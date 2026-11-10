@@ -1,0 +1,325 @@
+# 생성 파일: tools/gen-iscq-chains.py (2026-10-26). 성간 임시회의 과제를 게임 상황 기록에 띄운다. 손으로 고치지 말 것.
+
+sllm_iscq_peace_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_war_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_relation_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_naval_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_energy_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_minerals_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_food_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_alloys_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_consumer_goods_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_unity_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_physics_research_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_society_research_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_engineering_research_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_energy_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_minerals_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_food_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_alloys_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_consumer_goods_1 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_peace_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_war_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_relation_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_naval_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_energy_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_minerals_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_food_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_alloys_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_consumer_goods_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_unity_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_physics_research_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_society_research_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_engineering_research_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_energy_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_minerals_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_food_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_alloys_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_consumer_goods_2 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_peace_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_war_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_relation_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_naval_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_energy_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_minerals_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_food_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_alloys_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_consumer_goods_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_unity_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_physics_research_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_society_research_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_income_engineering_research_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_energy_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_minerals_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_food_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_alloys_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}
+
+sllm_iscq_stock_consumer_goods_3 = {
+	picture = GFX_evt_diplomatic_visit
+	icon = "gfx/interface/icons/situation_log/situation_log_quest.dds"
+	situation_log_category = urgent_matters
+}

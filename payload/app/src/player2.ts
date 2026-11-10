@@ -12,6 +12,8 @@ export function finishText(text: string, finish: unknown, opts: { json?: boolean
   if (opts.json) { try { opts.onTruncated?.(); } catch { /* 알림 실패는 무시 */ } return text; }
   return text + L(' …(잘림)', ' …(cut off)');
 }
+/** 쓴 토큰이 한도에 닿았나(Player2 는 한도에서 잘라도 stop 을 준다). 사용량을 모르면 false. */
+export function p2NearLimit(used: number, max: number): boolean { return Number.isFinite(used) && used > 0 && max > 0 && used >= max - Math.max(16, Math.round(max * 0.04)); }
 /** fetch 오류 안쪽(cause)의 실제 원인 코드(ECONNREFUSED 등). 없으면 ''. */
 export function fetchCauseCode(e: unknown): string {
   let c: any = (e as any)?.cause;
@@ -88,11 +90,19 @@ export class Player2Client {
     return Buffer.from(r.data, 'base64');
   }
   async chat(messages: ChatMessage[], opts: { maxTokens?: number; json?: boolean; _diagnosticId?: string; onTruncated?: () => void } = {}): Promise<string> {
-    const body: any = { messages, stream: false, max_tokens: opts.maxTokens ?? 300 };
-    if (opts.json) body.response_format = { type: 'json_object' };
-    const r = await this.req('POST', '/v1/chat/completions', body,opts._diagnosticId), choice = r.choices?.[0];
-    logDiagnostic('info','ai.usage',{parent:opts._diagnosticId,provider:'player2',promptTokens:r.usage?.prompt_tokens,completionTokens:r.usage?.completion_tokens,totalTokens:r.usage?.total_tokens,finishReason:choice?.finish_reason});
-    if (typeof choice?.message?.content !== 'string') throw new Error(L('Player2 응답에 대사가 없습니다.', 'Player2 reply has no text.'));
-    return finishText(choice.message.content, choice.finish_reason, opts);
+    const once = async (max: number) => {
+      const body: any = { messages, stream: false, max_tokens: max };
+      if (opts.json) body.response_format = { type: 'json_object' };
+      const r = await this.req('POST', '/v1/chat/completions', body,opts._diagnosticId), choice = r.choices?.[0];
+      logDiagnostic('info','ai.usage',{parent:opts._diagnosticId,provider:'player2',promptTokens:r.usage?.prompt_tokens,completionTokens:r.usage?.completion_tokens,totalTokens:r.usage?.total_tokens,finishReason:choice?.finish_reason,maxTokens:max});
+      if (typeof choice?.message?.content !== 'string') throw new Error(L('Player2 응답에 대사가 없습니다.', 'Player2 reply has no text.'));
+      return { text: choice.message.content as string, finish: choice.finish_reason, used: Number(r.usage?.completion_tokens) };
+    };
+    const max = opts.maxTokens ?? 300;
+    let a = await once(max);
+    // 2026-10-24 실플레이 로그: Player2 는 숨은 생각 토큰까지 한도에 넣고, 한도에 닿아도 finish_reason=stop 으로 준다(700 중 696 → 대사가 문장 중간에서 끊김).
+    // 한도에 닿았으면 한 번만 넉넉한 한도로 다시 부르고, 그래도 닿으면 끊긴 것(length)으로 처리한다.
+    if (p2NearLimit(a.used, max)) { const big = Math.min(6000, Math.max(max * 3, 1500)); a = await once(big); if (p2NearLimit(a.used, big)) a.finish = 'length'; }
+    return finishText(a.text, a.finish, opts);
   }
 }

@@ -1,0 +1,11 @@
+# SLLM 반란과 공작(2026-11-05) — 앱: src/features/rebels-app.ts · 효과: scripted_effects/sllm_rebels.txt
+# ③ 취약 국가(나라 수정자, 판정마다 100일): 우리를 압도하는 적대 이웃 앞에서 함대 한도를 다 쓰지 않음
+sllm_rb_vulnerable = {
+	planet_stability_add = -5
+	faction_approval = -0.1
+}
+# ④ 심어진 불안(행성 수정자, 3년): 선동 공작
+sllm_rb_sown = {
+	planet_stability_add = -10
+	planet_crime_add = 10
+}

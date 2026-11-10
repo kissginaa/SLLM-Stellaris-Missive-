@@ -6,7 +6,7 @@ import { BackstoryStore, cleanBackstory, BACKSTORY_MAX } from '../backstory';
 import { ctx } from '../app/ctx';
 import { logDiagnostic } from '../diagnostics';
 import { pick } from './settings-ui';
-import { personOf, personBio, setPersonBio, governorBio } from './persona-app';
+import { personOf, personBio, setPersonBio, governorBio, personCard, setPersonCard } from './persona-app';
 import { setGovBio } from './gov';
 
 export const backstories = new BackstoryStore(() => path.join(app.getPath('userData'), 'sllm_backstory.json'),
@@ -19,23 +19,25 @@ export function registerBackstory(autoLore: (name: string, idx?: number) => stri
     const name = String(a?.name ?? '').trim(); if (!name) return null;
     const idx = Number(a?.idx); let auto = '';
     try { auto = autoLore(name, Number.isFinite(idx) ? idx : undefined) || ''; } catch { /* 전기 없음 */ }
-    return { name, custom: backstories.empire(name), auto, max: BACKSTORY_MAX };
+    return { name, custom: backstories.empire(name), auto, max: BACKSTORY_MAX, card: true, ...backstories.empireCard(name) }; // 말투·비밀(2026-10-28)
   });
-  ipcMain.handle('backstoryEmpireSet', async (_e, a: { name?: unknown; text?: unknown }) => {
+  ipcMain.handle('backstoryEmpireSet', async (_e, a: { name?: unknown; text?: unknown; card?: { voice?: string; secret?: string } }) => {
     const name = String(a?.name ?? '').trim(); if (!name) return { ok: false, error: pick('제국 이름이 없습니다.', 'No empire name.') };
     if (!backstories.setEmpire(name, a?.text)) return { ok: false, error: pick('저장하지 못했습니다.', 'Could not save.') };
+    if (a?.card && typeof a.card === 'object' && !backstories.setEmpireCard(name, a.card)) return { ok: false, error: pick('저장하지 못했습니다.', 'Could not save.') };
     try { const t = ctx.talk as { name?: string; player?: string } | null; if (t && (t.name === name || t.player === name)) ctx.talk = ctx.withLore(ctx.talk!); } catch { /* 다음 대화부터 반영 */ }
     return { ok: true, custom: backstories.empire(name) };
   });
   ipcMain.handle('backstoryPerson', async (_e, key: unknown) => {
     const sid = ctx.curSaveId, k = String(key ?? ''); if (!sid || !k) return null;
     const p = personOf(k); if (!p) return null;
-    return { name: p.name, custom: personBio(sid, k), max: BACKSTORY_MAX };
+    return { name: p.name, custom: personBio(sid, k), max: BACKSTORY_MAX, card: true, ...personCard(sid, k) };
   });
-  ipcMain.handle('backstoryPersonSet', async (_e, key: unknown, text: unknown) => {
+  ipcMain.handle('backstoryPersonSet', async (_e, key: unknown, text: unknown, card: unknown) => {
     const sid = ctx.curSaveId, k = String(key ?? '');
     if (!sid || !k || !personOf(k)) return { ok: false, error: pick('연락처에서 이 인물을 찾지 못했습니다.', 'This person is not in your contacts.') };
     setPersonBio(sid, k, cleanBackstory(text));
+    if (card && typeof card === 'object') setPersonCard(sid, k, card as { voice?: string; secret?: string }); // 말투·비밀(2026-10-28)
     return { ok: true, custom: personBio(sid, k) };
   });
 }

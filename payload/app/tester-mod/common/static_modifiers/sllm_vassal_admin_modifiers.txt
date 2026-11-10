@@ -1,0 +1,35 @@
+# 동화 정책(2026-11-04): 종주국 윤리에 끌림 +100%, 반대 윤리 -75%. 앱 src/vassal-admin.ts · 효과 sllm_vassal_admin.txt
+sllm_va_assim_none = {
+}
+sllm_va_assim_authoritarian = {
+	pop_ethic_authoritarian_attraction_mult = 1
+	pop_ethic_egalitarian_attraction_mult = -0.75
+}
+sllm_va_assim_egalitarian = {
+	pop_ethic_egalitarian_attraction_mult = 1
+	pop_ethic_authoritarian_attraction_mult = -0.75
+}
+sllm_va_assim_xenophobe = {
+	pop_ethic_xenophobe_attraction_mult = 1
+	pop_ethic_xenophile_attraction_mult = -0.75
+}
+sllm_va_assim_xenophile = {
+	pop_ethic_xenophile_attraction_mult = 1
+	pop_ethic_xenophobe_attraction_mult = -0.75
+}
+sllm_va_assim_militarist = {
+	pop_ethic_militarist_attraction_mult = 1
+	pop_ethic_pacifist_attraction_mult = -0.75
+}
+sllm_va_assim_pacifist = {
+	pop_ethic_pacifist_attraction_mult = 1
+	pop_ethic_militarist_attraction_mult = -0.75
+}
+sllm_va_assim_materialist = {
+	pop_ethic_materialist_attraction_mult = 1
+	pop_ethic_spiritualist_attraction_mult = -0.75
+}
+sllm_va_assim_spiritualist = {
+	pop_ethic_spiritualist_attraction_mult = 1
+	pop_ethic_materialist_attraction_mult = -0.75
+}

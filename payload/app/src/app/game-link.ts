@@ -10,6 +10,9 @@ import { reqSeenIn, SllmMessage, MOD_PROTOCOL } from '../protocol';
 import { ctx } from './ctx';
 import { LogRouter, SLOT } from './log-router';
 import { SessionCommandQueue } from '../session-queue';
+import { energyNeed, energyCheckCommand } from '../energy-guard';
+import { L } from '../i18n-pick';
+import { usage } from '../usage-meter'; // 한 달 사용량(콘솔 명령 수, 2026-11-09)
 
 export const CONNECTION_PROTOCOL = MOD_PROTOCOL; // 연결 규격은 protocol.ts 의 MOD_PROTOCOL 한 곳에서만 정한다(2026-10-17, 4→5 때 두 상수가 어긋났던 사고).
 export type RuntimeMod = { version: string; protocol: number; verified: boolean };
@@ -110,10 +113,27 @@ export function consoleLog(line: string): void {
     fs.writeFileSync(f, old.slice(-60).join('\n') + '\n', 'utf8');
   } catch (error) { logDiagnostic('warn', 'storage.write_failed', { store: 'console_log', error }); } // 같은 줄은 위에서 진단 기록에도 남았으니 앱은 그대로 진행(F-33 B)
 }
+// 에너지 지불 확인(2026-11-08 사용자: 「에너지 크레딧이 없을 땐 소비 안 되게 — 지불하는 모든 행위가 인식」): 플레이어 국고에서 에너지가 빠지는 명령은
+// 보내기 전에 국고를 묻고(ENCHK), 모자라면 보내지 않고 오류를 던진다. 판정 규칙은 src/energy-guard.ts.
+const enWaiters = new Map<number, (ok: boolean) => void>();
+async function energyOk(need: number): Promise<boolean | null> {
+  const req = ++link.reqCounter;
+  const r = new Promise<boolean | null>((resolve) => { enWaiters.set(req, resolve); setTimeout(() => { if (enWaiters.delete(req)) { logDiagnostic('warn', 'game.energy_check.timeout', { req, need }); resolve(null); } }, 8000); });
+  try { const c = energyCheckCommand(req, need); await runConsoleCommand(c, (t) => clipboard.writeText(t)); usage.noteConsole(c); } catch (e) { enWaiters.delete(req); throw e; }
+  return r;
+}
 export async function sendConsole(cmd: string): Promise<void> {
   if (!link.sessionReady) { consoleLog('보내지 않음(게임 안에 들어가기 전) ' + cmd); throw new Error(NOT_IN_SESSION); }
   if (link.runtimeMod && link.runtimeMod.protocol !== CONNECTION_PROTOCOL && !cmd.includes('sllm_probe_hello')) throw new Error('앱과 연결 모드의 규격이 다릅니다. 양쪽을 함께 업데이트해 주세요.');
-  try { await runConsoleCommand(cmd, (t) => clipboard.writeText(t)); consoleLog('보냄 ' + cmd); }
+  const need = energyNeed(cmd);
+  if (need > 0) {
+    const ok = await energyOk(need);
+    if (ok !== true) {
+      consoleLog(`보내지 않음(에너지 ${ok === false ? '부족' : '확인 실패'} ${need}) ` + cmd);
+      throw new Error(ok === false ? L(`에너지 크레딧이 모자랍니다(필요 ${need}). 국고를 채운 뒤 다시 해 주세요.`, `Not enough energy credits (${need} needed). Refill the treasury and try again.`) : L('게임에서 국고를 확인하지 못해 에너지를 쓰지 않았습니다. 잠시 뒤 다시 해 주세요.', 'Could not check the treasury in the game, so no energy was spent. Try again shortly.'));
+    }
+  }
+  try { await runConsoleCommand(cmd, (t) => clipboard.writeText(t)); usage.noteConsole(cmd); consoleLog('보냄 ' + cmd); }
   catch (e) { consoleLog('보내기 실패(' + (e as Error).message + ') ' + cmd); throw e; }
 }
 export async function sendAndWait(build: (req: number) => string): Promise<Outcome | 'timeout'> {
@@ -141,6 +161,7 @@ export function registerGameLink(router: LogRouter): void {
     if (link.processRunning !== false && !link.sessionReady) { link.sessionReady = true; logDiagnostic('info', 'game.session_ready', { kind: m.kind }); } // 게임이 켜진 뒤 받은 모드 줄 = 게임 안
   });
   router.on(SLOT.ACK, 'game-link:ack', (m: SllmMessage) => {
+    if (m.kind === 'ENCHK') { const req = Number(String(m.kv.req ?? '').replace(/^\\/, '')), w = enWaiters.get(req); if (w) { enWaiters.delete(req); w(String(m.kv.ok ?? '').replace(/^\\/, '') === '1'); } return; } // 국고 확인 회신
     if (m.kind === 'ACK') {
       const w = waiters.get(Number(m.kv.req));
       if (w) { waiters.delete(Number(m.kv.req)); w(outcomeOf(m.fields, m.kv)); }

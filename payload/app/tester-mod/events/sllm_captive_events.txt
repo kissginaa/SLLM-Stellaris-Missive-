@@ -1,0 +1,48 @@
+# SLLM 사로잡은 적 제독(2026-11-04).
+# sllm_cap.1 — 적 배를 격침했을 때(바닐라 on_ship_destroyed_perp, THIS = 이긴 나라 = 플레이어만): 그 배가 함대의 마지막 배이고 제독이 지휘 중이면 25% 확률로 사로잡는다.
+# sllm_cap.2 — 앱이 고른 처리(몸값·심문·회유·처형·석방)를 실행하고 결과를 앱에 알린다(root = 플레이어라 sllm_capN@root 가 맞게 풀린다).
+namespace = sllm_cap
+
+country_event = {
+	id = sllm_cap.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		is_variable_set = sllm_save_id
+		exists = from
+		from = { sllm_is_empire = yes is_gestalt = no }
+		is_at_war_with = from
+		exists = fromfromfrom
+		fromfromfrom = {
+			exists = fleet
+			fleet = {
+				exists = leader
+				leader = { leader_class = commander }
+				num_ships <= 1
+			}
+		}
+		NOT = { AND = { has_country_flag = sllm_cap_s1 has_country_flag = sllm_cap_s2 has_country_flag = sllm_cap_s3 } }
+	}
+	immediate = {
+		random_list = {
+			75 = { }
+			25 = { sllm_cap_take = yes }
+		}
+	}
+}
+
+country_event = {
+	id = sllm_cap.2
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		if = { limit = { check_variable = { which = sllm_cap_slot value = 1 } } sllm_cap_do = { S = 1 } }
+		else_if = { limit = { check_variable = { which = sllm_cap_slot value = 2 } } sllm_cap_do = { S = 2 } }
+		else_if = { limit = { check_variable = { which = sllm_cap_slot value = 3 } } sllm_cap_do = { S = 3 } }
+		else = { set_variable = { which = sllm_cap_st value = 3 } }
+		if = { limit = { check_variable = { which = sllm_cap_st value = 1 } } log = "SLLM:CAPSET/;/req=\\[Root.sllm_cap_req]/;/status=applied" }
+		else_if = { limit = { check_variable = { which = sllm_cap_st value = 2 } } log = "SLLM:CAPSET/;/req=\\[Root.sllm_cap_req]/;/status=gone" }
+		else = { log = "SLLM:CAPSET/;/req=\\[Root.sllm_cap_req]/;/status=none" }
+	}
+}

@@ -94,14 +94,33 @@ export interface StateSnapshot { sid: string; n: string; date: string; wars: Sta
   /** 우리 종속국(종속국 통신 채널, 2026-10-17). 없으면 빈 배열 */ vassals?: Array<{ idx: number; name: string; loyalty: number }>;
   /** 평의회 의제 칸이 비었는지(내정·파벌 회의 알림). 모르면 undefined */ agendaFree?: boolean; gestalt?: boolean; /** 고를 수 있는 평의회 의제 비트(faction-meeting AGENDAS avail). 옛 모드면 없음 */ agendaAvail?: number; /** 제국 가치관 비트(faction-meeting ETHIC_BITS, 512 = 유랑). 모르면 undefined */ empireEth?: number;
   /** 플레이어 제국 외계인 성향(파벌 대표 종족): 1 보통·2 광적, 0 없음 */ xenophile?: number; xenophobe?: number;
+  /** 통치 체제(2026-10-23): 1 민주 2 과두 3 독재 4 제정 5 기업 0 그 밖. 옛 모드면 없음 */ authority?: number;
+  /** 동맹(방위 조약·연방)이 방어 전쟁 중인데 우리가 안 끼었나(외교 거래, 2026-10-27). 옛 모드면 없음 → 앱은 매달 직접 묻는다 */ allyWar?: boolean;
+  /** 엔클레이브·캐러밴(알파 11, 2026-10-25): 세계의 축제 중·축제 소동 수정자, 캐러밴 선단 국경 진입 비트(1·2·4, 540일). 옛 모드면 없음 */ enclave?: { fest: boolean; outrage: boolean; cara: number };
   /** 민심 재료(알파 10): 행성 안정도 합·수, 불안 행성 수, 전쟁 피로도 합(0..1 들의 합). 옛 모드면 없음 */ mood?: { sum: number; cnt: number; low: number; ox: number; dx: number } }
 export interface OriginRecord { kind: 'rebels' | 'released'; country: string; from: string; by?: string; planet?: string; date: string }
 export interface SpyOpRecord { phase: 'finished' | 'cancelled'; op: string; owner: string; target: string; date: string; /** 작전 종류(모드가 아는 것만: smear = 비방 공작, 2026-10-20) */ type?: string }
+
+/** 2026-11-09(회랑 방식): 모드가 바뀌지 않아 안 보낸 묶음(STATE_END kp 비트). 앱은 지난 상황의 값을 이어 쓴다. */
+export const STATE_KEEP = { council: 1, enclave: 2, factions: 4, vassals: 8, mood: 16 } as const;
+/** 안 보낸 묶음을 지난 상황(같은 세이브)에서 채운다. 지난 상황이 없으면 false(그 달은 쓰지 않고 모드에 전부 보내 달라고 한다). */
+export function carryKept(c: StateSnapshot, prev: StateSnapshot | null, kp: number): boolean {
+  if (!kp) return true;
+  if (!prev || prev.sid !== c.sid) return false;
+  if (kp & STATE_KEEP.council) { c.agendaFree = prev.agendaFree; c.gestalt = prev.gestalt; c.empireEth = prev.empireEth; c.agendaAvail = prev.agendaAvail; c.authority = prev.authority; c.allyWar = prev.allyWar; c.xenophile = prev.xenophile; c.xenophobe = prev.xenophobe; }
+  if (kp & STATE_KEEP.enclave) c.enclave = prev.enclave ? { ...prev.enclave } : undefined;
+  if (kp & STATE_KEEP.factions) c.factions = prev.factions.map((f) => ({ ...f }));
+  if (kp & STATE_KEEP.vassals) c.vassals = (prev.vassals ?? []).map((v) => ({ ...v }));
+  if (kp & STATE_KEEP.mood) c.mood = prev.mood ? { ...prev.mood } : undefined;
+  return true;
+}
 
 /** STATE_BEGIN 부터 STATE_END 까지 모아 하나의 상황으로 만든다. 끝이 오지 않은 묶음은 버린다. */
 export class StateCollector {
   private cur: StateSnapshot | null = null;
   last: StateSnapshot | null = null;
+  /** 안 보낸 묶음을 채울 지난 상황이 없었다(앱을 새로 켰음 등) — 부르는 쪽이 모드에 「다음 달은 전부」를 청하고 지운다(2026-11-09). */
+  needFull = false;
   /** 완성된 상황이 생기면 돌려준다. */
   feed(m: SllmMessage): StateSnapshot | null {
     const k = m.kind, kv = m.kv;
@@ -127,6 +146,8 @@ export class StateCollector {
       if (kv.gest === '0' || kv.gest === '1') c.gestalt = kv.gest === '1';
       { const e = num(kv.eth); if (e !== undefined && Number.isSafeInteger(e) && e >= 0 && e < 1024) c.empireEth = e; }
       { const v = num(kv.agv); if (v !== undefined && Number.isSafeInteger(v) && v >= 0 && v < 1 << 20) c.agendaAvail = v; } // 지금 고를 수 있는 평의회 의제(faction-meeting AGENDAS avail 비트, 2026-10-19)
+      { const au = num(kv.auth); if (au !== undefined && Number.isSafeInteger(au) && au >= 0 && au <= 5) c.authority = au; }
+      if (kv.al === '0' || kv.al === '1') c.allyWar = kv.al === '1'; // 외교 거래: 동맹 방어 전쟁(2026-10-27) // 통치 체제(행성총독회의, 2026-10-23)
       for (const [key, prop] of [['xph', 'xenophile'], ['xpb', 'xenophobe']] as const) { const v = num(kv[key]); if (v !== undefined && v >= 0 && v <= 2) c[prop] = v; }
     } else if (k === 'VASSAL' && same) {
       const idx = num(kv.idx), loy = num(kv.loyalty);
@@ -134,11 +155,15 @@ export class StateCollector {
     } else if (k === 'MOOD' && same) {
       const sum = num(kv.sum), cnt = num(kv.cnt), low = num(kv.low);
       if (sum !== undefined && cnt !== undefined && cnt >= 0 && low !== undefined) c.mood = { sum, cnt, low, ox: num(kv.ox) ?? 0, dx: num(kv.dx) ?? 0 };
+    } else if (k === 'ENCLAVE' && same) {
+      const ca = num(kv.cara); if (kv.fest === '0' || kv.fest === '1') c.enclave = { fest: kv.fest === '1', outrage: kv.outrage === '1', cara: ca !== undefined && Number.isSafeInteger(ca) && ca >= 0 && ca <= 7 ? ca : 0 };
     } else if (k === 'SUBJECT' && same) {
       c.subject = { overlord: kv.overlord ?? '', loyalty: num(kv.loyalty) ?? 0 };
     } else if (k === 'STATE_END') {
       this.cur = null;
       if ((kv.n ?? '') !== c.n) return null;
+      const kp = num(kv.kp) ?? 0;
+      if (!carryKept(c, this.last, Number.isSafeInteger(kp) && kp > 0 ? kp : 0)) { this.needFull = true; return null; }
       this.last = c; return c;
     }
     return null;

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Galaxy Map</title>
+<!-- 시나리오 은하 지도(2026-11-06 사용자: 「작전지휘실 전체 지도 기능을 이용해 시나리오 팩 전용 "은하 지도" — 섹터 구역마다 총독 초상화, 어느 구역 누구 총독」). -->
+<!-- 여는 곳: 집무실 대사관 보고의 「대립 긴장도」 칸(ui/office-tension.js). 자료: src/features/scenario-map-app.ts(scnMap). 그림·조작: scenario-map.js. 화면 전체(작업 표시줄까지). -->
+<style>
+ :root{--bg:#03060a;--text:#dcecf0;--dim:#7fa3ad;--hi:#5fd4e4;--gold:#e8c872;--line:#5fd4e455;--line2:#5fd4e422;--glass:#04121acc}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.55 "Malgun Gothic",sans-serif;overflow:hidden;user-select:none}
+ button{font:inherit;color:inherit;cursor:pointer}
+ #sm{position:fixed;inset:0;animation:smIn .7s ease-out both;background:radial-gradient(ellipse 70% 60% at 50% 50%,#0a1a24 0%,#050c12 55%,#020407 100%)}
+ @keyframes smIn{from{opacity:0;filter:brightness(1.7) blur(2px)}to{opacity:1;filter:none}}
+ #cv{position:absolute;inset:0;width:100%;height:100%;cursor:grab} #cv.drag{cursor:grabbing}
+ #scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#5fd4e40a 0 1px,transparent 1px 3px);mix-blend-mode:screen}
+ #cards{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+ /* 섹터 총독 카드: 바탕화면 아이콘처럼 투명하고 빛나는 초상화 + 이름 */
+ .gv{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;pointer-events:auto;cursor:pointer;transition:opacity .2s}
+ .gv .pic{width:var(--ps,40px);height:var(--ps,40px);border-radius:50%;overflow:hidden;border:1.5px solid var(--sc,#5fd4e4);background:#06141bcc center/cover no-repeat;
+  box-shadow:0 0 8px color-mix(in srgb,var(--sc,#5fd4e4) 65%,transparent),0 0 18px color-mix(in srgb,var(--sc,#5fd4e4) 25%,transparent)}
+ .gv .pic.none{display:flex;align-items:center;justify-content:center;font-size:calc(var(--ps,40px) * .42);color:var(--sc,#5fd4e4);text-shadow:0 0 6px var(--sc,#5fd4e4)}
+ .gv.noble .pic{border-color:var(--gold);box-shadow:0 0 8px #e8c872aa,0 0 20px #e8c87244}
+ .gv .tag{margin-top:3px;text-align:center;white-space:nowrap;line-height:1.25;text-shadow:0 0 4px #000,0 0 10px #000,0 1px 2px #000}
+ .gv .tag b{display:block;font-size:12px;font-weight:700;color:#fff;text-shadow:0 0 5px var(--sc,#5fd4e4),0 1px 2px #000}
+ .gv .tag small{display:block;font-size:11px;color:#dceef2}
+ .gv .tag i{font-style:normal;color:var(--gold)}
+ #sm.far .gv .tag{display:none}
+ .gv:hover .tag{display:block!important} .gv:hover .pic,.gv.sel .pic{transform:scale(1.12);box-shadow:0 0 12px var(--sc,#5fd4e4),0 0 28px color-mix(in srgb,var(--sc,#5fd4e4) 60%,transparent)} .gv .pic{transition:transform .15s,box-shadow .15s}
+ .gv.sel{z-index:3}
+ /* 위 머리판 · 오른쪽 목록 · 아래 안내 — 유리판 */
+ #top{position:absolute;left:18px;top:14px;right:18px;display:flex;align-items:center;gap:14px;pointer-events:none}
+ #top h1{margin:0;font-size:20px;letter-spacing:.08em;color:#fff;text-shadow:0 0 8px var(--hi),0 0 22px #5fd4e477}
+ #top .sub{color:var(--dim);font-size:12.5px}
+ #top .sp{flex:1}
+ #top button{pointer-events:auto;background:none;border:1px solid var(--line);border-radius:3px;padding:4px 12px;color:var(--text)} #top button:hover{border-color:var(--hi);color:#fff;box-shadow:0 0 10px #5fd4e444}
+ #legend{position:absolute;left:18px;top:52px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;pointer-events:none}
+ #legend span{display:inline-flex;align-items:center;gap:6px} #legend i{width:11px;height:11px;border-radius:2px;display:inline-block;box-shadow:0 0 6px currentColor}
+ #side{position:absolute;right:14px;top:56px;bottom:56px;width:290px;overflow:auto;padding:10px 12px;background:var(--glass);border:1px solid var(--line2);border-radius:4px;backdrop-filter:blur(4px)}
+ #side h3{margin:8px 0 4px;font-size:13px;letter-spacing:.04em;border-bottom:1px solid var(--line2);padding-bottom:3px} #side h3:first-child{margin-top:0}
+ #side .row{display:flex;align-items:center;gap:8px;padding:4px 4px;border-radius:3px;cursor:pointer} #side .row:hover,#side .row.sel{background:#5fd4e414}
+ #side .row .mini{width:26px;height:26px;border-radius:50%;flex:none;border:1px solid var(--sc,#5fd4e4);background:#06141b center/cover no-repeat}
+ #side .row div{min-width:0} #side .row b{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} #side .row small{display:block;color:var(--dim);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #side .row small i{font-style:normal;color:var(--gold)}
+ #info{position:absolute;left:18px;bottom:16px;max-width:560px;color:var(--dim);font-size:12px;pointer-events:none;text-shadow:0 1px 2px #000}
+ #msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:16px 22px;max-width:520px;text-align:center;background:var(--glass);border:1px solid var(--line);border-radius:4px;display:none}
+ #tip{position:absolute;pointer-events:none;padding:4px 8px;background:#04121aee;border:1px solid var(--line);border-radius:3px;font-size:12px;display:none;white-space:nowrap}
+</style></head>
+<body>
+<div id="sm">
+ <canvas id="cv"></canvas><div id="scan"></div><div id="cards"></div>
+ <div id="top"><h1 id="ttl">은하 지도</h1><span class="sub" id="sub"></span><span class="sp"></span><button id="re" type="button">새로 읽기</button><button id="x" type="button">닫기 (Esc)</button></div>
+ <div id="legend"></div>
+ <div id="side"></div>
+ <div id="info"></div>
+ <div id="msg"></div>
+ <div id="tip"></div>
+</div>
+<script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script src="scenario-intel.js"></script><script src="scenario-map.js"></script>
+</body></html>

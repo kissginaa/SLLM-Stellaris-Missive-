@@ -1,0 +1,17 @@
+# 성간제국통신임시회의 참가 후보(2026-10-23 집 PC 초안). 플레이어 나라 범위에서 부른다(앱: src/features/isc-app.ts).
+# 통신 중인 일반 AI 제국마다 통치자 이름·직함·통치자 유무·우리와 전쟁 여부·우리에 대한 호감을 한 줄씩.
+sllm_probe_isc = {
+ sllm_probe_init_vars = yes
+ set_variable = { which = sllm_out_req value = $REQ$ }
+ sllm_probe_assign_idx = yes
+ every_country = {
+  limit = { is_variable_set = sllm_idx is_ai = yes sllm_is_empire = yes has_communications = prev }
+  export_trigger_value_to_variable = { trigger = opinion parameters = { who = prev } variable = sllm_terminal_score }
+  set_variable = { which = sllm_isc_war value = 0 }
+  if = { limit = { is_at_war_with = prev } set_variable = { which = sllm_isc_war value = 1 } }
+  set_variable = { which = sllm_isc_rul value = 0 }
+  if = { limit = { exists = ruler } set_variable = { which = sllm_isc_rul value = 1 } }
+  log = "SLLM:ISCSEAT/;/sid=\\[Prev.sllm_save_id]/;/req=\\[Prev.sllm_out_req]/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/ruler=\\[This.GetRulerName]/;/title=\\[This.GetRulerTitle]/;/has=\\[This.sllm_isc_rul]/;/war=\\[This.sllm_isc_war]/;/score=\\[This.sllm_terminal_score]"
+ }
+ log = "SLLM:ISC_END/;/sid=\\[This.sllm_save_id]/;/req=\\[This.sllm_out_req]"
+}

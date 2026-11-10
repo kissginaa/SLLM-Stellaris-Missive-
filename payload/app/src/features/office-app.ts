@@ -2,7 +2,7 @@
 // 바탕화면 아이콘으로 제국 안 사람들(연락처·개인 서신·추모관)과 내치 창(총독·함대 사령부·종속국·인터뷰·연설·신문)을 연다.
 // 1단계: 연락처는 앱이 이미 아는 인물(행성 총독 목록·함대 사령부의 지휘관)만. 지도자 전원 읽기·기억·편지·추모는 2단계.
 import { paragonIndex, paragonFor, type ParagonLore } from '../paragons';
-import { BrowserWindow, ipcMain, screen } from 'electron';
+import { BrowserWindow, ipcMain, screen, type Rectangle } from 'electron';
 import * as path from 'path';
 import { ctx } from '../app/ctx';
 import { playerGestalt } from './gestalt-app';
@@ -14,10 +14,12 @@ import { press, openPress } from './press-app';
 import { speech, openSpeech } from './speech-app';
 import { media, openPaper, paperUnseen, paperHooks, winBounds } from './media';
 import { restoreRect } from '../window-bounds';
+import { coverScreen } from '../app/cover-screen';
+import { logDiagnostic } from '../diagnostics';
 import { chron } from './chronicle-app';
 import { crisisView } from './crisis-app';
 import { peopleOf, onPeopleChanged } from './people-app';
-import { roleIconMasks } from '../leader-icons';
+import { roleIconMasksSoon } from '../leader-icons';
 import { traitLoc, traitLabel } from '../trait-names';
 import { selectedLanguage } from './settings-ui';
 import { officePeople, officeFeed, OFFICE_APPS, OFFICE_SKIN, OFFICE_SKIN_PAPER, OFFICE_GLASS, OFFICE_GLASS_TERM, dockBounds, type OfficeApp, type OfficeRect } from '../office';
@@ -46,7 +48,7 @@ export function officeView() {
     planetsLoaded: !!planets,
     people: withParagons(withTraitNames(officePeople(planets, fv ? fv.admirals : [], sid ? peopleOf(sid) : []))),
     rosterLoaded: sid ? peopleOf(sid).some((p) => !p.gone) : false,
-    icons: roleIconMasks(ctx.flagProv.game()), // 게임 폴더의 직업 아이콘(실행 중에만 읽음) → 테마 색으로 칠할 가림판
+    icons: roleIconMasksSoon(ctx.flagProv.game(), () => push()), // 게임 폴더의 직업 아이콘(실행 중에만 읽음) → 테마 색으로 칠할 가림판. 처음엔 작업 스레드에서 만들고 다 되면 다시 보낸다(2026-10-27)
     feed: officeFeed(groups, ctx.playerIdx, 6),
     gestalt: playerGestalt(), // 단일 의식(machine·hive·gestalt) 제국이면 언론사 인터뷰·시민 청원 아이콘을 숨긴다(2026-10-19)
     letters: letterHook.count(), memorial: letterHook.memorial(), // 안 읽은 개인 서신(letters-app)·새로 이름이 오른 추모관 비석(memorial-app)
@@ -92,10 +94,29 @@ export function openOffice(go?: 'letters' | 'memorial') {
   office.win.setAlwaysOnTop(true, 'screen-saver', 0); // 집무실에서 연 창(총독·함대 등)이 그 위에 뜨도록 한 단계 낮게
   void office.win.loadFile(path.join(__dirname, '..', '..', 'ui', 'office.html'));
   office.win.once('ready-to-show', () => { office.win?.show(); push(); if (go) safeSend(office.win, 'officeGo', go); });
-  office.win.on('closed', () => { office.win = null; office.rect = null; const d = office.docked; office.docked = null; release(d); });
+  office.win.on('closed', () => { officeFull.want = officeFull.on; officeFull.on = false; officeFull.prev = null; office.win = null; office.rect = null; const d = office.docked; office.docked = null; release(d); });
   const follow = () => { const d = office.docked; if (d && !d.win.isDestroyed()) place(d.win); };
   office.win.on('move', follow); office.win.on('resize', follow);
-  { const w = office.win, keep = () => (w.isDestroyed() ? null : w.getBounds()); w.on('move', () => winBounds.later('office', keep)); w.on('resize', () => winBounds.later('office', keep)); w.on('close', () => { const b = keep(); if (b) winBounds.set('office', b); }); }
+  { const w = office.win, keep = () => (w.isDestroyed() ? null : officeFull.on ? officeFull.prev : w.getBounds()); w.on('move', () => { if (!officeFull.on) winBounds.later('office', keep); }); w.on('resize', () => { if (!officeFull.on) winBounds.later('office', keep); }); w.on('close', () => { const b = keep(); if (b) winBounds.set('office', b); }); }
+  // 전체화면 전환 키(2026-11-08 사용자: 「집무실은 전체화면 전환 키가 따로 있음 좋긴 할듯」 · 작업 표시줄까지 덮기): F11
+  { const w = office.win; w.webContents.on('before-input-event', (e, inp) => { if (inp.type === 'keyDown' && inp.key === 'F11' && !inp.alt && !inp.control && !inp.meta) { e.preventDefault(); toggleOfficeFull(); } });
+    if (officeFull.want) w.once('ready-to-show', () => { if (!w.isDestroyed() && !officeFull.on) toggleOfficeFull(); }); } // 기본 전체화면 · 지난번에 창 모드로 닫았으면 창 모드로(이 실행 동안)
+}
+/** 집무실 전체화면: on = 게임 모니터를 작업 표시줄까지 덮는다, off = 전의 창 크기·자리로. 저장되는 창 크기는 전체화면 전의 것. */
+const officeFull: { on: boolean; prev: Rectangle | null; want: boolean } = { on: false, prev: null, want: true }; // 기본은 전체화면(2026-11-08 사용자: 「전체화면을 디폴트로 — 작업 표시줄 빈자리까지」). F11 로 창 모드, 닫을 때 상태를 기억(이 실행 동안)
+export function toggleOfficeFull(): void {
+  const w = office.win; if (!w || w.isDestroyed()) return;
+  if (!officeFull.on) {
+    officeFull.prev = w.getBounds(); officeFull.on = true;
+    coverScreen(w, true, ctx.gameDip);
+    w.setAlwaysOnTop(true, 'screen-saver', 0); // 덮개는 2단계로 올리지만, 집무실에서 연 창(1단계)이 그 위에 떠야 한다
+  } else {
+    officeFull.on = false; coverScreen(w, false);
+    const b = officeFull.prev; officeFull.prev = null;
+    if (b) setTimeout(() => { if (!w.isDestroyed()) { w.setBounds(b); winBounds.set('office', b); } }, 60); // 전체화면이 풀린 뒤에 크기를 되돌린다
+  }
+  w.focus();
+  logDiagnostic('info', 'office.fullscreen', { on: officeFull.on });
 }
 export function closeOffice() { if (office.win && !office.win.isDestroyed()) { if (office.win.isFocused() || office.docked?.win.isFocused()) termHook.back(); office.win.close(); } }
 

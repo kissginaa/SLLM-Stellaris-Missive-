@@ -1,1 +1,17 @@
-node_modules/, dist/, runtime/, *.exe, *.dll, *.zip, *.pem, !update-public-key.pem
+# Build outputs and binaries (they ship with the installer / Steam Workshop mod, not this repository)
+node_modules/
+/dist/
+payload/app/dist/
+runtime/
+tools/electron/
+*.exe
+*.dll
+*.zip
+*.gz
+
+# Keys: only the public update key belongs here. The private signing key must never be committed.
+*.pem
+!payload/app/update-public-key.pem
+
+# Separate scenario mods are not published here
+payload/app/scenario-mods/

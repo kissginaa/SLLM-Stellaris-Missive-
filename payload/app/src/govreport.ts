@@ -9,6 +9,8 @@ export function planetTrouble(p: Planet): { score: number; reasons: string[] } {
   const reasons: string[] = []; let score = 0;
   if (p.stability !== null && p.stability < 50) { score += (50 - p.stability) * 2; reasons.push(L(`안정도 ${Math.round(p.stability)}`, `Stability ${Math.round(p.stability)}`)); }
   if (p.amenities !== null && p.amenities < 0) { score += -p.amenities * 3; reasons.push(L(`여가 시설 ${Math.round(-p.amenities)} 부족`, `Amenities short by ${Math.round(-p.amenities)}`)); }
+  // 실업(2026-11-05): 일자리가 모자라 실업자가 있으면 문제(빈 일자리가 있는데도 실업이면 종족·자격 문제 — 그래도 보고 거리)
+  if (p.unemployed !== undefined && p.unemployed > 0) { score += p.pops && p.pops > 0 ? Math.min(60, Math.round(200 * p.unemployed / p.pops)) : 10; reasons.push(L(`실업 ${p.unemployed}`, `${p.unemployed} unemployed`)); }
   if (p.housing !== null && p.housing < 0) { score += -p.housing * 3; reasons.push(L(`주거 ${Math.round(-p.housing)} 부족`, `Housing short by ${Math.round(-p.housing)}`)); }
   return { score: Math.round(score), reasons };
 }

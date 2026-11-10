@@ -4,7 +4,7 @@
 import { crisisRadio } from './crisis-app';
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import * as path from 'path';
-import { logDiagnostic } from '../diagnostics';
+import { logDiagnostic, writeRawDiagnostic } from '../diagnostics';
 import { RadioQueue, radioMessages, parseRadio, completeRadio, radioStation, radioStationViews, RadioAiredStore, backlogEvents, recapFacts, followUpBackground, radioNowBlock, radioGameLive } from '../radio';
 import { syncRadioChron } from './chronicle-app';
 import { redactKey } from '../aiclient';
@@ -16,6 +16,8 @@ import { ctx } from '../app/ctx';
 import { safeSend } from '../safe-send';
 import { pick } from './settings-ui';
 import { moodPromptNow } from './mood-app'; // 민심이 라디오 논조에(2026-10-20 알파 10)
+import { dayMoodLink } from '../app/daymood-hooks'; // 라디오 짧은 꼭지(2026-10-28)
+import { warFrontInfo } from '../app/war-front'; // 우리 전쟁의 전선(2026-10-26) — frontier-app 이 등록(가져오기 고리 방지)
 
 export const radio = {
   win: null as BrowserWindow | null,
@@ -60,6 +62,19 @@ export function scheduleRadio() {
   const session = radio.session;
   radio.next = Date.now() + RADIO_MS; pushRadioState();
   radio.timer = setTimeout(() => { void radioTick().finally(() => { if (radio.on && session === radio.session) scheduleRadio(); }); }, RADIO_MS);
+  // 짧은 꼭지(2026-10-28 동적 일상 분위기): AI 방송 사이 1분 지점에 틀 문장 하나(날씨·생활·광고·청취자 전화). LLM 없음.
+  if (segTimer) clearTimeout(segTimer);
+  segTimer = setTimeout(() => { segTimer = null; if (radio.on && session === radio.session) radioSegment(); }, RADIO_MS / 2);
+}
+let segTimer: ReturnType<typeof setTimeout> | null = null;
+/** 짧은 꼭지 한 편을 내보낸다(방송 중·게임이 꺼짐·게임 날짜 그대로면 쉼). 연대기·방송 기록에는 남기지 않는다. */
+export function radioSegment(): boolean {
+  if (!radio.on || radio.busy || !gameLive()) return false;
+  const seg = dayMoodLink.segment(); if (!seg) return false;
+  const station = configuredStation(settings.radioStation);
+  const names = { announcer: station.announcer, cohost: station.cohost, reporter: seg.caller || station.reporter };
+  safeSend(radio.win, 'radioBroadcast', { date: ctx.gameDate, lines: seg.lines, station: station.name, parent: station.parent, format: 'studio', names, fictional: true, short: seg.label, segKind: seg.kind });
+  return true;
 }
 export function configuredStations() {
   return radioStationViews().map((s) => ({
@@ -106,16 +121,17 @@ export async function radioTick(manual = false): Promise<boolean> {
     const background = !recap && sid && ctx.gameDate ? followUpBackground(taken, radioChronOwn(sid), ctx.gameDate, (id) => radioAired().has(sid, id)) : []; // 후속 보도: 이어지는 지난 소식을 같은 호출의 프롬프트에 넣는다(추가 AI 호출 없음)
     const messages = radioMessages(ctx.playerName || 'the player empire', date, facts, radioRecent, station.id, effectivePaper(settings.mediaPrefs, station.paper), station.name, format, recap, background);
     if (crisis.directive) messages.splice(1, 0, { role: 'system', content: crisis.directive });
+    if (!fictional) { const fronts = await warFrontInfo().catch(() => [] as string[]); if (fronts.length) messages.splice(1, 0, { role: 'system', content: '[War fronts of the player empire — confirmed game facts; mention them only if they fit the news, and name only these systems] ' + fronts.join(' ') }); } // 국경·전선(2026-10-26)
     { const md = moodPromptNow(); if (md) messages.splice(1, 0, { role: 'system', content: md }); } // 민심 한 줄(진행자의 말투·화제 선택에만, 수치를 읽지는 않게)
     let raw = await ctx.ai.chat(messages, { maxTokens: 2200, json: true });
     if (!radio.on || session !== radio.session || sid !== ctx.curSaveId) return false; // 껐다 다시 켠 창·다른 세이브에 이전 방송을 내보내지 않는다
-    let lines = parseRadio(raw);
+    let lines = parseRadio(raw, format);
     if (!completeRadio(lines, format)) {
       raw = await ctx.ai.chat([...messages, { role: 'user', content: 'Rewrite the script. I need complete JSON with exactly 8 lines alternating between announcer and ' + (format === 'studio' ? 'cohost' : 'reporter') + '. Keep each line short.' }], { maxTokens: 2200, json: true });
       if (!radio.on || session !== radio.session || sid !== ctx.curSaveId) return false;
-      lines = parseRadio(raw);
+      lines = parseRadio(raw, format);
     }
-    if (!completeRadio(lines, format)) { logDiagnostic('warn','ai.response.invalid',{feature:'radio',format,lineCount:lines.length});restore();safeSend(radio.win, 'radioError', pick('4차례 대화 형식의 대본을 완성하지 못했습니다. 이번 방송은 쉽니다(사건은 다음 방송으로 넘깁니다).', 'Could not complete a four-exchange script. Skipping this broadcast (the events carry over to the next one).')); return false; }
+    if (!completeRadio(lines, format)) { logDiagnostic('warn','ai.response.invalid',{feature:'radio',format,lineCount:lines.length});writeRawDiagnostic('sllm_radioraw.log',new Date().toISOString()+' format='+format+' len='+String(raw??'').length+'\n'+String(raw??'').slice(0,6000)); /* 다음에 실패하면 실제 답을 보고 고칠 수 있게 */restore();safeSend(radio.win, 'radioError', pick('4차례 대화 형식의 대본을 완성하지 못했습니다. 이번 방송은 쉽니다(사건은 다음 방송으로 넘깁니다).', 'Could not complete a four-exchange script. Skipping this broadcast (the events carry over to the next one).')); return false; }
     if (fictional && sid && date) radio.dailyDate.set(sid, date);
     if (recap) radio.recapSig.set(sid, recapSig); else if (sid) radioAired().mark(sid, taken.map((e) => e.id ?? '').filter(Boolean));
     for (const l of lines) radioRecent.push(`${names[l.who]}: ${l.text}`); if (radioRecent.length > 12) radioRecent.splice(0, radioRecent.length - 12);

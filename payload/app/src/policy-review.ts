@@ -56,7 +56,19 @@ export interface FactionIn { fid?: number; name: string; ethic: FactionEthic; su
 export interface Vote { fid?: number; name: string; ethic: FactionEthic; support: number; vote: 'yes' | 'no' | 'abstain'; score: number; why: Array<[string, string]> }
 export interface Review { votes: Vote[]; yes: number; no: number; abstain: number; passed: boolean }
 /** 파벌 표결. groups = 고른 버프 분야 2개, conds = 뽑힌 조건 종류. 파벌이 없으면 null(심사 없이 통과). */
-export function reviewPolicy(factions: FactionIn[], groups: string[], conds: string[]): Review | null {
+/** 의회 진영(2026-11-03 여당·야당): 파벌 열쇠(parliament facKey: 'f'+fid 또는 'n:'+이름) → 진영. 연정·거래 약속은 찬성 쪽, 야당 대표와의 관계는 제1야당 표에 반영. */
+export interface ParlBloc { side: Record<string, 'ruling' | 'coalition' | 'deal' | 'opposition'>; oppLead: string | null; relation: number; seats?: Record<string, number> }
+/** filiSeats: 반대한 야당 의석이 이만큼(200석 중 3분의 1) 넘으면 필리버스터. filiDays: 기다리면 이만큼 늦게 선포. ramMood·ramRelation: 날치기 통과의 대가. */
+export const PARL_VOTE = { ruling: 1, coalition: 1, deal: 2, relationAt: 25, filiSeats: 67, filiDays: 60, ramMood: -3, ramRelation: -20 };
+/** 필리버스터(2026-11-03 원내 공방): 표결은 통과했지만 반대한 야당 의석이 3분의 1을 넘고 야당 대표와의 관계가 좋지 않으면(+25 미만) 야당이 의사 진행을 막는다. */
+export function filibusterOf(r: Review | null, bloc: ParlBloc | null): { seats: number; by: string[] } | null {
+  if (!r || !r.passed || !bloc || !bloc.seats || bloc.relation >= PARL_VOTE.relationAt) return null;
+  const no = r.votes.filter((v) => v.vote === 'no' && bloc.side[blocKey(v)] === 'opposition');
+  const seats = no.reduce((a, v) => a + (bloc.seats![blocKey(v)] ?? 0), 0);
+  return seats >= PARL_VOTE.filiSeats ? { seats, by: no.map((v) => v.name) } : null;
+}
+export const blocKey = (f: { fid?: number; name: string }) => (f.fid ? 'f' + f.fid : 'n:' + f.name);
+export function reviewPolicy(factions: FactionIn[], groups: string[], conds: string[], bloc: ParlBloc | null = null): Review | null {
   const fs = factions.filter((f) => f && f.name && f.support > 0); if (!fs.length) return null;
   const votes: Vote[] = fs.map((f) => {
     let score = 0; const why: Array<[string, string]> = [];
@@ -66,6 +78,14 @@ export function reviewPolicy(factions: FactionIn[], groups: string[], conds: str
       for (const c of conds) { const v = COND_AFFINITY[e]?.[c] ?? 0; if (v) { score += v; const n = COND_KO[c] ?? [c, c]; why.push(v > 0 ? [`${n[0]} 지지`, `supports ${n[1]}`] : [`${n[0]} 반대`, `opposes ${n[1]}`]); } }
     }
     if (f.approval < DISGRUNTLED) { score -= 1; why.push(['정부에 불만', 'unhappy with the government']); }
+    if (bloc) {
+      const k = blocKey(f), side = bloc.side[k];
+      if (side === 'ruling') { score += PARL_VOTE.ruling; why.push(['여당', 'ruling party']); }
+      else if (side === 'coalition') { score += PARL_VOTE.coalition; why.push(['연정 약속', 'coalition partner']); }
+      else if (side === 'deal') { score += PARL_VOTE.deal; why.push(['법안 거래 약속', 'bound by a legislative deal']); }
+      else if (k === bloc.oppLead && bloc.relation <= -PARL_VOTE.relationAt) { score -= 1; why.push(['야당 대표와 대립', 'at odds with the opposition leader']); }
+      else if (k === bloc.oppLead && bloc.relation >= PARL_VOTE.relationAt) { score += 1; why.push(['영수회담의 신뢰', 'trust from the leaders\' summit']); }
+    }
     return { ...(f.fid !== undefined ? { fid: f.fid } : {}), name: f.name, ethic: f.ethic, support: f.support, vote: score > 0 ? 'yes' : score < 0 ? 'no' : 'abstain', score, why };
   });
   const sum = (k: Vote['vote']) => Math.round(votes.filter((v) => v.vote === k).reduce((a, v) => a + v.support, 0) * 1000) / 1000;

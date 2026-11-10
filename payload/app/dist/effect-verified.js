@@ -1,6 +1,0 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ATTACHMENT_VERIFIED_IDS = void 0;
-// 2026-10-16 실게임 부착·제거 확인. 수치·기간·기능 자동 연결의 검증과는 별개.
-exports.ATTACHMENT_VERIFIED_IDS = new Set(["speech_war_1", "speech_war_2", "speech_war_3", "speech_laststand_1", "speech_laststand_2", "speech_laststand_3", "speech_discovery_1", "speech_discovery_2", "speech_discovery_3", "speech_civil_1", "speech_civil_2", "speech_civil_3", "faction_mil_weapons", "faction_mil_navalcap", "faction_mil_claims", "faction_mil_attract", "faction_pac_stability", "faction_pac_happiness", "faction_pac_trust", "faction_pac_attract", "faction_aut_influence", "faction_aut_crime", "faction_aut_empsize", "faction_aut_attract", "faction_ega_citizen", "faction_ega_unity", "faction_ega_amenities", "faction_ega_attract", "faction_xph_trust", "faction_xph_envoy", "faction_xph_diplo", "faction_xph_attract", "faction_xpb_claims", "faction_xpb_stability", "faction_xpb_weapons", "faction_xpb_attract", "faction_mat_research", "faction_mat_specialist", "faction_mat_physics", "faction_mat_attract", "faction_spi_unity", "faction_spi_stability", "faction_spi_happiness", "faction_spi_attract", "faction_unrest", "spy_output_1", "spy_output_2", "spy_output_3"]);
-//# sourceMappingURL=effect-verified.js.map

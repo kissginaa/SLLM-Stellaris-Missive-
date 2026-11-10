@@ -1,0 +1,3 @@
+# SLLM 총독 방침: 게임 행성 자동화 분류는 2026-11-03 에 그만 씀(플레이어가 켜야만 돌아서).
+# 이제 연결 모드가 직접 짓는다: events/sllm_gov_events.txt(sllm_gov.1) → common/scripted_effects/sllm_gov_build_gen.txt(sllm_gov_build_tick).
+# 파일은 지우지 않고 비워 둔다(예전 버전 파일이 남아 있어도 덮어쓰도록).

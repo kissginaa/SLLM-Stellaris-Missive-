@@ -1,0 +1,19 @@
+# SLLM - 레전드 오브 갤럭시 ↔ 나라 연동(2026-10-31). 앱(src/log-nation.ts logNationCommand)이 시즌·월즈 뒤에 붙인다. 수치는 처음 조정값.
+# 연고 행성: 시즌 1~3위 구단의 연고 행성 360일(안정도 +3, 이주 끌림 — net_promo 와 같은 수정자), 2시즌 연속 꼴찌 구단의 연고 행성 360일(안정도 −3).
+sllm_log_home_pride = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 3
+	planet_resettlement_unemployed_destination_mult = 0.08
+}
+sllm_log_home_gloom = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -3
+}
+# 월즈 우승 축제: 우리 나라 120일(행복도 +5% — 시위가 덜 남).
+sllm_log_festival = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	pop_happiness = 0.05
+}

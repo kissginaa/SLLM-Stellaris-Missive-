@@ -1,0 +1,4 @@
+# SLLM 자동 작전(2026-11-04) — 매달 맥박. 모드의 on_actions 는 게임 것과 합쳐진다(4.5: events 만, effect 블록 불가).
+on_monthly_pulse_country = {
+	events = { sllm_fo.1 sllm_fo.2 }
+}

@@ -1,0 +1,97 @@
+# SLLM 총독 방침(2026-11-03): 맡긴 지 360일(행성 표식 sllm_gov_new 가 사라짐)이 지나면 총독이 손에 익어 「숙련된 총독」이 붙는다.
+# 플레이어 나라에서만, 한 번이라도 맡긴 적이 있을 때만(국가 표식 sllm_gov_any) 행성을 훑는다.
+# 직접 건설(2026-11-03, 게임 자동화를 켜지 않아도 됨): 맡긴 행성(또는 거둔 뒤 짓던 것이 남은 행성)마다 매달 sllm_gov_build_tick.
+#   짓던 것이 있으면 진척을 더하고 다 되면 완성, 없으면 방침대로 하나 골라 비용을 내고 시작. 목록·비용·기간은 sllm_gov_build_gen.txt(생성기 tools/gen-gov-build.js).
+namespace = sllm_gov
+
+country_event = {
+	id = sllm_gov.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_country_flag = sllm_gov_any
+	}
+	immediate = {
+		set_variable = { which = sllm_gov_starts value = 0 } # 부담 나누기(2026-11-05): 이달 새 공사 수(sllm_gov_build_tick 이 센다)
+		every_owned_colony = {
+			limit = {
+				sllm_gov_has_mandate = yes
+				NOT = { has_planet_flag = sllm_gov_new }
+				NOT = { has_modifier = sllm_gov_veteran }
+			}
+			add_modifier = { modifier = sllm_gov_veteran days = -1 }
+			planet_event = { id = sllm_gov.11 } # 게임 안 총독 창(2026-11-04)
+		}
+		every_owned_colony = {
+			limit = {
+				OR = {
+					sllm_gov_has_mandate = yes
+					is_variable_set = sllm_gov_proj
+				}
+			}
+			sllm_gov_build_tick = yes
+		}
+		every_owned_colony = { # 행성 할당량(2026-11-05, sllm_gov_quota.txt)
+			limit = { has_planet_flag = sllm_quota_on }
+			sllm_quota_tick = yes
+		}
+	}
+}
+
+# 게임 안 총독 창(2026-11-04, 사용자: Sector Command 모드처럼 초상화로) — 총독 얼굴·이름과 한마디. 총독이 없으면 뜨지 않는다.
+# sllm_gov.10 = 방침을 맡겼을 때(앱 govPolicyCommand 가 행성에서 띄움) · sllm_gov.11 = 1년이 지나 숙련됐을 때(sllm_gov.1).
+planet_event = {
+	id = sllm_gov.10
+	title = sllm_gov.10.name
+	desc = sllm_gov.10.desc
+	diplomatic = yes
+	picture_event_data = {
+		portrait = event_target:sllm_gov_face
+		room = root.owner
+	}
+	show_sound = event_conversation
+	location = root
+	is_triggered_only = yes
+	trigger = { exists = leader exists = owner owner = { is_ai = no } }
+	immediate = { leader = { save_event_target_as = sllm_gov_face } }
+	option = { name = sllm_gov.10.a }
+}
+
+planet_event = {
+	id = sllm_gov.11
+	title = sllm_gov.11.name
+	desc = sllm_gov.11.desc
+	diplomatic = yes
+	picture_event_data = {
+		portrait = event_target:sllm_gov_face
+		room = root.owner
+	}
+	show_sound = event_conversation
+	location = root
+	is_triggered_only = yes
+	trigger = { exists = leader exists = owner owner = { is_ai = no } }
+	immediate = { leader = { save_event_target_as = sllm_gov_face } }
+	option = { name = sllm_gov.11.a }
+}
+
+# 계획 다시 짜기(2026-11-05, 사용자 승인 4번): 행성 등급이 바뀌면(테라포밍·가이아화·고리 세계 등) 지구·구역 칸이 달라진다.
+# 「칸이 없어 못 지음」으로 1년 막아 둔 항목과 「지을 게 없음」 쉬기를 풀어, 다음 달부터 새 행성에 맞게 다시 고른다. 짓던 공사는 그대로(안 맞으면 완성 때 비용을 돌려받음).
+planet_event = {
+	id = sllm_gov.20
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = owner
+		owner = { is_ai = no }
+		OR = {
+			sllm_gov_has_mandate = yes
+			is_variable_set = sllm_gov_proj
+		}
+	}
+	immediate = {
+		sllm_gov_unblock = yes
+		remove_planet_flag = sllm_gov_idle
+		log = "SLLM:GOVBUILD/;/kind=replan/;/key=planet_class/;/ok=1/;/why=mandate/;/pl=\\[This.GetName]"
+	}
+}

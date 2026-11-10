@@ -1,0 +1,94 @@
+# SLLM 정치(2026-10-28 사용자 확정). 앱: src/court.ts. 모두 앱이 기한(days)을 붙여 단다.
+# 좌천·체포·추방의 반동: 그 인물 쪽 파벌 매력도 -10%(1년) · 결탁이 이루어짐: +15%(2년). 키는 4.x 현지화 mod_pop_ethic_<이념>_attraction_mult.
+sllm_plot_crack_militarist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_militarist_attraction_mult = -0.10
+}
+sllm_plot_collude_militarist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_militarist_attraction_mult = 0.15
+}
+sllm_plot_crack_pacifist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_pacifist_attraction_mult = -0.10
+}
+sllm_plot_collude_pacifist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_pacifist_attraction_mult = 0.15
+}
+sllm_plot_crack_authoritarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_authoritarian_attraction_mult = -0.10
+}
+sllm_plot_collude_authoritarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_authoritarian_attraction_mult = 0.15
+}
+sllm_plot_crack_egalitarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_egalitarian_attraction_mult = -0.10
+}
+sllm_plot_collude_egalitarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_egalitarian_attraction_mult = 0.15
+}
+sllm_plot_crack_xenophile = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophile_attraction_mult = -0.10
+}
+sllm_plot_collude_xenophile = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophile_attraction_mult = 0.15
+}
+sllm_plot_crack_xenophobe = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophobe_attraction_mult = -0.10
+}
+sllm_plot_collude_xenophobe = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophobe_attraction_mult = 0.15
+}
+sllm_plot_crack_materialist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_materialist_attraction_mult = -0.10
+}
+sllm_plot_collude_materialist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_materialist_attraction_mult = 0.15
+}
+sllm_plot_crack_spiritualist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_spiritualist_attraction_mult = -0.10
+}
+sllm_plot_collude_spiritualist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_spiritualist_attraction_mult = 0.15
+}
+# 부패가 이루어짐: 에너지 -10%(1년, mod_country_energy_produces_mult)
+sllm_plot_graft = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	country_energy_produces_mult = -0.10
+}
+# 독립 모의가 터짐: 그 행성 안정도 -15(2년)
+sllm_plot_secede = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -15
+}

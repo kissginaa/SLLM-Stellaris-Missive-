@@ -1,0 +1,8 @@
+# SLLM - 예술가 극단 순회 공연(알파 11, 2026-10-25). 앱(src/artist-tour.ts tourCommand)이 의뢰를 받으면 플레이어 나라에 900일 붙인다.
+# 사용자 확정: 세계의 축제(enclave_artist_festival: 행복도 +15% · 인구 증가 +10% · 1800일)를 75% 깎은 판, 기간만 1/2.
+sllm_artist_tour = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	pop_happiness = 0.04
+	logistic_growth_mult = 0.025
+}

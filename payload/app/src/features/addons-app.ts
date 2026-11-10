@@ -75,6 +75,9 @@ function view() {
     })),
   };
 }
+/** 창작마당 감지(workshop-app)·서재(lore-app)용: 지금 읽힌 애드온 목록과 다시 읽기(2026-10-23). */
+export const addonEntries = () => { try { return registry?.list() ?? []; } catch { return []; } };
+export function reloadAddons(): void { registry?.invalidate(); registry?.refresh(true); fireChanged(); }
 export function registerAddons(): void {
   ipcMain.handle('addonsList', async () => view());
   ipcMain.handle('addonsSet', async (_e, v: unknown) => {

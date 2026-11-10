@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Interstellar Summit</title>
+<!-- 성간제국통신임시회의(03·46, 2026-10-23 집 PC 초안). 앱: src/features/isc-app.ts · 규칙: src/interstellar-council.ts.
+     각국 통치자는 통신 홀로그램으로 참석한다. 문구는 ui(한, 영)만(언어 팩 호환). 통치자·제국 이름은 data-i18n-skip. -->
+<style>
+ :root{--bg:#050f16;--panel:#0b2230;--text:#dcecf0;--dim:#7fa3ad;--hi:#5fd4e4;--hi-text:#04161d;--gold:#e8c872;--linec:#5fd4e4;--shade:#06141b;--bad:#e0705f;--good:#6fd7a8;--warn:#e0a85f;
+  --btnbg:linear-gradient(#10394a,#0b2a38);--cardbg:linear-gradient(160deg,#0d2a38,#081a24);--inputbg:#04121a;
+  --mono:"D2Coding","Cascadia Mono",Consolas,"Malgun Gothic",monospace;--line:color-mix(in srgb,var(--linec) 34%,transparent);--line2:color-mix(in srgb,var(--linec) 15%,transparent);--holo:#7fe6ff}
+ *{box-sizing:border-box}
+ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ input,textarea,button{font:inherit;color:var(--text);border:1px solid var(--line);background:transparent;outline:none;border-radius:0}
+ button{cursor:pointer;background:var(--btnbg);padding:5px 11px;white-space:nowrap;letter-spacing:.03em} button:hover:not(:disabled){background:var(--hi);color:var(--hi-text);border-color:var(--hi)} button:disabled{opacity:.4;cursor:not-allowed}
+ input,textarea{background:var(--inputbg);padding:6px 9px} textarea{resize:none}
+ /* 방: 어두운 통신실 + 바닥 투영기 + 위쪽 반원 홀로그램 줄 */
+ #room{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse 70% 45% at 50% 100%,color-mix(in srgb,var(--holo) 16%,transparent),transparent 70%),radial-gradient(ellipse 90% 60% at 50% 30%,#0c2433,transparent 70%),var(--bg)}
+ #room::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,color-mix(in srgb,var(--holo) 4%,transparent) 3px 4px);pointer-events:none}
+ #ring{position:absolute;left:50%;bottom:-38vh;width:150vh;height:70vh;transform:translateX(-50%);border-radius:50%;border:1px solid color-mix(in srgb,var(--holo) 40%,transparent);box-shadow:0 0 60px color-mix(in srgb,var(--holo) 25%,transparent),inset 0 0 80px color-mix(in srgb,var(--holo) 12%,transparent)}
+ #ring::after{content:"";position:absolute;inset:12%;border-radius:50%;border:1px dashed color-mix(in srgb,var(--holo) 25%,transparent)}
+ #top{position:absolute;left:0;right:0;top:0;height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;-webkit-app-region:drag;z-index:30;background:linear-gradient(#000a,#0000)}
+ #top .t{font:600 12px var(--mono);letter-spacing:.16em;color:var(--hi)} #top .sp{flex:1} #empire{color:var(--dim);letter-spacing:.06em}
+ #x{-webkit-app-region:no-drag;background:none;border-color:transparent;color:var(--dim);width:30px;padding:2px}
+ /* 홀로그램 자리 */
+ #holos{position:absolute;left:4%;right:30%;top:52px;height:42%;display:flex;justify-content:center;align-items:flex-end;gap:2.2%;z-index:5}
+ .holo{position:relative;flex:0 1 200px;min-width:120px;cursor:pointer;display:flex;flex-direction:column;align-items:center;--c:var(--holo);transition:transform .25s}
+ .holo:nth-child(1),.holo:nth-child(4){transform:translateY(8%) scale(.92)} .holo:hover{filter:brightness(1.15)}
+ .holo .beam{position:absolute;left:12%;right:12%;bottom:-24px;height:40px;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--c) 55%,transparent),transparent 70%);filter:blur(2px)}
+ .holo .pt{position:relative;width:100%;aspect-ratio:3/3.6;max-height:30vh;border:1px solid color-mix(in srgb,var(--c) 70%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,transparent),color-mix(in srgb,var(--c) 4%,transparent));box-shadow:0 0 22px color-mix(in srgb,var(--c) 30%,transparent),inset 0 0 30px color-mix(in srgb,var(--c) 15%,transparent);overflow:hidden;clip-path:polygon(8% 0,92% 0,100% 6%,100% 100%,0 100%,0 6%)}
+ .holo .pt img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;opacity:.82;mix-blend-mode:screen;filter:saturate(.55) hue-rotate(-10deg) contrast(1.1)}
+ .holo .pt .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 46px var(--mono);color:var(--c);opacity:.6}
+ .holo .pt::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--c) 10%,transparent) 2px 3px);animation:scan 6s linear infinite;pointer-events:none}
+ @keyframes scan{to{background-position:0 60px}}
+ .holo .plate{margin-top:6px;width:100%;text-align:center;padding:3px 6px;background:color-mix(in srgb,var(--bg) 85%,transparent);border:1px solid var(--line2);border-top:3px solid var(--c)}
+ .holo .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .holo .em{font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .holo .tags{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:2px} .tg{font:10.5px var(--mono);padding:0 5px;border:1px solid var(--line2);color:var(--dim)} .tg.war{border-color:var(--bad);color:var(--bad)} .tg.st{border-color:var(--warn);color:var(--warn)}
+ .holo.to .pt{border-color:var(--hi);box-shadow:0 0 0 2px var(--hi),0 0 30px var(--hi)} .holo.talk{--c:var(--gold)} .holo.talk .pt{box-shadow:0 0 0 2px var(--gold),0 0 34px var(--gold)}
+ .holo.off{--c:#56707a;cursor:default} .holo.off .pt img{opacity:.25;filter:grayscale(1)} .holo.war{--c:#ff8a74}
+ #hostSeat{display:none} .hostnm{color:var(--gold)}
+ /* 가운데 판(주제·소집 양식) */
+ #screen{position:absolute;left:6%;right:32%;top:calc(52px + 42% + 30px);bottom:164px;z-index:8;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 82%,transparent);box-shadow:0 0 28px color-mix(in srgb,var(--holo) 12%,transparent);display:flex;flex-direction:column;min-height:120px}
+ #screen .over{display:flex;justify-content:space-between;padding:4px 10px;font:10.5px var(--mono);letter-spacing:.14em;color:var(--dim);border-bottom:1px solid var(--line2)}
+ #scrBody{flex:1;overflow:auto;padding:10px 14px}
+ .k{font:600 11px var(--mono);letter-spacing:.14em;color:var(--hi);margin-bottom:4px} .topic{font-size:16px;font-weight:700;margin-bottom:6px} .note{font-size:11.5px;color:var(--dim)}
+ .res{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px} .res>span{font-size:11.5px;padding:1px 7px;border:1px solid var(--line2)} .res .accepted{border-color:var(--good);color:var(--good)} .res .declined{border-color:var(--bad);color:var(--bad)} .res .ineligible{color:var(--dim)}
+ #topic{width:100%;height:58px;margin:4px 0}
+ .cand{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:5px;margin:6px 0}
+ .cand label{display:flex;gap:7px;align-items:center;padding:4px 8px;border:1px solid var(--line2);cursor:pointer;background:color-mix(in srgb,var(--bg) 60%,transparent)} .cand label:hover{border-color:var(--hi)}
+ .cand label.on{border-color:var(--hi);background:color-mix(in srgb,var(--hi) 12%,transparent)} .cand label.dis{opacity:.45;cursor:not-allowed}
+ .cand .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .cand .sub{font-size:11px;color:var(--dim)} .cand .op{margin-left:auto;font:11px var(--mono)} .op.g{color:var(--good)} .op.b{color:var(--bad)}
+ .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px} button.go{border-color:var(--hi);color:var(--hi)}
+ .past{display:flex;flex-direction:column;gap:4px;margin-top:4px} .past button{text-align:left;white-space:normal;background:none;border-color:var(--line2);font-size:12px}
+ /* 회의 과제(2026-10-26) */
+ .quests{margin:0 0 10px;display:flex;flex-direction:column;gap:6px} .qc{border:1px solid var(--line);border-left:3px solid var(--gold);padding:7px 10px;background:color-mix(in srgb,var(--bg) 55%,transparent)}
+ .qc.active{border-left-color:var(--hi)} .qc.success{border-left-color:var(--good)} .qc.failed{border-left-color:var(--bad)} .qt{font-weight:700;font-size:14px} .qs{margin:4px 0;font-style:italic} .qg{margin-top:3px}
+ .qr{font-size:12px;margin-top:2px} .qr.good{color:var(--good)} .qr.bad{color:var(--bad)} .qc .row button.go{border-color:var(--gold);color:var(--gold)}
+ /* 기록 */
+ #log{position:absolute;right:12px;top:52px;bottom:164px;width:calc(28% - 12px);min-width:240px;overflow:auto;z-index:8;padding:8px 10px;border:1px solid var(--line2);background:color-mix(in srgb,var(--bg) 80%,transparent)}
+ #log .ln{margin:0 0 7px;padding-left:8px;border-left:3px solid var(--holo);font-size:12.5px} #log .ln.host{border-left-color:var(--gold)} #log .who{display:block;font-weight:700;font-size:11.5px;color:var(--dim)} #log .md{margin-left:6px;font:10px var(--mono);color:var(--hi)}
+ #log .seg{font:10.5px var(--mono);color:var(--dim);text-align:center;margin:6px 0}
+ /* 아래 조작 */
+ #hud{position:absolute;left:12px;right:12px;bottom:12px;height:140px;z-index:20;display:flex;gap:12px;align-items:stretch}
+ #mid{flex:1;display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--line);background:var(--cardbg)}
+ #toRow,#modeRow{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--dim)} #toWho{color:var(--hi)} #modeRow label{display:flex;gap:5px;align-items:center;cursor:pointer}
+ .prompt{display:flex;gap:6px} #q{flex:1} #send{border-color:var(--hi);color:var(--hi)}
+ #status{min-height:18px;font-size:12px;color:var(--warn)}
+ #acts{display:flex;flex-direction:column;gap:6px;width:200px} #acts button{flex:1}
+ .bubble{position:absolute;z-index:25;max-width:440px;transform:translate(-50%,-100%);padding:9px 13px;background:color-mix(in srgb,var(--bg) 92%,transparent);border:1px solid var(--bc,var(--holo));box-shadow:0 0 20px color-mix(in srgb,var(--bc,var(--holo)) 30%,transparent);opacity:0;transition:opacity .2s;pointer-events:none;font-size:13px}
+ .bubble.on{opacity:1} .bubble b{display:block;font-size:11.5px;color:var(--bc,var(--holo));margin-bottom:2px} .bubble.me{left:38%!important;top:auto!important;bottom:170px;transform:translateX(-50%)}
+ /* 소집 전: 홀로그램·기록 자리를 소집 양식이 쓴다 */
+ body.idle #screen{top:52px;right:4%} body.idle #log,body.idle #holos,body.idle #hostSeat{display:none}
+ @media (max-width:1000px){#log{display:none}#holos,#screen{right:4%}}
+</style>
+<script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<link rel="stylesheet" href="window-chrome.css">
+</head><body>
+<div id="room">
+ <div id="ring"></div>
+ <div id="holos"></div>
+ <div id="hostSeat"></div>
+ <section id="screen" aria-live="polite"><div class="over"><span id="scrT"></span><span id="scrDate" data-i18n-skip></span></div><div id="scrBody"></div></section>
+ <div class="bubble" id="bubble"></div>
+</div>
+<div id="log" aria-live="polite"></div>
+<div id="top"><span class="t" id="ttl"></span><span class="sp"></span><span id="empire" data-i18n-skip></span><button id="x" type="button"></button></div>
+<div id="hud">
+ <div id="mid">
+  <div id="toRow"><span id="toCap"></span><b id="toWho" data-i18n-skip></b><button id="toAll" type="button" hidden></button></div>
+  <div id="modeRow"><label><input type="checkbox" id="supp"><span id="suppL"></span></label><button id="roll" type="button"></button></div>
+  <div class="prompt"><input id="q" autocomplete="off"><button id="send" type="button"></button></div>
+  <div id="status" role="status"></div>
+ </div>
+ <div id="acts"><button id="end" type="button"></button><button id="back" type="button"></button></div>
+</div>
+<script>
+ const $ = (id) => document.getElementById(id);
+ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+ const ui = (ko, en) => window.SLLMI18n?.pick ? window.SLLMI18n.pick(ko, en) : ko;
+ let S = null, to = null, busy = false, talking = null, IMG = { images: {}, defaults: {} }, pickSet = new Set(), draftTopic = '';
+ const pic = (k, seed = '') => (k && window.SLLMVariant && SLLMVariant.pick(IMG.images, ['delegate:' + k, 'class:' + k], seed, IMG.defaults[k])) || null;
+ const open = () => !!(S && S.meeting && S.meeting.state === 'active');
+ const ST = { present: ['참석', 'Present'], ruler_changed: ['통치자 교체', 'Ruler changed'], left: ['이탈', 'Left'], destroyed: ['멸망', 'Destroyed'] };
+ const RES = { accepted: ['수락', 'Accepted'], declined: ['거절', 'Declined'], ineligible: ['참석 불가', 'Ineligible'] };
+ const KIND = { peace: ['평화', 'Peace'], war: ['전쟁', 'War'], economy: ['경제', 'Economy'], crisis: ['은하 위기', 'Galactic crisis'], general: ['일반', 'General'] };
+ const T = (p) => ui(p[0], p[1]);
+ function statics() {
+  document.title = ui('성간 임시회의', 'Interstellar Summit');
+  $('ttl').textContent = ui('성간제국통신임시회의', 'EXTRAORDINARY INTERSTELLAR SUMMIT'); $('scrT').textContent = ui('통신 회의 · 각국 통치자', 'COMMS LINK · HEADS OF STATE');
+  $('x').textContent = '✕'; $('x').title = ui('집무실로 돌아가기 (Esc)', 'Back to the office (Esc)');
+  $('toCap').textContent = ui('발언 대상', 'Speaking to'); $('toAll').textContent = ui('전체에게', 'To everyone');
+  $('suppL').textContent = ui('다른 통치자 보충 발언 받기', 'Let another ruler add or rebut'); $('roll').textContent = ui('모든 참가국 입장 듣기', 'Hear every empire');
+  $('q').placeholder = ui('회의에 발언…', 'Address the summit…'); $('send').textContent = ui('발언', 'Speak');
+  $('end').textContent = ui('회의 종료', 'End summit'); $('back').textContent = ui('‹ 집무실로 돌아가기', '‹ Back to the office');
+ }
+ const foreign = () => (S && S.meeting ? S.meeting.seats.filter((s) => !s.host) : []);
+ function drawHolos() {
+  const seats = foreign(), host = S && S.meeting ? S.meeting.seats.find((s) => s.host) : null;
+  $('holos').innerHTML = seats.map((s) => { const img = pic(s.cls, s.ruler); const off = s.status !== 'present' || !open(); const r = (S.roster || []).find((x) => x.idx === s.idx);
+   return `<div class="holo${off ? ' off' : ''}${r && r.atWar ? ' war' : ''}${to === s.idx ? ' to' : ''}${talking === s.idx ? ' talk' : ''}" role="button" tabindex="0" data-i="${s.idx}" aria-label="${esc(s.ruler)}">
+    <div class="pt">${img ? `<img src="${esc(img)}" alt="">` : `<div class="gl">${esc([...(s.ruler || '?')][0])}</div>`}</div><div class="beam"></div>
+    <div class="plate"><div class="nm" data-i18n-skip title="${esc(s.ruler)}">${esc(s.ruler)}</div><div class="em" data-i18n-skip title="${esc(s.empire)}">${esc(s.title ? s.title + ' · ' : '')}${esc(s.empire)}</div>
+    <div class="tags">${r && r.atWar ? `<span class="tg war">${ui('교전 중', 'At war')}</span>` : ''}${s.status !== 'present' ? `<span class="tg st">${T(ST[s.status] || ST.left)}</span>` : ''}</div></div></div>`; }).join('');
+  for (const el of $('holos').querySelectorAll('.holo')) { const f = () => setTo(Number(el.dataset.i)); el.onclick = f; el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } }; }
+  $('hostSeat').innerHTML = host ? `<b data-i18n-skip>${esc(host.ruler)}</b><span data-i18n-skip>${esc(host.empire)}</span> · ${ui('개최국', 'Host')}` : '';
+ }
+ const QST = { active: ['진행 중', 'Under way'], success: ['성공', 'Succeeded'], failed: ['실패', 'Failed'] };
+ function questBlock() {
+  const Q = S.quests; if (!Q || (!Q.offer && !Q.active.length && !Q.done.length)) return '';
+  const list = (a) => a.map((x) => `<span data-i18n-skip>${esc(x)}</span>`).join(' · ');
+  const card = (q, offer) => `<div class="qc ${offer ? 'offer' : q.state}">
+   <div class="k">${offer ? ui('회의 과제 제안', 'SUMMIT TASK OFFERED') : T(QST[q.state] || QST.active)}${q.due && !offer ? ' · ' + ui(`기한 ${q.due}`, `due ${q.due}`) : ''}${q.endedOn && !offer && q.state !== 'active' ? ' · ' + esc(q.endedOn) : ''}</div>
+   <div class="qt" data-i18n-skip>${esc(q.title)}</div><div class="note"><span data-i18n-skip>${esc(q.giver.ruler)}${q.giver.ruler ? ' · ' : ''}${esc(q.giver.empire)}</span></div>
+   ${offer && q.say ? `<div class="qs" data-i18n-skip>${esc(q.say)}</div>` : ''}
+   <div class="qg">${ui('목표', 'Goal')}: <span data-i18n-skip>${esc(q.goal)}</span>${q.state === 'active' && q.now !== null && q.now !== undefined && !['peace', 'war'].includes(q.goalType) ? ` <span class="note">(${ui('지금', 'now')} <span data-i18n-skip>${esc(q.now)}</span>)</span>` : ''}</div>
+   ${offer || q.state === 'active' ? `<div class="qr good">${ui('성공하면', 'On success')}: ${list([...q.reward, ui(`호감 +${q.opSuccess}`, `opinion +${q.opSuccess}`)])}</div><div class="qr bad">${ui('실패하면', 'On failure')}: ${list([...q.penalty, ui(`호감 −${q.opFail}`, `opinion −${q.opFail}`)])}</div>` : ''}
+   ${offer ? `<div class="row"><button type="button" class="go" data-qa="${esc(q.id)}">${ui('과제 받기', 'Accept task')}</button><button type="button" data-qd="${esc(q.id)}">${ui('거절', 'Decline')}</button><span class="note">${ui(`${q.offerUntil}까지 · 거절해도 아무 일 없습니다 · 진행 중 ${Q.active.length}/${Q.max}`, `until ${q.offerUntil} · declining has no consequence · under way ${Q.active.length}/${Q.max}`)}</span></div>` : ''}
+  </div>`;
+  return `<div class="quests">${Q.offer ? card(Q.offer, true) : ''}${Q.active.map((q) => card(q, false)).join('')}${Q.done.slice(0, 3).map((q) => card(q, false)).join('')}</div>`;
+ }
+ function bindQuests(b) {
+  for (const el of b.querySelectorAll('[data-qa]')) el.onclick = async () => { el.disabled = true; $('status').textContent = ui('과제를 받는 중…', 'Accepting the task…'); const r = await window.sllm.iscQuestAccept(el.dataset.qa); $('status').textContent = r && !r.ok ? r.error || '' : r?.notice || ''; if (r && r.state) render(r.state); };
+  for (const el of b.querySelectorAll('[data-qd]')) el.onclick = async () => { const r = await window.sllm.iscQuestDecline(el.dataset.qd); $('status').textContent = ''; if (r && r.state) render(r.state); };
+ }
+ function drawScreen() {
+  const b = $('scrBody'); $('scrDate').textContent = S.date || '';
+  const m = S.meeting;
+  if (m && (open() || m.state === 'too_small')) {
+   b.innerHTML = `<div class="k">${ui('의제', 'AGENDA')} · ${T(KIND[m.topicKind] || KIND.general)}${m.segments > 1 ? ' · ' + ui(`${m.segments}번째 구간`, `session ${m.segments}`) : ''}</div><div class="topic" data-i18n-skip>${esc(m.topic)}</div>${(() => { const h = m.seats.find((s) => s.host); return h ? `<div class="note">${ui('개최', 'Host')} · <span class="hostnm" data-i18n-skip>${esc(h.ruler)} · ${esc(h.empire)}</span></div>` : ''; })()}
+    <div class="note">${ui(`${m.openedOn} 소집 · 같은 나라들과 새 회의는 ${m.nextAllowedOn}부터 · 그 전에는 이 회의를 이어서 합니다. 대화에서의 동의는 게임 조약이 아닙니다.`, `Convened ${m.openedOn} · a new summit with the same empires from ${m.nextAllowedOn}; until then this one continues. Agreement in talk is not a game treaty.`)}</div>
+    <div class="res">${m.results.map((r) => `<span class="${r.result}"><span data-i18n-skip>${esc(r.empire)}</span> · ${T(RES[r.result] || RES.declined)}</span>`).join('')}</div>
+    ${m.state === 'too_small' ? `<div class="row"><span class="note">${ui('응한 나라가 2개국 미만이라 회의가 열리지 않았습니다. 한 나라와는 기존 양자 통신을 이용하세요.', 'Fewer than 2 empires accepted, so the summit did not open. Use the regular one-on-one channel for a single empire.')}</span><button type="button" id="back2">${ui('새 소집', 'New summit')}</button></div>` : ''}`;
+   const b2 = $('back2'); if (b2) b2.onclick = async () => { const r = await window.sllm.iscEnd(); if (r && r.state) render(r.state); };
+   return;
+  }
+  const ro = S.roster || [], max = S.limits.max - 1;
+  b.innerHTML = `${questBlock()}<div class="k">${ui('임시회의 소집', 'CONVENE A SUMMIT')}</div>
+   <textarea id="topic" placeholder="${esc(ui('무엇을 논의합니까? (예: 북부 국경 휴전, 은하 위기 공동 대응)', 'What should be discussed? (e.g. a ceasefire on the northern border, a joint answer to the crisis)'))}" data-i18n-skip>${esc(draftTopic)}</textarea>
+   <div class="row"><span class="note">${ui(`초대할 나라를 2~${max}개 고르세요 (우리 포함 ${S.limits.min}~${S.limits.max}개국). 각국 통치자에게만 초대가 갑니다.`, `Pick 2–${max} empires to invite (${S.limits.min}–${S.limits.max} including yours). Only heads of state are invited.`)}</span>
+    <button type="button" id="rf">${ui('통신 목록 새로 고침', 'Refresh contacts')}</button>${S.rosterOn ? `<span class="note">${ui(`${S.rosterOn} 기준`, `as of ${S.rosterOn}`)}</span>` : ''}</div>
+   ${ro.length ? `<div class="cand">${ro.map((r) => { const on = pickSet.has(r.idx), dis = !r.hasRuler || (!on && pickSet.size >= max);
+     return `<label class="${on ? 'on' : ''}${dis ? ' dis' : ''}"><input type="checkbox" data-i="${r.idx}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span style="min-width:0"><div class="nm" data-i18n-skip>${esc(r.empire)}</div><div class="sub"><span data-i18n-skip>${esc(r.ruler || '—')}</span>${r.atWar ? ' · ' + ui('교전 중', 'at war') : ''}${!r.hasRuler ? ' · ' + ui('통치자 없음', 'no ruler') : ''}</div></span><span class="op ${r.score >= 0 ? 'g' : 'b'}">${r.score > 0 ? '+' : ''}${r.score}</span></label>`; }).join('')}</div>`
+     : `<div class="note" style="margin:8px 0">${S.gameRunning ? ui('「통신 목록 새로 고침」을 눌러 지금 통신 중인 제국을 불러오세요.', 'Press “Refresh contacts” to load the empires you are in contact with.') : ui('게임이 켜져 있어야 초대할 수 있습니다.', 'The game must be running to send invitations.')}</div>`}
+   <div class="row"><button type="button" class="go" id="conv" ${pickSet.size < S.limits.min - 1 ? 'disabled' : ''}>${ui(`초대 보내기 (${pickSet.size}개국)`, `Send invitations (${pickSet.size})`)}</button><span class="note">${ui('수락 여부는 바로 정해지며 다시 뽑지 않습니다 · 비용 없음', 'Replies are decided at once and never rerolled · no cost')}</span></div>
+   ${S.past.length ? `<div class="note" style="margin-top:8px">${ui('지난 회의', 'Past summits')}</div><div class="past">${S.past.map((p) => `<button type="button" data-id="${esc(p.id)}" ${p.canContinue ? '' : 'disabled'}><span data-i18n-skip>${esc(p.openedOn)} · ${esc(p.topic)} · ${esc(p.empires.join(', '))}</span>${p.canContinue ? ' · ' + ui('이어서 하기', 'continue') : ''}</button>`).join('')}</div>` : ''}`;
+  bindQuests(b);
+  $('topic').oninput = (e) => { draftTopic = e.target.value; };
+  $('rf').onclick = async () => { $('status').textContent = ui('통신 목록을 확인하는 중…', 'Checking contacts…'); const r = await window.sllm.iscRoster(); $('status').textContent = r && !r.ok ? r.error || '' : ''; if (r && r.state) render(r.state); };
+  for (const el of b.querySelectorAll('.cand input')) el.onchange = () => { const i = Number(el.dataset.i); el.checked ? pickSet.add(i) : pickSet.delete(i); render(); };
+  $('conv').onclick = async () => {
+   const t = draftTopic.trim(); if (!t) { $('topic').focus(); return; }
+   $('status').textContent = ui('초대를 보내는 중…', 'Sending invitations…');
+   const r = await window.sllm.iscConvene({ topic: t, invited: [...pickSet] });
+   $('status').textContent = r && !r.ok ? r.error || '' : r?.notice || '';
+   if (r && r.ok) { pickSet = new Set(); draftTopic = ''; }
+   if (r && r.state) render(r.state);
+  };
+  for (const el of b.querySelectorAll('.past button')) el.onclick = async () => { const r = await window.sllm.iscResume(el.dataset.id); $('status').textContent = r && !r.ok ? r.error || '' : r?.notice || ''; if (r && r.state) render(r.state); };
+ }
+ function drawLog() {
+  const lg = $('log'), atEnd = lg.scrollTop + lg.clientHeight >= lg.scrollHeight - 8;
+  const md = { supplement: ui('보충', 'adds'), roll_call: ui('입장 표명', 'position') };
+  lg.innerHTML = (S.meeting ? S.meeting.turns : []).map((t) => `<div class="ln ${t.host ? 'host' : 'ai'}"><span class="who" data-i18n-skip>${esc(t.who)} · ${esc(t.empire)}${t.to ? ' → ' + esc(t.to) : ''}</span><span data-i18n-skip>${esc(t.text)}</span>${md[t.mode] && !t.host ? `<span class="md">${md[t.mode]}</span>` : ''}</div>`).join('');
+  if (atEnd) lg.scrollTop = lg.scrollHeight;
+ }
+ function render(st) {
+  if (st) S = st; if (!S) return;
+  if (to !== null && !foreign().some((s) => s.idx === to && s.status === 'present')) to = null;
+  document.body.classList.toggle('idle', !(S.meeting && (open() || S.meeting.state === 'too_small')));
+  $('empire').textContent = S.empire || ''; drawHolos(); drawScreen(); drawLog(); updTo();
+  const off = !open() || busy || S.busy || !!talking;
+  $('send').disabled = off; $('q').disabled = !open(); $('roll').disabled = off; $('supp').disabled = !open() || to !== null; $('end').disabled = !open() || busy;
+ }
+ async function speak(who, name, color, text) {
+  talking = who; if (S) render(S);
+  const bb = $('bubble'), el = who === 'host' ? null : document.querySelector(`.holo[data-i="${who}"]`);
+  if (who !== 'host' && !el) { talking = null; return; }
+  bb.className = 'bubble' + (el ? '' : ' me'); bb.style.setProperty('--bc', color);
+  if (el) { const r = el.getBoundingClientRect(); bb.style.left = Math.min(window.innerWidth - 230, Math.max(230, r.left + r.width / 2)) + 'px'; bb.style.top = Math.max(150, r.top + r.height * .55) + 'px'; } else { bb.style.left = ''; bb.style.top = ''; }
+  bb.innerHTML = `<b data-i18n-skip>${esc(name)}</b><span data-i18n-skip></span>`; const span = bb.lastChild;
+  requestAnimationFrame(() => bb.classList.add('on'));
+  const chars = [...text], step = Math.max(12, Math.min(38, 2600 / Math.max(chars.length, 1)));
+  for (let i = 1; i <= chars.length; i++) { span.textContent = chars.slice(0, i).join(''); await new Promise((r) => setTimeout(r, step)); }
+  await new Promise((r) => setTimeout(r, Math.min(2200, 700 + chars.length * 12)));
+  bb.classList.remove('on'); await new Promise((r) => setTimeout(r, 200));
+  talking = null; if (S) render(S);
+ }
+ function setTo(i) { if (!open()) return; const s = foreign().find((x) => x.idx === i); if (!s || s.status !== 'present') return; to = to === i ? null : i; render(); }
+ function updTo() { const s = to !== null && foreign().find((x) => x.idx === to); $('toWho').textContent = s ? `${s.ruler} · ${s.empire}` : ui('전체', 'Everyone'); $('toAll').hidden = !s; }
+ $('toAll').onclick = () => setTo(to);
+ async function send(rollCall) {
+  const text = $('q').value.trim(); if ((!text && !rollCall) || busy || talking || !open()) return;
+  busy = true; $('status').textContent = ''; render();
+  try {
+   $('q').value = '';
+   const host = S.meeting.seats.find((s) => s.host);
+   const said = text ? speak('host', host ? host.ruler : ui('통치자', 'Ruler'), 'var(--gold)', text) : Promise.resolve();
+   const r = await window.sllm.iscSay({ text, to, supplement: $('supp').checked, rollCall: !!rollCall });
+   await said;
+   if (!r || !r.ok) { $('status').textContent = r?.error || ui('발언을 처리하지 못했습니다.', 'Could not process what you said.'); if (r && r.state) S = r.state; return; }
+   if (r.state) S = r.state; if (r.notice) $('status').textContent = r.notice;
+   render();
+   for (const rp of r.replies || []) { const s = foreign().find((x) => x.idx === rp.idx); if (s) await speak(s.idx, `${s.ruler} · ${s.empire}`, 'var(--holo)', rp.say); }
+  } catch (e) { $('status').textContent = e.message; } finally { busy = false; render(); $('q').focus(); }
+ }
+ $('send').onclick = () => send(false); $('roll').onclick = () => send(true);
+ $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) send(false); });
+ $('end').onclick = async () => { $('end').disabled = true; $('status').textContent = ui('회의를 마치는 중… 통치자들이 과제를 정리합니다.', 'Closing the summit… the rulers are settling on a task.'); const r = await window.sllm.iscEnd(); to = null; $('status').textContent = [ui('회의를 마쳤습니다. 같은 나라들과는 기간 안에 이어서 할 수 있습니다.', 'The summit is over. You can continue it with the same empires within the period.'), r && r.notice].filter(Boolean).join(' '); if (r && r.state) render(r.state); };
+ $('back').onclick = $('x').onclick = () => window.sllm.iscClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.iscClose(); });
+ window.addEventListener('resize', () => { if (S && !talking) render(); });
+ statics();
+ document.addEventListener('sllm-language', () => { statics(); if (S) render(); });
+ window.sllm.onIscState((st) => { if (st && !talking && !busy) render(st); else if (st) S = st; });
+ window.sllm.onTheme((t) => applyTheme(t.theme, t.custom));
+ window.sllm.launcherState().then((s) => applyTheme(s.theme, s.custom));
+ window.sllm.getImageState().then((st) => { IMG = st || IMG; }, () => {}).then(() => window.sllm.iscState()).then((st) => { if (st) render(st); });
+</script>
+</body></html>

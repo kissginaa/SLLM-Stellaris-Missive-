@@ -211,8 +211,43 @@
       const pc = (x) => Math.round(x * 100) + '%';
       rvb.append(h('div', 'pol-tally ' + (rv.review.passed ? 'ok' : 'bad'), L(`찬성 ${pc(rv.review.yes)} · 반대 ${pc(rv.review.no)} · 기권 ${pc(rv.review.abstain)} → ${rv.review.passed ? '가결' : '부결'}`, `Aye ${pc(rv.review.yes)} · Nay ${pc(rv.review.no)} · Abstain ${pc(rv.review.abstain)} → ${rv.review.passed ? 'Passed' : 'Rejected'}`)));
     }
+    // 필리버스터(2026-11-03 원내 공방): 통과했어도 반대한 야당 의석이 3분의 1을 넘으면 야당이 막는다 → 기다리기 / 날치기 통과
+    const fb = rv && rv.ok && rv.filibuster;
+    if (fb) {
+      const fbx = h('div', 'pol-ref pol-fili');
+      fbx.append(h('b', '', L('필리버스터', 'Filibuster')), h('p', 'pol-note', L(`야당(${fb.by.join(', ')}, ${fb.seats}석)이 필리버스터로 의사 진행을 막고 있습니다.`, `The opposition (${fb.by.join(', ')}, ${fb.seats} seats) is filibustering the bill.`)));
+      if (fb.mode === 'wait') fbx.append(h('p', 'pol-note', fb.ready ? L('필리버스터가 끝났습니다. 이제 선포할 수 있습니다.', 'The filibuster is over. You can proclaim now.') : L(`기다리는 중입니다. ${fb.until}부터 선포할 수 있습니다.`, `Waiting it out. You can proclaim from ${fb.until}.`)));
+      else if (fb.mode === 'ram') fbx.append(h('p', 'pol-note', L('날치기 통과를 결정했습니다. 선포하면 대가를 치릅니다.', 'You chose to ram it through. Proclaiming will cost you.')));
+      else {
+        const fr = h('div', 'pol-btns');
+        const ans = async (what) => { err = ''; const r = await window.sllm.policyFilibuster(what); if (!r || !r.ok) err = (r && r.error) || L('처리하지 못했습니다.', 'Something went wrong.'); else wiz.rv = r; draw(); };
+        fr.append(btn('pol-sub', L(`기다리기 (${Math.round(fb.days / 30)}달 뒤 선포)`, `Wait it out (proclaim in ${Math.round(fb.days / 30)} months)`), () => ans('wait')),
+          btn('act danger', L(`날치기 통과 (민심 ${fb.ramMood} · 야당 관계 ${fb.ramRelation})`, `Ram it through (mood ${fb.ramMood} · opposition relations ${fb.ramRelation})`), () => ans('ram')));
+        fbx.append(fr);
+      }
+      rvb.append(fbx);
+    }
     w.append(rvb);
-    const rejected = !!(rv && rv.ok && rv.review && !rv.review.passed);
+    // 국민투표(2026-11-03): 파벌 심사 대신 국민에게 직접 묻는다(2년에 한 번). 권위 정부 = 요식 투표, 단일 의식 = 없음.
+    const ref = rv && rv.ok && rv.referendum ? rv.referendum : null, refRes = ref && ref.result;
+    if (ref && ref.regime !== 'none') {
+      const rb = h('div', 'pol-ref'); rb.dataset.i18nSkip = '';
+      rb.append(h('b', '', L('국민투표', 'Referendum')));
+      if (refRes) rb.append(h('div', 'pol-tally ' + (refRes.passed ? 'ok' : 'bad'), L(`찬성 ${refRes.yes}% → ${refRes.passed ? '가결' : '부결'}${refRes.sham ? ' (요식 투표)' : ''}`, `${refRes.yes}% yes → ${refRes.passed ? 'Approved' : 'Rejected'}${refRes.sham ? ' (rubber-stamp vote)' : ''}`)));
+      else {
+        rb.append(h('p', 'pol-note', ref.regime === 'sham' ? L('정부 형태상 국민투표는 형식일 뿐입니다. 늘 통과하지만 민심은 오르지 않고, 외국 언론이 비웃습니다.', 'Under this government a referendum is a formality. It always passes, but public mood does not rise and foreign newspapers mock it.')
+          : L('파벌 심사 대신 국민에게 직접 묻습니다. 통과하면 2년 동안 모든 행성 안정도 +5·민심 +3. 부결되면 민주정에서는 선포할 수 없고, 다른 정부는 강행할 수 있지만 안정도 −5(1년)·민심 하락. 2년에 한 번만 열 수 있습니다.', 'Ask the people directly instead of the factions. If it passes, all planets get +5 stability and public mood +3 for two years. If it fails, a democracy cannot proclaim it; other governments may force it through at −5 stability (1 year) and a drop in public mood. Only once every two years.')));
+        if (!ref.ready) rb.append(h('p', 'pol-note', L(`다음 국민투표는 ${ref.until}부터 열 수 있습니다.`, `The next referendum can be held from ${ref.until}.`)));
+        else rb.append(btn('pol-sub', L('국민투표에 부치기', 'Put to a referendum'), async () => {
+          if (!wiz.title || !String(wiz.title).trim()) { err = L('정책 제목을 먼저 적어 주세요.', 'Write the policy title first.'); draw(); return; }
+          err = ''; const r = await window.sllm.policyReferendum(wiz.title);
+          if (!r || !r.ok) { err = (r && r.error) || L('국민투표를 열지 못했습니다.', 'Could not hold the referendum.'); draw(); return; }
+          wiz.rv = r; draw();
+        }, S.busy));
+      }
+      w.append(rb);
+    }
+    const rejected = refRes ? !refRes.passed : !!(rv && rv.ok && rv.review && !rv.review.passed);
     const row = h('div', 'pol-btns');
     row.append(btn('pol-sub', L('이전', 'Back'), () => { wiz.step = 2; wiz.rv = null; err = ''; window.sllm.policyCancelDraft(); draw(); }));
     const enact = async (force) => {
@@ -221,8 +256,9 @@
       view = 'main'; wiz = null; rec = null; await load();
     };
     if (rejected && rv.rule === 'vote') row.append(btn('act', L('부결 — 선포할 수 없음', 'Rejected — cannot proclaim'), () => {}, true));
-    else if (rejected) row.append(btn('act danger', S.busy ? L('선포하는 중…', 'Proclaiming…') : L('강행 선포 (반대 파벌 승인도 하락)', 'Force through (opposing factions lose approval)'), () => enact(true), S.busy));
-    else row.append(btn('act', S.busy ? L('선포하는 중…', 'Proclaiming…') : L('선포', 'Proclaim'), () => enact(false), S.busy || !rv));
+    else if (rejected) row.append(btn('act danger', S.busy ? L('선포하는 중…', 'Proclaiming…') : refRes ? L('강행 선포 (국민투표 거역: 안정도 −5)', 'Force through (defying the referendum: −5 stability)') : L('강행 선포 (반대 파벌 승인도 하락)', 'Force through (opposing factions lose approval)'), () => enact(true), S.busy));
+    else if (fb && !fb.ready) row.append(btn('act', fb.mode === 'wait' ? L('필리버스터 중', 'Filibuster under way') : L('필리버스터에 먼저 답하세요', 'Answer the filibuster first'), () => {}, true));
+    else row.append(btn('act', S.busy ? L('선포하는 중…', 'Proclaiming…') : fb && fb.mode === 'ram' ? L('날치기 선포', 'Ram it through') : L('선포', 'Proclaim'), () => enact(false), S.busy || !rv));
     w.append(row);
     if (rejected && rv.rule === 'vote') w.append(h('p', 'pol-note', L('반대 파벌의 가치관에 맞는 버프·조건으로 정책을 다시 짜 보세요. 파벌 승인도가 오르면 찬성하는 파벌도 늘어납니다.', 'Redesign the policy with buffs and conditions that suit the opposing factions. Factions with higher approval are more likely to vote yes.')));
   }

@@ -1,0 +1,8 @@
+# SLLM 감정 기억(알파 11, 2026-10-25): 원한·두려움이 강한 AI 제국의 「포위 심리」(群星AI mod 의 coalition spirit 과 같은 값).
+# 강한 제국(플레이어)에게 위협을 느낀 나라들끼리 더 쉽게 믿고 국경 마찰이 줄어든다. 앱이 3달마다 200일씩 다시 붙인다.
+sllm_emo_coalition = {
+	icon = "gfx/interface/icons/modifiers/mod_country_trust_cap_add.dds"
+	icon_frame = 1
+	country_trust_cap_add = 10
+	country_border_friction_mult = -0.15
+}

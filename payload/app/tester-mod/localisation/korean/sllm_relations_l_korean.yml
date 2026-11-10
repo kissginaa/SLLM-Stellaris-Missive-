@@ -1,0 +1,7 @@
+﻿l_korean:
+ sllm_trait_rel_discontent_commander:0 "마음의 짐(지휘관)"
+ sllm_trait_rel_discontent_commander_desc:0 "풀리지 않은 인간관계 갈등 때문에 지휘에 집중하지 못합니다. 지휘하는 함대·지상군의 피해가 5% 줄어듭니다. 갈등이 모두 풀리면 사라집니다."
+ sllm_trait_rel_discontent_official:0 "마음의 짐(관료)"
+ sllm_trait_rel_discontent_official_desc:0 "풀리지 않은 인간관계 갈등 때문에 업무에 집중하지 못합니다. 맡은 행성의 직업 산출이 5% 줄어듭니다. 갈등이 모두 풀리면 사라집니다."
+ sllm_trait_rel_discontent_scientist:0 "마음의 짐(과학자)"
+ sllm_trait_rel_discontent_scientist_desc:0 "풀리지 않은 인간관계 갈등 때문에 연구에 집중하지 못합니다. 탐사·이상 현상 조사 속도가 5% 줄고, 평의회에 있으면 연구 속도도 5% 줄어듭니다. 갈등이 모두 풀리면 사라집니다."

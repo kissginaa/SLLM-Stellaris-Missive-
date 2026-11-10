@@ -1,0 +1,18 @@
+# SLLM 종속국 통치권(2026-11-05) — 앱 명령(add_casus_belli)으로만 생긴다(is_valid = no: 저절로는 안 생김). 효과: scripted_effects/sllm_vassal_reign.txt
+# 대리전: 종주국(우리)이 종속국에게 이웃을 치라고 명할 때 종속국이 받는다(1년).
+cb_sllm_vr_proxy = {
+	show_in_diplomacy = no
+	show_notification = no
+	potential = { always = yes }
+	is_valid = { always = no }
+}
+# 종속국 쟁탈: 우리와 국경이 닿은 남의 종속국을 빼앗을 명분(그 종주국에 대해, 5년). 그 종속국이 더는 그 나라 종속국이 아니면 사라진다.
+cb_sllm_vr_prize = {
+	show_in_diplomacy = yes
+	show_notification = yes
+	potential = { is_country_type = default }
+	is_valid = { always = no }
+	destroy_if = {
+		from = { NOT = { any_subject = { has_country_flag = sllm_vr_prize } } }
+	}
+}

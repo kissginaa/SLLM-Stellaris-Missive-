@@ -14,6 +14,7 @@ export interface DebateReq {
   title: string; desc: string; proposer: string; target: string; player: string; dir: 'f' | 'a';
   text: string; repeat: boolean; speakers: DebateSpeaker[]; history: string[];
   tally: { f: number; a: number; u: number };
+  /** 플레이어가 의원석을 눌러 한 제국에게 직접 한 말이면 그 제국 이름(2026-10-29). 나머지 발언자는 끼어든 제국 */ to?: string;
 }
 export interface DebateReply { id: number; text: string; shift: number; reason: string }
 
@@ -27,7 +28,7 @@ export function debateMessages(r: DebateReq): ChatMessage[] {
   const firmWord = (f: number) => (f >= 0.75 ? 'very stubborn' : f >= 0.45 ? 'moderate' : 'flexible');
   const want = r.dir === 'f' ? 'FOR' : 'AGAINST';
   const sys = [
-    'You are the scene writer for a Galactic Community (council) session in the space strategy game "Stellaris". In response to the player empire delegate\'s speech, each AI empire delegate who has the floor answers in one or two sentences, true to their own character.',
+    'You are the scene writer for a Galactic Community (council) session in the space strategy game "Stellaris". In response to the player empire delegate\'s speech, each AI empire delegate who has the floor answers with a real speech of two to four sentences, true to their own character.',
     'Rules:',
     '- Each delegate speaks in a voice that fits their empire\'s ethics, government, species and relationship with the player. They must not all sound the same.',
     '- Actively use the empire description, origin, attitude and role in this resolution (proposer/target). A proposer defends its own resolution; a target reacts fiercely if it is harmed. Hostile or angry empires do not take the player\'s words kindly; friendly empires are more open.',
@@ -38,7 +39,7 @@ export function debateMessages(r: DebateReq): ChatMessage[] {
     '  · The more strongly an empire already leans, or the more stubborn it is, the smaller the value.',
     '- The app calculates the position score. In the dialogue, do not announce a reversal; express only as much wavering, deliberation or conditional openness as the shift size warrants. If they hold firm, they push back with reasons.',
     '- reason is a very short summary (about 5 words) of why you rated it that way (e.g. "agrees with the security case", "argument repeated", "resents the threat").',
-    '- Each answer is 1–2 sentences, at most about 90 characters (the response language follows the language instruction below). Dialogue only, no stage directions or quotation marks. Each line must have a clearly different voice and concern (military powers talk security, commercial empires profit, peaceful empires cooperation, authoritarian empires hierarchy and order). No repeated sentences or empty agreement; respond specifically to what the player said, rebutting or agreeing from their own position.',
+    '- Each answer is 2–4 sentences, roughly 150–300 characters (the response language follows the language instruction below): state the position, give the empire\'s own reason or interest, and answer the player\'s actual argument (concede a point, rebut it, or set a condition). Dialogue only, no stage directions or quotation marks. Each line must have a clearly different voice and concern (military powers talk security, commercial empires profit, peaceful empires cooperation, authoritarian empires hierarchy and order). No repeated sentences or empty agreement; respond specifically to what the player said, rebutting or agreeing from their own position.',
     'Answer with a single JSON object only: {"replies":[{"id":number,"text":"dialogue","shift":integer,"reason":"reason"}]}  Give exactly one reply for every supplied id.',
   ].join('\n');
   const sp = r.speakers
@@ -53,7 +54,7 @@ export function debateMessages(r: DebateReq): ChatMessage[] {
     `Player empire: ${r.player || 'Player'} — persuading the council to vote ${want} on this resolution`,
     `Current tally (weight %): for ${Math.round(r.tally.f)} / against ${Math.round(r.tally.a)} / abstain ${Math.round(r.tally.u)}`,
     r.history.length ? `Earlier speeches:\n${r.history.slice(-8).join('\n')}` : '',
-    `This player speech (to the whole council): ${clip(r.text, 400)}`,
+    r.to ? `This player speech is addressed directly to ${r.to}: ${clip(r.text, 400)}\n${r.to} answers first, directly to the player (3–5 sentences, a proper reply). Any other delegate listed below is interjecting uninvited: one or two pointed sentences each, reacting to the exchange.` : `This player speech (to the whole council): ${clip(r.text, 400)}`,
     r.repeat ? 'NOTE: This speech repeats an earlier argument. There is no new argument, so rate shift at 0 or below.' : '',
     `Delegates who answer:\n${sp}`,
   ].filter(Boolean).join('\n');
@@ -70,7 +71,7 @@ export function parseDebate(raw: string, allowed: number[]): DebateReply[] {
     const sh = Number(x.shift ?? x.strength ?? x.persuasion ?? 0);
     const shift = Number.isFinite(sh) ? Math.max(-MAX_SHIFT, Math.min(MAX_SHIFT, Math.round(sh))) : 0; // 못 읽으면 0(입장 유지)
     const rv = x.reason ?? x.why;
-    seen.add(id); out.push({ id, text: clip(text, 160), shift, reason: typeof rv === 'string' ? clip(rv.replace(/\s+/g, ' ').trim(), 40) : '' });
+    seen.add(id); out.push({ id, text: clip(text, 600), shift, reason: typeof rv === 'string' ? clip(rv.replace(/\s+/g, ' ').trim(), 40) : '' });
   };
   const cleaned = raw.replace(/ …\(잘림\)\s*$/, '').replace(/^```(?:json)?\s*|\s*```$/g, '');
   let obj: any = null;

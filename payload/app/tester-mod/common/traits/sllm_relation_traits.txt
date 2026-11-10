@@ -1,0 +1,57 @@
+# SLLM - 인간관계 불만 특성(2026-10-23 집 PC 초안). 앱(src/discontent.ts)이 사교회 연간 판정 뒤 add_trait 로 붙이고, 원인 갈등이 모두 풀리면 remove_trait 로 뗀다.
+# 키는 집 PC 게임 폴더 바닐라와 같은 것만 쓴다: fleet_modifier ship_weapon_damage·army_modifier army_damage_mult(00_admiral/00_general_traits),
+#   planet_modifier planet_jobs_produces_mult(00_governor_traits), modifier science_ship_survey_speed·ship_anomaly_research_speed_mult·councilor_modifier all_technology_research_speed(00_scientist_traits).
+sllm_trait_rel_discontent_commander = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	fleet_modifier = {
+		ship_weapon_damage = -0.05
+	}
+	army_modifier = {
+		army_damage_mult = -0.05
+	}
+	leader_class = { commander }
+	selectable_weight = 0
+}
+
+sllm_trait_rel_discontent_official = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	planet_modifier = {
+		planet_jobs_produces_mult = -0.05
+	}
+	leader_class = { official }
+	selectable_weight = 0
+}
+
+sllm_trait_rel_discontent_scientist = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	modifier = {
+		science_ship_survey_speed = -0.05
+		ship_anomaly_research_speed_mult = -0.05
+	}
+	councilor_modifier = {
+		all_technology_research_speed = -0.05
+	}
+	leader_class = { scientist }
+	selectable_weight = 0
+}

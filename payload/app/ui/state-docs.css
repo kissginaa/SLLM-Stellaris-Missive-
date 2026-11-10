@@ -1,0 +1,70 @@
+/* 국가 문서 서식(알파 11, 2026-10-25): 감정서 · 상인 보증서 3종 · 국가 공인 문서. 시안 승인본(docs/ALPHA11_ENCLAVES_DESIGN_KO.md §8-2) 그대로.
+   종이는 어두운 테마에서도 종이색(문서는 문서처럼). 바탕 문양은 플레이어 국기 문양만(emblemFor). */
+.sd-overlay{position:fixed;inset:0;z-index:9000;background:rgba(6,8,12,.78);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:28px 12px}
+.sd-bar{position:fixed;top:10px;right:14px;z-index:9001;display:flex;gap:6px}
+.sd-bar button{background:#1d232c;color:#e8e4da;border:1px solid #4a5260;border-radius:4px;padding:5px 12px;cursor:pointer;font:inherit}
+.sd-doc{--paper:#f4ecd8;--ink:#2b2418;--faint:#8a7a5c;--line:#9a7b3c;--accent:#9a7b3c;--seal:#a3241c;width:min(820px,100%);position:relative;color:var(--ink);background:radial-gradient(ellipse at 20% 10%,rgba(255,255,255,.35),transparent 60%),radial-gradient(ellipse at 85% 90%,rgba(120,90,40,.12),transparent 55%),repeating-linear-gradient(0deg,rgba(120,100,60,.025) 0 2px,transparent 2px 4px),var(--paper);box-shadow:0 18px 50px rgba(0,0,0,.55);font-family:"Noto Serif KR","Noto Serif CJK KR","Batang","바탕",Georgia,serif;text-align:left;line-height:1.5}
+.sd-doc *{box-sizing:border-box}
+.sd-frame{position:relative;margin:20px;border:2px solid var(--line);padding:6px}
+.sd-inner{position:relative;overflow:hidden;border:1px solid var(--line);padding:36px 48px 30px}
+.sd-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.sd-wm img{width:62%;max-width:500px;filter:brightness(0) sepia(1) saturate(.6);opacity:.045}
+.sd-head{text-align:center;position:relative}
+.sd-org{font-size:12.5px;letter-spacing:.28em;color:var(--faint)}
+.sd-emb{display:block;margin:10px auto 6px;width:74px;height:74px}
+.sd-title{font-size:32px;letter-spacing:.16em;font-weight:700;margin:4px 0 0}
+.sd-sub{font-size:11.5px;letter-spacing:.24em;color:var(--faint);margin-top:6px}
+.sd-meta{display:flex;justify-content:space-between;gap:12px;font-family:Consolas,monospace;font-size:12px;color:var(--faint);margin:24px 0 14px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);padding-bottom:8px;position:relative}
+.sd-grid{display:grid;grid-template-columns:1fr;gap:20px;position:relative}
+.sd-grid.with-img{grid-template-columns:1fr 168px}
+.sd-pic{width:168px;height:168px;border:1px solid color-mix(in srgb,var(--line) 50%,transparent);background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.5),transparent 70%);display:flex;align-items:center;justify-content:center}
+.sd-pic img{max-width:92%;max-height:92%}
+.sd-doc table{width:100%;border-collapse:collapse;font-size:14.5px;position:relative}
+.sd-doc td{padding:7px 4px;border-bottom:1px dotted color-mix(in srgb,var(--faint) 60%,transparent);vertical-align:top}
+.sd-doc td.k{width:140px;color:var(--faint);font-size:12.5px;letter-spacing:.06em;padding-top:9px}
+.sd-grade{display:inline-block;padding:1px 12px;border:1.5px solid currentColor;font-size:12.5px;letter-spacing:.14em;border-radius:2px}
+.sd-g1{color:#6b7480}.sd-g2{color:#3f6fb0}.sd-g3{color:#c4821e}
+.sd-price{font-family:Consolas,monospace;font-weight:700;font-size:17px;color:var(--accent)}
+.sd-verdict{font-weight:700;letter-spacing:.08em}
+.sd-body{margin-top:20px;position:relative}
+.sd-body h4{font-size:12.5px;letter-spacing:.24em;color:var(--faint);font-weight:400;margin:0 0 8px}
+.sd-body p{font-size:14.5px;line-height:1.85;text-align:justify;text-indent:1em;margin:0;white-space:pre-line}
+.sd-micro{margin-top:22px;font-family:Consolas,monospace;font-size:6px;letter-spacing:.5px;color:color-mix(in srgb,var(--faint) 75%,transparent);white-space:nowrap;overflow:hidden;line-height:7px}
+.sd-sign{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;position:relative;gap:12px}
+.sd-sigbox{width:300px;max-width:60%;text-align:center}
+.sd-date{font-size:12.5px;color:var(--faint);margin-bottom:8px}
+.sd-sig{font-family:"Segoe Script","Brush Script MT","URW Chancery L",cursive;font-size:28px;color:#1d2b52;transform:rotate(-4deg);height:42px;white-space:nowrap}
+.sd-line{border-top:1px solid var(--ink);padding-top:6px;font-size:12px;letter-spacing:.06em}
+.sd-line small{display:block;color:var(--faint);font-size:11px;margin-top:2px}
+.sd-seal{width:124px;height:124px;flex:none;transform:rotate(-12deg);opacity:.86;mix-blend-mode:multiply}
+.sd-fine{margin-top:18px;font-size:7.6px;line-height:1.5;color:#7d858f;text-align:justify;border-top:1px solid color-mix(in srgb,var(--line) 35%,transparent);padding-top:8px;position:relative}
+.sd-stamp{position:absolute;right:46px;top:46%;transform:rotate(-14deg);border:4px solid;padding:6px 22px;font-size:28px;font-weight:900;letter-spacing:.3em;border-radius:6px;opacity:.82;mix-blend-mode:multiply;text-align:center;line-height:1.1}
+.sd-stamp.green{color:#2f7a3d}.sd-stamp.red{color:#a3241c}.sd-stamp.grey{color:#6b7480}
+.sd-stamp small{display:block;font-size:11px;letter-spacing:.15em}
+/* 상인별 서식 */
+.sd-doc.t-xura,.sd-doc.t-riggan,.sd-doc.t-muutagan{--paper:#f1f0ea;font-family:"Noto Sans KR","Noto Sans CJK KR","Malgun Gothic","Segoe UI",sans-serif}
+.sd-doc.t-xura{--accent:#1d5c63;--line:#1d5c63}.sd-doc.t-riggan{--accent:#6a2c3c;--line:#7a6a6e;--paper:#efece8}.sd-doc.t-muutagan{--accent:#2b6e6a;--line:#b08a3a;--paper:#f3efe2}
+.sd-band{display:flex;align-items:center;gap:16px;padding:20px 40px;color:#eef4f3}
+.t-xura .sd-band{background:linear-gradient(90deg,#123d42,#1d5c63 60%,#2a7a80)}
+.t-riggan .sd-band{background:linear-gradient(90deg,#2a1218,#5b2a3a 60%,#6f3a4a)}
+.t-muutagan .sd-band{background:linear-gradient(90deg,#173c3a,#2b6e6a 55%,#8a6a2a)}
+.sd-band b{font-size:22px;letter-spacing:.12em}.sd-band small{display:block;font-size:10.5px;letter-spacing:.26em;opacity:.82;margin-top:3px}
+.sd-band .r{margin-left:auto;text-align:right;font-family:Consolas,monospace;font-size:11px;opacity:.85;line-height:1.6}
+.sd-logo{width:50px;height:50px;flex:none}
+.sd-tier{height:8px}.sd-tier.g1{background:repeating-linear-gradient(135deg,#7d858f 0 14px,#a1a8b1 14px 28px)}.sd-tier.g2{background:repeating-linear-gradient(135deg,#3f6fb0 0 14px,#6c93c9 14px 28px)}.sd-tier.g3{background:repeating-linear-gradient(135deg,#c4821e 0 14px,#e0a84a 14px 28px)}
+.sd-mbody{padding:28px 40px 24px;position:relative;overflow:hidden}
+.sd-holo{width:150px;height:150px;border-radius:50%;background:conic-gradient(from 20deg,#f6d9ff,#bfe7ff,#c8ffd9,#fff4b8,#ffd0c4,#e5c9ff,#bfe7ff,#f6d9ff);position:relative;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7),0 2px 6px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;text-align:center;color:#3b4250;font-weight:700;font-size:13px;letter-spacing:.1em;line-height:1.45}
+.sd-holo:after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,rgba(255,255,255,.35) 0 1px,transparent 1px 4px)}
+.sd-holo span{position:relative;z-index:1}.sd-holo small{display:block;font-size:9px;letter-spacing:.2em;font-weight:400}
+.sd-barcode{height:38px;width:240px;background:repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 3px,#111 3px 4px,transparent 4px 7px,#111 7px 10px,transparent 10px 11px,#111 11px 12px,transparent 12px 15px)}
+.sd-bc small{display:block;font-family:Consolas,monospace;font-size:10px;letter-spacing:.25em;margin-top:3px;color:#6b7480}
+/* 국가 공인 문서 */
+.sd-doc.t-state{--paper:#f3efe4;--line:#24365c;--accent:#24365c}
+.t-state .sd-frame{border:3px double #24365c;padding:0}
+.t-state .sd-emb-img{width:84px;height:84px;display:block;margin:0 auto;filter:brightness(0) saturate(100%) invert(18%) sepia(30%) saturate(1500%) hue-rotate(195deg)}
+.t-state .sd-gov{font-size:15px;letter-spacing:.35em;color:#24365c;margin-top:6px;font-weight:700}
+.t-state .sd-rule{width:220px;margin:12px auto;border-top:1px solid #24365c;border-bottom:1px solid #24365c;height:4px}
+.t-state .sd-squareseal{width:100px;height:100px;border:3px solid #a3241c;display:flex;align-items:center;justify-content:center;transform:rotate(4deg);opacity:.85;mix-blend-mode:multiply;position:relative;color:#a3241c;font-weight:900;font-size:19px;line-height:1.15;text-align:center}
+.t-state .sd-squareseal:before{content:"";position:absolute;inset:4px;border:1px solid #a3241c}
+@media print{body>*:not(.sd-overlay){display:none!important}.sd-overlay{position:static;background:none;padding:0}.sd-bar{display:none}.sd-doc{box-shadow:none}}
+.sd-doc.t-artist{--paper:#f4ede6;--line:#7a4fa0;--accent:#6b3f8f;--faint:#8a6f8f}

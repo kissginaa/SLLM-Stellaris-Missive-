@@ -41,7 +41,7 @@ PY
 echo "[5/6] 최소 설치 구성 + 게임 DLL 해시"
 # 2026-10-21 사용자 결정 A안: 설치기에는 실행 프로그램·DLL·로컬 모드·첫 설치 도우미만. 나머지는 첫 실행 때 창작마당 묶음에서 채운다.
 SEED="$WORK/stage/seed"; rm -rf "$SEED"; mkdir -p "$SEED"
-for k in runtime tester-mod native/command-bridge.dll dist/bootstrap.js dist/app-update-core.js dist/version-check.js dist/environment-paths.js package.json start_app.bat update-public-key.pem README_KO.md ALPHA_SETUP_KO.md ALPHA_SETUP_EN.md; do
+for k in runtime tester-mod native/command-bridge.dll native/bridge/command-bridge.dll dist/bootstrap.js dist/app-update-core.js dist/version-check.js dist/environment-paths.js package.json start_app.bat update-public-key.pem README_KO.md ALPHA_SETUP_KO.md ALPHA_SETUP_EN.md; do
   if [ -e "$WORK/stage/app/$k" ]; then mkdir -p "$SEED/$(dirname "$k")"; cp -R "$WORK/stage/app/$k" "$SEED/$k";
   else case "$k" in *.md) ;; *) echo "최소 설치 구성 항목이 없습니다: $k"; exit 1;; esac; fi
 done

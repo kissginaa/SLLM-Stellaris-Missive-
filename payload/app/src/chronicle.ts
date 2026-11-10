@@ -26,7 +26,7 @@ export class ChronicleStore {
   batch<T>(fn: () => T): T {
     this.batchDepth++;
     try { return fn(); }
-    finally { if (--this.batchDepth === 0 && this.dirty) { this.dirty = false; this.save(); try { this.onAdd?.(); } catch { /* 화면 알림 실패는 무시 */ } } }
+    finally { if (--this.batchDepth === 0 && this.dirty) { this.dirty = false; this.saveSoon(); try { this.onAdd?.(); } catch { /* 화면 알림 실패는 무시 */ } } }
   }
   constructor(private file: string, private branchOf: (sid: string) => number) {
     try {
@@ -42,6 +42,25 @@ export class ChronicleStore {
   error: string | null = null;
   /** 새 기록이 실제로 들어갔을 때 부른다(화면 자동 갱신용). */
   onAdd: (() => void) | null = null;
+  /** 상한(MAX_CHRON)에서 밀려난 줄(2026-10-28 ChatSyncAuto 참고: 오래된 기록을 장으로 압축, 원문은 따로 보관). */
+  onTrim: ((sid: string, idx: number, dropped: ChronEntry[]) => void) | null = null;
+  /** 늦춰 쓰기(2026-11-08): 0 이면 기록마다 바로 쓴다(검사·예전 동작). 앱은 1500ms — 연대기 파일(수 MB)을 줄마다 통째로 다시 쓰면
+   *  시나리오 시작처럼 사건 줄이 수천 개 몰릴 때 앱이 몇 분씩 멈췄다(행성 조사 6천여 줄 × 9MB). 앱을 끌 때 flush() 로 남은 것을 쓴다. */
+  lazyMs = 0;
+  private lazyT: ReturnType<typeof setTimeout> | null = null;
+  /** 늦춰 쓰기 때 실제로 쓰는 쪽(앱: 작업 스레드 bgWriteJson). 없으면 이 스레드에서 쓴다. done(실패 이유 | null). */
+  writer: ((file: string, data: ChronFile, done: (err: string | null) => void) => void) | null = null;
+  /** 늦춰 둔 저장을 지금 한다(앱 종료 때). */
+  flush(): void { if (this.lazyT) { clearTimeout(this.lazyT); this.lazyT = null; this.save(); } }
+  private saveSoon(): void {
+    if (!this.lazyMs) { this.save(); return; }
+    if (this.lazyT) return;
+    this.lazyT = setTimeout(() => {
+      this.lazyT = null;
+      if (!this.writer) { this.save(); return; }
+      try { this.writer(this.file, this.data, (err) => { this.error = err; if (err) logDiagnostic('error', 'storage.write_failed', { store: 'chronicle', file: this.file, error: err }); }); } catch { this.save(); }
+    }, this.lazyMs);
+  }
   private save(): void {
     try { const tmp = this.file + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(this.data), 'utf8'); fs.renameSync(tmp, this.file); this.error = null; }
     catch (e) { this.error = e instanceof Error ? e.message : String(e);logDiagnostic('error','storage.write_failed',{store:'chronicle',file:this.file,error:e}); } // 기억 속 기록은 남아 있으니 다음 기록 때 다시 저장을 시도한다
@@ -71,10 +90,12 @@ export class ChronicleStore {
     // 성간 라디오 전용 연대기는 게임 날짜로 최근 RADIO_KEEP_DAYS(360)일만 남긴다(라디오는 지금 일어난 일을 전하는 것이 목적이다). 연도가 넘어가도 최근 사건은 이어지고, 같은 시간선(branch)의 더 오래된 것만 지운다. 상한은 MAX_RADIO 건.
     if (idx === RADIO_IDX) { const nd = dayNo(date); if (nd !== null) for (let i = arr.length - 1; i >= 0; i--) { const ed = dayNo(arr[i].date); if (ed !== null && ed < nd - RADIO_KEEP_DAYS && (arr[i].branch ?? 1) === br) arr.splice(i, 1); } }
     const cap = idx === RADIO_IDX ? MAX_RADIO : MAX_CHRON;
-    while (arr.length > cap) arr.shift();
+    const dropped: ChronEntry[] = [];
+    while (arr.length > cap) dropped.push(arr.shift()!);
+    if (dropped.length && idx !== RADIO_IDX && this.onTrim) { try { this.onTrim(sid, idx, dropped); } catch { /* 장(章) 압축은 부가 기능 */ } } // 상한에서 밀려난 줄 → 장(章) 압축·원문 보관(2026-10-28)
     this.rev++;
     if (this.batchDepth) { this.dirty = true; return true; }
-    this.save(); try { this.onAdd?.(); } catch { /* 화면 알림 실패는 무시 */ } return true;
+    this.saveSoon(); try { this.onAdd?.(); } catch { /* 화면 알림 실패는 무시 */ } return true;
   }
 }
 

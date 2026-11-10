@@ -27,6 +27,9 @@ export interface SaveFlags {
   typesByIdx?: Record<string, string>;
   portraitsByIdx?: Record<string, PortraitInfo>; // A-04·A-09
   rulerByIdx?: Record<string, RulerInfo>; // 통치자 초상화·성별(포트레이트 라이브러리 자동 선택)
+  natureByIdx?: Record<string, EmpireNature>; // 정부 형태·국시·기원·건국 종족 특성(2026-11-03, AI가 우리 제국을 제대로 알게)
+  /** 세이브 요약(지도자·행성 등, 2026-11-03 세이브 읽기 2단계 — 작업 스레드에서만 채움). */
+  snap?: import('./savegame/extract').SaveSnap; snapError?: string;
   sid?: string;
   date: string;
 }
@@ -73,12 +76,29 @@ export function readZipEntry(buf: Buffer, name: string): Buffer | null {
 /** gamestate 문자열에서 country={ ... } 구역만 훑어 깃발을 모은다. */
 function unescapePdx(v: string): string { return v.replace(/\\(.)/g, (_m, c: string) => (c === 'n' ? '\n' : c)); } // 한 번에 풀어야 '\\n'(역슬래시+n)이 줄바꿈으로 바뀌지 않는다(2026-10-18)
 
+// 메모리(2026-10-27, 「앱을 켜자 메모리가 치솟는다」 제보): 예전에는 구역을 찾을 때마다 「그 구역부터 파일 끝까지」를 줄로 쪼갰다(한 번 읽을 때 7번).
+// 후반 세이브(gamestate 수백 MB)면 줄 문자열 수천만 개가 생겨 RAM 이 GB 단위로 치솟았다. 이제 최상위 구역(name= … 0열의 }) 하나만 잘라서 쪼개고,
+// readSaveFlags 안에서는 같은 구역을 한 번만 쪼개 함께 쓴다(끝나면 버림).
+let secMemo: { src: string; map: Map<string, string[]> } | null = null;
+/** 최상위 구역 줄들: [0] = 'name=' 머리 줄 … 닫는 0열 '}' 줄까지. 없으면 []. */
+export function sectionLines(gs: string, name: string): string[] {
+  if (secMemo && secMemo.src === gs) { const hit = secMemo.map.get(name); if (hit) return hit; }
+  const start = gs.search(new RegExp('^' + name + '=\\r?$', 'm'));
+  let lines: string[] = [];
+  if (start >= 0) {
+    const endRe = /\n\}\r?(?=\n|$)/g; endRe.lastIndex = start;
+    const e = endRe.exec(gs);
+    lines = gs.slice(start, e ? e.index + e[0].length : gs.length).split('\n');
+  }
+  if (secMemo && secMemo.src === gs) secMemo.map.set(name, lines);
+  return lines;
+}
+
 /** species_db 구역에서 종족 번호 -> species_bio. 전기가 없는 종족은 빠진다. */
 export function parseSpeciesBios(gamestate: string): Record<string, string> {
   const out: Record<string, string> = {};
-  const start = gamestate.search(/^species_db=\r?$/m);
-  if (start < 0) return out;
-  const lines = gamestate.slice(start).split('\n');
+  const lines = sectionLines(gamestate, 'species_db');
+  if (!lines.length) return out;
   let cur = '';
   for (let li = 1; li < lines.length; li++) {
     const raw = lines[li].replace(/\r$/, '');
@@ -101,9 +121,8 @@ export function parseFlags(gamestate: string): { byId: Record<string, FlagSpec>;
   const bioByIdx: Record<string, string> = {};
   const bios = parseSpeciesBios(gamestate);
   let founder = '';
-  const start = gamestate.search(/^country=\r?$/m);
-  if (start < 0) return { byId, byIdx, bioById, bioByIdx, statsById, statsByIdx };
-  const lines = gamestate.slice(start).split('\n');
+  const lines = sectionLines(gamestate, 'country');
+  if (!lines.length) return { byId, byIdx, bioById, bioByIdx, statsById, statsByIdx };
   let curId = '';
   let flag: FlagSpec | null = null;
   let inFlag = false;
@@ -168,19 +187,61 @@ export function parseFlags(gamestate: string): { byId: Record<string, FlagSpec>;
   return { byId, byIdx, bioById, bioByIdx, statsById, statsByIdx };
 }
 
+/** 제국의 정체(2026-11-03 테스터 요청: AI가 종족 특성·국시를 몰랐다). 게임 키 그대로(번역은 앱이 따로). */
+export interface EmpireNature { authority?: string; civics: string[]; origin?: string; traits: string[] }
+/** country 구역의 government(authority·civics·origin)와 founder_species_ref, species_db 의 traits 를 sllm_idx 별로 모은다. */
+export function parseEmpireNature(gamestate: string): Record<string, EmpireNature> {
+  const out: Record<string, EmpireNature> = {};
+  const traitsOf: Record<string, string[]> = {};
+  { const L = sectionLines(gamestate, 'species_db'); let cur = '', inT = false, depth = 0;
+    for (let li = 1; li < L.length; li++) { const raw = L[li].replace(/\r$/, ''); if (raw === '}') break;
+      const m = /^\t(\d+)=$/.exec(raw); if (m) { cur = m[1]; inT = false; continue; }
+      if (!cur) continue;
+      if (!inT && /^\t\ttraits\s*=/.test(raw)) { inT = true; depth = 0; }
+      if (inT) {
+        for (const t of raw.matchAll(/trait="([^"]+)"/g)) (traitsOf[cur] ??= []).includes(t[1]) || traitsOf[cur].push(t[1]);
+        depth += (raw.match(/\{/g) || []).length - (raw.match(/\}/g) || []).length;
+        if (depth <= 0 && /\}/.test(raw)) inT = false;
+      } } }
+  const L = sectionLines(gamestate, 'country'); if (!L.length) return out;
+  let idx = '', founder = '', gov = false, civ = false, cdepth = 0, n: EmpireNature = { civics: [], traits: [] };
+  const finish = () => { if (idx) { const t = founder ? traitsOf[founder] ?? [] : []; if (n.authority || n.civics.length || n.origin || t.length) out[idx] = { ...n, traits: t }; } idx = ''; founder = ''; gov = false; civ = false; n = { civics: [], traits: [] }; };
+  for (let li = 1; li < L.length; li++) { const raw = L[li].replace(/\r$/, ''); if (raw === '}') break;
+    if (/^\t\d+=$/.test(raw)) { finish(); continue; }
+    const id = /^\t{3,}sllm_idx=(\d+)(?:\.0+)?$/.exec(raw); if (id) { idx = id[1]; continue; }
+    const f = /^\t\tfounder_species_ref=(\d+)$/.exec(raw); if (f) { founder = f[1]; continue; }
+    if (/^\t\tgovernment\s*=/.test(raw)) { gov = true; continue; }
+    if (!gov) continue;
+    if (raw === '\t\t}') { gov = false; civ = false; continue; }
+    if (civ) {
+      for (const q of raw.matchAll(/"([A-Za-z0-9_.:-]+)"/g)) if (!n.civics.includes(q[1])) n.civics.push(q[1]);
+      cdepth += (raw.match(/\{/g) || []).length - (raw.match(/\}/g) || []).length; if (cdepth <= 0 && /\}/.test(raw)) civ = false; continue;
+    }
+    if (/^\t\t\tcivics\s*=/.test(raw)) { civ = true; cdepth = 0; for (const q of raw.matchAll(/"([A-Za-z0-9_.:-]+)"/g)) if (!n.civics.includes(q[1])) n.civics.push(q[1]); cdepth += (raw.match(/\{/g) || []).length - (raw.match(/\}/g) || []).length; if (cdepth <= 0 && /\}/.test(raw)) civ = false; continue; }
+    const a = /^\t\t\tauthority="([^"]+)"/.exec(raw); if (a) { n.authority = a[1]; continue; }
+    const o = /^\t\t\torigin="([^"]+)"/.exec(raw); if (o) { n.origin = o[1]; continue; }
+  }
+  finish();
+  return out;
+}
+
 export function readSaveFlags(savePath: string): SaveFlags | null {
   const buf = fs.readFileSync(savePath);
-  const gs = readZipEntry(buf, 'gamestate');
-  if (!gs) return null;
-  const text = gs.toString('utf8');
   const meta = readZipEntry(buf, 'meta')?.toString('utf8') ?? '';
+  let text: string;
+  { const gs = readZipEntry(buf, 'gamestate'); if (!gs) return null; text = gs.toString('utf8'); } // 압축 푼 버퍼는 문자열로 바꾼 뒤 바로 놓는다
+  secMemo = { src: text, map: new Map() };
+  try {
   const date = /^date="([^"]*)"/m.exec(meta)?.[1] ?? '';
   const metadata = parseSaveCountryMetadata(text);
   let portraitsByIdx: Record<string, PortraitInfo> | undefined;
   try { portraitsByIdx = parsePortraitInfo(text); } catch { /* 초상화 정보는 없어도 된다 */ }
   let rulerByIdx: Record<string, RulerInfo> | undefined;
   try { rulerByIdx = parseRulers(text); } catch { /* 통치자 정보는 없어도 된다 */ }
-  return { ...parseFlags(text), ...metadata, portraitsByIdx, rulerByIdx, date };
+  let natureByIdx: Record<string, EmpireNature> | undefined;
+  try { natureByIdx = parseEmpireNature(text); } catch { /* 국시·특성은 없어도 된다 */ }
+  return { ...parseFlags(text), ...metadata, portraitsByIdx, rulerByIdx, natureByIdx, date };
+  } finally { secMemo = null; } // 쪼갠 구역을 붙잡고 있지 않는다
 }
 
 /** 제국 통치자의 초상화 ID·성별(포트레이트 라이브러리가 같은 옷·성별의 그림을 고를 때 쓴다). */
@@ -188,10 +249,7 @@ export interface RulerInfo { portrait: string; gender: 'f' | 'm' | ''; leaderCla
 /** gamestate 에서 제국마다 통치자의 초상화·성별을 읽는다. 직접 만든 통치자는 design.portrait(정확한 ID), 아니면 지도자의 portrait, 그것도 없으면 종족 초상화. */
 export function parseRulers(gamestate: string): Record<string, RulerInfo> {
   const out: Record<string, RulerInfo> = {};
-  const sections = (name: string): string[] => {
-    const start = gamestate.search(new RegExp('^' + name + '=\\r?$', 'm'));
-    return start < 0 ? [] : gamestate.slice(start).split('\n');
-  };
+  const sections = (name: string): string[] => sectionLines(gamestate, name);
   const speciesPortrait: Record<string, string> = {};
   { const L = sections('species_db'); let cur = '';
     for (let i = 1; i < L.length; i++) { const raw = L[i].replace(/\r$/, ''); if (raw === '}') break; const m = /^\t(\d+)=$/.exec(raw); if (m) { cur = m[1]; continue; } const q = /^\t\tportrait="([^"]*)"$/.exec(raw); if (cur && q) speciesPortrait[cur] = q[1]; } }
@@ -253,10 +311,10 @@ export function findLatestSave(roots: string[] = saveRoots()): string | null {
 /** Save format uses a country-level ethos/ethics block; nested species/pop ethics are excluded. */
 export function parseSaveCountryMetadata(text: string): { ethicsByIdx: Record<string,string[]>; typesByIdx: Record<string,string>; sid: string } {
   const ethicsByIdx: Record<string,string[]> = {}, typesByIdx: Record<string,string> = {};
-  const start=text.search(/^country=\r?$/m); if(start<0)return {ethicsByIdx,typesByIdx,sid:''};
+  const sec=sectionLines(text,'country'); if(!sec.length)return {ethicsByIdx,typesByIdx,sid:''};
   let idx='',type='',ids:string[]=[],section=false,sid='';
   const finish=()=>{if(idx){ethicsByIdx[idx]=[...new Set(ids)];typesByIdx[idx]=type;}idx='';type='';ids=[];section=false;};
-  for(const line of text.slice(start).split('\n').slice(1)) {
+  for(let li=1;li<sec.length;li++) { const line=sec[li];
     const raw=line.replace(/\r$/,''); if(raw==='}')break;
     if(/^\t\d+=$/.test(raw)){finish();continue;}
     const id=/^\t{3,}sllm_idx=(\d+)(?:\.0+)?$/.exec(raw);if(id)idx=id[1];
@@ -274,8 +332,10 @@ export function parseSaveCountryMetadata(text: string): { ethicsByIdx: Record<st
 export interface PortraitMix { portrait: string; cls: string; share: number; /** 종족 이름 표 키(세이브 species name_list, 인물 이름 짓기용). 없으면 빠짐 */ list?: string }
 export interface PortraitInfo { founder: { portrait: string; cls: string; list?: string } | null; mix: PortraitMix[]; /** 이름 짓기용: 제국에 사는 모든 종족의 인구 비율(5% 미만·초상화 없는 종족 포함, 2026-10-20) */ pop?: Array<{ cls: string; share: number; list?: string }> }
 export function parsePortraitInfo(gs: string): Record<string, PortraitInfo> {
-  const lines = gs.split('\n'), out: Record<string, PortraitInfo> = {};
-  const sec = (name: string) => lines.findIndex((l) => l.replace(/\r$/, '') === name + '=');
+  const out: Record<string, PortraitInfo> = {};
+  let lines: string[] = [];
+  /** 그 구역 줄로 바꾸고 머리 줄 위치(0)를 돌려준다. 없으면 -1. 아래 반복은 i += 2(머리·여는 괄호 다음)부터. */
+  const sec = (name: string) => { lines = sectionLines(gs, name); return lines.length ? 0 : -1; };
   // 1. 종족
   const species: Record<string, { portrait: string; cls: string; list?: string }> = {};
   let i = sec('species_db');

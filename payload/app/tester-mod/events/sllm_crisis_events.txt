@@ -1,5 +1,5 @@
 # SLLM Probe - 은하 위기 감시(2026-10-17). 앱은 이 줄로 신문·라디오를 "위기 특별판/긴급 특별 방송"으로 바꾼다.
-# 로그: 지금 은하에 있는 위기마다 SLLM:CRISIS(kind) → 마지막에 SLLM:CRISIS_END(묶음 끝, 매달 한 번). 위기가 없으면 CRISIS_END 만 남는다.
+# 로그: 지금 은하에 있는 위기마다 SLLM:CRISIS(kind) → 마지막에 SLLM:CRISIS_END(묶음 끝). 2026-11-08부터 위기 구성이 바뀐 달·세이브를 불러온 때만. 위기가 없으면 CRISIS_END 만 남는다.
 # 위기 세력 = 바닐라 common/country_types 의 종말 위기 국가 종류(swarm·extradimensional*·ai_empire·synth_queen*)와 대칸(awakened_marauders).
 namespace = sllm_crisis
 
@@ -9,11 +9,45 @@ country_event = {
 	is_triggered_only = yes
 	trigger = { is_ai = no }
 	immediate = {
-		if = { limit = { any_country = { is_country_type = swarm } } log = "SLLM:CRISIS/;/kind=prethoryn" }
-		if = { limit = { any_country = { OR = { is_country_type = extradimensional is_country_type = extradimensional_2 is_country_type = extradimensional_3 } } } log = "SLLM:CRISIS/;/kind=unbidden" }
-		if = { limit = { any_country = { is_country_type = ai_empire } } log = "SLLM:CRISIS/;/kind=contingency" }
-		if = { limit = { any_country = { OR = { is_country_type = synth_queen is_country_type = awakened_synth_queen } } } log = "SLLM:CRISIS/;/kind=cetana" }
-		if = { limit = { any_country = { is_country_type = awakened_marauders } } log = "SLLM:CRISIS/;/kind=khan" }
-		log = "SLLM:CRISIS_END/;/date=\\[GetDate]"
+		# 2026-11-08 사용자: 「매달 확인이 필요 없는 것은 바뀔 때만」 — 살피기는 매달(가볍다), 줄은 위기 구성이 바뀐 달에만(앱은 세이브별로 마지막 상태를 저장해 이어 쓴다).
+		# 구성 비트: 프레소린 1 · 언비든 2 · 컨틴전시 4 · 세타나 전쟁 8 · 세타나 16 · 그레이트 칸 32 · 하늘의 전쟁 64 → sllm_crisis_now, 지난번 보낸 것 sllm_crisis_m. 불러오면 sllm_crisis.2 가 지워서 다시 보낸다.
+		set_variable = { which = sllm_crisis_now value = 0 }
+		if = { limit = { any_country = { is_country_type = swarm } } change_variable = { which = sllm_crisis_now value = 1 } }
+		if = { limit = { any_country = { OR = { is_country_type = extradimensional is_country_type = extradimensional_2 is_country_type = extradimensional_3 } } } change_variable = { which = sllm_crisis_now value = 2 } }
+		if = { limit = { any_country = { is_country_type = ai_empire } } change_variable = { which = sllm_crisis_now value = 4 } }
+		if = { limit = { any_country = { is_country_type = awakened_synth_queen } } change_variable = { which = sllm_crisis_now value = 8 } }
+		else_if = { limit = { any_country = { is_country_type = synth_queen } } change_variable = { which = sllm_crisis_now value = 16 } }
+		if = { limit = { any_country = { is_country_type = awakened_marauders } } change_variable = { which = sllm_crisis_now value = 32 } }
+		if = { limit = { has_global_flag = war_in_heaven_ongoing } change_variable = { which = sllm_crisis_now value = 64 } }
+		if = {
+			limit = { OR = { NOT = { is_variable_set = sllm_crisis_m } NOT = { check_variable = { which = sllm_crisis_m value = sllm_crisis_now } } } }
+			set_variable = { which = sllm_crisis_m value = sllm_crisis_now }
+			if = { limit = { any_country = { is_country_type = swarm } } log = "SLLM:CRISIS/;/kind=prethoryn" }
+			if = { limit = { any_country = { OR = { is_country_type = extradimensional is_country_type = extradimensional_2 is_country_type = extradimensional_3 } } } log = "SLLM:CRISIS/;/kind=unbidden" }
+			if = { limit = { any_country = { is_country_type = ai_empire } } log = "SLLM:CRISIS/;/kind=contingency" }
+			if = { limit = { any_country = { is_country_type = awakened_synth_queen } } log = "SLLM:CRISIS/;/kind=cetana/;/war=1" } # 세타나 전쟁 개시 뒤(바닐라 crisis.8060 전쟁 선택 → awakened_synth_queen). 그 전에는 모든 제국에 중립(알파 11, 사용자 2026-10-25)
+			else_if = { limit = { any_country = { is_country_type = synth_queen } } log = "SLLM:CRISIS/;/kind=cetana" }
+			if = { limit = { any_country = { is_country_type = awakened_marauders } } log = "SLLM:CRISIS/;/kind=khan" }
+			if = { limit = { has_global_flag = war_in_heaven_ongoing } log = "SLLM:CRISIS/;/kind=wih" } # 하늘의 전쟁(알파 11): 각성한 몰락제국 둘의 전쟁(바닐라 war_in_heaven_events)
+			log = "SLLM:CRISIS_END/;/date=\\[GetDate]"
+		}
 	}
+}
+
+# 세이브를 불러오면(on_single_player_save_game_load, 범위 없음) 지난번 보낸 구성을 지우고 바로 다시 살핀다 — 앱이 다른 세이브의 상태를 이어 쓰지 않게(2026-11-08).
+event = {
+	id = sllm_crisis.2
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = { every_playable_country = { limit = { is_ai = no } clear_variable = sllm_crisis_m country_event = { id = sllm_crisis.1 } } }
+}
+
+# 해마다(on_yearly_pulse_country, 플레이어 나라): 지난번 보낸 구성을 지우고 다시 살펴 한 번 보낸다(2026-11-09).
+# 위기 줄은 구성이 바뀐 달에만 오므로, 게임은 계속 돌고 앱만 껐다 켠 사이에 바뀐 것을 해마다 바로잡는다.
+country_event = {
+	id = sllm_crisis.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no }
+	immediate = { clear_variable = sllm_crisis_m country_event = { id = sllm_crisis.1 } }
 }

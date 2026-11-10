@@ -1,0 +1,13 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 위 명분과 짝. This = 공격국, From = 방어국.
+# 결판: 이기면 진 나라가 10년간 굴욕(sllm_tn_humbled). 영토는 평화 협상(점령지 요구)으로 정한다. 끝나면 긴장도는 70 으로(sllm_tn_month).
+wg_sllm_tn_showdown = {
+	casus_belli = cb_sllm_tn_showdown
+	surrender_acceptance = -25
+	ai_weight = { weight = 100 }
+	potential = { always = yes }
+	possible = { always = yes }
+	on_accept = {
+		custom_tooltip = wg_sllm_tn_showdown_accept
+		hidden_effect = { from = { add_modifier = { modifier = sllm_tn_humbled days = 3600 } } }
+	}
+}

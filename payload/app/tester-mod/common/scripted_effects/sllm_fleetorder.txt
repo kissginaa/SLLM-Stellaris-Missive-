@@ -1,0 +1,556 @@
+# SLLM 자동 작전(2026-11-04) — 함대 사령부 「자동 작전」. 앱이 켜고 끈다(국가 표식 sllm_fo_on). 우리가 직접 쓴 스크립트(설계만 「자동작전 · Auto Combat」 모드 참고).
+# 매달(on_monthly_pulse_country → sllm_fo.1): 수리 복귀 → 작전 1~3 진행. 전쟁 중일 때만 새 작전을 연다.
+# 작전 하나 = 선두 함대(가장 센 함대) + 불러온 함대. 목표 = 수도에서 가장 가까운, 우리 전력(÷1.2)으로 이길 만한 적 성계(적 식민지 성계 먼저).
+#   상태 sllm_fo_opN: 0 비어 있음, 1 집결(선두 성계로 모임, 최대 5달), 2 진격. 적이 우리보다 세지면 후퇴, 적이 없어지면 완료.
+# 작전 함대 풀은 every_controlled_fleet: 우리 함대 + 빌려 온 동맹 함대(give_fleet, sllm_fleetorder_ally.txt). 우리가 빌려준 함대는 빠진다.
+# 함대 변수·표식: sllm_fo_op(0/1~3), sllm_fo_lead(선두), sllm_fo_manual(직접 지휘 — 손대지 않음), sllm_fo_repair(수리하러 감), sllm_fo_fid(앱이 쓰는 번호).
+# 로그(앱이 읽음): FOEV(사건) + FOEVF(그 함대·제독) + FOEVS(성계) — 같은 n 끼리 한 묶음. FOREP·FOOP·FOOPF·FOOPS·FOFL(보고), FOSET(켜기·끄기·전환 응답).
+# 게임 부담: 작전마다 한 달에 함대 목록 몇 번 + 빈 작전일 때만 수도 둘레 40칸 안에서 가장 가까운 성계 찾기.
+
+# ── 작은 도우미 ──
+# 사건 번호를 올린다(로그 묶음 n).
+sllm_fo_ev_next = {
+	if = { limit = { NOT = { is_variable_set = sllm_fo_evn } } set_variable = { which = sllm_fo_evn value = 0 } }
+	change_variable = { which = sllm_fo_evn value = 1 }
+}
+# 작전 N 의 함대 전력 합(sllm_fo_pow)과 함대 수(sllm_fo_n).
+sllm_fo_op_power = {
+	set_variable = { which = sllm_fo_pow value = 0 }
+	set_variable = { which = sllm_fo_n value = 0 }
+	every_controlled_fleet = {
+		limit = { is_variable_set = sllm_fo_op check_variable = { which = sllm_fo_op value = $N$ } }
+		set_variable = { which = sllm_fo_fp value = trigger:fleet_power }
+		save_event_target_as = sllm_fo_f
+		root = {
+			change_variable = { which = sllm_fo_pow value = event_target:sllm_fo_f.sllm_fo_fp }
+			change_variable = { which = sllm_fo_n value = 1 }
+		}
+	}
+}
+# 작전 N 의 목표 성계 적 전력(sllm_fo_en). 엔진 값이 안 읽히면 고를 때의 단계 값으로.
+sllm_fo_op_enemy = {
+	set_variable = { which = sllm_fo_en value = sllm_fo_op$N$_tier }
+	event_target:sllm_fo_op$N$_sys = {
+		export_trigger_value_to_variable = { trigger = hostile_military_power parameters = { who = root safety_buffer = no } variable = sllm_fo_en }
+		if = {
+			limit = { is_variable_set = sllm_fo_en check_variable = { which = sllm_fo_en value > 0 } }
+			root = { set_variable = { which = sllm_fo_en value = event_target:sllm_fo_op$N$_sys.sllm_fo_en } }
+		}
+	}
+}
+# 작전 N 의 함대를 모두 목표 성계로 보낸다(이미 그 성계에 있거나 전투 중이면 그대로).
+sllm_fo_op_send = {
+	every_controlled_fleet = {
+		limit = {
+			is_variable_set = sllm_fo_op
+			check_variable = { which = sllm_fo_op value = $N$ }
+			is_in_combat = no
+			NOT = { solar_system = { is_same_value = event_target:sllm_fo_op$N$_sys } }
+		}
+		auto_move_to_planet = { target = event_target:sllm_fo_op$N$_star clear_auto_move_on_arrival = yes }
+	}
+}
+# 사건 로그: 선두 함대·제독, 목표 성계. EVN: 1 new 2 go 3 done 4 lost 5 lead 6 abort 7 retreat (8 repair·9 repaired 는 수리 쪽). 로그 글자 안에는 $매개변수$ 를 쓰지 않는다(변수로 옮겨 찍는다 — 게임이 글자 속 매개변수를 잘못 바꾼 적이 있음).
+sllm_fo_op_log = {
+	sllm_fo_ev_next = yes
+	set_variable = { which = sllm_fo_lop value = $N$ }
+	set_variable = { which = sllm_fo_lev value = $EVN$ }
+	log = "SLLM:FOEV/;/n=\\[Root.sllm_fo_evn]/;/ev=\\[Root.sllm_fo_lev]/;/op=\\[Root.sllm_fo_lop]/;/date=\\[GetDate]/;/pow=\\[Root.sllm_fo_pow]/;/en=\\[Root.sllm_fo_en]/;/cnt=\\[Root.sllm_fo_n]"
+	if = {
+		limit = { exists = event_target:sllm_fo_op$N$_lead }
+		event_target:sllm_fo_op$N$_lead = {
+			log = "SLLM:FOEVF/;/n=\\[Root.sllm_fo_evn]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]"
+			if = { limit = { exists = leader leader = { is_variable_set = sllm_lid } } leader = { log = "SLLM:FOEVA/;/n=\\[Root.sllm_fo_evn]/;/lid=\\[This.sllm_lid]" } }
+		}
+	}
+	if = { limit = { exists = event_target:sllm_fo_op$N$_sys } event_target:sllm_fo_op$N$_sys = { log = "SLLM:FOEVS/;/n=\\[Root.sllm_fo_evn]/;/sys=\\[This.GetName]" } }
+}
+# 작전 N 끝: 함대를 풀어 주고 목표 표식을 지운다. HOME = yes 면 수도로 물린다(후퇴·중단).
+sllm_fo_op_end = {
+	every_controlled_fleet = {
+		limit = { is_variable_set = sllm_fo_op check_variable = { which = sllm_fo_op value = $N$ } }
+		set_variable = { which = sllm_fo_op value = 0 }
+		remove_fleet_flag = sllm_fo_lead
+		if = {
+			limit = { always = $HOME$ is_in_combat = no }
+			root = { capital_star = { save_event_target_as = sllm_fo_home_star } }
+			if = { limit = { exists = event_target:sllm_fo_home_star } auto_move_to_planet = { target = event_target:sllm_fo_home_star clear_auto_move_on_arrival = yes } }
+		}
+	}
+	if = { limit = { exists = event_target:sllm_fo_op$N$_sys } event_target:sllm_fo_op$N$_sys = { remove_star_flag = sllm_fo_tgt } }
+	clear_global_event_target = sllm_fo_op$N$_sys
+	clear_global_event_target = sllm_fo_op$N$_star
+	clear_global_event_target = sllm_fo_op$N$_lead
+	set_variable = { which = sllm_fo_op$N$ value = 0 }
+	set_variable = { which = sllm_fo_op$N$_m value = 0 }
+}
+# 자유 함대 가운데 가장 센 것을 작전 N 에 넣고 선두 성계로 부른다.
+sllm_fo_op_recruit = {
+	if = {
+		limit = {
+			check_variable_arithmetic = { which = sllm_fo_en multiply = sllm_fo_ratio value > sllm_fo_pow }
+			any_controlled_fleet = { sllm_fo_free_fleet = yes }
+		}
+		ordered_controlled_fleet = {
+			limit = { sllm_fo_free_fleet = yes }
+			order_by = trigger:fleet_power
+			position = 0
+			set_variable = { which = sllm_fo_op value = $N$ }
+			set_fleet_stance = aggressive
+			set_variable = { which = sllm_fo_fp value = trigger:fleet_power }
+			save_event_target_as = sllm_fo_f
+			root = {
+				change_variable = { which = sllm_fo_pow value = event_target:sllm_fo_f.sllm_fo_fp }
+				change_variable = { which = sllm_fo_n value = 1 }
+			}
+			if = {
+				limit = { exists = event_target:sllm_fo_op$N$_lead }
+				event_target:sllm_fo_op$N$_lead = { solar_system = { star = { save_event_target_as = sllm_fo_rally } } }
+				if = { limit = { exists = event_target:sllm_fo_rally } auto_move_to_planet = { target = event_target:sllm_fo_rally clear_auto_move_on_arrival = yes } }
+			}
+		}
+	}
+}
+
+# ── 목표 찾기: 우리 전력 ÷ 1.2 아래의 단계(MAX)에서, 수도에서 가장 가까운 적 성계 ──
+sllm_fo_find = {
+	if = {
+		limit = { check_variable = { which = sllm_fo_found value = 0 } check_variable = { which = sllm_fo_cap value >= $MAX$ } }
+		# 1차: 적 식민지가 있는 성계
+		capital_scope = {
+			solar_system = {
+				closest_system = {
+					min_steps = 0
+					max_steps = $STEPS$
+					limit = { sllm_fo_war_target = yes sllm_fo_war_colony = yes hostile_military_power = { who = root safety_buffer = no value <= $MAX$ } }
+					save_global_event_target_as = sllm_fo_op$N$_sys
+					star = { save_global_event_target_as = sllm_fo_op$N$_star }
+					root = { set_variable = { which = sllm_fo_found value = 1 } }
+				}
+			}
+		}
+		# 2차: 그 밖의 적 성계(적 정거장·함대)
+		if = {
+			limit = { check_variable = { which = sllm_fo_found value = 0 } }
+			capital_scope = {
+				solar_system = {
+					closest_system = {
+						min_steps = 0
+						max_steps = $STEPS$
+						limit = { sllm_fo_war_target = yes hostile_military_power = { who = root safety_buffer = no value <= $MAX$ } }
+						save_global_event_target_as = sllm_fo_op$N$_sys
+						star = { save_global_event_target_as = sllm_fo_op$N$_star }
+						root = { set_variable = { which = sllm_fo_found value = 1 } }
+					}
+				}
+			}
+		}
+		if = { limit = { check_variable = { which = sllm_fo_found value = 1 } } set_variable = { which = sllm_fo_op$N$_tier value = $MAX$ } }
+		# 단계 하나를 봤으면 더 낮은 단계는 보지 않는다(같은 달에 성계 찾기를 여러 번 하지 않게)
+		set_variable = { which = sllm_fo_found value = 2 }
+	}
+}
+
+# 단계마다 한 번(가장 높은 단계 하나만 실제로 찾는다)
+# sllm_fo_find_tiers: 겹침 한도 때문에 sllm_fo_op_new 안에 풀어 썼다(2026-11-08). 남겨 둔 것은 다른 곳에서 부를 때를 위해.
+sllm_fo_find_tiers = {
+	sllm_fo_find = { N = $N$ MAX = 400000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 200000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 100000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 60000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 30000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 15000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 8000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 4000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 2000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 1000 STEPS = $STEPS$ }
+	sllm_fo_find = { N = $N$ MAX = 500 STEPS = $STEPS$ }
+}
+
+# ── 새 작전 N ──
+sllm_fo_op_new = {
+	if = {
+		limit = { is_at_war = yes exists = capital_scope check_variable = { which = sllm_fo_maxops value >= $N$ } any_controlled_fleet = { sllm_fo_free_fleet = yes } }
+		# 쓸 수 있는 전력 = 자유 함대 전부
+		set_variable = { which = sllm_fo_cap value = 0 }
+		every_controlled_fleet = {
+			limit = { sllm_fo_free_fleet = yes }
+			set_variable = { which = sllm_fo_fp value = trigger:fleet_power }
+			save_event_target_as = sllm_fo_f
+			root = { change_variable = { which = sllm_fo_cap value = event_target:sllm_fo_f.sllm_fo_fp } }
+		}
+		divide_variable = { which = sllm_fo_cap value = sllm_fo_ratio }
+		set_variable = { which = sllm_fo_found value = 0 }
+		# 작전 지시의 우선 목표가 칠 수 있는 곳이면 그곳부터(전력이 모자라면 집결하며 더 불러 모은다)
+		if = {
+			limit = { exists = event_target:sllm_fo_prio_sys event_target:sllm_fo_prio_sys = { sllm_fo_war_target = yes } }
+			event_target:sllm_fo_prio_sys = {
+				save_global_event_target_as = sllm_fo_op$N$_sys
+				star = { save_global_event_target_as = sllm_fo_op$N$_star }
+			}
+			set_variable = { which = sllm_fo_op$N$_tier value = sllm_fo_cap }
+			set_variable = { which = sllm_fo_found value = 2 }
+		}
+		# 작전 반경(지시): 1 가까이 12칸 · 2 중간 25칸 · 3 멀리 40칸
+		if = { limit = { check_variable = { which = sllm_fo_range value = 1 } } sllm_fo_find = { N = $N$ MAX = 400000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 200000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 100000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 60000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 30000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 15000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 8000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 4000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 2000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 1000 STEPS = 12 } sllm_fo_find = { N = $N$ MAX = 500 STEPS = 12 } }
+		else_if = { limit = { check_variable = { which = sllm_fo_range value = 2 } } sllm_fo_find = { N = $N$ MAX = 400000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 200000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 100000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 60000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 30000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 15000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 8000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 4000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 2000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 1000 STEPS = 25 } sllm_fo_find = { N = $N$ MAX = 500 STEPS = 25 } }
+		else = { sllm_fo_find = { N = $N$ MAX = 400000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 200000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 100000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 60000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 30000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 15000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 8000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 4000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 2000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 1000 STEPS = 40 } sllm_fo_find = { N = $N$ MAX = 500 STEPS = 40 } }
+		if = {
+			limit = { exists = event_target:sllm_fo_op$N$_sys }
+			event_target:sllm_fo_op$N$_sys = { set_star_flag = sllm_fo_tgt }
+			# 선두 = 가장 센 자유 함대
+			ordered_controlled_fleet = {
+				limit = { sllm_fo_free_fleet = yes }
+				order_by = trigger:fleet_power
+				position = 0
+				set_variable = { which = sllm_fo_op value = $N$ }
+				set_fleet_flag = sllm_fo_lead
+				set_fleet_stance = aggressive
+				save_global_event_target_as = sllm_fo_op$N$_lead
+			}
+			set_variable = { which = sllm_fo_op$N$ value = 1 }
+			set_variable = { which = sllm_fo_op$N$_m value = 0 }
+			sllm_fo_op_power = { N = $N$ }
+			sllm_fo_op_enemy = { N = $N$ }
+			sllm_fo_op_log = { N = $N$ EVN = 1 }
+		}
+	}
+}
+
+# ── 작전 N 한 달 ──
+# ── 끝까지 추격(2026-11-04, 「Search and Destroy」의 추격을 참고해 우리가 씀): 작전 지시 sllm_fo_chase = 1 이고 진격 중(2)일 때만.
+# 지금 목표 성계에서 3칸 안, 적 군 함대가 보이는 칠 만한 성계(sllm_fo_war_target) 가운데 가장 가까운 곳으로 목표를 옮긴다. 찾으면 sllm_fo_chased = 1.
+sllm_fo_op_chase = {
+	set_variable = { which = sllm_fo_chased value = 0 }
+	if = {
+		limit = {
+			check_variable = { which = sllm_fo_chase value = 1 }
+			check_variable = { which = sllm_fo_op$N$ value = 2 }
+			exists = event_target:sllm_fo_op$N$_sys
+		}
+		event_target:sllm_fo_op$N$_sys = {
+			remove_star_flag = sllm_fo_tgt
+			closest_system = {
+				min_steps = 1
+				max_steps = 3
+				limit = {
+					sllm_fo_war_target = yes
+					any_fleet_in_system = { exists = owner owner = { is_at_war_with = root } is_civilian = no is_mobile = yes NOT = { is_cloaked = yes } }
+				}
+				save_global_event_target_as = sllm_fo_op$N$_sys
+				star = { save_global_event_target_as = sllm_fo_op$N$_star }
+				root = { set_variable = { which = sllm_fo_chased value = 1 } }
+			}
+		}
+		if = { limit = { exists = event_target:sllm_fo_op$N$_sys } event_target:sllm_fo_op$N$_sys = { set_star_flag = sllm_fo_tgt } }
+	}
+}
+
+sllm_fo_op_tick = {
+	if = { limit = { NOT = { is_variable_set = sllm_fo_op$N$ } } set_variable = { which = sllm_fo_op$N$ value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_fo_op$N$ value > 0 } }
+		change_variable = { which = sllm_fo_op$N$_m value = 1 }
+		sllm_fo_op_power = { N = $N$ }
+		if = {
+			# 목표가 사라졌거나 적이 없다 → 완료
+			limit = {
+				OR = {
+					NOT = { exists = event_target:sllm_fo_op$N$_sys }
+					event_target:sllm_fo_op$N$_sys = { NOT = { hostile_military_power = { who = root safety_buffer = no value > 0 } } }
+				}
+			}
+			# 끝까지 추격(2026-11-04): 진격 중에 적 함대가 빠져나갔으면 3칸 안의 적 함대 성계로 목표를 옮겨 계속 쫓는다(세면 다음 달 기존 규칙대로 물러남)
+			sllm_fo_op_chase = { N = $N$ }
+			if = {
+				limit = { check_variable = { which = sllm_fo_chased value = 1 } }
+				sllm_fo_op_send = { N = $N$ }
+				sllm_fo_op_log = { N = $N$ EVN = 2 }
+			}
+			else = {
+				set_variable = { which = sllm_fo_en value = 0 }
+				sllm_fo_op_log = { N = $N$ EVN = 3 }
+				if = { limit = { exists = event_target:sllm_fo_prio_sys exists = event_target:sllm_fo_op$N$_sys event_target:sllm_fo_prio_sys = { is_same_value = event_target:sllm_fo_op$N$_sys } } clear_global_event_target = sllm_fo_prio_sys }
+				sllm_fo_op_end = { N = $N$ HOME = no }
+			}
+		}
+		else_if = {
+			# 함대가 하나도 안 남았다(전멸·전부 수리)
+			limit = { check_variable = { which = sllm_fo_n value = 0 } }
+			set_variable = { which = sllm_fo_en value = 0 }
+			sllm_fo_op_log = { N = $N$ EVN = 4 }
+			sllm_fo_op_end = { N = $N$ HOME = no }
+		}
+		else = {
+			sllm_fo_op_enemy = { N = $N$ }
+			# 선두가 빠졌으면(파괴·수리·직접 지휘) 남은 함대 가운데 가장 센 함대가 지휘를 넘겨받는다
+			if = {
+				limit = {
+					NOT = { any_controlled_fleet = { has_fleet_flag = sllm_fo_lead is_variable_set = sllm_fo_op check_variable = { which = sllm_fo_op value = $N$ } } }
+				}
+				ordered_controlled_fleet = {
+					limit = { is_variable_set = sllm_fo_op check_variable = { which = sllm_fo_op value = $N$ } }
+					order_by = trigger:fleet_power
+					position = 0
+					set_fleet_flag = sllm_fo_lead
+					save_global_event_target_as = sllm_fo_op$N$_lead
+				}
+				sllm_fo_op_log = { N = $N$ EVN = 5 }
+			}
+			if = {
+				# 집결
+				limit = { check_variable = { which = sllm_fo_op$N$ value = 1 } }
+				sllm_fo_op_recruit = { N = $N$ }
+				sllm_fo_op_recruit = { N = $N$ }
+				if = {
+					limit = {
+						check_variable_arithmetic = { which = sllm_fo_en multiply = sllm_fo_ratio value <= sllm_fo_pow }
+						OR = {
+							check_variable = { which = sllm_fo_op$N$_m value >= 5 }
+							NOT = {
+								any_controlled_fleet = {
+									is_variable_set = sllm_fo_op
+									check_variable = { which = sllm_fo_op value = $N$ }
+									NOT = { solar_system = { is_same_value = event_target:sllm_fo_op$N$_lead.solar_system } }
+								}
+							}
+						}
+					}
+					set_variable = { which = sllm_fo_op$N$ value = 2 }
+					set_variable = { which = sllm_fo_op$N$_m value = 0 }
+					sllm_fo_op_send = { N = $N$ }
+					sllm_fo_op_log = { N = $N$ EVN = 2 }
+				}
+				else_if = {
+					# 다섯 달을 기다려도 모자라다 → 접는다
+					limit = { check_variable = { which = sllm_fo_op$N$_m value >= 5 } }
+					sllm_fo_op_log = { N = $N$ EVN = 6 }
+					sllm_fo_op_end = { N = $N$ HOME = no }
+				}
+			}
+			else = {
+				# 진격: 적이 우리보다 세지면 수도로 물린다. 1년 반이 지나도 안 끝나면 접는다. 아니면 늦게 온 함대도 보낸다.
+				if = {
+					limit = { check_variable_arithmetic = { which = sllm_fo_en value > sllm_fo_pow } }
+					sllm_fo_op_log = { N = $N$ EVN = 7 }
+					sllm_fo_op_end = { N = $N$ HOME = yes }
+				}
+				else_if = {
+					limit = { check_variable = { which = sllm_fo_op$N$_m value >= 18 } }
+					sllm_fo_op_log = { N = $N$ EVN = 6 }
+					sllm_fo_op_end = { N = $N$ HOME = no }
+				}
+				else = {
+					sllm_fo_op_send = { N = $N$ }
+				}
+			}
+		}
+	}
+	else = {
+		sllm_fo_op_new = { N = $N$ }
+	}
+}
+
+# ── 수리 복귀: 체력 60% 아래 → 작전에서 빠져 가장 가까운 우리 조선소로(소극 자세). 97% 넘으면 다시 쓸 수 있다. ──
+sllm_fo_repair_tick = {
+	every_controlled_fleet = {
+		limit = {
+			sllm_fo_military_fleet = yes
+			NOT = { has_fleet_flag = sllm_fo_manual }
+			NOT = { has_fleet_flag = zz_manual }
+			NOT = { has_fleet_flag = sllm_fo_repair }
+			is_in_combat = no
+			sllm_fo_needs_repair = yes
+		}
+		set_variable = { which = sllm_fo_op value = 0 }
+		remove_fleet_flag = sllm_fo_lead
+		set_fleet_flag = sllm_fo_repair
+		set_fleet_stance = passive
+		save_event_target_as = sllm_fo_mover
+		solar_system = {
+			closest_system = {
+				min_steps = 0
+				max_steps = 60
+				limit = { any_starbase_in_system = { exists = owner owner = { is_same_value = root } has_starbase_module = shipyard } }
+				star = { save_event_target_as = sllm_fo_dock }
+				event_target:sllm_fo_mover = { auto_move_to_planet = { target = event_target:sllm_fo_dock clear_auto_move_on_arrival = yes } }
+			}
+		}
+		root = { sllm_fo_ev_next = yes }
+		log = "SLLM:FOEV/;/n=\\[Root.sllm_fo_evn]/;/ev=8/;/op=0/;/date=\\[GetDate]"
+		log = "SLLM:FOEVF/;/n=\\[Root.sllm_fo_evn]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]"
+		if = { limit = { exists = leader leader = { is_variable_set = sllm_lid } } leader = { log = "SLLM:FOEVA/;/n=\\[Root.sllm_fo_evn]/;/lid=\\[This.sllm_lid]" } }
+	}
+	every_controlled_fleet = {
+		limit = { has_fleet_flag = sllm_fo_repair has_hp_percentage > 0.97 }
+		remove_fleet_flag = sllm_fo_repair
+		set_fleet_stance = aggressive
+		root = { sllm_fo_ev_next = yes }
+		log = "SLLM:FOEV/;/n=\\[Root.sllm_fo_evn]/;/ev=9/;/op=0/;/date=\\[GetDate]"
+		log = "SLLM:FOEVF/;/n=\\[Root.sllm_fo_evn]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]"
+		if = { limit = { exists = leader leader = { is_variable_set = sllm_lid } } leader = { log = "SLLM:FOEVA/;/n=\\[Root.sllm_fo_evn]/;/lid=\\[This.sllm_lid]" } }
+	}
+}
+
+# 작전 지시의 기본값: 전력 1.2배, 수리 60%(단계 3), 작전 3개, 반경 멀리(3).
+sllm_fo_defaults = {
+	if = { limit = { NOT = { is_variable_set = sllm_fo_ratio } } set_variable = { which = sllm_fo_ratio value = 1.2 } }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_hpt } } set_variable = { which = sllm_fo_hpt value = 3 } }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_maxops } } set_variable = { which = sllm_fo_maxops value = 3 } }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_range } } set_variable = { which = sllm_fo_range value = 3 } }
+	# 수색 섬멸식 조건(2026-11-04, 「Search and Destroy」 모드 참고): 적 요새 피하기·우리 영토 안에서만·끝까지 추격. 0 끔 · 1 켬
+	if = { limit = { NOT = { is_variable_set = sllm_fo_nosb } } set_variable = { which = sllm_fo_nosb value = 0 } }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_home } } set_variable = { which = sllm_fo_home value = 0 } }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_chase } } set_variable = { which = sllm_fo_chase value = 0 } }
+}
+
+# ── 매달 한 번(국가 범위, 플레이어·켜졌을 때만 이벤트가 부른다) ──
+sllm_fo_monthly = {
+	sllm_fo_defaults = yes
+	every_controlled_fleet = { limit = { NOT = { is_variable_set = sllm_fo_op } } set_variable = { which = sllm_fo_op value = 0 } }
+	sllm_fo_repair_tick = yes
+	# 작전 칸 1~3(sllm_fo_op_tick)은 이벤트 sllm_fo.1 이 직접 부른다 — 스크립트 효과 겹침 한도 5(2026-11-08 error.log CRITICAL)
+}
+
+# ── 앱 명령(콘솔 effect 로 부른다) ──
+# 켜기: 표식 + 작전 칸 초기화 + 군 함대 공격 자세.
+sllm_fo_enable = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	sllm_fo_defaults = yes
+	set_country_flag = sllm_fo_on
+	set_variable = { which = sllm_fo_op1 value = 0 }
+	set_variable = { which = sllm_fo_op2 value = 0 }
+	set_variable = { which = sllm_fo_op3 value = 0 }
+	every_controlled_fleet = {
+		limit = { sllm_fo_military_fleet = yes NOT = { has_fleet_flag = sllm_fo_manual } }
+		if = { limit = { NOT = { is_variable_set = sllm_fo_op } } set_variable = { which = sllm_fo_op value = 0 } }
+		set_fleet_stance = aggressive
+	}
+	log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=on/;/status=applied"
+}
+# 끄기: 작전을 모두 풀고(이동 명령도 지움) 수리 표식·자세를 원래대로.
+sllm_fo_disable = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	remove_country_flag = sllm_fo_on
+	sllm_fo_op_end = { N = 1 HOME = no }
+	sllm_fo_op_end = { N = 2 HOME = no }
+	sllm_fo_op_end = { N = 3 HOME = no }
+	every_controlled_fleet = {
+		limit = { sllm_fo_military_fleet = yes NOT = { has_fleet_flag = sllm_fo_manual } }
+		if = { limit = { is_in_combat = no } remove_auto_move_target = yes }
+		remove_fleet_flag = sllm_fo_repair
+		set_fleet_stance = aggressive
+	}
+	log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=off/;/status=applied"
+}
+# 함대 하나를 직접 지휘(ON = yes)로 / 자동 작전(ON = no)으로. FID = 보고 때 붙인 번호.
+sllm_fo_set_manual = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	if = {
+		limit = { any_controlled_fleet = { is_variable_set = sllm_fo_fid check_variable = { which = sllm_fo_fid value = $FID$ } } }
+		every_controlled_fleet = {
+			limit = { is_variable_set = sllm_fo_fid check_variable = { which = sllm_fo_fid value = $FID$ } }
+			if = {
+				limit = { always = $ON$ }
+				set_fleet_flag = sllm_fo_manual
+				remove_fleet_flag = sllm_fo_lead
+				remove_fleet_flag = sllm_fo_repair
+				set_variable = { which = sllm_fo_op value = 0 }
+				if = { limit = { is_in_combat = no } remove_auto_move_target = yes }
+			}
+			else = { remove_fleet_flag = sllm_fo_manual }
+		}
+		log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=fleet/;/status=applied"
+	}
+	else = { log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=fleet/;/status=no_target" }
+}
+# 보고(함대 사령부를 열 때·⟳ 때만): 켜짐·작전 3개·군 함대 목록. 번호가 없는 함대에는 번호를 붙인다.
+sllm_fo_report = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_fidn } } set_variable = { which = sllm_fo_fidn value = 0 } }
+	if = { limit = { has_country_flag = sllm_fo_on } set_variable = { which = sllm_fo_onv value = 1 } } else = { set_variable = { which = sllm_fo_onv value = 0 } }
+	if = { limit = { is_at_war = yes } set_variable = { which = sllm_fo_warv value = 1 } } else = { set_variable = { which = sllm_fo_warv value = 0 } }
+	log = "SLLM:FOREP/;/req=\\[Root.sllm_fo_req]/;/on=\\[Root.sllm_fo_onv]/;/war=\\[Root.sllm_fo_warv]/;/date=\\[GetDate]"
+	sllm_fo_report_op = { REQ = $REQ$ N = 1 }
+	sllm_fo_report_op = { REQ = $REQ$ N = 2 }
+	sllm_fo_report_op = { REQ = $REQ$ N = 3 }
+	every_controlled_fleet = {
+		limit = { sllm_fo_military_fleet = yes }
+		if = { limit = { NOT = { is_variable_set = sllm_fo_fid } } root = { change_variable = { which = sllm_fo_fidn value = 1 } } set_variable = { which = sllm_fo_fid value = root.sllm_fo_fidn } }
+		if = { limit = { NOT = { is_variable_set = sllm_fo_op } } set_variable = { which = sllm_fo_op value = 0 } }
+		if = { limit = { OR = { has_fleet_flag = sllm_fo_manual has_fleet_flag = zz_manual } } set_variable = { which = sllm_fo_mode value = 1 } }
+		else_if = { limit = { has_fleet_flag = sllm_fo_repair } set_variable = { which = sllm_fo_mode value = 2 } }
+		else_if = { limit = { exists = owner NOT = { owner = { is_same_value = root } } } set_variable = { which = sllm_fo_mode value = 4 } }
+		else_if = { limit = { has_fleet_flag = sllm_fo_lead } set_variable = { which = sllm_fo_mode value = 3 } }
+		else = { set_variable = { which = sllm_fo_mode value = 0 } }
+		set_variable = { which = sllm_fo_fp value = trigger:fleet_power }
+		log = "SLLM:FOFL/;/req=\\[Root.sllm_fo_req]/;/fid=\\[This.sllm_fo_fid]/;/op=\\[This.sllm_fo_op]/;/mode=\\[This.sllm_fo_mode]/;/pow=\\[This.sllm_fo_fp]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]/;/own=\\[This.Owner.GetName]"
+	}
+	sllm_fo_ally_report = yes
+	# 작전 지시(지금 값)와 우선 목표
+	sllm_fo_defaults = yes
+	log = "SLLM:FORDR/;/req=\\[Root.sllm_fo_req]/;/ratio=\\[Root.sllm_fo_ratio]/;/hpt=\\[Root.sllm_fo_hpt]/;/ops=\\[Root.sllm_fo_maxops]/;/range=\\[Root.sllm_fo_range]/;/nosb=\\[Root.sllm_fo_nosb]/;/home=\\[Root.sllm_fo_home]/;/chase=\\[Root.sllm_fo_chase]"
+	if = { limit = { exists = event_target:sllm_fo_prio_sys } event_target:sllm_fo_prio_sys = { log = "SLLM:FOPRIO/;/req=\\[Root.sllm_fo_req]/;/name=\\[This.GetName]" } }
+	# 우선 목표 후보: 전쟁 중인 나라의 보이는 성계 가운데 식민지가 있는 곳(최대 40곳). 번호가 없으면 붙인다.
+	if = { limit = { NOT = { is_variable_set = sllm_fo_sysn } } set_variable = { which = sllm_fo_sysn value = 0 } }
+	set_variable = { which = sllm_fo_cnt value = 0 }
+	every_country = {
+		limit = { is_at_war_with = root }
+		every_system_within_border = {
+			limit = {
+				root = { check_variable = { which = sllm_fo_cnt value < 40 } }
+				is_in_sensor_range_of_country = root
+				any_system_planet_colony = { exists = owner owner = { is_at_war_with = root } }
+			}
+			if = { limit = { NOT = { is_variable_set = sllm_fo_sid } } root = { change_variable = { which = sllm_fo_sysn value = 1 } } set_variable = { which = sllm_fo_sid value = root.sllm_fo_sysn } }
+			root = { change_variable = { which = sllm_fo_cnt value = 1 } }
+			log = "SLLM:FOSYS/;/req=\\[Root.sllm_fo_req]/;/sid=\\[This.sllm_fo_sid]/;/name=\\[This.GetName]/;/owner=\\[This.Owner.GetName]"
+		}
+	}
+	log = "SLLM:FOREP_END/;/req=\\[Root.sllm_fo_req]"
+}
+sllm_fo_report_op = {
+	if = {
+		limit = { is_variable_set = sllm_fo_op$N$ check_variable = { which = sllm_fo_op$N$ value > 0 } }
+		sllm_fo_op_power = { N = $N$ }
+		sllm_fo_op_enemy = { N = $N$ }
+		set_variable = { which = sllm_fo_lop value = $N$ }
+		set_variable = { which = sllm_fo_lst value = sllm_fo_op$N$ }
+		set_variable = { which = sllm_fo_lm value = sllm_fo_op$N$_m }
+		log = "SLLM:FOOP/;/req=\\[Root.sllm_fo_req]/;/op=\\[Root.sllm_fo_lop]/;/st=\\[Root.sllm_fo_lst]/;/m=\\[Root.sllm_fo_lm]/;/pow=\\[Root.sllm_fo_pow]/;/en=\\[Root.sllm_fo_en]/;/cnt=\\[Root.sllm_fo_n]"
+		if = {
+			limit = { exists = event_target:sllm_fo_op$N$_lead }
+			event_target:sllm_fo_op$N$_lead = {
+				log = "SLLM:FOOPF/;/req=\\[Root.sllm_fo_req]/;/op=\\[Root.sllm_fo_lop]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]"
+				if = { limit = { exists = leader leader = { is_variable_set = sllm_lid } } leader = { log = "SLLM:FOOPA/;/req=\\[Root.sllm_fo_req]/;/op=\\[Root.sllm_fo_lop]/;/lid=\\[This.sllm_lid]" } }
+			}
+		}
+		if = { limit = { exists = event_target:sllm_fo_op$N$_sys } event_target:sllm_fo_op$N$_sys = { log = "SLLM:FOOPS/;/req=\\[Root.sllm_fo_req]/;/op=\\[Root.sllm_fo_lop]/;/sys=\\[This.GetName]" } }
+	}
+}
+
+# 작전 지시(앱의 LLM 이 말로 받은 지시를 숫자로 바꿔 보낸다). RATIO 1.0~1.6, HPT 1~5(40~80%), OPS 1~3, RANGE 1~3, PRIO = 보고 때 붙인 성계 번호(0 = 없음).
+sllm_fo_orders = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	set_variable = { which = sllm_fo_ratio value = $RATIO$ }
+	set_variable = { which = sllm_fo_hpt value = $HPT$ }
+	set_variable = { which = sllm_fo_maxops value = $OPS$ }
+	set_variable = { which = sllm_fo_range value = $RANGE$ }
+	set_variable = { which = sllm_fo_prioq value = $PRIO$ }
+	set_variable = { which = sllm_fo_nosb value = $NOSB$ }
+	set_variable = { which = sllm_fo_home value = $HOME$ }
+	set_variable = { which = sllm_fo_chase value = $CHASE$ }
+	clear_global_event_target = sllm_fo_prio_sys
+	if = {
+		limit = { check_variable = { which = sllm_fo_prioq value > 0 } }
+		every_country = {
+			limit = { is_at_war_with = root }
+			every_system_within_border = {
+				limit = { is_variable_set = sllm_fo_sid check_variable = { which = sllm_fo_sid value = root.sllm_fo_prioq } }
+				save_global_event_target_as = sllm_fo_prio_sys
+			}
+		}
+	}
+	if = { limit = { exists = event_target:sllm_fo_prio_sys } log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=orders/;/prio=1/;/status=applied" }
+	else = { log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=orders/;/prio=0/;/status=applied" }
+}

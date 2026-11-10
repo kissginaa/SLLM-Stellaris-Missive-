@@ -1,0 +1,129 @@
+/* 집무실 「인터넷」(2026-10-28) — 인터넷_시안.html 그대로 옮김. 모든 규칙은 #net 안에서만. */
+body[data-gestalt=machine] #netCall,body[data-gestalt=hive] #netCall,body[data-gestalt=gestalt] #netCall{display:none!important} /* 기계 지성·군체: 인터넷 없음 */
+#net{font-size:14px}#net *{box-sizing:border-box}
+#net .link{cursor:pointer}#net .link:hover{text-decoration:underline}
+#net .net-h{flex-wrap:wrap;padding:8px 18px}
+#net .net-tabs{display:flex;gap:4px}
+#net .net-tab{background:none;border:none;border-bottom:2px solid transparent;padding:4px 10px;color:var(--dim);font-size:13px;cursor:pointer;display:flex;align-items:center}
+#net .net-tab img{width:16px;height:16px;border-radius:3px;margin-right:5px}
+#net .net-tab.on{color:var(--text);border-bottom-color:var(--hi)}
+#net .net-rf,#net .net-nickb{background:none;border:1px solid var(--line);border-radius:4px;color:var(--hi);height:24px;padding:0 8px;font-size:15px;line-height:1;cursor:pointer}
+#net .net-nickb{font-size:12px}#net .net-rf:disabled{opacity:.5;cursor:default}
+#net .net-addr{flex:1;min-width:160px;max-width:420px;border:1px solid var(--line2);border-radius:4px;padding:2px 10px;font:12px Consolas,monospace;color:var(--hi);background:#0005;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#net .net-toast{font-size:12px;color:var(--gold);max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#net .net-view{display:block;overflow:auto}
+#net .net-empty{color:var(--dim);padding:30px;text-align:center}
+#net .net-wait{margin-top:6px;padding:5px 8px;border:1px dashed var(--line);border-radius:4px;font-size:12px;color:var(--hi)}
+#net .net-ip{color:var(--dim);font-weight:400;font-size:.88em;opacity:.7;margin-left:1px}
+#net .net-adimg{display:block;object-fit:cover;border:1px solid var(--line2);flex:none;cursor:pointer;max-width:100%}
+#net .net-av{width:38px;height:38px;border-radius:50%;flex:none;border:1px solid #ffd86b66;color:#ffd86b;display:flex;align-items:center;justify-content:center;font-size:13px}
+#net .net-av.img{object-fit:cover;padding:0;background:#0e1220}#net .net-av.big{width:64px;height:64px;font-size:24px}
+#net .net-av.mini{width:26px;height:26px;display:inline-block;vertical-align:middle;margin-right:6px}
+#net .net-av.heir{border:2px solid var(--gold)}
+#net .net-star{color:#ffd86b;font-size:11px}#net .net-ver{color:#4aa3ff;font-size:12px}
+#net .net-heir{font-size:10px;color:var(--gold);border:1px solid #e8c87266;border-radius:3px;padding:0 5px}
+#net .net-tag{color:#ffd86b}
+#net .net-compose{display:flex;flex-direction:column;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line2)}
+#net .net-compose textarea,#net .net-compose input,#net .net-acct,#net .net-rbox input{background:#0006;border:1px solid var(--line);color:var(--text);border-radius:4px;padding:6px 8px;font:inherit;font-size:13px}
+#net .net-compose textarea{height:54px;resize:none}
+#net .net-compose button,#net .net-rbox button{align-self:flex-end;border:1px solid var(--hi);background:color-mix(in srgb,var(--hi) 16%,transparent);color:var(--text);border-radius:4px;padding:3px 16px;font-weight:700;cursor:pointer}
+#net .net-compose button:disabled,#net .net-rbox button:disabled{opacity:.45;cursor:default}
+#net .net-acct{align-self:flex-start;padding:3px 6px}
+#net .net-rbox{display:flex;gap:6px;margin:6px 0}#net .net-rbox input{flex:1;padding:4px 8px}#net .net-rbox button{padding:0 12px;font-size:12px}
+#net .net-newbar{padding:6px;text-align:center;font-size:12px;color:var(--hi);border-bottom:1px solid var(--line2);background:color-mix(in srgb,var(--hi) 8%,transparent)}
+#net .net-to{font-size:11px;color:var(--dim);margin-left:6px}
+#net .net-c{padding:3px 0;font-size:13px}#net .net-c.mine b{color:var(--hi)}#net .net-c small{color:var(--dim)}
+#net .net-nickp{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid var(--line2);font-size:13px}
+#net .net-nickp input{background:#0006;border:1px solid var(--line);color:var(--text);border-radius:4px;padding:2px 6px;width:130px;font:inherit;font-size:13px}
+#net .net-nickp button{border:1px solid var(--hi);background:color-mix(in srgb,var(--hi) 16%,transparent);color:var(--text);border-radius:4px;padding:1px 12px;cursor:pointer}
+#net .hint,#net .h{color:var(--dim);font-size:12px}
+#net .lg{width:28px;height:28px;border-radius:6px;vertical-align:middle;margin-right:8px}
+/* 트윙클: 금빛 별 */
+#net .net-tw{display:grid;grid-template-columns:150px minmax(0,1fr) 260px;min-height:100%}
+#net .net-tw .nav{padding:14px;border-right:1px solid var(--line2)}#net .net-tw .logo{font-size:20px;font-weight:700;color:#ffd86b;margin-bottom:14px;text-shadow:0 0 10px #ffd86b55}
+#net .net-tw .nav div{padding:6px 0;color:var(--dim)}#net .net-tw .feed{border-right:1px solid var(--line2);min-width:0}
+#net .net-tw-post{padding:12px 16px;border-bottom:1px solid var(--line2);display:flex;gap:10px}#net .net-tw-post .b{flex:1;min-width:0}
+#net .net-tw-post .nm{font-weight:700}#net .net-tw-post .t{margin-top:4px;white-space:pre-wrap;word-break:break-word}
+#net .net-tw-post .acts{display:flex;gap:26px;color:var(--dim);font-size:12px;margin-top:6px}
+#net .net-tw .side{padding:14px}#net .net-tw .box{border:1px solid var(--line2);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+#net .net-tw .box h4{margin:0 0 6px;font-size:14px;color:#ffd86b}#net .net-tw .trend{padding:5px 0;font-size:13px}#net .net-tw .trend small{display:block;color:var(--dim);font-size:11px}
+#net .net-tw .irow{padding:4px 0;font-size:13px}#net .net-tw .irow small{display:block;color:var(--dim);font-size:11px;margin-left:32px}
+#net .net-tw .who{display:flex;gap:8px;align-items:center;font-size:13px}
+#net .net-replies{margin-top:8px;border-left:2px solid #ffd86b44;padding-left:10px;font-size:13px}#net .net-replies .lbl{color:#ffd86b;font-size:11px}
+#net .net-pcard{margin-top:6px;padding:8px 10px;border:1px solid #ffd86b44;border-radius:8px;font-size:13px;background:#ffd86b0d}#net .net-pcard .pnote{font-size:10px;color:var(--dim);margin-top:2px}
+#net .net-promo{display:block;margin-top:6px;width:480px;max-width:100%;height:auto;border-radius:10px;border:1px solid #ffd86b55}#net .net-promotag{font-size:11px;color:#ffd86b;margin-top:3px}
+#net .net-prof{padding:12px 16px}#net .net-prof .back{color:#ffd86b;font-size:12px}
+#net .pban{height:70px;margin:8px 0 0;border-radius:8px 8px 0 0;background:linear-gradient(90deg,#ffd86b33,#5fd4e422)}
+#net .phead{display:flex;align-items:center;gap:10px;margin-top:-20px;padding:0 6px;flex-wrap:wrap}#net .pname{font-size:18px;font-weight:700}
+#net .pbtn{border:1px solid #ffd86b88;background:#ffd86b14;border-radius:14px;padding:3px 12px;font-size:12px;color:var(--text);cursor:pointer}
+#net .pbio{margin:10px 6px 4px}#net .net-prof>.h{margin:0 6px}#net .ptitle{margin:14px 6px 4px;color:#ffd86b;font-size:13px}
+#net .net-pedit{display:flex;flex-wrap:wrap;gap:8px;margin:10px 6px;padding:10px;border:1px dashed var(--line);border-radius:6px;font-size:12px;align-items:center}
+#net .net-pedit input,#net .net-pedit select{background:#0006;border:1px solid var(--line);color:var(--text);border-radius:4px;padding:2px 6px;font:inherit;font-size:12px}
+#net .net-pedit label.w{flex-basis:100%}#net .net-pedit label.w input:not([type=file]){width:80%}
+#net .net-pedit button{border:1px solid var(--hi);background:color-mix(in srgb,var(--hi) 16%,transparent);color:var(--text);border-radius:4px;padding:1px 12px;cursor:pointer}
+/* DS인사이드: 파란 게시판 */
+#net .net-ds{display:grid;grid-template-columns:160px minmax(0,1fr) 160px;gap:10px;padding:10px;font-size:13px}
+#net .net-ds .main{border:1px solid #8c9cff55;min-width:0}#net .net-ds .top{background:#8c9cff22;border-bottom:1px solid #8c9cff66;padding:8px 12px;display:flex;align-items:center;gap:10px}
+#net .net-ds .top b{font-size:18px;color:#8c9cff}#net .net-ds .top span{font-size:12px;color:var(--dim)}
+#net .net-ds .gal{padding:6px 12px;font-size:15px;font-weight:700;border-bottom:2px solid #8c9cff;color:#8c9cff}
+#net .net-ds .sub{display:flex;gap:4px;padding:6px 12px}#net .net-ds .sub span{padding:2px 10px;border:1px solid #8c9cff55;cursor:pointer;font-size:12px}#net .net-ds .sub span.on{background:#8c9cff33;color:#fff}
+#net .net-ds table{width:100%;border-collapse:collapse}#net .net-ds th{background:#8c9cff18;font-weight:400;color:var(--dim);padding:5px;border-bottom:1px solid #8c9cff44;font-size:12px}
+#net .net-ds td{padding:5px;border-bottom:1px solid var(--line2);text-align:center;color:var(--dim)}#net .net-ds td.t{text-align:left;color:var(--text);cursor:pointer}
+#net .net-ds td.t:hover{text-decoration:underline}#net .net-ds td:nth-child(3),#net .net-ds td:nth-child(4){white-space:nowrap}#net .net-ds .cm{color:#ff8a7a;font-size:11px}#net .net-ds .head{color:#8c9cff}
+#net .net-ds .banner{display:flex;align-items:center;gap:10px;margin:6px 12px;border:1px solid #e8c87255;background:#e8c87210}
+#net .net-ds .banner .txt{flex:1;font-weight:700;color:var(--gold)}#net .net-ds .banner .tag{font-size:10px;color:var(--dim);padding:0 6px}
+#net .net-ds .postv{padding:12px 16px}#net .net-ds .postv h3{margin:0 0 6px;font-size:16px}#net .net-ds .postv .meta{color:var(--dim);font-size:12px;border-bottom:1px solid var(--line2);padding-bottom:8px}
+#net .net-ds .body{padding:12px 0;line-height:1.7}#net .net-ds .rec{display:flex;justify-content:center;gap:10px;margin:6px 0 12px}
+#net .net-ds .rec span{border:1px solid #8c9cff;color:#8c9cff;padding:4px 14px}#net .net-ds .cmts .net-c{border-bottom:1px solid var(--line2);padding:5px 0}
+#net .net-ds .best{border:1px solid #ff8a7a66;padding:2px 8px;font-weight:700;color:#ff8a7a;font-size:12px;display:inline-block;margin:6px 0}
+#net .net-ds .sidead{width:160px;min-height:60px;border:1px solid #e8c87255;background:#e8c87210;padding:8px;font-weight:700;color:var(--gold);font-size:13px}
+#net .net-ds .back{color:#8c9cff;font-size:12px;display:inline-block;margin-bottom:6px}
+/* 레드시프트: 주황 + 청색편이 */
+#net .net-rs{display:grid;grid-template-columns:minmax(0,1fr) 322px;gap:16px;padding:12px 16px}
+#net .net-rs .hdr{grid-column:1/3;display:flex;align-items:center;gap:12px;border:1px solid #ff6a4555;padding:8px 14px}#net .net-rs .hdr b{color:#ff6a45;font-size:18px}
+#net .net-rs .card{border:1px solid var(--line2);border-radius:4px;display:flex;margin-bottom:8px}
+#net .net-rs .vote{width:44px;background:#0004;display:flex;flex-direction:column;align-items:center;padding:8px 0;font-size:12px;font-weight:700;flex:none}
+#net .net-rs .up{color:#4aa3ff}#net .net-rs .dn{color:#ff6a45}#net .net-rs .cb{padding:8px 10px;flex:1;min-width:0}
+#net .net-rs .meta{font-size:12px;color:var(--dim)}#net .net-rs .pr{color:#ff6a45}#net .net-rs .title{font-size:16px;font-weight:700;margin:3px 0;cursor:pointer}
+#net .net-rs .prev{color:#b9c9cf;font-size:13px;line-height:1.5}#net .net-rs .foot{font-size:12px;color:var(--dim);margin-top:5px}
+#net .net-rs .sb{border:1px solid var(--line2);border-radius:4px;padding:10px;margin-bottom:12px;font-size:13px}
+#net .net-rs .prem{border-color:#ff6a4588}#net .net-rs .prem button{background:#ff6a4533;color:#fff;border:1px solid #ff6a45;padding:4px 14px;border-radius:14px;margin-top:6px}
+#net .net-rs .full{line-height:1.7}#net .net-rs .net-c{border-left:2px solid var(--line2);padding:3px 0 3px 10px;margin:6px 0}
+#net .net-rs .lbl{color:#ff6a45;font-size:12px;margin:8px 0 4px}#net .net-rs .back{color:#4aa3ff;font-size:12px}#net .rs-c{border:1px solid var(--line2);border-radius:4px;margin-bottom:8px}
+/* 광고주 홈페이지(80곳) — 광고주_페이지_시안.html */
+#net .net-advwrap{padding:10px 14px}#net .net-advwrap>.back{color:var(--hi);font-size:12px;display:inline-block;margin-bottom:8px}
+#net .pg{--c:#5fd4e4;--c2:#0e1a24;--ink:#dcecf0;--font:inherit;color:var(--ink);background:var(--c2);font-family:var(--font);border:1px solid #ffffff1a}
+#net .pg .ph{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:3px solid var(--c)}
+#net .pg .mark{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:var(--c2);font-weight:900;font-size:20px}
+#net .pg .pn{font-size:20px;font-weight:800}#net .pg .pnav{margin-left:auto;display:flex;gap:16px;font-size:13px;opacity:.8}
+#net .pg .hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;padding:22px}
+#net .pg .hero img{width:100%;max-height:340px;object-fit:cover;border-radius:10px;border:1px solid #ffffff22}
+#net .pg .tag{font-size:24px;font-weight:800;line-height:1.35;margin:4px 0 10px;color:var(--c)}
+#net .pg .about{opacity:.9}#net .pg .cta{display:inline-block;margin-top:14px;padding:9px 20px;border-radius:24px;background:var(--c);color:var(--c2);font-weight:800;cursor:pointer;border:0}
+#net .pg .ask{display:inline-block;margin:14px 0 0 8px;padding:8px 18px;border-radius:24px;border:2px solid var(--c);color:var(--c);background:none;font-weight:700;cursor:pointer}
+#net .pg .feat{display:block;margin-top:10px;font-size:12px;padding:6px 10px;border:1px dashed var(--c);border-radius:6px;color:var(--c);background:none;cursor:pointer;text-align:left}
+#net .pg .camp{padding:4px 22px 18px}#net .pg .camp h3{font-size:14px;margin:6px 0 8px;color:var(--c)}
+#net .pg .cg{display:flex;flex-wrap:wrap;gap:10px}#net .pg .cg img{height:120px;border-radius:6px;border:1px solid #ffffff22}
+#net .pg .pf{padding:10px 22px;font-size:11px;opacity:.55;border-top:1px solid #ffffff1a}
+#net .pg .spec{margin-top:10px;font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;opacity:.85}
+#net .t-gov{--c:#d7b56d;--c2:#0f1b2d;--font:"Batang",serif}#net .t-gov .ph{background:#13243a}#net .t-gov .mark{border-radius:6px}
+#net .t-military{--c:#d94b3a;--c2:#1a1d14;--font:Impact,"Malgun Gothic",sans-serif}#net .t-military .tag{text-transform:uppercase;letter-spacing:.04em;font-size:28px}#net .t-military .ph{background:repeating-linear-gradient(-45deg,#2a2e1e 0 14px,#23261a 14px 28px)}
+#net .t-civic{--c:#7fd38a;--c2:#13221a}#net .t-civic .mark{border-radius:40% 60% 50% 50%}
+#net .t-faith{--c:#c9a7ff;--c2:#1a1230;--font:"Batang",serif}#net .t-faith .hero{text-align:center;grid-template-columns:1fr}#net .t-faith .hero img{max-width:520px;margin:0 auto}
+#net .t-corp{--c:#5fd4e4;--c2:#0c1820}#net .t-corp .hero{grid-template-columns:1fr 1fr}
+#net .t-luxury{--c:#e9cf86;--c2:#0b0a08;--font:"Batang",serif}#net .t-luxury .pn{letter-spacing:.3em;font-weight:400}#net .t-luxury .tag{font-weight:400;font-style:italic}#net .t-luxury .cta{border-radius:0;background:none;border:1px solid var(--c);color:var(--c)}
+#net .t-estate{--c:#7cc4ff;--c2:#0d1a2b}
+#net .t-travel{--c:#3fe0c5;--c2:#0a2025}#net .t-travel .tag{font-size:28px}
+#net .t-food{--c:#ff9a4a;--c2:#231309}#net .t-food .pn{font-family:"Gungsuh",serif}
+#net .t-culture{--c:#ff7ab6;--c2:#140c18}#net .t-culture .ph{background:radial-gradient(circle at 20% 50%,#ff7ab633,transparent 50%)}
+#net .t-edu{--c:#8fb4ff;--c2:#0e1630}
+#net .t-wellness{--c:#9fe3c8;--c2:#0f201c}#net .t-wellness .mark,#net .t-wellness .cta{border-radius:12px}
+#net .t-shady{--c:#fff200;--c2:#3a0040;--ink:#fff;--font:"Comic Sans MS","Malgun Gothic",sans-serif}#net .t-shady .tag{color:#ff3df0;font-size:30px;text-shadow:2px 2px 0 #000;animation:netbl 1s steps(2) infinite}#net .t-shady .ph{background:linear-gradient(90deg,#ff00c8,#ffe600,#00ffd5)}#net .t-shady .pn{color:#000}#net .t-shady .cta{background:#ff2a2a;color:#fff;font-size:18px;animation:netbl .7s steps(2) infinite}
+@keyframes netbl{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){#net .t-shady .tag,#net .t-shady .cta{animation:none}}
+#net .t-propaganda{--c:#ff3b2f;--c2:#160606;--font:Impact,"Malgun Gothic",sans-serif}#net .t-propaganda .ph{background:#2a0606}#net .t-propaganda .tag{font-size:30px}
+#net .t-enclave{--c:#f0b452;--c2:#1a160c}
+@media (max-width:1100px){#net .net-tw{grid-template-columns:minmax(0,1fr) 230px}#net .net-tw .nav{display:none}#net .net-ds{grid-template-columns:minmax(0,1fr)}#net .net-ds>div:not(.main){display:none}#net .net-rs{grid-template-columns:minmax(0,1fr)}#net .net-rs .hdr{grid-column:1}#net .net-rs>div:last-child{display:none}#net .pg .hero{grid-template-columns:1fr}}
+.net-ama{display:inline-flex;align-items:center;gap:4px;font-size:12px;opacity:.85;cursor:pointer;white-space:nowrap}
+.net-ama input{margin:0}
+.net-c small.neg{color:#e0623a}

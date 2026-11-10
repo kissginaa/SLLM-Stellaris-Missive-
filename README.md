@@ -1,6 +1,6 @@
 SLLM Missive (SteLLaris Missive)
 An unofficial Stellaris mod plus a desktop app (Electron) that lets you hold AI-driven conversations with in-game leaders: diplomacy, letters, speeches, banquets and more. The app sends the results back into the game.
-> Supported: Windows x64, Stellaris **4.5.2 (one verified build only)**. Multiplayer and Ironman are not supported.
+> Supported: Windows x64, Stellaris **4.5.2 and 4.5.3 (verified builds only)**. Multiplayer and Ironman are not supported.
 > This is a fan-made project and is not affiliated with Paradox Interactive.
 한국어: README.ko.md
 ---
@@ -37,7 +37,7 @@ The game bridge DLL (`command-bridge.dll`)
 Stellaris has no official way for a mod to apply "what the AI decided" to the running game. The app therefore uses this DLL as a narrow channel to deliver commands (for example granting a gift or changing a diplomatic state) one at a time.
 The app writes one request file (`sx<random>.ini`) into its user data folder and runs `bridge-client.exe`.
 `bridge-client.exe` attaches the DLL to the running Stellaris window so the game's own command path runs that request, then reports the result (success, failure, or the game's acknowledgement) back to the app.
-On any build other than the verified one (4.5.2, `stellaris.exe` SHA-256 `400DF27C…F7A83`), the installer refuses to install and the app refuses to run it (`installer/verify-game.ps1`).
+On any build other than the verified ones (4.5.2, `stellaris.exe` SHA-256 `400DF27C…F7A83`; 4.5.3, `2F0FC2A9…3EAFB`), the installer refuses to install and the DLL refuses to run (`installer/verify-game.ps1`).
 If the app cannot tell whether a request reached the game, it never retries automatically, so the same command cannot run twice. See `classifyDelivery` in `src/native-bridge.ts`.
 The DLL has no networking code. It only reads the request file and calls the game's command handler.
 A pre-existing DLL with the same name is backed up before install and restored on uninstall (`installer/manage-dll.ps1`). If the hash does not match what we expect, it refuses to overwrite an unknown DLL.
@@ -52,7 +52,7 @@ The app never downloads updates from the internet. It only looks at the update b
 `manifest.json` must match its Ed25519 signature (`manifest.sig`), checked with the public key shipped inside the app.
 Every file must match the SHA-256 in the manifest and be inside an allowed folder.
 Only if the version is higher does the app ask "Update now?". If you accept, only changed files are replaced (and rolled back on failure).
-A version that changes the game bridge DLL is never applied inside the app; you are asked to install a new installer instead.
+When an update brings a new game bridge DLL (for example after a game patch), it is shipped as `native/bridge/command-bridge.dll`. The app copies it into the game folder only while the game is closed, and only if the DLL there is the one SLLM installed (its `.owner` hash file must match). It backs up the old DLL first and restores it if anything fails. Code: `src/game-dll.ts`.
 The private signing key exists only on the author's PC and is never committed to this repository. The public key (`update-public-key.pem`) is in the repository. Code: `src/app-update-core.ts`.
 What it does not do
 Modify or delete `stellaris.exe` or other original game files (it adds one DLL, and restores the original state on uninstall)
@@ -73,7 +73,7 @@ If you subscribe to the mod on Steam Workshop, turn off the local-mod install op
 Uninstall: Windows Settings → Apps. Only mod files whose managed hash is unchanged are removed, and the original DLL is restored. Your chat history and other user data are kept.
 Build from source
 ```text
-payload/app/   App source (src/ TypeScript, ui/ screens, tester-mod/ game mod source)
+payload/app/   App source (src/ TypeScript, ui/ screens, tester-mod/ game mod source, native/src/ bridge source)
 installer/     NSIS installer script and PowerShell helpers
 tools/         Update bundle tooling
 ```
@@ -83,6 +83,7 @@ npm install
 npx tsc        # builds dist/
 npm test       # self test
 ```
+This repository holds code, mod scripts and documents. New images and other art (UI pictures, news photos, sounds) and build outputs (`dist/`, the Electron runtime, compiled DLL/EXE) are not added here; they ship with the Steam Workshop mod and the installer.
 The installer is built with NSIS and `make-installer.ps1`; see `RELEASE_RULES_KO.md` for the release rules (Korean).
 Folders containing material taken from the original game (such as `example/`) are not in the repository, so a few self-tests fail without them.
 Reporting vulnerabilities

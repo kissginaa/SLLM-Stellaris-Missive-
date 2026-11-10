@@ -1,0 +1,22 @@
+﻿l_english:
+ # SLLM 작전지휘실 연합 원정군(2026-11-05): 동맹이 보낸 함대를 가진 세력 이름. [prev.GetName] = 보낸 나라.
+ SLLM_WR_XF_NAME:0 "[prev.GetName] Expeditionary Force"
+ # 작전지휘실 전쟁 성향 특성(2026-11-05, common/traits/sllm_warroom_traits.txt)
+ sllm_doc_no_retreat:0 "No-Retreat Charger"
+ sllm_doc_no_retreat_desc:0 "There is no retreat. Everything goes in, head-on, whatever the odds."
+ sllm_doc_focused_striker:0 "Focused Striker"
+ sllm_doc_focused_striker_desc:0 "Masses overwhelming force on the one point that decides the battle."
+ sllm_doc_raider:0 "Raider"
+ sllm_doc_raider_desc:0 "Strikes weakly held colonies fast and is gone before the battle line arrives."
+ sllm_doc_fortress:0 "Fortress Keeper"
+ sllm_doc_fortress_desc:0 "Holds the chokepoint and the starbase at all costs and does not leave a fortified position."
+ sllm_doc_elastic:0 "Elastic Defender"
+ sllm_doc_elastic_desc:0 "Gives ground on purpose, then strikes the enemy once it has overextended."
+ sllm_doc_guardian:0 "Homeland Guardian"
+ sllm_doc_guardian_desc:0 "The capital and the core worlds come first; keeps the fleets close to home."
+ sllm_doc_maneuver:0 "Maneuver Tactician"
+ sllm_doc_maneuver_desc:0 "Flanks, pincers and feints: wins by movement, not by mass."
+ sllm_doc_calculator:0 "Calculating Staff Officer"
+ sllm_doc_calculator_desc:0 "Fights only with a clear numbers advantage."
+ sllm_doc_opportunist:0 "Opportunist"
+ sllm_doc_opportunist_desc:0 "Waits for the enemy to look away, strikes the gap and slips out when the odds turn."

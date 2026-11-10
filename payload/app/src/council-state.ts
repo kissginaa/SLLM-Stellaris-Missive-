@@ -5,8 +5,8 @@ import { L } from './i18n-pick';
 // 연결(6단계): 회의 창을 열 때 open(), councilDebate 결과마다 noteDebate(), councilForce 맨 앞에서 check().
 // 화면 규칙과 어긋나지 않는지는 selftest가 council.html의 실제 계산 코드와 비교한다.
 
-/** 강제 결정에 필요한 비율(%) — council.html 과 같음 */
-export const FORCE_PCT = 80;
+/** 강제 결정에 필요한 비율(%) — council.html FORCE 와 같음. 2026-11-04 사용자 결정: 언제든 → 찬성(통과)·반대(부결)가 60% 이상일 때만. */
+export const FORCE_PCT = 60;
 /**
  * 플레이어가 은하공동체 비회원일 때 붙는 가상 의석(전체 가중치의 10%)을 집계에 넣을지.
  * F-15 후속으로 게임 확인 뒤 사용자가 정한다. 정하기 전에는 화면과 같은 규칙(넣음). 바꿀 곳은 여기 한 곳.
@@ -84,10 +84,9 @@ export class CouncilState {
   check(sid: string, key: string, pass: boolean, dev: DevVote = null): CheckResult {
     const c = this.cur;
     if (!c || c.sid !== sid || c.key !== key) return { ok: false, reason: L('앱이 이 회의의 집계를 갖고 있지 않습니다. 회의 창을 다시 열어 주세요.', 'The app has no tally for this meeting. Please reopen the council window.') };
-    if (!c.reliable) return { ok: false, reason: L('게임 정보를 완전히 읽지 못한 회의라 강제 결정을 보낼 수 없습니다.', 'The game information for this meeting was not fully read, so a forced decision cannot be sent.') };
-    const pct = devTally(dev) ?? tally(c.seats, c.dir);
-    const side = pass ? pct.f : pct.a;
-    if (side < FORCE_PCT) return { ok: false, reason: L(`앱의 집계로는 ${pass ? '찬성' : '반대'}이 ${Math.floor(side * 10) / 10}%라 ${FORCE_PCT}%에 못 미칩니다. 게임에 보내지 않았습니다.`, `By the app's tally, ${pass ? 'For' : 'Against'} is ${Math.floor(side * 10) / 10}%, short of ${FORCE_PCT}%. Not sent to the game.`), pct };
+    // 2026-11-04 사용자 결정: 강제 통과는 찬성, 강제 부결은 반대가 60% 이상일 때만(2026-10-29의 「언제든」을 조건부로). 정보 완전성 잠금은 여전히 없다.
+    const pct = devTally(dev) ?? tally(c.seats, c.dir), got = pass ? pct.f : pct.a;
+    if (got < FORCE_PCT) return { ok: false, pct, reason: L(`강제 ${pass ? '통과' : '부결'}에는 ${pass ? '찬성' : '반대'} ${FORCE_PCT}% 이상이 필요합니다(지금 ${Math.round(got)}%).`, `Forcing ${pass ? 'passage' : 'rejection'} needs at least ${FORCE_PCT}% ${pass ? 'for' : 'against'} (now ${Math.round(got)}%).`) };
     return { ok: true, pct };
   }
 }

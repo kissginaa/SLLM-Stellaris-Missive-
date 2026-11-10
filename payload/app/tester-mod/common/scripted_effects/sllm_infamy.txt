@@ -1,0 +1,224 @@
+# SLLM 악명·전쟁범죄(2026-11-04 사용자, War Crimes Expanded 모드 3811476508 의 생각을 참고해 우리 식으로 따로 씀).
+# 앱: src/infamy.ts · src/features/infamy-app.ts, 화면: ui/fleet-infamy.js(함대 사령부 창 「악명 · 전쟁범죄」).
+# 악명 = 나라 변수 sllm_inf(0~100). 전쟁범죄가 올리고, 전쟁이 없을 때 매달 0.5씩 내려간다. 말살자(is_homicidal)는 쌓지도, 신경 쓰지도 않는다.
+# 단계 sllm_inf_tier: 0 없음 · 1 악명(25+) · 2 오명(50+) · 3 공공의 적(75+). 단계마다 나라 수정자(sllm_inf_t1~3)와, 교신하는 다른 나라들의 호감(sllm_inf_op1~3).
+# 범죄(k): 1 무차별 폭격(+1/달) · 2 아마겟돈 폭격(+2/달) · 3 행성 말살(+10) · 4 숙청(+3/해) · 5 포로 처형(+5, sllm_captive.txt).
+# 숨은 악명 sllm_inf_hid(3단계, 2026-11-04): 은폐 공작·비밀 처형으로 쌓인다. 단계에는 안 들어가지만 해마다 드러날 수 있고(sllm_inf.5), 드러나면 1.5배로 공개 악명에 더해진다.
+#   드러나지 않은 해에는 증거가 흐려져 0.85배.
+# 전범: 우리 함대가 무차별·아마겟돈 폭격이나 행성 말살을 하면 그 함대 제독에게 지도자 표식 sllm_war_criminal. 전쟁에 지면 이긴 나라가 인도를 요구한다(sllm_wc.1).
+# 로그 글자 안에는 $매개변수$ 를 쓰지 않는다(변수로 옮겨 찍음).
+
+# 나라 범위: 악명 더하기(음수면 빼기). 0~100 으로 자르고 단계 다시 보기.
+sllm_inf_add = {
+	if = {
+		limit = { sllm_is_empire = yes is_homicidal = no }
+		if = { limit = { NOT = { is_variable_set = sllm_inf } } set_variable = { which = sllm_inf value = 0 } }
+		change_variable = { which = sllm_inf value = $AMT$ }
+		if = { limit = { check_variable = { which = sllm_inf value > 100 } } set_variable = { which = sllm_inf value = 100 } }
+		if = { limit = { check_variable = { which = sllm_inf value < 0 } } set_variable = { which = sllm_inf value = 0 } }
+		sllm_inf_refresh = yes
+	}
+}
+
+# 나라 범위: 지금 값의 단계를 sllm_inf_nt 에
+sllm_inf_calc = {
+	set_variable = { which = sllm_inf_nt value = 0 }
+	if = { limit = { check_variable = { which = sllm_inf value >= 75 } } set_variable = { which = sllm_inf_nt value = 3 } }
+	else_if = { limit = { check_variable = { which = sllm_inf value >= 50 } } set_variable = { which = sllm_inf_nt value = 2 } }
+	else_if = { limit = { check_variable = { which = sllm_inf value >= 25 } } set_variable = { which = sllm_inf_nt value = 1 } }
+}
+
+# 나라 범위: 단계가 바뀌었을 때만 수정자·호감을 바꾸고, 플레이어면 앱에 알린다(INFTIER).
+sllm_inf_refresh = {
+	sllm_inf_calc = yes
+	if = { limit = { NOT = { is_variable_set = sllm_inf_tier } } set_variable = { which = sllm_inf_tier value = 0 } }
+	if = {
+		limit = { NOT = { check_variable = { which = sllm_inf_tier value = sllm_inf_nt } } }
+		set_variable = { which = sllm_inf_old value = sllm_inf_tier }
+		set_variable = { which = sllm_inf_tier value = sllm_inf_nt }
+		remove_modifier = sllm_inf_t1
+		remove_modifier = sllm_inf_t2
+		remove_modifier = sllm_inf_t3
+		if = { limit = { check_variable = { which = sllm_inf_tier value = 3 } } add_modifier = { modifier = sllm_inf_t3 days = -1 } }
+		else_if = { limit = { check_variable = { which = sllm_inf_tier value = 2 } } add_modifier = { modifier = sllm_inf_t2 days = -1 } }
+		else_if = { limit = { check_variable = { which = sllm_inf_tier value = 1 } } add_modifier = { modifier = sllm_inf_t1 days = -1 } }
+		sllm_inf_opinions = yes
+		if = {
+			limit = { is_ai = no is_variable_set = sllm_save_id }
+			log = "SLLM:INFTIER/;/sid=\\[This.sllm_save_id]/;/old=\\[This.sllm_inf_old]/;/tier=\\[This.sllm_inf_tier]/;/inf=\\[This.sllm_inf]/;/date=\\[GetDate]"
+		}
+	}
+}
+
+# 나라 범위(악명 있는 나라): 교신하는 다른 나라들이 이 나라를 보는 눈을 단계에 맞춘다.
+sllm_inf_opinions = {
+	every_country = {
+		limit = { sllm_is_empire = yes NOT = { is_same_value = prev } has_communications = prev }
+		remove_opinion_modifier = { who = prev modifier = sllm_inf_op1 }
+		remove_opinion_modifier = { who = prev modifier = sllm_inf_op2 }
+		remove_opinion_modifier = { who = prev modifier = sllm_inf_op3 }
+		if = {
+			limit = { is_homicidal = no }
+			if = { limit = { prev = { check_variable = { which = sllm_inf_tier value = 3 } } } add_opinion_modifier = { who = prev modifier = sllm_inf_op3 } }
+			else_if = { limit = { prev = { check_variable = { which = sllm_inf_tier value = 2 } } } add_opinion_modifier = { who = prev modifier = sllm_inf_op2 } }
+			else_if = { limit = { prev = { check_variable = { which = sllm_inf_tier value = 1 } } } add_opinion_modifier = { who = prev modifier = sllm_inf_op1 } }
+		}
+	}
+}
+
+# 나라 범위: 로그용 번호(sllm_inf_i = 단말기 번호, 없으면 -1)와 플레이어 여부(sllm_inf_me)
+sllm_inf_idx_copy = {
+	set_variable = { which = sllm_inf_i value = -1 }
+	if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_inf_i value = sllm_idx } }
+	set_variable = { which = sllm_inf_me value = 0 }
+	if = { limit = { is_ai = no } set_variable = { which = sllm_inf_me value = 1 } }
+	if = { limit = { NOT = { is_variable_set = sllm_inf } } set_variable = { which = sllm_inf value = 0 } }
+}
+
+# 행성 범위(이벤트의 from = 가해국, owner = 피해국): 범죄 한 건을 앱에 알린다. 플레이어가 가해·피해국이거나 가해국과 교신할 때만.
+sllm_inf_crime_planet = {
+	set_variable = { which = sllm_ik value = $K$ }
+	from = { sllm_inf_idx_copy = yes }
+	set_variable = { which = sllm_ib value = from.sllm_inf_i }
+	set_variable = { which = sllm_ibm value = from.sllm_inf_me }
+	set_variable = { which = sllm_ii value = from.sllm_inf }
+	set_variable = { which = sllm_iv value = -1 }
+	set_variable = { which = sllm_ivm value = 0 }
+	if = {
+		limit = { exists = owner }
+		owner = { sllm_inf_idx_copy = yes }
+		set_variable = { which = sllm_iv value = owner.sllm_inf_i }
+		set_variable = { which = sllm_ivm value = owner.sllm_inf_me }
+	}
+	set_variable = { which = sllm_ikn value = 0 }
+	set_variable = { which = sllm_isid value = 0 }
+	every_playable_country = {
+		limit = { is_ai = no is_variable_set = sllm_save_id }
+		prev = { set_variable = { which = sllm_isid value = prev.sllm_save_id } }
+		if = { limit = { has_communications = from } prev = { set_variable = { which = sllm_ikn value = 1 } } }
+	}
+	if = {
+		limit = { OR = { check_variable = { which = sllm_ikn value = 1 } check_variable = { which = sllm_ibm value = 1 } check_variable = { which = sllm_ivm value = 1 } } }
+		log = "SLLM:ATROC/;/sid=\\[This.sllm_isid]/;/k=\\[This.sllm_ik]/;/by=\\[This.sllm_ib]/;/byme=\\[This.sllm_ibm]/;/vic=\\[This.sllm_iv]/;/vicme=\\[This.sllm_ivm]/;/place=\\[This.GetName]/;/byname=\\[From.GetName]/;/vicname=\\[Owner.GetName]/;/inf=\\[This.sllm_ii]/;/date=\\[GetDate]"
+	}
+}
+
+# 나라 범위(가해국): 나라 단위 범죄(숙청·포로 처형). 피해국은 없음(-1).
+sllm_inf_crime_country = {
+	set_variable = { which = sllm_ik value = $K$ }
+	sllm_inf_idx_copy = yes
+	set_variable = { which = sllm_ikn value = 0 }
+	set_variable = { which = sllm_isid value = 0 }
+	every_playable_country = {
+		limit = { is_ai = no is_variable_set = sllm_save_id }
+		prev = { set_variable = { which = sllm_isid value = prev.sllm_save_id } }
+		if = { limit = { OR = { is_same_value = prev has_communications = prev } } prev = { set_variable = { which = sllm_ikn value = 1 } } }
+	}
+	if = {
+		limit = { check_variable = { which = sllm_ikn value = 1 } }
+		log = "SLLM:ATROC/;/sid=\\[This.sllm_isid]/;/k=\\[This.sllm_ik]/;/by=\\[This.sllm_inf_i]/;/byme=\\[This.sllm_inf_me]/;/vic=-1/;/vicme=0/;/place=/;/byname=\\[This.GetName]/;/vicname=/;/inf=\\[This.sllm_inf]/;/date=\\[GetDate]"
+	}
+}
+
+# 플레이어 범위(이벤트 sllm_inf.4, root = 플레이어): 악명 있는 나라 목록 INFY … INFEND. sllm_inf_req 는 부른 쪽이 둔다(해마다 = 0).
+sllm_inf_list = {
+	if = { limit = { NOT = { is_variable_set = sllm_inf } } set_variable = { which = sllm_inf value = 0 } }
+	if = { limit = { NOT = { is_variable_set = sllm_inf_tier } } set_variable = { which = sllm_inf_tier value = 0 } }
+	every_country = {
+		limit = { sllm_is_empire = yes is_variable_set = sllm_inf check_variable = { which = sllm_inf value > 0 } NOT = { is_same_value = root } }
+		sllm_inf_idx_copy = yes
+		if = { limit = { NOT = { is_variable_set = sllm_inf_tier } } set_variable = { which = sllm_inf_tier value = 0 } }
+		log = "SLLM:INFY/;/sid=\\[Root.sllm_save_id]/;/idx=\\[This.sllm_inf_i]/;/name=\\[This.GetName]/;/inf=\\[This.sllm_inf]/;/tier=\\[This.sllm_inf_tier]/;/known=1"
+	}
+	if = { limit = { NOT = { is_variable_set = sllm_inf_hid } } set_variable = { which = sllm_inf_hid value = 0 } }
+	every_owned_leader = {
+		limit = { has_leader_flag = sllm_war_criminal }
+		log = "SLLM:WCL/;/sid=\\[Root.sllm_save_id]/;/name=\\[This.GetName]"
+	}
+	log = "SLLM:INFEND/;/sid=\\[This.sllm_save_id]/;/req=\\[This.sllm_inf_req]/;/inf=\\[This.sllm_inf]/;/tier=\\[This.sllm_inf_tier]/;/hid=\\[This.sllm_inf_hid]/;/date=\\[GetDate]"
+}
+
+# 나라 범위: 숨은 악명 더하기(0~100)
+sllm_inf_hide_add = {
+	if = {
+		limit = { sllm_is_empire = yes is_homicidal = no }
+		if = { limit = { NOT = { is_variable_set = sllm_inf_hid } } set_variable = { which = sllm_inf_hid value = 0 } }
+		change_variable = { which = sllm_inf_hid value = $AMT$ }
+		if = { limit = { check_variable = { which = sllm_inf_hid value > 100 } } set_variable = { which = sllm_inf_hid value = 100 } }
+	}
+}
+
+# 나라 범위: 숨은 악명이 드러난다 — ×1.5 를 공개 악명에, 숨은 악명은 0. 플레이어면 앱에 INFEXPOSE.
+sllm_inf_expose = {
+	set_variable = { which = sllm_inf_ex value = sllm_inf_hid }
+	multiply_variable = { which = sllm_inf_ex value = 1.5 }
+	if = { limit = { NOT = { is_variable_set = sllm_inf } } set_variable = { which = sllm_inf value = 0 } }
+	change_variable = { which = sllm_inf value = sllm_inf_ex }
+	if = { limit = { check_variable = { which = sllm_inf value > 100 } } set_variable = { which = sllm_inf value = 100 } }
+	set_variable = { which = sllm_inf_hid value = 0 }
+	if = {
+		limit = { is_ai = no is_variable_set = sllm_save_id }
+		log = "SLLM:INFEXPOSE/;/sid=\\[This.sllm_save_id]/;/ex=\\[This.sllm_inf_ex]/;/inf=\\[This.sllm_inf]/;/date=\\[GetDate]"
+	}
+	sllm_inf_refresh = yes
+}
+
+# 행성 범위(이벤트의 from = 가해국, fromfrom = 그 자리 가해국 함대): 플레이어 함대의 제독에게 전범 표식(처음 한 번만 알림)
+sllm_wc_mark = {
+	if = {
+		limit = { from = { is_ai = no is_variable_set = sllm_save_id } exists = fromfrom fromfrom = { exists = leader } }
+		fromfrom = {
+			leader = {
+				if = {
+					limit = { NOT = { has_leader_flag = sllm_war_criminal } }
+					set_leader_flag = sllm_war_criminal
+					log = "SLLM:WCMARK/;/sid=\\[Owner.sllm_save_id]/;/name=\\[This.GetName]/;/date=\\[GetDate]"
+				}
+			}
+		}
+	}
+}
+
+# 플레이어 범위(sllm_wc.2): 인도 요구에 답한다. sllm_wc_act: 1 인도 · 2 자국 군사법정(영향력 50) · 3 거부. sllm_wc_tid = 요구한 나라 단말기 번호.
+sllm_wc_do = {
+	set_variable = { which = sllm_wc_st value = 0 }
+	set_variable = { which = sllm_wc_has value = 0 }
+	set_variable = { which = sllm_wc_n value = 0 }
+	every_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = root.sllm_wc_tid } }
+		save_event_target_as = sllm_wc_to
+		root = { set_variable = { which = sllm_wc_has value = 1 } }
+	}
+	every_owned_leader = {
+		limit = { has_leader_flag = sllm_war_criminal }
+		prev = { change_variable = { which = sllm_wc_n value = 1 } }
+	}
+	if = {
+		limit = { check_variable = { which = sllm_wc_act value = 1 } }
+		if = {
+			limit = { check_variable = { which = sllm_wc_has value = 1 } }
+			every_owned_leader = { limit = { has_leader_flag = sllm_war_criminal } kill_leader = { show_notification = yes } }
+			sllm_inf_add = { AMT = -10 }
+			event_target:sllm_wc_to = { add_opinion_modifier = { who = root modifier = sllm_wc_handed } }
+			set_variable = { which = sllm_wc_st value = 1 }
+		}
+		else = { set_variable = { which = sllm_wc_st value = 2 } }
+	}
+	else_if = {
+		limit = { check_variable = { which = sllm_wc_act value = 2 } }
+		if = {
+			limit = { resource_stockpile_compare = { resource = influence value >= 50 } }
+			add_resource = { influence = -50 }
+			every_owned_leader = { limit = { has_leader_flag = sllm_war_criminal } remove_leader_flag = sllm_war_criminal }
+			sllm_inf_add = { AMT = -5 }
+			if = { limit = { check_variable = { which = sllm_wc_has value = 1 } } event_target:sllm_wc_to = { add_opinion_modifier = { who = root modifier = sllm_wc_tried } } }
+			set_variable = { which = sllm_wc_st value = 1 }
+		}
+		else = { set_variable = { which = sllm_wc_st value = 3 } }
+	}
+	else = {
+		sllm_inf_add = { AMT = 5 }
+		if = { limit = { check_variable = { which = sllm_wc_has value = 1 } } event_target:sllm_wc_to = { add_opinion_modifier = { who = root modifier = sllm_wc_refused } } }
+		set_variable = { which = sllm_wc_st value = 1 }
+	}
+}

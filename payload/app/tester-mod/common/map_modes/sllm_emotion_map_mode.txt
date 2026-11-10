@@ -1,0 +1,69 @@
+# SLLM 감정 지도(알파 11, 2026-10-25, DTP 맵 모드 기법). 앱(src/emotion-acts.ts)이 3달마다 AI 제국에 가장 센 감정 깃발 하나를 붙인다.
+# 진한 색 = 강함(40 이상), 옅은 색 = 눈에 띔(20 이상). 원한 빨강 · 감사 초록 · 두려움 보라 · 야망 주황. 아이콘은 게임의 태도 지도 아이콘을 빌려 쓴다.
+# this = 색칠할 나라, from = 보는 나라(플레이어)
+sllm_emotion_map_mode = {
+	icon = "GFX_map_mode_attitude"
+	enable_terra_incognita = yes
+	can_change_point_of_view = no
+	display_claims = no
+	color = {
+		type = country_and_borders
+		value = rgb { 235 235 245 255 }
+		custom_tooltip = sllm_emf_self_tt
+		condition = { is_ai = no }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 230 60 50 255 }
+		custom_tooltip = sllm_emf_grudge_2_tt
+		condition = { has_country_flag = sllm_emf_grudge_2 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 70 200 110 255 }
+		custom_tooltip = sllm_emf_gratitude_2_tt
+		condition = { has_country_flag = sllm_emf_gratitude_2 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 150 110 230 255 }
+		custom_tooltip = sllm_emf_fear_2_tt
+		condition = { has_country_flag = sllm_emf_fear_2 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 240 160 40 255 }
+		custom_tooltip = sllm_emf_ambition_2_tt
+		condition = { has_country_flag = sllm_emf_ambition_2 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 150 95 90 255 }
+		custom_tooltip = sllm_emf_grudge_1_tt
+		condition = { has_country_flag = sllm_emf_grudge_1 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 110 160 125 255 }
+		custom_tooltip = sllm_emf_gratitude_1_tt
+		condition = { has_country_flag = sllm_emf_gratitude_1 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 130 120 170 255 }
+		custom_tooltip = sllm_emf_fear_1_tt
+		condition = { has_country_flag = sllm_emf_fear_1 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 180 145 95 255 }
+		custom_tooltip = sllm_emf_ambition_1_tt
+		condition = { has_country_flag = sllm_emf_ambition_1 }
+	}
+	color = {
+		type = country_and_borders
+		value = rgb { 70 72 82 255 }
+		custom_tooltip = sllm_emf_none_tt
+		condition = { always = yes }
+	}
+}

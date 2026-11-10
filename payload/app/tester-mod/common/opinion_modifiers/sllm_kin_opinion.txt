@@ -1,0 +1,78 @@
+# SLLM 「우리 동족을 학대한다」(2026-11-05 사용자: Expanded Espionage and Diplomacy 모드를 참고만 해서 우리 식으로).
+# 게임이 스스로 붙였다 뗐다 하는 호감 수정자(trigger 가 있는 opinion_modifier) — 스크립트 틱·앱 명령 없음.
+# ROOT = 화를 내는 나라, FROM = 학대하는 나라. ROOT 의 건국 종족이 FROM 에서 노예·추방·숙청·신경 절제를 당하고,
+# ROOT 가 FROM 의 경제 첩보를 그만큼 갖고 있을 때만(모르면 화낼 수도 없다). 숙청은 악명(sllm_infamy)과 따로 — 이건 그 종족의 나라만.
+# 앱 쪽 안내: ui/fleet-infamy.js 「규칙」.
+
+sllm_kin_enslaved = {
+	trigger = {
+		NOT = { is_same_value = FROM }
+		has_intel_level = { who = FROM category = economy level >= 1 }
+		FROM = {
+			any_owned_species = {
+				is_same_species = ROOT
+				has_citizenship_type = { country = FROM type = citizenship_slavery }
+			}
+		}
+	}
+	opinion = {
+		base = -40
+		modifier = { add = -15 has_ethic = ethic_egalitarian }
+		modifier = { add = -35 has_ethic = ethic_fanatic_egalitarian }
+		modifier = { add = 15 has_ethic = ethic_authoritarian }
+		modifier = { add = 25 has_ethic = ethic_fanatic_authoritarian }
+	}
+}
+
+sllm_kin_expelled = {
+	trigger = {
+		NOT = { is_same_value = FROM }
+		has_intel_level = { who = FROM category = economy level >= 1 }
+		FROM = {
+			any_owned_species = {
+				is_same_species = ROOT
+				has_citizenship_type = { country = FROM type = citizenship_purge }
+				has_purge_type = { country = FROM type = purge_displacement }
+			}
+		}
+	}
+	opinion = {
+		base = -25
+		modifier = { add = -10 is_xenophile = yes }
+	}
+}
+
+sllm_kin_purged = {
+	trigger = {
+		NOT = { is_same_value = FROM }
+		has_intel_level = { who = FROM category = economy level >= 1 }
+		FROM = {
+			any_owned_species = {
+				is_same_species = ROOT
+				has_citizenship_type = { country = FROM type = citizenship_purge }
+				NOT = { has_purge_type = { country = FROM type = purge_displacement } }
+			}
+		}
+	}
+	opinion = {
+		base = -120
+	}
+}
+
+sllm_kin_stapled = {
+	trigger = {
+		NOT = { is_same_value = FROM }
+		has_intel_level = { who = FROM category = economy level >= 2 }
+		FROM = {
+			any_owned_species = {
+				is_same_species = ROOT
+				has_trait = trait_nerve_stapled
+			}
+		}
+	}
+	opinion = {
+		base = -35
+		modifier = { add = -15 has_ethic = ethic_egalitarian }
+		modifier = { add = -30 has_ethic = ethic_fanatic_egalitarian }
+	}
+}

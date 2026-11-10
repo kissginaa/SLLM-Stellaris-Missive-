@@ -3,6 +3,7 @@ country_event = {
  id = sllm_dinner.1
  title = SLLM_DINNER_TITLE
  desc = SLLM_DINNER_DESC
+ picture = GFX_evt_diplomatic_visit # 그림 없으면 error.log 경고(2026-10-27 테스터 로그). 바닐라 그림
  is_triggered_only = yes
  trigger = { is_ai = no has_country_flag = sllm_dinner_open }
  option = { name = SLLM_DINNER_GRAND allow = { has_resource = { type = energy amount >= 1000 } } sllm_probe_dinner_grand = yes }

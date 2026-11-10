@@ -1,0 +1,21 @@
+# SLLM 반란과 공작(2026-11-09) — 취약 판정을 모드가 3달마다 스스로(앱이 sllm_rb_auto_on 으로 맡긴 세이브만). 효과: common/scripted_effects/sllm_rebels.txt
+namespace = sllm_rbm
+
+country_event = {
+	id = sllm_rbm.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_country_flag = sllm_rb_auto
+	}
+	immediate = {
+		if = { limit = { NOT = { is_variable_set = sllm_rb_vm } } set_variable = { which = sllm_rb_vm value = 3 } }
+		if = {
+			limit = { check_variable = { which = sllm_rb_vm value >= 3 } }
+			set_variable = { which = sllm_rb_vm value = 1 }
+			sllm_rb_vuln_auto = yes
+		}
+		else = { change_variable = { which = sllm_rb_vm value = 1 } }
+	}
+}

@@ -1,0 +1,27 @@
+# SLLM - 가구 편의(2026-10-31 사용자 결정). 앱: src/bedroom.ts COMFORT · src/features/bedroom-app.ts syncComfort.
+# 백화점 40·42층 가구·장식을 모은 종류 수(3·6·10·15종)에 따라 한 단계만 붙음(기한 없음, 단계가 바뀌면 앱이 갈아 끼움).
+sllm_bedroom_comfort_1 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	country_unity_produces_mult = 0.02
+	official_exp_gain = 0.05
+}
+sllm_bedroom_comfort_2 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	country_unity_produces_mult = 0.03
+	official_exp_gain = 0.10
+}
+sllm_bedroom_comfort_3 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	country_unity_produces_mult = 0.04
+	official_exp_gain = 0.15
+}
+sllm_bedroom_comfort_4 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	country_unity_produces_mult = 0.06
+	official_exp_gain = 0.20
+	pop_happiness = 0.02
+}

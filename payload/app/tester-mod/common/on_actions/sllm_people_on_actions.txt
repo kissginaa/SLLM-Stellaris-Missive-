@@ -1,6 +1,29 @@
 # SLLM Probe - 집무실 연락처: 내 지도자 명단(2026-10-18). 모드의 on_actions 는 게임 것과 합쳐진다. 숨은 이벤트만 부른다(on_actions 에 effect 블록 불가).
 on_monthly_pulse_country = {
-	events = { sllm_people.1 }
+	events = { sllm_people.9 } # 2026-10-24: 명단(sllm_people.1)은 6일 뒤로 미룬다(렉 줄이기). 2026-11-03: 지도자에 바뀐 일이 있을 때만 읽는다
+}
+on_yearly_pulse_country = {
+	events = { sllm_people.8 } # 2026-11-03: 1년에 한 번 전체 명단·특성
+}
+# 2026-11-03 「슈뢰딩거」: 지도자가 바뀌는 일에 표식만(다음 달 한 번 읽음)
+on_leader_hired = {
+	events = { sllm_people.20 }
+}
+on_leader_assigned = {
+	events = { sllm_people.20 }
+}
+on_leader_unassigned = {
+	events = { sllm_people.20 }
+}
+on_ruler_set = {
+	events = { sllm_people.21 }
+}
+on_single_player_save_game_load = {
+	events = { sllm_people.22 }
+}
+# 승급하면 다음 명단에서 특성을 다시 읽는다(2026-10-24, 특성 검사는 평소 1년에 한 번)
+on_leader_level_up = {
+	events = { sllm_people.6 }
 }
 # 작별·추모(2026-10-18): 지도자 사망·해임(This = 국가, From = 지도자, 바닐라 00_on_actions.txt 설명과 같음)
 on_leader_death = {

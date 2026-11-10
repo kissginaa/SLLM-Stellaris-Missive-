@@ -1,0 +1,22 @@
+# SLLM - 레전드 오브 갤럭시 ↔ 나라 연동(2026-10-31). 앱(src/log-nation.ts)이 그 나라에 붙인다(who = 우리). 처음 조정값, 달마다 줄어듦.
+# 라이벌 격파: −10(게임에서도 경쟁 관계면 −20). 유치 투표에서 우리에게 표를 준 나라: +15. 레전드를 그 나라 구단으로 보냄: +20. 전쟁 중에도 경기 강행: +5.
+sllm_log_rival_sting = {
+	opinion = { base = -10 }
+	decay = { base = 1 }
+}
+sllm_log_rival_sting_2 = {
+	opinion = { base = -20 }
+	decay = { base = 1 }
+}
+sllm_log_host_thanks = {
+	opinion = { base = 15 }
+	decay = { base = 1 }
+}
+sllm_log_transfer_goodwill = {
+	opinion = { base = 20 }
+	decay = { base = 1 }
+}
+sllm_log_sportsmanship = {
+	opinion = { base = 5 }
+	decay = { base = 1 }
+}

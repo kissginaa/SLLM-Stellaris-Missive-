@@ -117,7 +117,7 @@ sllm_probe_assign_idx = {
 	every_country = {
 		limit = {
 			OR = {
-				is_country_type = default
+				sllm_is_empire = yes
 				is_country_type = fallen_empire
 				is_country_type = awakened_fallen_empire
 				has_communications = prev
@@ -317,8 +317,13 @@ sllm_probe_talk_profile = {
 	set_variable = { which = sllm_pf_gest value = 0 } # 0 일반, 1 기계 지성, 2 군집(2026-10-17)
 	if = { limit = { has_authority = auth_machine_intelligence } set_variable = { which = sllm_pf_gest value = 1 } }
 	else_if = { limit = { has_authority = auth_hive_mind } set_variable = { which = sllm_pf_gest value = 2 } }
+	set_variable = { which = sllm_pf_gciv value = 0 } # 게슈탈트 시빅(알파 11, 2026-10-25): 1 확고한 말살자 2 동화 기계 3 반란 하인 4 포식 군체
+	if = { limit = { has_valid_civic = civic_machine_terminator } set_variable = { which = sllm_pf_gciv value = 1 } }
+	else_if = { limit = { has_valid_civic = civic_machine_assimilator } set_variable = { which = sllm_pf_gciv value = 2 } }
+	else_if = { limit = { has_valid_civic = civic_machine_servitor } set_variable = { which = sllm_pf_gciv value = 3 } }
+	else_if = { limit = { has_valid_civic = civic_hive_devouring_swarm } set_variable = { which = sllm_pf_gciv value = 4 } }
 	sllm_probe_econ_state = yes
-	log = "SLLM:PROFILE/;/idx=\\[This.sllm_idx]/;/gov=\\[This.GetGovernmentName]/;/species=\\[This.GetSpeciesName]/;/personality=\\[This.GetPersonalityName]/;/origin=\\[This.GetOriginName]/;/ruler=\\[This.GetRulerName]/;/title=\\[This.GetRulerTitle]/;/home=\\[This.GetHomeWorldName]/;/war=\\[This.sllm_pf_war]/;/truce=\\[This.sllm_pf_truce]/;/rival=\\[This.sllm_pf_rival]/;/hostile=\\[This.sllm_pf_hostile]/;/unfriendly=\\[This.sllm_pf_unfriendly]/;/friendly=\\[This.sllm_pf_friendly]/;/fed=\\[This.sllm_pf_fed]/;/nap=\\[This.sllm_pf_nap]/;/def=\\[This.sllm_pf_def]/;/com=\\[This.sllm_pf_com]/;/res=\\[This.sllm_pf_res]/;/emb=\\[This.sllm_pf_emb]/;/busy=\\[This.sllm_pf_busy]/;/att=\\[This.sllm_pf_att]/;/organ=\\[This.GetSpeciesOrganName]/;/adj=\\[This.GetSpeciesAdj]/;/n=\\[This.sllm_pf_n]/;/cls=\\[This.sllm_pf_cls]/;/gest=\\[This.sllm_pf_gest]/;/beh=\\[This.sllm_pf_beh]/;/ec=\\[This.sllm_ec_e]\\[This.sllm_ec_m]\\[This.sllm_ec_f]\\[This.sllm_ec_a]\\[This.sllm_ec_c]"
+	log = "SLLM:PROFILE/;/idx=\\[This.sllm_idx]/;/gov=\\[This.GetGovernmentName]/;/species=\\[This.GetSpeciesName]/;/personality=\\[This.GetPersonalityName]/;/origin=\\[This.GetOriginName]/;/ruler=\\[This.GetRulerName]/;/title=\\[This.GetRulerTitle]/;/home=\\[This.GetHomeWorldName]/;/war=\\[This.sllm_pf_war]/;/truce=\\[This.sllm_pf_truce]/;/rival=\\[This.sllm_pf_rival]/;/hostile=\\[This.sllm_pf_hostile]/;/unfriendly=\\[This.sllm_pf_unfriendly]/;/friendly=\\[This.sllm_pf_friendly]/;/fed=\\[This.sllm_pf_fed]/;/nap=\\[This.sllm_pf_nap]/;/def=\\[This.sllm_pf_def]/;/com=\\[This.sllm_pf_com]/;/res=\\[This.sllm_pf_res]/;/emb=\\[This.sllm_pf_emb]/;/busy=\\[This.sllm_pf_busy]/;/att=\\[This.sllm_pf_att]/;/organ=\\[This.GetSpeciesOrganName]/;/adj=\\[This.GetSpeciesAdj]/;/n=\\[This.sllm_pf_n]/;/cls=\\[This.sllm_pf_cls]/;/gest=\\[This.sllm_pf_gest]/;/gciv=\\[This.sllm_pf_gciv]/;/beh=\\[This.sllm_pf_beh]/;/ec=\\[This.sllm_ec_e]\\[This.sllm_ec_m]\\[This.sllm_ec_f]\\[This.sllm_ec_a]\\[This.sllm_ec_c]"
 }
 
 # Energy transfer with a direction. Console/app: effect every_playable_country = { limit = { is_ai = no } sllm_probe_transfer = { REQ = 5 TID = 2 AMT = 50 DIR = 1 } }

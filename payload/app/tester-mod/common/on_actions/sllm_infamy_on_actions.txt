@@ -1,0 +1,16 @@
+# SLLM 악명·전쟁범죄(2026-11-04). 바닐라 목록에 덧붙는다(4.5: events 만).
+on_monthly_pulse_country = {
+	events = { sllm_inf.1 }
+}
+on_yearly_pulse_country = {
+	events = { sllm_inf.2 sllm_inf.3 sllm_inf.5 }
+}
+on_pop_bombed_to_death = {
+	events = { sllm_inf.10 }
+}
+on_colony_destroyed_by_bombardment = {
+	events = { sllm_inf.11 }
+}
+on_war_ended = {
+	events = { sllm_wc.1 }
+}

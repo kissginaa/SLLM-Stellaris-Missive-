@@ -1,0 +1,15 @@
+# SLLM 예산 회의(2026-11-04) — 매달 예산 차감. 플레이어 국가이고 집행 중인 예산이 있을 때(sllm_bud_any)만 돈다.
+namespace = sllm_bud
+
+country_event = {
+	id = sllm_bud.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_country_flag = sllm_bud_any
+	}
+	immediate = {
+		sllm_bud_monthly = yes
+	}
+}

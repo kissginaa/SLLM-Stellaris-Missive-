@@ -1,0 +1,97 @@
+# SLLM 하츠 오브 아이언 참고 외교(2026-10-28 사용자 확정). 앱: src/hoi.ts · src/features/hoi-app.ts. 플레이어 국가 범위에서 부른다(wrapForPlayer).
+# 상대 찾기는 외교 거래의 sllm_deal_find(event_target:sllm_dl_x, 플레이어 변수 sllm_dl_ok)를 그대로 쓴다. 로그 문자열 안에 $..$ 매개변수를 넣지 않는다(F-39).
+# 게임 안 검수 전(4.x 문서·바닐라 파일 기준): pop_ethic_*_attraction_mult · planet_stability_add · set_subject_of = { who = none } · intel = { who = prev }.
+
+# ① 물자 지원: 그 제국(TID)과 전쟁 중인 나라마다 SLLM:AIDEN(그 나라가 우리에 대해 첩보 수준 30 이상이면 intel=1), 끝에 SLLM:AIDEND.
+#    … sllm_aid_enemies = { REQ = 9 TID = 4 }
+sllm_aid_enemies = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	sllm_deal_find = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_dl_ok value = 1 } }
+		every_country = {
+			limit = {
+				is_variable_set = sllm_idx
+				sllm_is_empire = yes
+				is_at_war_with = event_target:sllm_dl_x
+				NOT = { is_same_value = event_target:sllm_dl_p }
+			}
+			set_variable = { which = sllm_aid_iv value = 0 }
+			if = { limit = { intel = { who = prev value >= 30 } } set_variable = { which = sllm_aid_iv value = 1 } }
+			log = "SLLM:AIDEN/;/req=\\[Prev.sllm_dl_req]/;/idx=\\[This.sllm_idx]/;/intel=\\[This.sllm_aid_iv]/;/name=\\[This.GetName]"
+		}
+		log = "SLLM:AIDEND/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/found=1"
+	}
+	else = {
+		log = "SLLM:AIDEND/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/found=0"
+	}
+}
+
+# ② 파벌 지원·공작 시작: 영향력 100·에너지 500, 그 나라에 이념 매력도 +15%(sllm_fsup_<이념>, 720일) + 수도 안정도 -5(sllm_fsup_unrest, 720일).
+#    … sllm_fsup_start = { REQ = 9 TID = 4 ETH = militarist }   SLLM:FSUP status=applied|short|target|duplicate
+sllm_fsup_start = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_fs_last } } set_variable = { which = sllm_fs_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_fs_last value >= $REQ$ } }
+		log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_fs_last value = $REQ$ }
+		sllm_deal_find = { TID = $TID$ }
+		if = {
+			limit = { check_variable = { which = sllm_dl_ok value = 0 } }
+			log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else_if = {
+			limit = { OR = { NOT = { resource_stockpile_compare = { resource = influence value >= 100 } } NOT = { resource_stockpile_compare = { resource = energy value >= 500 } } } }
+			log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+		}
+		else = {
+			add_resource = { influence = -100 energy = -500 }
+			event_target:sllm_dl_x = {
+				add_modifier = { modifier = sllm_fsup_$ETH$ days = 720 }
+				capital_scope = { add_modifier = { modifier = sllm_fsup_unrest days = 720 } }
+			}
+			log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+	}
+}
+# 2년째: 매력도 +10% 더(360일). 「지지도 해마다 +10%」를 갈음한다(바닐라에 파벌 지지도를 바꾸는 효과 사용례가 없음).
+sllm_fsup_more = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	sllm_deal_find = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_dl_ok value = 1 } }
+		event_target:sllm_dl_x = { add_modifier = { modifier = sllm_fsup_more_$ETH$ days = 360 } }
+		log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+	}
+	else = { log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target" }
+}
+# AI 가 우리 파벌을 몰래 지원: 우리(플레이어)에게 같은 수정자. … sllm_fsup_onus = { REQ = 9 ETH = pacifist }
+sllm_fsup_onus = {
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	add_modifier = { modifier = sllm_fsup_$ETH$ days = 720 }
+	capital_scope = { add_modifier = { modifier = sllm_fsup_unrest days = 720 } }
+	log = "SLLM:FSUP/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+}
+
+# ③ 종속국 독립: 우리 종속국(sllm_idx = TID)을 종속에서 풀어 준다. … sllm_auto_free = { REQ = 9 TID = 4 }   SLLM:AUTOFREE status=applied|target
+sllm_auto_free = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	set_variable = { which = sllm_af_ok value = 0 }
+	every_subject = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		set_subject_of = { who = none }
+		event_target:sllm_dl_p = { set_variable = { which = sllm_af_ok value = 1 } }
+	}
+	if = {
+		limit = { check_variable = { which = sllm_af_ok value = 1 } }
+		log = "SLLM:AUTOFREE/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+	}
+	else = { log = "SLLM:AUTOFREE/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target" }
+}

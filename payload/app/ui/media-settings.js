@@ -13,6 +13,7 @@
    $('mediaPaperImage').src = row.paperImage || 'brands/' + row.id + '-paper.svg';
    $('mediaRadioImage').src = row.radioImage || 'brands/' + row.id + '-radio.svg';
    $('mediaPaperImage').alt = row.name + ' 브랜드'; $('mediaRadioImage').alt = row.radio + ' 브랜드';
+   $('mediaWebImage').src = row.webImage || 'brands/' + row.id + '-web.webp'; $('mediaWebImage').alt = row.name + ' 홈페이지 로고'; $('mediaWebName').textContent = row.name;
    dirty = false; count();
  }
  function count() { $('mediaCount').textContent = $('mediaPersona').value.length + ' / 4000자'; }
@@ -34,6 +35,7 @@
        const row = rows[current];
        $('mediaPaperImage').src = row.paperImage || 'brands/' + row.id + '-paper.svg';
        $('mediaRadioImage').src = row.radioImage || 'brands/' + row.id + '-radio.svg';
+       $('mediaWebImage').src = row.webImage || 'brands/' + row.id + '-web.webp';
      }
      note(message);
    } catch { note('변경하지 못했습니다. 다시 시도해 주세요.'); }
@@ -51,7 +53,7 @@
  $('mediaComments').onchange = () => { dirty = true; note('아직 저장하지 않은 변경 사항이 있습니다.'); };
  $('mediaSave').onclick = () => perform(() => window.sllm.mediaSave(rows[current].id, { paperName: $('mediaPaperTitle').value, radioName: $('mediaRadioTitle').value, persona: $('mediaPersona').value, comments: $('mediaComments').checked, font: $('mediaFont').value }), '저장했습니다. 이름은 화면에 반영되고, 페르소나는 다음 기사·방송부터 적용됩니다.');
  $('mediaResetPersona').onclick = () => { if (confirm('이 계열의 페르소나와 논평 설정을 기본값으로 되돌릴까요?')) perform(() => window.sllm.mediaSave(rows[current].id, null), '기본 페르소나로 되돌렸습니다.'); };
- for (const kind of ['paper', 'radio']) {
+ for (const kind of ['paper', 'web', 'radio']) { // web = 홈페이지 로고(2026-11-10)
    document.querySelector('[data-brand-pick="' + kind + '"]').onclick = () => perform(() => window.sllm.mediaBrand(rows[current].id, kind, false), '브랜드 그림을 바꿨습니다.', false);
    document.querySelector('[data-brand-reset="' + kind + '"]').onclick = () => perform(() => window.sllm.mediaBrand(rows[current].id, kind, true), '기본 브랜드 그림으로 되돌렸습니다.', false);
  }

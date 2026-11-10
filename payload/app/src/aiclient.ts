@@ -8,7 +8,7 @@ import { createSign, createHash, randomUUID } from 'crypto';
 import { modelRotation, rotationEligible, rotationError } from './model-rotation-host';
 import { googleHttpError } from './model-rotation';
 
-export type Provider = 'openai' | 'openrouter' | 'gemini' | 'vertex' | 'anthropic' | 'groq' | 'ollama' | 'lmstudio' | 'custom';
+export type Provider = 'openai' | 'openrouter' | 'gemini' | 'vertex' | 'anthropic' | 'groq' | 'nanogpt' | 'ollama' | 'lmstudio' | 'custom';
 export interface AiConn { id: string; name: string; provider: Provider; baseUrl: string; model: string; saveKey: boolean }
 export interface ChatOpts { signal?: AbortSignal; conversationId?: string; _rotationSingle?: boolean; purpose?: string; _diagnosticId?: string; maxTokens?: number; json?: boolean; /** JSON 모드 응답이 토큰 한도에서 끊기면 불린다(텍스트에 표시를 붙이지 않는다). */ onTruncated?: () => void }
 
@@ -21,6 +21,8 @@ export const PRESETS: Record<Provider, { label: string; baseUrl: string; needsKe
   vertex: { label: 'Google Agent Platform · Vertex AI (API 키 · 서비스 계정)', baseUrl: 'https://aiplatform.googleapis.com/v1/publishers/google', needsKey: true },
   anthropic: { label: 'Anthropic Claude (OpenAI 호환)', baseUrl: 'https://api.anthropic.com/v1', needsKey: true },
   groq: { label: 'Groq', baseUrl: 'https://api.groq.com/openai/v1', needsKey: true },
+  // 2026-10-26: NanoGPT(OpenAI 호환, 문서 확인 https://docs.nano-gpt.com). 모델 목록 GET /models 지원.
+  nanogpt: { label: 'NanoGPT', baseUrl: 'https://nano-gpt.com/api/v1', needsKey: true },
   ollama: { label: 'Ollama (내 컴퓨터)', baseUrl: 'http://localhost:11434/v1', needsKey: false },
   lmstudio: { label: 'LM Studio (내 컴퓨터)', baseUrl: 'http://localhost:1234/v1', needsKey: false },
   custom: { label: '직접 입력 (OpenAI 호환)', baseUrl: '', needsKey: false },
@@ -212,6 +214,9 @@ export async function testConn(c: AiConn, key: string | null): Promise<{ ok: boo
   } catch (e) { return { ok: false, ms: Date.now() - t0, message: redactKey((e as Error).message, key) }; }
 }
 
+/** 세계관 팩(47): 플레이어가 켠 참고 자료를 롤플레이 호출의 system 에 붙이는 훅. src/features/lore-app.ts 가 등록. 없거나 실패하면 붙이지 않는다. */
+let promptAugment: ((purpose: string | undefined) => string) | null = null;
+export function setPromptAugment(fn: ((purpose: string | undefined) => string) | null): void { promptAugment = fn; }
 const conversationIds = new WeakMap<object, string>();
 /** Stable id for one multi-turn conversation (keeps the same Gemini fallback model across its turns). Pass the object that lives exactly as long as that conversation. */
 export function conversationOf(owner: object): string { let id = conversationIds.get(owner); if (!id) { id = randomUUID(); conversationIds.set(owner, id); } return id; }
@@ -247,7 +252,8 @@ export class AiRouter {
     });
     opts={...opts,_diagnosticId:span.id};
     try {
-    const instruction = responseLanguageInstruction(language);
+    let extra = ''; try { extra = promptAugment ? promptAugment(opts.purpose) : ''; } catch { extra = ''; }
+    const instruction = (extra ? extra + String.fromCharCode(10, 10) : '') + responseLanguageInstruction(language);
     messages = messages.some(m => m.role === 'system') ? messages.map(m => m.role === 'system' ? { ...m, content: m.content + String.fromCharCode(10, 10) + instruction } : m) : [{ role: 'system', content: instruction }, ...messages];
     if (mode === 'custom') { if (!cust) throw new Error(L('개인 API 연결이 선택되지 않았거나 API 키가 없습니다. 설정 → AI 연결을 확인하세요.', 'No personal API connection is selected, or it has no API key. Check Settings → AI connection.')); let result: string;
       if (rotationEligible(cust.conn)) {

@@ -34,7 +34,7 @@ foreach($folder in Get-ChildItem -LiteralPath $stage -Recurse -Directory | Sort-
 #    나머지 앱 파일은 처음 켤 때 dist\bootstrap.js 가 창작마당 묶음(sllm_app_update)에서 서명·해시를 확인하고 채운다.
 #    제거 목록(3)은 위의 전체 구성으로 만들었으므로 채워진 파일도 함께 지운다.
 $seed=Join-Path $work 'seed'
-$keep=@('runtime','tester-mod','native\command-bridge.dll','dist\bootstrap.js','dist\app-update-core.js','dist\version-check.js','dist\environment-paths.js','package.json','start_app.bat','update-public-key.pem')
+$keep=@('runtime','tester-mod','native\command-bridge.dll','native\bridge\command-bridge.dll','dist\bootstrap.js','dist\app-update-core.js','dist\version-check.js','dist\environment-paths.js','package.json','start_app.bat','update-public-key.pem')
 $docs=@('README_KO.md','ALPHA_SETUP_KO.md','ALPHA_SETUP_EN.md')
 foreach($k in $keep+$docs){
  $src=Join-Path $stage $k

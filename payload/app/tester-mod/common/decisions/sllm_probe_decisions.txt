@@ -10,6 +10,7 @@ decision_sllm_talk_governor = {
 	}
 
 	potential = {
+		always = no # 2026-10-23: 앱의 1:1 총독 대화를 뗐다(총독 일은 집무실 「행성 총독」 칸·비서 보고). 결정 목록에 보이지 않게만 막는다.
 		exists = owner
 		owner = { is_ai = no }
 	}

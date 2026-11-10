@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Outing</title>
+<!-- 외출(2026-10-30 사용자 결정, 계획서 10번). 앱: src/features/outing-app.ts · 자료: src/outing.ts. 입구: 집무실 책상 위 가죽 지갑.
+     그림 자리: assets/outing/(성향)-city.webp(저녁 수도 지도 8장, 같은 구도 — 03_외출_그림_의뢰서.md). 없으면 캔버스로 그린 저녁 도시.
+     장소 표시는 지도 위 % 자리(그림이 오면 집컴에서 재서 src/outing.ts 숫자를 맞춤). 문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--bg:#070b14;--panel:#0d1624ee;--text:#e3eaf3;--dim:#8796aa;--hi:#7fd8ff;--gold:#f2c86b;--line:#24364c;--red:#ff6b78;--good:#7be0a0}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,select{font:inherit;color:var(--text);border:1px solid var(--line);background:#14233a;border-radius:4px}
+ button{cursor:pointer;padding:5px 12px} button:hover:not(:disabled){border-color:var(--hi);color:var(--hi)} button:disabled{opacity:.45;cursor:default}
+ select{padding:4px 6px;max-width:240px}
+ #top{position:absolute;z-index:5;left:0;right:0;top:0;height:44px;display:flex;align-items:center;gap:10px;padding:0 14px;-webkit-app-region:drag;background:linear-gradient(#0b1424f2,#0b142400)}
+ #top>*{-webkit-app-region:no-drag} #top .t{font-weight:800;letter-spacing:.14em;color:var(--hi);-webkit-app-region:drag} #top .sp{flex:1;-webkit-app-region:drag}
+ #papBtn{cursor:pointer;color:inherit;font:inherit} #papBtn:hover{border-color:#ff6a7a} #vault{cursor:pointer;color:inherit;font:inherit} #vault:hover{border-color:var(--gold)}
+ /* 개인 금고 창(2026-10-31): 외출 화면에서 넣기·빼기·장부·쓸 곳 */
+ #vwin{position:absolute;inset:0;z-index:30;background:#000a;display:none;align-items:center;justify-content:center} #vwin.on{display:flex}
+ #vbox{width:min(760px,94vw);max-height:88vh;overflow:auto;background:linear-gradient(#141d2c,#0b121c);border:1px solid var(--gold);border-radius:12px;padding:18px 22px;box-shadow:0 20px 60px #000c}
+ #vbox h2{margin:0 0 4px;color:var(--gold);font-size:20px;display:flex;align-items:center;gap:10px} #vbox h2 .bal{margin-left:auto;font-size:26px}
+ .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0} .vcard{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#0d1828}
+ .vcard h3{margin:0 0 6px;font-size:13.5px;color:var(--hi)} .vrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px} .vrow input{width:120px;padding:5px 8px;background:#0a1220;border:1px solid var(--line);color:inherit;font:inherit;border-radius:6px}
+ .vb{padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:#14243a;color:inherit;cursor:pointer;font:inherit} .vb:hover:not(:disabled){border-color:var(--hi)} .vb:disabled{opacity:.45;cursor:default} .vb.gold{border-color:var(--gold);color:var(--gold);font-weight:700}
+ .vgo{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px} .vgo button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;text-align:left;border-radius:10px;border:1px solid var(--line);background:#0d1828;color:inherit;cursor:pointer;font:inherit} .vgo button:hover{border-color:var(--gold)} .vgo button b{font-size:13px} .vgo button small{color:var(--dim);font-size:11px}
+ .vlog{font-size:12.5px} .vlog div{display:grid;grid-template-columns:78px 1fr auto;gap:8px;padding:3px 0;border-top:1px solid #ffffff10} .vlog .in{color:#7be0a0} .vlog .out{color:#ffb070} .vlog .spend{color:#ff8a9a} .vlog .earn{color:#8fd4ff}
+ .vnote{color:var(--dim);font-size:12px;margin-top:6px} .vwarn{color:#ffb070;font-size:12px} #vmsg{min-height:18px;color:#ff8a9a;font-size:12.5px;margin-top:6px}
+ #top .chip{padding:3px 10px;border:1px solid var(--line);border-radius:12px;background:#0d1828cc;white-space:nowrap} #vault b{color:var(--gold)}
+ #x{background:none;border-color:transparent;color:var(--dim);font-size:16px}
+ #stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+ #map{position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;overflow:hidden}
+ #map canvas,#map img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ .pin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:none;border:0;padding:0}
+ .pin .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(#fff,var(--hi) 45%,#7fd8ff00 72%);box-shadow:0 0 14px 4px #7fd8ff99;animation:pulse 2.2s ease-in-out infinite}
+ .pin.soon .dot{background:radial-gradient(#fff,#9aa7b8 45%,#9aa7b800 72%);box-shadow:0 0 8px 2px #9aa7b866;animation:none}
+ .pin .lb{font-size:12px;padding:2px 9px;border-radius:10px;background:#081220d8;border:1px solid #7fd8ff55;white-space:nowrap;text-shadow:0 1px 2px #000}
+ .pin.soon .lb{color:var(--dim);border-color:#46546a}
+ .pin:hover .lb,.pin.sel .lb{border-color:var(--gold);color:var(--gold)} .pin.sel .dot{box-shadow:0 0 18px 7px #f2c86baa}
+ @keyframes pulse{50%{transform:scale(1.35)}}
+ #card{position:absolute;z-index:4;left:50%;bottom:22px;transform:translateX(-50%);width:min(560px,92vw);padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px #000a;display:none}
+ #card.on{display:block} #card .pic{height:170px;margin:-14px -16px 10px;border-radius:8px 8px 0 0;background-size:cover;background-position:center} #card h3{margin:0 0 6px;color:var(--gold);font-size:15px} #card .about{color:#c9d4e1} #card .why{color:var(--red);margin-top:6px} #card .row{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+ #msg{position:absolute;z-index:6;left:50%;top:56px;transform:translateX(-50%);padding:6px 14px;border-radius:6px;background:#2a1418ee;border:1px solid var(--red);display:none}
+ #shuttle{position:absolute;inset:0;z-index:8;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:radial-gradient(ellipse at 50% 120%,#1b2f4a,#05080f 70%)}
+ #shuttle.on{display:flex;animation:fade 1.4s ease forwards} #shuttle.art{background-size:cover;background-position:center} #shuttle.art .ship{display:none} #shuttle.art .tx{padding:6px 16px;border-radius:6px;background:#070b14cc}
+ #shuttle .ship{width:120px;height:26px;border-radius:50% 50% 40% 40%;background:linear-gradient(#cfe6ff,#5a7896);box-shadow:0 0 24px #7fd8ff88;animation:lift 1.4s ease-in forwards}
+ #shuttle .tx{letter-spacing:.2em;color:var(--hi)}
+ #shuttle .lights{position:absolute;bottom:18%;left:20%;right:20%;height:4px;background:repeating-linear-gradient(90deg,#7fd8ff 0 10px,transparent 10px 34px);animation:run .5s linear infinite;opacity:.7}
+ @keyframes fade{0%{opacity:0}15%{opacity:1}85%{opacity:1}100%{opacity:0}} @keyframes lift{0%{transform:translateY(40px)}100%{transform:translateY(-140px) scale(.6)}} @keyframes run{to{background-position:34px 0}}
+ #empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:var(--dim)}
+</style></head>
+<body>
+<div id="stage"><div id="map"><canvas id="cv"></canvas><img id="art" alt="" hidden></div></div>
+<div id="top"><span class="t" id="tt"></span><span class="chip" id="where"></span><span class="sp"></span><button class="chip" id="papBtn" type="button"></button><button class="chip" id="vault" type="button"></button><span id="compBox"></span><span id="ethBox"></span><button id="x" type="button">✕</button></div>
+<div id="card"></div><div id="msg"></div><div id="empty"></div>
+<div id="vwin"><div id="vbox"></div></div>
+<div id="shuttle"><div class="ship"></div><div class="tx" id="shTx"></div><div class="lights"></div></div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ let S = null, sel = null, busy = false;
+ const say = (t) => { const m = $('msg'); m.textContent = t; m.style.display = t ? 'block' : 'none'; if (t) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 3500); };
+
+ // ---- 그림이 없을 때 그리는 저녁 수도(성향마다 색과 랜드마크만 다름, 같은 구도)
+ const TINT = { spiritualist: ['#2a1640', '#7a3f8f', '#f2b45a'], militarist: ['#141c26', '#4a5566', '#ff8a4a'], pacifist: ['#14283a', '#4f8fa8', '#ffd59a'], authoritarian: ['#2a0f14', '#7a2430', '#f0b04a'], egalitarian: ['#12233a', '#3f7aa8', '#ffe0a0'], xenophile: ['#1a1838', '#6a4fb0', '#7fe0c8'], xenophobe: ['#101820', '#3b4a5a', '#c8d6e6'], materialist: ['#0c2028', '#2f7f8a', '#8ff0ff'], none: ['#111a2c', '#3c5478', '#ffcf8a'] };
+ function rnd(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+ function drawCity(eth) {
+  const cv = $('cv'), map = $('map'), W = cv.width = map.clientWidth * (devicePixelRatio || 1), H = cv.height = map.clientHeight * (devicePixelRatio || 1), c = cv.getContext('2d'), r = rnd(1030), [d1, d2, glow] = TINT[eth] || TINT.none;
+  const sky = c.createLinearGradient(0, 0, 0, H * 0.55); sky.addColorStop(0, '#05070f'); sky.addColorStop(0.55, d1); sky.addColorStop(0.85, d2); sky.addColorStop(1, glow); c.fillStyle = sky; c.fillRect(0, 0, W, H);
+  for (let i = 0; i < 160; i++) { c.fillStyle = `rgba(255,255,255,${0.2 + r() * 0.6})`; c.fillRect(r() * W, r() * H * 0.4, 1.5, 1.5); }
+  // 궤도 카지노 정거장(오른쪽 위)
+  c.save(); c.translate(W * 0.81, H * 0.13); c.strokeStyle = '#ff7ad9'; c.lineWidth = H * 0.008; c.shadowColor = '#ff7ad9'; c.shadowBlur = 18; c.beginPath(); c.ellipse(0, 0, W * 0.06, H * 0.035, -0.2, 0, Math.PI * 2); c.stroke(); c.fillStyle = '#ffe6fb'; c.beginPath(); c.arc(0, 0, H * 0.012, 0, Math.PI * 2); c.fill(); c.restore();
+  // 먼 도시 실루엣
+  const horizon = H * 0.5; for (let layer = 0; layer < 3; layer++) { const base = horizon + layer * H * 0.08, col = ['#0b1222', '#0a1020', '#080d1a'][layer]; let x = 0; while (x < W) { const w = W * (0.012 + r() * 0.03), hh = H * (0.04 + r() * (0.16 - layer * 0.03)); c.fillStyle = col; c.fillRect(x, base - hh, w, H); for (let k = 0; k < hh / (H * 0.012); k++) for (let j = 0; j < w / (W * 0.006); j++) if (r() < 0.32) { c.fillStyle = r() < 0.8 ? '#ffd88a' : '#9fe6ff'; c.globalAlpha = 0.35 + r() * 0.5; c.fillRect(x + j * W * 0.006 + 2, base - hh + k * H * 0.012 + 3, W * 0.0025, H * 0.004); c.globalAlpha = 1; } x += w + W * 0.002; } }
+  // 공원(왼쪽) + 호수
+  c.fillStyle = '#0d2418'; c.beginPath(); c.ellipse(W * 0.18, H * 0.58, W * 0.13, H * 0.1, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#1d4a6a'; c.globalAlpha = 0.9; c.beginPath(); c.ellipse(W * 0.17, H * 0.6, W * 0.05, H * 0.03, 0, 0, Math.PI * 2); c.fill(); c.globalAlpha = 1;
+  for (let i = 0; i < 40; i++) { c.fillStyle = '#123322'; c.beginPath(); c.arc(W * (0.07 + r() * 0.22), H * (0.52 + r() * 0.12), H * 0.012, 0, Math.PI * 2); c.fill(); }
+  // 백화점 유리탑(가운데)
+  const gt = c.createLinearGradient(W * 0.44, 0, W * 0.5, 0); gt.addColorStop(0, '#3a6a9a'); gt.addColorStop(1, '#a8d8ff'); c.fillStyle = gt; c.globalAlpha = 0.85; c.fillRect(W * 0.445, H * 0.36, W * 0.05, H * 0.3); c.globalAlpha = 1; c.strokeStyle = '#d8f0ff'; c.lineWidth = 1; for (let y = H * 0.37; y < H * 0.66; y += H * 0.018) { c.beginPath(); c.moveTo(W * 0.445, y); c.lineTo(W * 0.495, y); c.stroke(); }
+  // 경기장(오른쪽) + 조명 기둥
+  c.fillStyle = '#1a2436'; c.beginPath(); c.ellipse(W * 0.77, H * 0.56, W * 0.09, H * 0.06, 0, 0, Math.PI * 2); c.fill(); c.strokeStyle = '#7fd8ff'; c.lineWidth = H * 0.006; c.beginPath(); c.ellipse(W * 0.77, H * 0.545, W * 0.085, H * 0.045, 0, 0, Math.PI * 2); c.stroke();
+  for (const dx of [-0.08, -0.03, 0.03, 0.08]) { const g = c.createLinearGradient(0, H * 0.5, 0, 0); g.addColorStop(0, '#9fe6ff88'); g.addColorStop(1, '#9fe6ff00'); c.fillStyle = g; c.fillRect(W * (0.77 + dx) - 2, 0, 4, H * 0.52); }
+  // 뒷골목·암시장(오른쪽 아래, 어둡게 + 네온)
+  c.fillStyle = '#05070c'; c.fillRect(W * 0.58, H * 0.68, W * 0.42, H * 0.2); for (let i = 0; i < 14; i++) { c.fillStyle = ['#ff4fa0', '#4fffd0', '#ffb04f', '#a06bff'][i % 4]; c.shadowColor = c.fillStyle; c.shadowBlur = 10; c.fillRect(W * (0.6 + r() * 0.38), H * (0.7 + r() * 0.15), W * 0.012, H * 0.006); } c.shadowBlur = 0;
+  c.strokeStyle = '#1a2230'; c.lineWidth = H * 0.012; c.beginPath(); c.moveTo(W * 0.74, H * 0.7); c.lineTo(W, H * 0.66); c.stroke(); // 고가 철도
+  // 펫샵 거리(왼쪽 아래, 따뜻한 낮은 가게)
+  for (let i = 0; i < 8; i++) { c.fillStyle = '#1b130c'; const x = W * (0.21 + i * 0.018); c.fillRect(x, H * 0.7, W * 0.016, H * 0.05); c.fillStyle = '#ffb86a'; c.globalAlpha = 0.7; c.fillRect(x + 3, H * 0.715, W * 0.01, H * 0.015); c.globalAlpha = 1; }
+  // 성향별 랜드마크(가운데 위 언덕)
+  c.fillStyle = '#0c1424'; c.beginPath(); c.ellipse(W * 0.52, H * 0.42, W * 0.12, H * 0.07, 0, Math.PI, 0); c.fill();
+  c.save(); c.translate(W * 0.52, H * 0.36); c.fillStyle = '#1a2438'; c.strokeStyle = glow; c.lineWidth = 2; c.shadowColor = glow; c.shadowBlur = 16; const u = H * 0.06;
+  if (eth === 'spiritualist') { c.beginPath(); c.arc(0, 0, u, Math.PI, 0); c.fill(); c.stroke(); c.fillRect(-u * 1.2, 0, u * 2.4, u * 0.8); c.fillRect(-u * 0.08, -u * 1.9, u * 0.16, u); }
+  else if (eth === 'militarist' || eth === 'xenophobe') { c.fillRect(-u * 1.4, -u * 0.6, u * 2.8, u * 1.4); for (const x of [-1.4, -0.5, 0.5, 1.4]) c.fillRect(x * u - u * 0.15, -u * 1.2, u * 0.3, u * 0.7); c.strokeRect(-u * 1.4, -u * 0.6, u * 2.8, u * 1.4); }
+  else if (eth === 'authoritarian') { c.fillRect(-u, -u * 1.2, u * 0.5, u * 2); c.fillRect(u * 0.5, -u * 1.2, u * 0.5, u * 2); c.fillRect(-u, -u * 1.4, u * 2, u * 0.4); c.strokeRect(-u, -u * 1.4, u * 2, u * 2.2); }
+  else if (eth === 'materialist') { c.beginPath(); c.arc(0, -u * 0.2, u * 0.9, Math.PI, 0); c.fill(); c.stroke(); c.fillRect(-u * 1.3, -u * 0.2, u * 2.6, u); c.fillRect(u * 1.1, -u * 1.6, u * 0.12, u * 1.6); }
+  else if (eth === 'pacifist') { c.fillRect(-u * 0.12, -u * 1.8, u * 0.24, u * 2.2); c.beginPath(); c.ellipse(0, u * 0.5, u * 1.6, u * 0.35, 0, 0, Math.PI * 2); c.stroke(); }
+  else if (eth === 'xenophile') { for (const [x, rr] of [[-0.8, 0.6], [0, 0.9], [0.8, 0.5]]) { c.beginPath(); c.arc(x * u, 0, rr * u, Math.PI, 0); c.fill(); c.stroke(); } }
+  else if (eth === 'egalitarian') { c.beginPath(); c.moveTo(-u * 1.5, u * 0.4); c.lineTo(0, -u * 0.9); c.lineTo(u * 1.5, u * 0.4); c.closePath(); c.fill(); c.stroke(); }
+  c.restore();
+  // 앞쪽 궁 테라스와 셔틀 승강장
+  const tg = c.createLinearGradient(0, H * 0.86, 0, H); tg.addColorStop(0, '#1c2638'); tg.addColorStop(1, '#0a0f18'); c.fillStyle = tg; c.beginPath(); c.moveTo(0, H); c.lineTo(0, H * 0.9); c.quadraticCurveTo(W * 0.5, H * 0.84, W, H * 0.9); c.lineTo(W, H); c.fill();
+  c.fillStyle = glow; c.globalAlpha = 0.6; for (let i = 0; i < 16; i++) c.fillRect(W * (0.3 + i * 0.026), H * 0.885, W * 0.008, H * 0.004); c.globalAlpha = 1;
+  c.fillStyle = '#cfe6ff'; c.beginPath(); c.ellipse(W * 0.5, H * 0.875, W * 0.03, H * 0.008, 0, 0, Math.PI * 2); c.fill();
+ }
+
+ function draw() {
+  $('tt').textContent = L('외출', 'OUTING'); $('shTx').textContent = L('궁 앞 셔틀 승강장 · 출발', 'Palace shuttle pad · departing');
+  if (!S || !S.ready) { $('empty').style.display = 'flex'; $('empty').textContent = L('세이브를 불러온 뒤에 나갈 수 있습니다.', 'Load a save first.'); return; }
+  $('empty').style.display = 'none';
+  $('where').textContent = `${S.map.name} · ${L('저녁', 'Evening')}${S.date ? ' · ' + S.date : ''}`;
+  $('papBtn').textContent = L('📰 타블로이드', '📰 Tabloid'); $('papBtn').title = L('파파라치가 찍은 사진과 지금까지 나간 기사', 'Paparazzi photos and the stories so far'); $('papBtn').onclick = () => window.sllm.paparazziOpen && window.sllm.paparazziOpen();
+  $('vault').innerHTML = ''; $('vault').append(document.createTextNode('💰 ' + L('개인 금고 ', 'Private vault ')), h('b', '', `${Math.round(S.vault).toLocaleString()}`), document.createTextNode(L(' 크레딧', ' credits'))); $('vault').title = L('금고 열기 — 넣기·빼기·장부', 'Open the vault — deposit, withdraw, ledger'); $('vault').onclick = openVault;
+  if ($('vwin').classList.contains('on')) drawVault();
+  // 동행
+  const cb = $('compBox'); cb.textContent = ''; const cs = h('select'); cs.title = L('동행', 'Companion');
+  const add = (val, text, on) => { const o = h('option', '', text); o.value = val; if (on) o.selected = true; cs.append(o); };
+  add('alone:', L('동행: 혼자', 'Companion: alone'), S.comp.kind === 'alone');
+  if (S.companions.partners.length) { const g = h('optgroup'); g.label = L('연인 · 배우자', 'Partner · spouse'); for (const p of S.companions.partners) { const o = h('option', '', p.name); o.value = 'partner:' + p.key; if (S.comp.kind === 'partner' && S.comp.key === p.key) o.selected = true; g.append(o); } cs.append(g); }
+  if (S.companions.leaders.length) { const g = h('optgroup'); g.label = L('우리 지도자', 'Our leaders'); for (const p of S.companions.leaders) { const o = h('option', '', p.name); o.value = 'leader:' + p.key; if (S.comp.kind === 'leader' && S.comp.key === p.key) o.selected = true; g.append(o); } cs.append(g); }
+  cs.onchange = async () => { const [kind, ...k] = cs.value.split(':'); const r = await window.sllm.outingCompanion({ kind, key: k.join(':') }); if (!r.ok) say(r.error); S = r.state; draw(); };
+  cb.append(cs);
+  // 성향별 특별한 곳(성향이 여럿이면 고르기)
+  const eb = $('ethBox'); eb.textContent = '';
+  if (S.ethicChoices.length > 1) { const es = h('select'); es.title = L('성향별 특별한 곳', 'Landmark by ethic'); const o0 = h('option', '', L('특별한 곳: 자동(가장 강한 성향)', 'Landmark: auto (strongest ethic)')); o0.value = ''; if (!S.ethicPicked) o0.selected = true; es.append(o0); for (const e of S.ethicChoices) { const o = h('option', '', `${e.name} — ${e.place}`); o.value = e.key; if (S.ethicPicked && S.ethic === e.key) o.selected = true; es.append(o); } es.onchange = async () => { const r = await window.sllm.outingEthic(es.value || null); if (!r.ok) say(r.error); S = r.state; draw(); }; eb.append(es); }
+  // 지도
+  const img = $('art'); if (S.map.art) { if (img.getAttribute('src') !== S.map.art) img.src = S.map.art; img.hidden = false; } else { img.hidden = true; drawCity(S.ethic || 'none'); }
+  document.querySelectorAll('.pin').forEach((p) => p.remove());
+  for (const p of S.places) { if (p.hidden) continue; const b = h('button', 'pin' + (p.ready ? '' : ' soon') + (sel === p.id ? ' sel' : '')); b.type = 'button'; b.style.left = p.x + '%'; b.style.top = p.y + '%'; b.append(h('i', 'dot'), h('span', 'lb', p.ready ? p.name : `${p.name} · ${L('준비 중', 'coming')}`)); b.onclick = () => { sel = p.id; draw(); }; $('map').append(b); }
+  // 장소 카드
+  const card = $('card'), p = S.places.find((x) => x.id === sel); card.textContent = ''; card.classList.toggle('on', !!p);
+  if (p) { if (p.art) { const pic = h('div', 'pic'); pic.style.backgroundImage = `url(${p.art})`; card.append(pic); } card.append(h('h3', '', p.name), h('div', 'about', p.about)); if (S.comp.kind !== 'alone') card.append(h('div', 'about', L(`동행: ${S.comp.name}`, `With: ${S.comp.name}`))); if (!p.go && p.why) card.append(h('div', 'why', p.why));
+   const row = h('div', 'row'), go = h('button', '', L('가기', 'Go')); go.disabled = !p.go || busy; go.onclick = () => goTo(p.id); const cl = h('button', '', L('닫기', 'Close')); cl.onclick = () => { sel = null; draw(); }; row.append(cl, go); card.append(row); }
+ }
+ async function goTo(id) {
+  if (busy) return; busy = true; draw(); const sh = $('shuttle'); sh.classList.toggle('art', !!(S.map && S.map.depart)); sh.style.backgroundImage = S.map && S.map.depart ? `url(${S.map.depart})` : ''; sh.classList.remove('on'); void sh.offsetWidth; sh.classList.add('on');
+  await new Promise((r) => setTimeout(r, 1200)); const r = await window.sllm.outingGo(id); busy = false; sh.classList.remove('on');
+  if (!r.ok) say(r.error); else sel = null; S = r.state; draw();
+ }
+ // ---- 개인 금고(2026-10-31): 에너지 크레딧을 국고에서 금고로(게임 명령, 게임이 켜져 있어야 함). 백화점·카지노·토토는 금고에서만 씀.
+ let V = null;
+ async function openVault() { if (!window.sllm.vaultState) return; V = await window.sllm.vaultState(); $('vwin').classList.add('on'); drawVault(); }
+ function closeVault() { $('vwin').classList.remove('on'); }
+ async function vmove(dir, amt) { const r = await window.sllm[dir === 'in' ? 'vaultDeposit' : 'vaultWithdraw'](amt); if (r && r.state) V = r.state; drawVault(); $('vmsg').textContent = r && !r.ok && r.error ? r.error : ''; if (r && r.ok) { const s2 = await window.sllm.outingState(); if (s2) { S = s2; draw(); } } }
+ function drawVault() {
+  const b = $('vbox'); b.textContent = ''; if (!V) return; const fmt = (n) => Math.round(n).toLocaleString();
+  const hd = h('h2'); hd.append(document.createTextNode('💰 ' + L('통치자 개인 금고', 'Ruler\'s private vault')), h('span', 'bal', fmt(V.balance) + ' ' + L('크레딧', 'cr'))); b.append(hd);
+  b.append(h('div', 'vnote', L('게임의 에너지 크레딧을 금고에 넣어야 백화점·펫샵·카지노·스포츠토토에서 쓸 수 있습니다. 넣기·빼기는 게임이 켜져 있을 때 바로 반영됩니다(국고 ↔ 금고).', 'Move energy credits from the treasury into the vault to spend at the store, pet shop, casino and sports toto. Deposits and withdrawals apply while the game is running (treasury ↔ vault).')));
+  if (V.pending) { const w = h('div', 'vwarn', L(`처리 중: ${V.pending.dir === 'in' ? '넣기' : '빼기'} ${fmt(V.pending.amount)} — 게임이 받으면 반영됩니다.`, `Pending: ${V.pending.dir === 'in' ? 'deposit' : 'withdraw'} ${fmt(V.pending.amount)} — applies once the game confirms.`)); const rb = h('button', 'vb', L('다시 보내기', 'Resend')); rb.type = 'button'; rb.onclick = async () => { const r = await window.sllm.vaultRetry(); if (r && r.state) V = r.state; drawVault(); }; w.append(' ', rb); b.append(w); }
+  const g = h('div', 'vgrid');
+  for (const dir of ['in', 'out']) { const c = h('div', 'vcard'); c.append(h('h3', '', dir === 'in' ? L('국고 → 금고 (넣기)', 'Treasury → vault (deposit)') : L('금고 → 국고 (빼기)', 'Vault → treasury (withdraw)')));
+   const row = h('div', 'vrow'), inp = h('input'); inp.type = 'number'; inp.min = '1'; inp.step = '100'; inp.value = dir === 'in' ? '1000' : String(Math.min(1000, Math.floor(V.balance)) || 0); row.append(inp);
+   for (const v of [500, 1000, 5000]) { const q = h('button', 'vb', '+' + fmt(v)); q.type = 'button'; q.onclick = () => { inp.value = String((Number(inp.value) || 0) + v); }; row.append(q); }
+   if (dir === 'out') { const all = h('button', 'vb', L('전부', 'All')); all.type = 'button'; all.onclick = () => { inp.value = String(Math.floor(V.balance)); }; row.append(all); }
+   const go = h('button', 'vb gold', dir === 'in' ? L('넣기', 'Deposit') : L('빼기', 'Withdraw')); go.type = 'button'; go.disabled = !!V.pending || V.busy; go.onclick = () => vmove(dir, Number(inp.value)); row.append(go); c.append(row);
+   if (dir === 'in') c.append(h('div', 'vnote', L('에너지 수입이 적자일 때 넣으면 아주 드물게 부패 낌새가 쌓입니다.', 'Depositing while energy income is negative can, rarely, raise suspicion of graft.')));
+   g.append(c); }
+  b.append(g, (() => { const m = h('div'); m.id = 'vmsg'; return m; })());
+  // 쓸 곳 바로 가기
+  const go = h('div', 'vcard'); go.append(h('h3', '', L('금고로 갈 수 있는 곳', 'Where the vault is spent'))); const gg = h('div', 'vgo');
+  const dest = [['store', '🏬 ' + L('백화점', 'Department store'), L('가구·선물·애완동물·물고기', 'Furniture, gifts, pets, fish')], ['casino', '🎰 ' + L('우주 카지노', 'Space casino'), L('판돈은 금고에서, 따면 금고로', 'Stakes from the vault, wins back in')], ['petshop', '🐾 ' + L('펫샵', 'Pet shop'), L('애완동물·물고기', 'Pets and fish')], ['stadium', '🏟 ' + L('우주 경기장 토토', 'Stadium toto'), L('리그·월즈·올림픽 토토, 구단 후원', 'League, Worlds and Olympic toto; sponsorship')]];
+  for (const [id, name, sub] of dest) { const bt = h('button'); bt.type = 'button'; bt.append(h('b', '', name), h('small', '', sub)); bt.onclick = () => { closeVault(); const p = (S.places || []).find((x) => x.id === id); if (p && p.ready) { sel = p.id; draw(); } else say(L('지금은 갈 수 없는 곳입니다.', 'Not available right now.')); }; gg.append(bt); }
+  go.append(gg); b.append(go);
+  // 장부
+  const lg = h('div', 'vcard'); lg.append(h('h3', '', L('최근 장부', 'Recent ledger'))); const lv = h('div', 'vlog');
+  if (!V.log.length) lv.append(h('div', 'vnote', L('아직 기록이 없습니다.', 'No entries yet.')));
+  for (const e of V.log.slice(0, 20)) { const r = h('div'); const k = e.k, lab = k === 'in' ? L('넣음', 'Deposit') : k === 'out' ? L('뺌', 'Withdraw') : k === 'spend' ? L('씀', 'Spent') : L('들어옴', 'Earned'); r.append(h('span', 'vnote', e.d || ''), h('span', k, lab + (e.what ? ` · ${e.what}` : '') + (e.def ? ' ' + L('(적자 중)', '(in deficit)') : '')), h('b', k, (k === 'in' || k === 'earn' ? '+' : '−') + fmt(e.amt))); lv.append(r); }
+  lg.append(lv); b.append(lg);
+  const cl = h('button', 'vb', L('닫기', 'Close')); cl.type = 'button'; cl.style.marginTop = '10px'; cl.onclick = closeVault; b.append(cl);
+ }
+ if (window.sllm.onVaultUpdate) window.sllm.onVaultUpdate((v) => { V = v; if ($('vwin').classList.contains('on')) drawVault(); });
+ $('x').onclick = () => window.sllm.outingClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('vwin').classList.contains('on')) { closeVault(); return; } if (sel) { sel = null; draw(); } else window.sllm.outingClose(); } });
+ window.addEventListener('resize', () => { if (S && S.ready && !S.map.art) drawCity(S.ethic || 'none'); });
+ document.addEventListener('sllm-language', draw);
+ if (window.sllm.onOutingState) window.sllm.onOutingState((s) => { S = s; draw(); });
+ window.sllm.outingState().then((s) => { S = s; draw(); });
+</script>
+</body></html>

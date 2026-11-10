@@ -1,0 +1,15 @@
+# 타국 지인 생사 확인(2026-10-23, 사용자 확정: 플레이어와 연락처를 바꾼 사람만). 만찬 참석자 확인 때 붙인 sllm_fgid 가 있는 지도자만 알린다.
+# 1년에 한 번·편지 보낼 때만 부른다(앱: src/features/fbanquet-app.ts checkContactsAlive). 사망·은퇴한 지도자는 목록에서 빠지므로 「소식 끊김」으로 본다.
+sllm_probe_fgalive = {
+ set_variable = { which = sllm_out_req value = $REQ$ }
+ sllm_probe_assign_idx = yes
+ every_country = {
+  limit = { is_ai = yes }
+  set_variable = { which = sllm_fa_req value = prev.sllm_out_req }
+  every_owned_leader = {
+   limit = { is_variable_set = sllm_fgid }
+   log = "SLLM:FGALIVE/;/req=\\[Prev.sllm_fa_req]/;/fg=\\[This.sllm_fgid]/;/idx=\\[Prev.sllm_idx]"
+  }
+ }
+ log = "SLLM:FGALIVE_END/;/req=\\[This.sllm_out_req]"
+}

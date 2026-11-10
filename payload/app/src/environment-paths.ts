@@ -14,7 +14,8 @@ export function runtimeUserDir(): string { return selectedUserDir || findUserDir
 let roots: EnvironmentRoots = { documents: path.join(os.homedir(), 'Documents'), home: os.homedir(), steam: [], extraLibraries: [], drives: [] };
 
 /** Electron supplies the OS known Documents folder, including OneDrive redirection. */
-export function initializeEnvironment(documents: string, steamOverride?: string[]): void {
+/** home 은 시험용(2026-11-05): 실제 PC 의 문서 폴더·스팀이 시험에 섞이지 않게 바꿔 끼운다. 앱은 넘기지 않는다. */
+export function initializeEnvironment(documents: string, steamOverride?: string[], home: string = os.homedir()): void {
   const steam = steamOverride ?? [];
   if (!steamOverride && process.platform === 'win32') {
     for (const key of ['HKCU\\Software\\Valve\\Steam', 'HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam']) {
@@ -31,7 +32,7 @@ export function initializeEnvironment(documents: string, steamOverride?: string[
   for (const d of drives) for (const sub of ['SteamLibrary', 'Steam', 'Games\\Steam', 'Games\\SteamLibrary', 'Program Files (x86)\\Steam', 'Program Files\\Steam', 'Program Files (x86)\\SteamLibrary', 'Game\\Steam', 'Game\\SteamLibrary']) {
     const c = path.join(d, sub); if (isDir(path.join(c, 'steamapps'))) extra.push(c);
   }
-  roots = { documents, home: os.homedir(), steam: unique(steam), extraLibraries: unique(extra), drives };
+  roots = { documents, home, steam: unique(steam), extraLibraries: unique(extra), drives };
 }
 export function windowsDrives(): string[] {
   const out: string[] = [];

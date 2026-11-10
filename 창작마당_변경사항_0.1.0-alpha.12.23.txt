@@ -1,0 +1,225 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 12.23 — 신문 대개편: 종이 신문 · 신문사 홈페이지 · 보도사진 · 실시간 소식 (0.1.0-alpha.12.23)[/h1]
+
+알파 12.22 이후의 업데이트입니다. 신문을 처음부터 다시 만들었습니다. 오버레이 신문은 [b]진짜 종이 신문[/b]처럼, 집무실 은하 신문은 [b]신문사 홈페이지[/b]처럼 바뀌었습니다. 기사마다 앱이 [b]보도사진을 먼저 고르고[/b] AI가 그 사진에 맞춰 기사를 씁니다. 전투 승리 · 궤도 폭격 · 고고학 발굴 같은 큰 사건은 [b]일어난 순간[/b] 신문 소식으로 들어옵니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]📰 종이 신문 (오버레이 · 집무실 책상 신문)[/h2]
+[list]
+[*][b]종이 질감[/b] 지면에 신문사별 [b]제호 띠[/b], 분야 띠(인쇄 장식), 그날의 [b]우주 기상[/b]이 붙습니다.
+[*]머리기사에는 [b]흑백 망점 보도사진[/b]이 실립니다. 나머지 기사는 세 단으로 나뉘고, 빈자리에 [b]지면 광고[/b]가 들어갑니다(광고 문구는 한/영).
+[*][b]호외[/b]는 기사 한 건과 붉은 호외 도장으로 냅니다. 나머지 지면은 AI를 쓰지 않은 장식 글씨로 채워 LLM을 아낍니다.
+[/list]
+
+[h2]🖥️ 신문사 홈페이지 (집무실 은하 신문)[/h2]
+[list]
+[*]같은 기사를 [b]뉴스 홈페이지[/b] 모양으로 보여 줍니다. 사진은 컬러 그대로, 신문사마다 고유 색 · [b]머리 배너[/b] · [b]둥근 로고[/b]가 있습니다. 위기 특별판은 붉게 바뀝니다.
+[*][b]신문사 3곳을 브라우저 탭처럼[/b] 오갑니다. 각 홈페이지에는 그 신문사가 쓴 기사만 나옵니다.
+[*]연도별로 나누지 않고 [b]최신순 피드[/b]로 이어집니다. 목록은 [b]9개씩 게시판처럼[/b] 페이지를 넘깁니다(큰 기사는 첫 페이지에만).
+[*][b]분야 탭[/b](전쟁 · 외교 · 정치 · 경제 · 은하 · 스포츠): 누르면 올해 그 분야 기사를 보고 있는 신문사가 [b]자기 논조로[/b] 많아야 3건 씁니다. 그 분야에 실제 사건이 없으면 쓰지 않습니다.
+[*][b]속보 띠[/b]: 실시간 소식 줄이 흐릅니다. 누르면 그때 보고 있는 신문사가 그 소식을 기사로 씁니다(같은 사건도 신문사마다 논조가 다름).
+[*]설정에서 [b]홈페이지 로고[/b]를 신문 그림과 따로 바꿀 수 있습니다.
+[/list]
+
+[h2]🆓 신문 구독 (무료) — LLM 사용 줄이기[/h2]
+[list]
+[*]신문사 3곳 가운데 [b]구독한 곳만[/b] 새 기사(정기호 · 분야 · 실시간)를 씁니다. 새해 정기호는 구독한 신문사 중 한 곳이 무작위로 냅니다. 구독은 무료입니다.
+[*]처음 홈페이지를 열면 [b]구독할 신문사 1곳[/b]을 고릅니다. 나중에 홈페이지의 「이 신문 구독하기」 단추나 설정 「신문 구독」에서 늘리거나 줄일 수 있습니다. 홈페이지에서는 마지막 한 곳은 해지할 수 없고, 설정에서 모두 끄면 신문을 내지 않습니다.
+[*]구독하지 않은 신문사 탭도 보이고, 이미 쓴 기사는 그대로 읽을 수 있습니다.
+[/list]
+
+[h2]📷 보도사진 먼저[/h2]
+[list]
+[*]사건마다 앱이 [b]사진을 먼저[/b] 고르고, AI는 그 사진과 사실을 받아 [b]사진에 맞는 기사와 사진 설명[/b]을 씁니다.
+[*]사진은 그 제국의 [b]종족 계열[/b]에 맞춰 고릅니다(인간 · 포유류 · 파충류 · 조류 · 절지류 · 연체류 · 균류 · 식물 · 암석 · 괴사체 · 수생 · 독성 · 지옥 · 로봇 · 사이보그 · 사이오닉). 시위 · 축제 같은 민간 사건은 [b]제국의 종족 인구 비율대로[/b] 고릅니다.
+[*]계열을 모르는 모드 종족은 인간 사진, 기계 지성은 로봇 사진, 군체 의식은 종족 없는 사진을 씁니다. 같은 기사는 다시 열어도 같은 사진입니다.
+[*][b]광고 모델[/b]도 독자 제국의 종족 비율대로 나옵니다.
+[/list]
+
+[h2]🚀 함선 보도사진[/h2]
+[list]
+[*]함대가 나오는 기사에는 [b]그 제국의 함선 양식[/b]으로 찍은 보도사진이 실립니다. 정거장 전망창 너머로 본 출정, 함교 창밖의 교전, 땅에서 올려다본 궤도 폭격, 개선 귀환, 관함식, 합동 함대, 나포 함선, 첫 접촉, 고고학 탐사.
+[*]몰락 제국 · 프레소린 · 컨틴전시 · 언비든 · 신스 퀸 같은 [b]특수 세력은 그들만의 함선 사진[/b]을 씁니다. 함선 양식이 아니라 [b]그 제국이 누구인지[/b]로 판별하므로, 모드로 일반 제국이 같은 함선을 써도 섞이지 않습니다.
+[*]군체 제국은 함선 사진에서만 주 종족의 함선 양식을 씁니다.
+[*]아직 그리지 못한 일부 장면은 [b]같은 종족의 비슷한 장면 · 자료사진[/b]으로 임시로 채우며, 다음 업데이트에서 채워집니다.
+[/list]
+
+[h2]⚡ 실시간 신문 소식 (모드가 사건 순간에 알림)[/h2]
+[list]
+[*]거대 구조물 완공 · 정부 형태 개편 · 지도자 포로 · 폭격으로 식민지 말살 · 연방 의장국 · 은하 공동체 창설이 일어난 순간 신문 소식이 됩니다. [i](모드 파일 변경)[/i]
+[*][b]전투 승리[/b]: 서로 전쟁 중인 제국끼리 싸워 제독이 이끈 함대가 이기면 「제독 OO이 이끄는 함대가 격파」 소식이 납니다(이긴 나라마다 180일에 한 번). [i](모드 파일 변경)[/i]
+[*][b]고고학 발굴[/b]: 유적 발굴이 끝나면 과학자 이름과 유적 이름으로 소식이 납니다. [i](모드 파일 변경)[/i]
+[*][b]궤도 폭격[/b]: 폭격이 시작되면 한 번(행성마다 1년에 한 번), 우리 제국이 낀 폭격에서 사상자가 나면 한 번 더 소식이 납니다. 매일 불리는 게임 신호는 행성 표식으로 바로 빠져나와 게임 부담이 거의 없습니다. AI끼리의 폭격은 폭격한 나라마다 1년에 한 번만. [i](모드 파일 변경)[/i]
+[*]이 소식들은 신문 홈페이지 속보 띠로 가고, 라디오에는 중복으로 내보내지 않습니다.
+[/list]
+
+[h2]🔧 버그 수정[/h2]
+[list]
+[*]게임 초반, 아직 아무와도 접촉하지 않았는데 신문에 [b]은하 판세(남의 나라 함대 순위)[/b]나 모르는 해적 세력의 멸망 소식이 나오던 문제. 이제 신문 · 라디오 · 호외는 [b]통신이 있는 나라[/b]의 일만 싣습니다. 은하 판세는 아는 나라만 순위에 넣고, 아는 나라가 없으면 기사를 내지 않습니다. 은하 위기 시작 · 은하 공동체 창설처럼 온 은하가 아는 일은 그대로 실립니다.
+[/list]
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 12.23 — Newspaper overhaul: printed paper · newspaper websites · press photos · live news (0.1.0-alpha.12.23)[/h1]
+
+Update since Alpha 12.22. The newspaper has been rebuilt from the ground up. The overlay newspaper now looks like a [b]real printed paper[/b], and the Office galactic newspaper is now a [b]news website[/b]. For every story the app [b]picks a press photo first[/b] and the AI writes the story to match it. Big events such as battle victories, orbital bombardments and archaeological digs reach the news [b]the moment they happen[/b].
+
+⚠️ [b]Mod files changed.[/b] Update this mod (Workshop) and the app together, then fully restart the game.
+
+[h2]📰 Printed newspaper (overlay · Office desk paper)[/h2]
+[list]
+[*][b]Paper-textured[/b] pages with each newspaper's own [b]masthead strip[/b], a section strip (print ornaments) and the day's [b]space weather[/b].
+[*]The lead story carries a [b]black-and-white halftone press photo[/b]. Other stories run in three columns, with a [b]print ad[/b] filling the gap (ad copy in Korean/English).
+[*][b]Extras[/b] run one story with a red EXTRA stamp. The rest of the page is filled with decorative lettering instead of AI text, to save LLM use.
+[/list]
+
+[h2]🖥️ Newspaper websites (Office galactic newspaper)[/h2]
+[list]
+[*]The same stories shown as a [b]news website[/b]: full-colour photos, each newspaper with its own colours, [b]header banner[/b] and [b]round logo[/b]. Crisis special editions turn red.
+[*]Switch between the [b]three newspapers like browser tabs[/b]. Each site only shows that newspaper's own stories.
+[*]No more year-by-year pages: one [b]newest-first feed[/b], listed [b]9 per page like a message board[/b] (big stories on the first page only).
+[*][b]Section tabs[/b] (War · Diplomacy · Politics · Economy · Galaxy · Sports): opening one has the newspaper you are reading write up to 3 stories of that section for this year, [b]in its own editorial voice[/b]. Nothing is written if that section had no real events.
+[*][b]Breaking-news ticker[/b]: live news lines scroll by. Click one and the newspaper you are reading writes it up as a story (the same event reads differently in each paper).
+[*]The [b]website logo[/b] can be changed in Settings, separately from the newspaper art.
+[/list]
+
+[h2]🆓 Newspaper subscriptions (free) — less LLM use[/h2]
+[list]
+[*]Only the newspapers you [b]subscribe to[/b] write new stories (regular issues, sections, live stories). Each new year one subscribed paper is picked at random to publish the regular issue. Subscribing is free.
+[*]The first time you open the website you [b]pick one newspaper[/b]. Add or drop papers later with the site's "Subscribe" button or in Settings "Newspaper subscriptions". The website will not let you drop your last paper; turning all of them off in Settings stops publication.
+[*]Unsubscribed papers keep their tab, and stories they already wrote stay readable.
+[/list]
+
+[h2]📷 Photo first[/h2]
+[list]
+[*]For each event the app picks [b]the photo first[/b]; the AI gets the photo and the facts and writes [b]a story and caption that fit the photo[/b].
+[*]Photos follow the empire's [b]species class[/b] (Human · Mammalian · Reptilian · Avian · Arthropoid · Molluscoid · Fungoid · Plantoid · Lithoid · Necroid · Aquatic · Toxoid · Infernal · Robot · Cybernetic · Psionic). Civilian events such as protests and festivals pick by the empire's [b]species population mix[/b].
+[*]Modded species of unknown class use human photos, Machine Intelligences use robot photos, Hive Minds use species-free photos. The same story always shows the same photo.
+[*][b]Ad models[/b] also follow the reading empire's species mix.
+[/list]
+
+[h2]🚀 Ship press photos[/h2]
+[list]
+[*]Fleet stories carry press photos shot in [b]that empire's ship set[/b]: a fleet leaving orbit seen through a station window, a battle through a bridge window, orbital bombardment seen from the ground, a victorious return, a naval review, allied fleets, a captured warship, first contact, an archaeological dig.
+[*][b]Special factions[/b] (Fallen Empires, Prethoryn, Contingency, Unbidden, Synth Queen) get [b]their own ship photos[/b]. They are recognised by [b]who the empire is[/b], not by ship set, so a regular empire using the same ships through a mod is never mixed up with them.
+[*]Hive Minds use their main species' ship set for ship photos.
+[*]A few scenes not yet drawn are temporarily filled with [b]a similar scene or archive photo of the same species[/b]; they will be filled in a coming update.
+[/list]
+
+[h2]⚡ Live news (the mod reports events as they happen)[/h2]
+[list]
+[*]Megastructure completed · government reformed · leader captured · colony wiped out by bombardment · federation president · Galactic Community founded become news the moment they happen. [i](mod files changed)[/i]
+[*][b]Battle victories[/b]: when a fleet led by an admiral wins a battle between two empires at war, "fleet under Admiral X defeated…" makes the news (once per 180 days per winning empire). [i](mod files changed)[/i]
+[*][b]Archaeological digs[/b]: a finished dig site makes the news with the scientist's and site's names. [i](mod files changed)[/i]
+[*][b]Orbital bombardment[/b]: news when a bombardment starts (once a year per planet), plus one more when it causes casualties in a bombardment involving your empire. The game's daily signal exits at once on a planet marker, so the game cost is close to nothing. AI-vs-AI bombardments report once a year per attacker. [i](mod files changed)[/i]
+[*]These go to the website's breaking-news ticker and are not repeated on the radio.
+[/list]
+
+[h2]🔧 Fixes[/h2]
+[list]
+[*]Early in a game, before any contact, the news could print a [b]galactic balance of power (other empires' fleet rankings)[/b] or the fall of pirates you had never met. The newspaper, radio and extras now only report on empires [b]you have communications with[/b]. The balance-of-power line only ranks empires you know, and is skipped if you know none. Galaxy-wide events such as a crisis starting or the Galactic Community forming are still reported.
+[/list]
+
+===== Discord (한국어) — 1/2 =====
+
+# SLLM 알파 12.23 — 신문 대개편: 종이 신문 · 신문사 홈페이지 · 보도사진 · 실시간 소식 (0.1.0-alpha.12.23)
+
+알파 12.22 이후의 업데이트입니다. 신문을 처음부터 다시 만들었습니다. 오버레이 신문은 **진짜 종이 신문**처럼, 집무실 은하 신문은 **신문사 홈페이지**처럼 바뀌었습니다. 기사마다 앱이 **보도사진을 먼저 고르고** AI가 그 사진에 맞춰 기사를 씁니다. 전투 승리 · 궤도 폭격 · 고고학 발굴 같은 큰 사건은 **일어난 순간** 신문 소식으로 들어옵니다.
+
+⚠️ **모드 파일이 바뀌었습니다.** 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+## 📰 종이 신문 (오버레이 · 집무실 책상 신문)
+- **종이 질감** 지면에 신문사별 **제호 띠**, 분야 띠(인쇄 장식), 그날의 **우주 기상**이 붙습니다.
+- 머리기사에는 **흑백 망점 보도사진**이 실립니다. 나머지 기사는 세 단으로 나뉘고, 빈자리에 **지면 광고**가 들어갑니다(광고 문구는 한/영).
+- **호외**는 기사 한 건과 붉은 호외 도장으로 냅니다. 나머지 지면은 AI를 쓰지 않은 장식 글씨로 채워 LLM을 아낍니다.
+
+## 🖥️ 신문사 홈페이지 (집무실 은하 신문)
+- 같은 기사를 **뉴스 홈페이지** 모양으로 보여 줍니다. 사진은 컬러 그대로, 신문사마다 고유 색 · **머리 배너** · **둥근 로고**가 있습니다. 위기 특별판은 붉게 바뀝니다.
+- **신문사 3곳을 브라우저 탭처럼** 오갑니다. 각 홈페이지에는 그 신문사가 쓴 기사만 나옵니다.
+- 연도별로 나누지 않고 **최신순 피드**로 이어집니다. 목록은 **9개씩 게시판처럼** 페이지를 넘깁니다(큰 기사는 첫 페이지에만).
+- **분야 탭**(전쟁 · 외교 · 정치 · 경제 · 은하 · 스포츠): 누르면 올해 그 분야 기사를 보고 있는 신문사가 **자기 논조로** 많아야 3건 씁니다. 그 분야에 실제 사건이 없으면 쓰지 않습니다.
+- **속보 띠**: 실시간 소식 줄이 흐릅니다. 누르면 그때 보고 있는 신문사가 그 소식을 기사로 씁니다(같은 사건도 신문사마다 논조가 다름).
+- 설정에서 **홈페이지 로고**를 신문 그림과 따로 바꿀 수 있습니다.
+
+## 🆓 신문 구독 (무료) — LLM 사용 줄이기
+- 신문사 3곳 가운데 **구독한 곳만** 새 기사(정기호 · 분야 · 실시간)를 씁니다. 새해 정기호는 구독한 신문사 중 한 곳이 무작위로 냅니다. 구독은 무료입니다.
+- 처음 홈페이지를 열면 **구독할 신문사 1곳**을 고릅니다. 나중에 홈페이지의 「이 신문 구독하기」 단추나 설정 「신문 구독」에서 늘리거나 줄일 수 있습니다. 홈페이지에서는 마지막 한 곳은 해지할 수 없고, 설정에서 모두 끄면 신문을 내지 않습니다.
+- 구독하지 않은 신문사 탭도 보이고, 이미 쓴 기사는 그대로 읽을 수 있습니다.
+
+## 📷 보도사진 먼저
+- 사건마다 앱이 **사진을 먼저** 고르고, AI는 그 사진과 사실을 받아 **사진에 맞는 기사와 사진 설명**을 씁니다.
+- 사진은 그 제국의 **종족 계열**에 맞춰 고릅니다(인간 · 포유류 · 파충류 · 조류 · 절지류 · 연체류 · 균류 · 식물 · 암석 · 괴사체 · 수생 · 독성 · 지옥 · 로봇 · 사이보그 · 사이오닉). 시위 · 축제 같은 민간 사건은 **제국의 종족 인구 비율대로** 고릅니다.
+- 계열을 모르는 모드 종족은 인간 사진, 기계 지성은 로봇 사진, 군체 의식은 종족 없는 사진을 씁니다. 같은 기사는 다시 열어도 같은 사진입니다.
+- **광고 모델**도 독자 제국의 종족 비율대로 나옵니다.
+
+===== Discord (한국어) — 2/2 =====
+
+## 🚀 함선 보도사진
+- 함대가 나오는 기사에는 **그 제국의 함선 양식**으로 찍은 보도사진이 실립니다. 정거장 전망창 너머로 본 출정, 함교 창밖의 교전, 땅에서 올려다본 궤도 폭격, 개선 귀환, 관함식, 합동 함대, 나포 함선, 첫 접촉, 고고학 탐사.
+- 몰락 제국 · 프레소린 · 컨틴전시 · 언비든 · 신스 퀸 같은 **특수 세력은 그들만의 함선 사진**을 씁니다. 함선 양식이 아니라 **그 제국이 누구인지**로 판별하므로, 모드로 일반 제국이 같은 함선을 써도 섞이지 않습니다.
+- 군체 제국은 함선 사진에서만 주 종족의 함선 양식을 씁니다.
+- 아직 그리지 못한 일부 장면은 **같은 종족의 비슷한 장면 · 자료사진**으로 임시로 채우며, 다음 업데이트에서 채워집니다.
+
+## ⚡ 실시간 신문 소식 (모드가 사건 순간에 알림)
+- 거대 구조물 완공 · 정부 형태 개편 · 지도자 포로 · 폭격으로 식민지 말살 · 연방 의장국 · 은하 공동체 창설이 일어난 순간 신문 소식이 됩니다. *(모드 파일 변경)*
+- **전투 승리**: 서로 전쟁 중인 제국끼리 싸워 제독이 이끈 함대가 이기면 「제독 OO이 이끄는 함대가 격파」 소식이 납니다(이긴 나라마다 180일에 한 번). *(모드 파일 변경)*
+- **고고학 발굴**: 유적 발굴이 끝나면 과학자 이름과 유적 이름으로 소식이 납니다. *(모드 파일 변경)*
+- **궤도 폭격**: 폭격이 시작되면 한 번(행성마다 1년에 한 번), 우리 제국이 낀 폭격에서 사상자가 나면 한 번 더 소식이 납니다. 매일 불리는 게임 신호는 행성 표식으로 바로 빠져나와 게임 부담이 거의 없습니다. AI끼리의 폭격은 폭격한 나라마다 1년에 한 번만. *(모드 파일 변경)*
+- 이 소식들은 신문 홈페이지 속보 띠로 가고, 라디오에는 중복으로 내보내지 않습니다.
+
+## 🔧 버그 수정
+- 게임 초반, 아직 아무와도 접촉하지 않았는데 신문에 **은하 판세(남의 나라 함대 순위)**나 모르는 해적 세력의 멸망 소식이 나오던 문제. 이제 신문 · 라디오 · 호외는 **통신이 있는 나라**의 일만 싣습니다. 은하 판세는 아는 나라만 순위에 넣고, 아는 나라가 없으면 기사를 내지 않습니다. 은하 위기 시작 · 은하 공동체 창설처럼 온 은하가 아는 일은 그대로 실립니다.
+
+===== Discord (English) — 1/4 =====
+
+# SLLM Alpha 12.23 — Newspaper overhaul: printed paper · newspaper websites · press photos · live news (0.1.0-alpha.12.23)
+
+Update since Alpha 12.22. The newspaper has been rebuilt from the ground up. The overlay newspaper now looks like a **real printed paper**, and the Office galactic newspaper is now a **news website**. For every story the app **picks a press photo first** and the AI writes the story to match it. Big events such as battle victories, orbital bombardments and archaeological digs reach the news **the moment they happen**.
+
+⚠️ **Mod files changed.** Update this mod (Workshop) and the app together, then fully restart the game.
+
+## 📰 Printed newspaper (overlay · Office desk paper)
+- **Paper-textured** pages with each newspaper's own **masthead strip**, a section strip (print ornaments) and the day's **space weather**.
+- The lead story carries a **black-and-white halftone press photo**. Other stories run in three columns, with a **print ad** filling the gap (ad copy in Korean/English).
+- **Extras** run one story with a red EXTRA stamp. The rest of the page is filled with decorative lettering instead of AI text, to save LLM use.
+
+===== Discord (English) — 2/4 =====
+
+## 🖥️ Newspaper websites (Office galactic newspaper)
+- The same stories shown as a **news website**: full-colour photos, each newspaper with its own colours, **header banner** and **round logo**. Crisis special editions turn red.
+- Switch between the **three newspapers like browser tabs**. Each site only shows that newspaper's own stories.
+- No more year-by-year pages: one **newest-first feed**, listed **9 per page like a message board** (big stories on the first page only).
+- **Section tabs** (War · Diplomacy · Politics · Economy · Galaxy · Sports): opening one has the newspaper you are reading write up to 3 stories of that section for this year, **in its own editorial voice**. Nothing is written if that section had no real events.
+- **Breaking-news ticker**: live news lines scroll by. Click one and the newspaper you are reading writes it up as a story (the same event reads differently in each paper).
+- The **website logo** can be changed in Settings, separately from the newspaper art.
+
+## 🆓 Newspaper subscriptions (free) — less LLM use
+- Only the newspapers you **subscribe to** write new stories (regular issues, sections, live stories). Each new year one subscribed paper is picked at random to publish the regular issue. Subscribing is free.
+- The first time you open the website you **pick one newspaper**. Add or drop papers later with the site's "Subscribe" button or in Settings "Newspaper subscriptions". The website will not let you drop your last paper; turning all of them off in Settings stops publication.
+- Unsubscribed papers keep their tab, and stories they already wrote stay readable.
+
+===== Discord (English) — 3/4 =====
+
+## 📷 Photo first
+- For each event the app picks **the photo first**; the AI gets the photo and the facts and writes **a story and caption that fit the photo**.
+- Photos follow the empire's **species class** (Human · Mammalian · Reptilian · Avian · Arthropoid · Molluscoid · Fungoid · Plantoid · Lithoid · Necroid · Aquatic · Toxoid · Infernal · Robot · Cybernetic · Psionic). Civilian events such as protests and festivals pick by the empire's **species population mix**.
+- Modded species of unknown class use human photos, Machine Intelligences use robot photos, Hive Minds use species-free photos. The same story always shows the same photo.
+- **Ad models** also follow the reading empire's species mix.
+
+## 🚀 Ship press photos
+- Fleet stories carry press photos shot in **that empire's ship set**: a fleet leaving orbit seen through a station window, a battle through a bridge window, orbital bombardment seen from the ground, a victorious return, a naval review, allied fleets, a captured warship, first contact, an archaeological dig.
+- **Special factions** (Fallen Empires, Prethoryn, Contingency, Unbidden, Synth Queen) get **their own ship photos**. They are recognised by **who the empire is**, not by ship set, so a regular empire using the same ships through a mod is never mixed up with them.
+- Hive Minds use their main species' ship set for ship photos.
+- A few scenes not yet drawn are temporarily filled with **a similar scene or archive photo of the same species**; they will be filled in a coming update.
+
+===== Discord (English) — 4/4 =====
+
+## ⚡ Live news (the mod reports events as they happen)
+- Megastructure completed · government reformed · leader captured · colony wiped out by bombardment · federation president · Galactic Community founded become news the moment they happen. *(mod files changed)*
+- **Battle victories**: when a fleet led by an admiral wins a battle between two empires at war, "fleet under Admiral X defeated…" makes the news (once per 180 days per winning empire). *(mod files changed)*
+- **Archaeological digs**: a finished dig site makes the news with the scientist's and site's names. *(mod files changed)*
+- **Orbital bombardment**: news when a bombardment starts (once a year per planet), plus one more when it causes casualties in a bombardment involving your empire. The game's daily signal exits at once on a planet marker, so the game cost is close to nothing. AI-vs-AI bombardments report once a year per attacker. *(mod files changed)*
+- These go to the website's breaking-news ticker and are not repeated on the radio.
+
+## 🔧 Fixes
+- Early in a game, before any contact, the news could print a **galactic balance of power (other empires' fleet rankings)** or the fall of pirates you had never met. The newspaper, radio and extras now only report on empires **you have communications with**. The balance-of-power line only ranks empires you know, and is skipped if you know none. Galaxy-wide events such as a crisis starting or the Galactic Community forming are still reported.

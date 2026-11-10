@@ -1,0 +1,7 @@
+﻿l_english:
+ sllm_audit_clean:0 "Transparent Government"
+ sllm_audit_clean_desc:0 "The government answered the charges of the national audit in good faith. The people trust it."
+ sllm_audit_scandal:0 "Audit Scandal"
+ sllm_audit_scandal_desc:0 "The government's answers at the national audit caused an uproar. Trust is crumbling."
+ sllm_audit_refused:0 "Audit Refused"
+ sllm_audit_refused_desc:0 "The government never appeared before parliament's national audit. The people believe it has something to hide."

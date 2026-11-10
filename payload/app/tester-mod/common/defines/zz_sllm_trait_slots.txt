@@ -1,0 +1,5 @@
+# SLLM 작전지휘실(2026-11-05 사용자): 전쟁 성향 특성(sllm_doc_*)이 일반 특성 칸 하나를 쓰므로 칸을 하나 늘린다(바닐라 2 → 3).
+# 파일 이름이 zz_sllm 인 것은 NLL(The New Logic of Leaders, zz_vanilla_subclass_levels.txt)처럼 같은 값을 바꾸는 모드가 뒤에 읽혀 그 값이 이기게 하려는 것.
+NGameplay = {
+	MAX_BASIC_TRAITS = 3
+}

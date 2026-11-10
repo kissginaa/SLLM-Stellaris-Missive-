@@ -1,0 +1,68 @@
+# 시간선 표식(2026-11-05, Empire Dashboard Feed 의 기법을 참고해 우리 식으로 새로 씀).
+# 매달 새 무작위 번호 sllm_tl = 앞 3자리(sllm_tl_a, 100~999) · 뒤 3자리(sllm_tl_b, 000~999). 세 자리씩 나눠 두는 까닭:
+#   큰 수는 로그에 「123.4K」처럼 줄여 찍혀 정확한 값을 잃는다.
+# 지난달 번호는 sllm_tlp_a/b. 세이브에 함께 저장되므로, 불러오면 LOADED 줄의 tl 이 「그 세이브가 몇 년 몇 월의 어느 시간선인가」를 정확히 가리킨다.
+# 불러올 때마다 sllm_run_a/b 도 새로 뽑는다: 게임은 한 번 실행하는 동안 똑같은 로그 줄을 다시 쓰지 않으므로,
+#   같은 세이브를 두 번 불러오면 LOADED 줄이 통째로 빠질 수 있다 — 매번 다른 run 이 줄을 다르게 만든다.
+sllm_tl_digit = {
+	multiply_variable = { which = $V$ value = 10 }
+	random_list = {
+		10 = { }
+		10 = { change_variable = { which = $V$ value = 1 } }
+		10 = { change_variable = { which = $V$ value = 2 } }
+		10 = { change_variable = { which = $V$ value = 3 } }
+		10 = { change_variable = { which = $V$ value = 4 } }
+		10 = { change_variable = { which = $V$ value = 5 } }
+		10 = { change_variable = { which = $V$ value = 6 } }
+		10 = { change_variable = { which = $V$ value = 7 } }
+		10 = { change_variable = { which = $V$ value = 8 } }
+		10 = { change_variable = { which = $V$ value = 9 } }
+	}
+}
+# 세 자리(첫 자리 1~9) — A
+sllm_tl_three_lead = {
+	random_list = {
+		10 = { set_variable = { which = $V$ value = 1 } }
+		10 = { set_variable = { which = $V$ value = 2 } }
+		10 = { set_variable = { which = $V$ value = 3 } }
+		10 = { set_variable = { which = $V$ value = 4 } }
+		10 = { set_variable = { which = $V$ value = 5 } }
+		10 = { set_variable = { which = $V$ value = 6 } }
+		10 = { set_variable = { which = $V$ value = 7 } }
+		10 = { set_variable = { which = $V$ value = 8 } }
+		10 = { set_variable = { which = $V$ value = 9 } }
+	}
+	sllm_tl_digit = { V = $V$ }
+	sllm_tl_digit = { V = $V$ }
+}
+# 세 자리(000~999) — B
+sllm_tl_three = {
+	set_variable = { which = $V$ value = 0 }
+	sllm_tl_digit = { V = $V$ }
+	sllm_tl_digit = { V = $V$ }
+	sllm_tl_digit = { V = $V$ }
+}
+# 매달(sllm_probe.100, MONTH 줄 앞): 지난 번호를 tlp 로 옮기고 새로 뽑는다.
+sllm_tl_roll = {
+	if = {
+		limit = { is_variable_set = sllm_tl_a }
+		set_variable = { which = sllm_tlp_a value = sllm_tl_a }
+		set_variable = { which = sllm_tlp_b value = sllm_tl_b }
+	}
+	else = {
+		set_variable = { which = sllm_tlp_a value = 0 }
+		set_variable = { which = sllm_tlp_b value = 0 }
+	}
+	sllm_tl_three_lead = { V = sllm_tl_a }
+	sllm_tl_three = { V = sllm_tl_b }
+}
+# 불러올 때(sllm_probe.101, LOADED 줄 앞): 번호가 아직 없으면(옛 세이브·새 게임) 0 으로 둔다 — 앱은 0 을 「모름」으로 본다.
+sllm_tl_on_load = {
+	if = {
+		limit = { NOT = { is_variable_set = sllm_tl_a } }
+		set_variable = { which = sllm_tl_a value = 0 }
+		set_variable = { which = sllm_tl_b value = 0 }
+	}
+	sllm_tl_three_lead = { V = sllm_run_a }
+	sllm_tl_three = { V = sllm_run_b }
+}

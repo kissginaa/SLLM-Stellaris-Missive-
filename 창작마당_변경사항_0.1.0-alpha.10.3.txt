@@ -1,0 +1,31 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 10.3 마이너 픽스 (0.1.0-alpha.10.3)[/h1]
+
+[list]
+[*]통치자는 다중 연애와 다중 결혼이 가능합니다.
+[*]지도자마다 초상화를 바꿀 수 있습니다. 집무실 인물 카드의 「🖼 초상화 넣기」에서 고르면, 이 세이브의 모든 장면에서 그 그림이 먼저 보입니다.
+[/list]
+
+앱 업데이트 안내가 나타나면 적용해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 10.3 Minor Fix (0.1.0-alpha.10.3)[/h1]
+
+[list]
+[*]The ruler can now have multiple partners and multiple spouses.
+[*]You can change any leader's portrait. Use "🖼 Set portrait" on their card in the Office, and that image is shown first in every scene of this save.
+[/list]
+
+When the app update notice appears, please apply it.
+
+===== Discord (한국어) =====
+# 🔧 SLLM 알파 10.3 마이너 픽스
+💞 통치자는 다중 연애와 다중 결혼이 가능합니다.
+🖼 지도자마다 초상화를 바꿀 수 있습니다(집무실 인물 카드 → 「🖼 초상화 넣기」).
+앱 업데이트 안내가 나타나면 적용해 주세요!
+
+===== Discord (English) =====
+# 🔧 SLLM Alpha 10.3 Minor Fix
+💞 The ruler can now have multiple partners and multiple spouses.
+🖼 You can change any leader's portrait (Office person card → "🖼 Set portrait").
+Apply the app update when the notice appears!

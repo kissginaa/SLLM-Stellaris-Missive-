@@ -1,0 +1,43 @@
+# SLLM 성계 번호표(알파 11, 2026-10-25, 사용자 결정 「1번도 하자」). 게임에는 앱이 부를 수 있는 성계 번호가 없어서 모드가 붙인다.
+# 각 성계의 별(행성 범위라 변수를 붙일 수 있음)에 sllm_sys = 1, 2, 3… 을 한 번만 적고, 번호·이름을 로그로 보낸다.
+# 앱(src/features/systems-app.ts)이 세이브마다 표를 저장하고, 번호로 지도 이름표를 세우거나 치운다.
+# 범위: This = Root = 플레이어 나라(앱 명령이 every_playable_country 안에서 부른다, 행성 목록과 같은 방식).
+sllm_probe_systems = {
+	if = { limit = { NOT = { is_variable_set = sllm_sys_n } } set_variable = { which = sllm_sys_n value = 0 } }
+	root = { if = { limit = { NOT = { is_variable_set = sllm_sys_n } } set_variable = { which = sllm_sys_n value = 0 } } }   # 세는 쪽(root)도 미리(error.log, 2026-11-08)
+	set_variable = { which = sllm_sys_req value = $REQ$ } # F-39: 로그에는 변수로(2026-10-27)
+	log = "SLLM:SYS_BEGIN/;/req=\\[This.sllm_sys_req]/;/sid=\\[This.sllm_save_id]"
+	every_system = {
+		limit = { exists = star }
+		star = {
+			if = {
+				limit = { NOT = { is_variable_set = sllm_sys } }
+				root = {
+					change_variable = { which = sllm_sys_n value = 1 }
+					prev = { set_variable = { which = sllm_sys value = prev.sllm_sys_n } }   # root.변수 대신 prev 사슬(2026-11-08 error.log: 별 670개 번호 빠짐)
+				}
+			}
+			if = { limit = { is_variable_set = sllm_sys } root = { set_variable = { which = sllm_sys_cur value = prev.sllm_sys } } }
+		}
+		log = "SLLM:SYS/;/n=\\[Root.sllm_sys_cur]/;/name=\\[This.GetName]"
+	}
+	clear_variable = sllm_sys_cur
+	log = "SLLM:SYS_END/;/req=\\[This.sllm_sys_req]/;/n=\\[This.sllm_sys_n]"
+}
+
+# 번호로 이름표 세우기·치우기. N = 성계 번호, KIND = talk(대화에서 언급) 등. 이름표 모양은 sllm_map_marks.txt 의 sllm_mark_put.
+sllm_mark_sys = {
+	random_system = {
+		limit = { exists = star star = { check_variable = { which = sllm_sys value = $N$ } } }
+		sllm_mark_put = { KIND = $KIND$ }
+	}
+}
+sllm_unmark_sys = {
+	random_system = {
+		limit = { exists = star star = { check_variable = { which = sllm_sys value = $N$ } } }
+		every_system_megastructure = {
+			limit = { is_megastructure_type = sllm_mark_$KIND$ }
+			remove_megastructure = this
+		}
+	}
+}

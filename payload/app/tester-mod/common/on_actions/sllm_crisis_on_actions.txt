@@ -3,3 +3,11 @@
 on_monthly_pulse_country = {
 	events = { sllm_crisis.1 }
 }
+# 세이브를 불러오면 지금 위기를 한 번 다시 알린다(2026-11-08 — 매달 보내던 줄은 바뀐 달에만)
+on_single_player_save_game_load = {
+	events = { sllm_crisis.2 }
+}
+# 해마다 한 번 지금 위기를 다시 알린다(2026-11-09 — 바뀐 달에만 보내므로, 앱이 꺼져 있던 동안 바뀐 것을 놓치지 않게)
+on_yearly_pulse_country = {
+	events = { sllm_crisis.3 }
+}

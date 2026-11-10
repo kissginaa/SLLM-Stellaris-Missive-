@@ -1,6 +1,7 @@
 // 단일 의식(기계 지성·군체) 플레이어 제국 판정(2026-10-19 사용자 결정): 파벌·언론·시민 개개인을 전제로 한 기능은 막고, 인물 기능은 말투를 바꾼다.
 // 어디서 알게 되나: 플레이어 제국 정보(PROFILE gest 1=기계·2=군체) → 외교 단말기 연락처(playerGest) → 월간 상황(COUNCILAG gest, 종류는 모름).
 // 가져오기 고리를 만들지 않으려고 월간 상황은 main.ts 가 noteGestaltSnapshot 으로 넘겨 준다(이 파일은 ctx·terminal 만 가져온다).
+import { ipcMain } from 'electron';
 import { ctx } from '../app/ctx';
 import { terminal } from './terminal';
 
@@ -17,5 +18,7 @@ export function playerGestalt(): GestaltKind {
   return '';
 }
 export const isGestalt = (): boolean => playerGestalt() !== '';
+/** 따로 뜨는 창(총독회의·연설)이 말투를 고르려고 묻는다(ui/gestalt-terms.js, 알파 11). */
+export function registerGestalt(): void { ipcMain.handle('playerGestalt', () => playerGestalt()); }
 /** 인물 프롬프트에 넘길 값(persona/letters/memorial): 1 기계, 2 군체(종류를 모르면 군체로 보지 않고 1·2 둘 다 아님 → 3). */
 export const gestaltCode = (): 0 | 1 | 2 | 3 => { const k = playerGestalt(); return k === 'machine' ? 1 : k === 'hive' ? 2 : k === 'gestalt' ? 3 : 0; };

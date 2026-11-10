@@ -66,7 +66,7 @@
     document.body.append(scene);
   }
   async function enter() {
-    if (scene || $('secRetire') || document.body.classList.contains('docked')) return;
+    if (scene || $('secRetire') || document.body.classList.contains('docked') || $('secCall')?.style.display === 'none') return; // 숨긴 비서(단일 의식 제국)는 부를 수 없다
     $('secNudge')?.remove(); // 쪽지는 부르면 읽은 것(앱이 지운다)
     leaving = false; mode = ''; err = ''; logOn = false; curPose = ''; knowledgeDraft = null; knowledgeSid = ''; knowledgeEditing = false;
     build(); document.body.classList.add('sec-scene');
@@ -189,7 +189,7 @@
       box.append(f, tools); setTimeout(() => inp.focus(), 50); return;
     }
     // 이름표
-    const plate = h('div', 'sec-plate'); plate.append(h('b', '', S.name), h('small', '', stageLabel(S.stage)));
+    const plate = h('div', 'sec-plate'); plate.append(h('b', '', S.name), h('small', '', stageLabel(S.stage) + (S.engaged ? ' · ' + L('약혼', 'Engaged') : '')));
     if (S.romance) { const hb = h('span', 'sec-heart'), bar = h('span', 'bar'), i = h('i'); i.style.width = Math.max(0, Math.min(100, S.aff)) + '%'; bar.append(i); hb.append(h('span', '', '♥'), bar, h('span', '', String(S.aff))); if (lastDelta) { const d = h('span', 'd show', (lastDelta > 0 ? '+' : '') + lastDelta); hb.append(d); setTimeout(() => d.classList.remove('show'), 1600); } plate.append(hb); }
     if (S.mood && MOOD[S.mood]) { const m = h('span', 'sec-mood ' + S.mood, L(MOOD[S.mood][0], MOOD[S.mood][1])); m.title = L('얼마 전 함께한 일의 여운이 남아 있습니다', 'The afterglow of a recent moment together lingers'); plate.append(m); }
     const tools = h('div', 'sec-tools'); tools.append(btn('', L('기록', 'Records'), () => { logOn = !logOn; drawLog(); }), btn('leave', L('이만 물러가라', 'You may go'), leave));
@@ -214,7 +214,9 @@
       setPose(t.pose || 'idle');
       if (animate !== false && t !== draw.shown) { draw.shown = t; type(tx, t.text, () => {}); say.onclick = () => typing && typing.fin(); } else tx.textContent = t.text;
     } else say.append(h('span', 'sec-wait', L('…', '…')));
-    box.append(plate, tools, say);
+    box.append(plate, tools);
+    if (morningLine) { const mg = h('div', 'sec-morning', '☀ ' + morningLine); mg.dataset.i18nSkip = ''; mg.style.cssText = 'font-size:12.5px;opacity:.85;margin:2px 0 6px;font-style:italic'; box.append(mg); }
+    box.append(say);
     if (err) box.append(h('div', 'sec-err', err));
     if (leaving) return;
     // 고르기·입력
@@ -222,7 +224,14 @@
     const stay = btn('', L('그냥 곁에 있어 줘', 'Just stay with me'), () => quiet(true)); stay.disabled = waiting || !t; ch.append(stay);
     for (const [lab, q] of QUICK) { const b = btn('', L(lab[0], lab[1]), () => talk(L(q[0], q[1]))); b.disabled = waiting || !t; ch.append(b); }
     for (const d of S.dates || []) { if (d.locked) continue; const b = btn('date', d.title, () => startEv(d.id, false)); b.disabled = waiting || !d.ok; if (!d.ok) b.title = L(`약 ${d.wait}개월 뒤에 다시 청할 수 있습니다`, `You can ask again in about ${d.wait} months`); ch.append(b); }
+    if (S.parkDate && !S.parkDate.locked) { const b = btn('date', L('💐 데이트', '💐 Go on a date'), async () => { err = ''; try { const r = await window.sllm.dateOpen('sec'); if (r && !r.ok) { err = r.error || ''; draw(false); } } catch (e) { err = String(e); draw(false); } }); b.disabled = waiting || !S.parkDate.ok; if (!S.parkDate.ok) b.title = S.parkDate.why; ch.append(b); } // 지도 데이트 화면(date-park.html)으로 — 2026-10-23
     if (S.confess) { const b = btn('love', L('마음 전하기', 'Confess'), () => { mode = mode === 'confess' ? '' : 'confess'; draw(false); box.querySelector('textarea')?.focus(); }); b.disabled = waiting; ch.append(b); }
+    // 비서 예식(2026-10-24 사용자 확정): 약혼 → 규모 선택(비용) → 1년 준비 → 예식. 지도자 예식과 같은 romance-app 명령(상대 'sec')
+    if (S.engaged && S.wedding) { const w = S.wedding, c = w.cost, wd = async (fn) => { err = ''; waiting = true; draw(false); try { const r = await fn(); if (r && !r.ok) err = r.error || ''; else if (r && r.guests) err = L(`하객: ${r.guests.join(', ') || '없음'}`, `Guests: ${r.guests.join(', ') || 'none'}`); } catch (e) { err = String(e); } waiting = false; await open(); };
+      if (w.state === 'engaged') { for (const [sc, lab] of [['state', L(`💒 국가공인 결혼식 준비 (에너지 ${c.state.energy}·식량 ${c.state.food}·광물 ${c.state.minerals})`, `💒 Prepare a state wedding (energy ${c.state.energy}, food ${c.state.food}, minerals ${c.state.minerals})`)], ['informal', L(`💒 비공식 결혼식 준비 (에너지 ${c.informal.energy}·식량 ${c.informal.food}·광물 ${c.informal.minerals})`, `💒 Prepare an informal wedding (energy ${c.informal.energy}, food ${c.informal.food}, minerals ${c.informal.minerals})`)]]) { const b = btn('love', lab, () => wd(() => window.sllm.weddingPrepare('sec', sc))); b.disabled = waiting; ch.append(b); } }
+      else if (w.state === 'preparing') { const b = btn('love', w.due ? L('💒 예식 올리기', '💒 Hold the ceremony') : L(`결혼식 ${w.scheduledOn} 예정`, `Wedding set for ${w.scheduledOn}`), () => wd(() => window.sllm.weddingHold('sec'))); b.disabled = waiting || !w.due; ch.append(b); }
+      const x = btn('', L('결혼식 취소 (교제는 유지)', 'Call off the wedding (stay together)'), () => { if (window.confirm(L(w.state === 'preparing' ? '결혼식 준비를 접습니까? 낸 비용의 50%를 돌려받고, 교제는 그대로입니다.' : '약혼을 물립니까? 교제는 그대로입니다.', w.state === 'preparing' ? 'Call off the wedding? 50% of what you paid is refunded; you stay together.' : 'Call off the engagement? You stay together.'))) wd(() => window.sllm.weddingCancel('sec')); }); x.disabled = waiting; ch.append(x);
+    }
     if (S.propose) { const b = btn('love', L('청혼하기', 'Propose'), () => { mode = mode === 'propose' ? '' : 'propose'; draw(false); box.querySelector('textarea')?.focus(); }); b.disabled = waiting; ch.append(b); }
     const inr = h('div', 'sec-in'); const ta = h('textarea'); ta.maxLength = 600;
     ta.placeholder = mode === 'confess' ? L('그녀에게 전할 마음 (Enter 보내기)', 'What you want to tell her (Enter to send)') : mode === 'propose' ? L('청혼의 말 (Enter 보내기)', 'Your proposal (Enter to send)') : L('비서에게 말하기 (Enter 보내기, Shift+Enter 줄바꿈)', 'Speak to your secretary (Enter to send, Shift+Enter for a new line)');
@@ -431,7 +440,7 @@
     const box = scene.querySelector('.sec-box'); box.textContent = '';
     const plate = h('div', 'sec-plate'); plate.append(h('b', '', S.name), h('small', '', E.title + (E.replay ? ' · ' + L('회상', 'Recollection') : '')));
     if (S.romance && !E.replay) { const hb = h('span', 'sec-heart'), bar = h('span', 'bar'), i = h('i'); i.style.width = Math.max(0, Math.min(100, S.aff)) + '%'; bar.append(i); hb.append(h('span', '', '♥'), bar, h('span', '', String(S.aff))); if (lastDelta) { const d = h('span', 'd show', (lastDelta > 0 ? '+' : '') + lastDelta); hb.append(d); setTimeout(() => d.classList.remove('show'), 1600); } plate.append(hb); }
-    const tools = h('div', 'sec-tools'); tools.append(btn('', L('기록', 'Records'), () => { logOn = !logOn; drawLog(); }));
+    const tools = h('div', 'sec-tools'); tools.append(btn('', L('기록', 'Records'), () => { logOn = !logOn; drawLog(); })); tools.append(btn('leave', '‹ ' + L('돌아가기', 'Go back'), () => leaveEv())); // 2026-10-24: 이벤트 도중에도 언제든 돌아간다
     const say = h('div', 'sec-say ev-say'); say.dataset.i18nSkip = '';
     const items = [{ narr: E.narr }, ...E.lines]; const step = Math.min(evStep, items.length - 1); const it = items[step];
     const key = E.id + ':' + E.beat + ':' + step;
@@ -455,7 +464,7 @@
       else ch.append(btn('evc end', E.last ? L('마치기', 'Finish') : L('계속', 'Continue'), () => nextEv(null)));
       box.append(ch);
       // 직접 말하기(2026-10-19): 장면을 띄워 둔 채 자유롭게 대화(장면은 그대로). 앞부분을 잊기 시작할 만큼 길어지면 「돌아갈 시간」. 업무 부탁은 「개인 시간」이라 사양한다.
-      if (E.timeUp) box.append(h('div', 'ev-timeup', L('어느새 시간이 많이 흘렀다. 이제 돌아갈 시간이다.', 'Time has slipped away. It is time to go back.')));
+      if (E.timeUp) { box.append(h('div', 'ev-timeup', L('어느새 시간이 많이 흘렀다. 이제 돌아갈 시간이다.', 'Time has slipped away. It is time to go back.'))); ch.append(btn('evc end', L('돌아가기', 'Go back'), () => leaveEv())); }
       else if (E.canSay) {
         const inr = h('div', 'sec-in ev-in'); const ta = h('textarea'); ta.maxLength = 300; ta.rows = 1;
         ta.placeholder = L('직접 말하기 (Enter 보내기)', 'Say something yourself (Enter to send)');
@@ -478,6 +487,15 @@
     try { const r = await window.sllm.secretaryEventSay(text); if (r && r.state) S = { ...r.state }; if (r && !r.ok) err = r.error || ''; } catch (e) { err = String(e); }
     waiting = false; evStep = 1; evShown = null; draw(); // 지문은 건너뛰고 바로 답을
   }
+  /** 이벤트 도중 돌아가기(2026-10-24 사용자 요청): 고른 만큼만 남기고 장면을 닫는다. */
+  async function leaveEv() {
+    if (waiting) return; err = '';
+    try { const r = await window.sllm.secretaryEventLeave(); if (r && r.state) S = { ...r.state }; if (r && !r.ok) { err = r.error || ''; draw(); return; } } catch (e) { err = String(e); draw(); return; }
+    if (typing) { clearInterval(typing.t); typing = null; } evStep = 0; evShown = null;
+    if (scene) { scene.classList.remove('ev'); delete scene.dataset.ev; } setCg(''); setBg(''); setPose('idle');
+    if (!S || !(S.lines || []).length) { draw(); open(); return; }
+    draw();
+  }
   async function nextEv(choice) {
     if (waiting) return; err = ''; waiting = true; draw();
     const silent = S && S.ev && S.ev.id === "mourning";
@@ -493,7 +511,7 @@
   async function refreshBadge() {
     const call = $('secCall'); if (!call || scene || document.hidden) return;
     try {
-      const st = await window.sllm.secretaryState(); call.classList.toggle('sec-pending', !!(st && st.pending)); call.title = st && st.pending ? L('비서가 전할 일이 있는 듯합니다', 'Your secretary seems to have something to tell you') : '';
+      const st = await window.sllm.secretaryState(); call.style.display = st && st.off ? 'none' : ''; if (st && st.off) { $('secNudge')?.remove(); $('secRetire')?.remove(); return; } call.classList.toggle('sec-pending', !!(st && st.pending)); // off: 단일 의식 제국에는 비서가 없다(알파 11) call.title = st && st.pending ? L('비서가 전할 일이 있는 듯합니다', 'Your secretary seems to have something to tell you') : '';
       if (st && st.pending && st.pending.forced && !scene && !document.body.classList.contains('docked')) { $('secNudge')?.remove(); $('secRetire')?.remove(); enter(); return; } // 서거: 국장이 강제로 시작된다
       const old = $('secRetire');
       if (old && (!st || !st.retire || old.dataset.entry !== JSON.stringify([st.sid, st.retire.key, st.retire.date]))) old.remove();
@@ -529,7 +547,7 @@
   // ── 먼저 다가오기: 책상 위 쪽지(2026-10-19) ──
   let nudgeAt = 0;
   async function checkNudge() {
-    const call = $('secCall'); if (!call || scene || $('secRetire') || document.hidden || Date.now() - nudgeAt < 60000) return; nudgeAt = Date.now();
+    const call = $('secCall'); if (!call || call.style.display === 'none' || scene || $('secRetire') || document.hidden || Date.now() - nudgeAt < 60000) return; nudgeAt = Date.now();
     let n = null; try { n = await window.sllm.secretaryNudge(); } catch (e) { n = null; }
     let el = $('secNudge'); if (!n || !n.text || scene) { el?.remove(); return; }
     if (!el) { el = h('div', 'sec-nudge'); el.id = 'secNudge'; el.dataset.i18nSkip = ''; document.body.append(el); }
@@ -544,9 +562,11 @@
   }
 
   // ── 대화 ──
+  let morningLine = ''; // 비서의 아침 인사(2026-10-28 동적 일상 분위기): 게임 달이 바뀐 뒤 처음 부를 때 한 줄, 이번 방문 동안만 보인다
   async function open() {
     err = ''; waiting = true; mode = 'open'; draw();
-    try { const r = await window.sllm.secretaryOpen(); if (r && r.state) S = r.state; if (r && !r.ok && !r.needName) err = r.error || ''; } catch (e) { err = String(e); }
+    morningLine = '';
+    try { const r = await window.sllm.secretaryOpen(); if (r && r.state) { S = r.state; morningLine = r.state.morning || ''; } if (r && !r.ok && !r.needName) err = r.error || ''; } catch (e) { err = String(e); }
     waiting = false; mode = ''; draw();
   }
   async function talk(t) {

@@ -1,0 +1,4 @@
+# SLLM 성간 임시회의 과제 감시(2026-11-09) — 매달 맥박(4.5: events 만). 감시 중인 과제가 없으면 이벤트 trigger 에서 바로 끝난다.
+on_monthly_pulse_country = {
+	events = { sllm_iqw.1 }
+}

@@ -1,0 +1,106 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Audience</title>
+<!-- 접견실(시나리오 「회랑의 삼파전」 전용, 2026-11-06): 전체 화면 1:1 비밀회담. 앱: src/features/scenario-audience-app.ts, 규칙: src/scenario-audience.ts.
+     배경: assets/scenario/corridor/audience_(a|b).png(없으면 audience_p.png, 그것도 없으면 어두운 단색) · 초상화 틀 frame_(a|b).png(없으면 선만).
+     밀사·고발은 버튼이 아니라 말로 한다(사용자 결정). 문구는 L('한국어','English') 로만(언어 팩). -->
+<style>
+ html,body{margin:0;height:100%;background:#07090d;color:#ece6d6;font:15px/1.6 "Noto Sans KR","Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ #bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,#1d2430 0%,#0a0d12 70%) center/cover no-repeat}
+ #bg.img{filter:brightness(.85)}
+ #top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:14px 22px;background:linear-gradient(#000a,transparent);-webkit-app-region:drag}
+ #top *{-webkit-app-region:no-drag}
+ #top b{font-size:20px;color:#f2deb0}#top small{opacity:.8}#top .sp{flex:1}
+ .chip{font-size:12px;padding:2px 10px;border:1px solid #b8975a88;border-radius:12px;background:#0008}
+ .chip.ch{border-color:#7fd88f;color:#c9f2d2}.chip.love{border-color:#e0577f;color:#ffd0dc}.chip.doc{border-color:#e0c48a;color:#f5e3bb;cursor:help}.chip.sus{border-color:#ff9a6a;color:#ffd6c2}
+ button{padding:7px 16px;cursor:pointer;font:inherit;font-size:13.5px;background:#b8975a22;color:#ece6d6;border:1px solid #b8975a99}
+ button:disabled{opacity:.45;cursor:default}
+ #who{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(30vw,420px);aspect-ratio:4/5}
+ #who img.p{position:absolute;inset:6%;width:88%;height:88%;object-fit:cover;box-shadow:0 10px 50px #000}
+ #who img.f{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+ /* 군주 전신(2026-11-07 GPT 그림): 틀 없이 서 있는 모습, 아랫부분은 대화창 그라데이션에 잠긴다 */
+ #who.full{top:auto;bottom:4vh;transform:translateX(-50%);height:88vh;width:auto;aspect-ratio:2/3}
+ #who.full img.p{inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;box-shadow:none;filter:drop-shadow(0 12px 40px #000c)}
+ #who .ph{position:absolute;inset:6%;display:flex;align-items:center;justify-content:center;font-size:64px;color:#f2deb0;background:#141922;border:1px solid #b8975a66}
+ #box{position:absolute;left:0;right:0;bottom:0;height:27vh;min-height:220px;display:flex;flex-direction:column;gap:8px;padding:12px 8vw 16px;background:linear-gradient(transparent,#000d 18%,#000f)}
+ #log{flex:1;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:8px}
+ #log .me{align-self:flex-end;max-width:70%;color:#cfe4ff}
+ #log .them{max-width:78%}#log .them b{color:#f2deb0;margin-right:8px}
+ #log .sys{align-self:center;font-size:13px;color:#ffd38a;border:1px solid #ffd38a55;padding:3px 12px;background:#2a210f99}
+ #row{display:flex;gap:8px}
+ #text{flex:1;background:#0d1117ee;border:1px solid #b8975a77;color:#ece6d6;padding:9px 12px;font:inherit;resize:none;height:44px}
+ #hint{font-size:12px;opacity:.7}#err{font-size:12.5px;color:#ff9a8a}
+ /* 식탁에 오른 음식(2026-11-08 식당 접견): 대화창 바로 위 가운데. 그림이 없으면 접시 모양만 */
+ #dish{position:absolute;left:50%;bottom:calc(max(27vh,220px) - 2vh);transform:translateX(-50%);width:min(18vw,240px);aspect-ratio:1;display:none;pointer-events:none;z-index:2}
+ #dish.on{display:block;animation:dishIn .6s ease-out}
+ @keyframes dishIn{from{opacity:0;transform:translate(-50%,24px)}to{opacity:1;transform:translate(-50%,0)}}
+ #dish img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 14px 22px #000c)}
+ #dish .plate{position:absolute;inset:18% 6% 22%;border-radius:50%;background:radial-gradient(circle at 50% 45%,#f4efe6 0 52%,#d9cfbe 53% 60%,#efe8dc 61% 70%,#c9bca6 71%);box-shadow:0 12px 22px #000b}
+ #dish small{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);white-space:nowrap;font-size:12px;color:#ffe9b8;background:#2a210fcc;border:1px solid #ffd38a55;padding:1px 10px}
+</style>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script></head>
+<body><div id="bg"></div>
+<div id="top"><b id="name"></b><small id="title"></small><span id="chips"></span><span class="sp"></span><small id="left"></small><button id="close" type="button"></button></div>
+<div id="who"></div>
+<div id="dish"></div>
+<div id="box"><div id="log"></div><div id="row"><textarea id="text" spellcheck="false"></textarea><button id="send" type="button"></button></div><div><span id="hint"></span> <span id="err"></span></div></div>
+<script>
+(() => {
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; };
+ let S = null, busy = false, shownBg = '';
+ const tryImg = (list, ok) => { const go = (i) => { if (i >= list.length) return; const im = new Image(); im.onload = () => ok(list[i]); im.onerror = () => go(i + 1); im.src = list[i]; }; go(0); };
+ function chrome() {
+  $('close').textContent = L('회담 마치기', 'End meeting');
+  $('send').textContent = L('말하기', 'Speak');
+  $('text').placeholder = L('하고 싶은 말을 적으세요. 밀사 이야기도, 누군가에 대한 고발도 말로 꺼냅니다.', 'Say what you want. Envoy proposals and accusations are made in your own words.');
+  $('hint').textContent = L('말은 되돌릴 수 없습니다. 충성스러운 사람에게 잘못 꺼낸 말은 군주에게 들어갑니다.', 'Words cannot be taken back. The wrong words to a loyal ear will reach their sovereign.');
+ }
+ function render() {
+  if (!S || !S.ok) return; chrome();
+  $('name').textContent = S.name; $('title').textContent = S.title;
+  const ch = $('chips'); ch.textContent = '';
+  if (S.stage) ch.append(h('span', 'chip', L('친밀도: ', 'Intimacy: ') + S.stage));
+  if (S.channel) ch.append(h('span', 'chip ch', L('밀사 통로 열림', 'Envoy channel open')));
+  if (S.suspect) ch.append(h('span', 'chip sus', L('군주의 의심을 받는 중', 'Under suspicion')));
+  if (S.love) ch.append(h('span', 'chip love', '♥ ' + S.love)); // 연애 단계(2026-11-08)
+  if (S.docs && S.docs.length) { const c = h('span', 'chip doc', L(`건넬 수 있는 기밀 문서 ${S.docs.length}건`, `${S.docs.length} secret document(s) in hand`)); c.title = L('대화에서 꺼내 건넬 수 있습니다(예: 「이 문서를 보시오」).\n', 'Bring one up in conversation to hand it over (e.g. "Look at this document").\n') + S.docs.map((x) => '· ' + x).join('\n'); ch.append(c); } // 기밀 문서(2026-11-08)
+  if (S.intro) { const c = h('span', 'chip', L(`소개해 줄 수 있는 사람 ${S.intro}명`, `Can introduce ${S.intro}`)); c.title = L('아직 모르는 귀족 중 이 사람이 아는 이가 있습니다. 소개를 청해 보세요(친밀도가 낮으면 꺼립니다).', 'This person knows nobles you have not met. Ask for an introduction (they hesitate if intimacy is low).'); ch.append(c); }
+  $('left').textContent = ''; // 말 수 제한 없음(2026-11-07)
+  const key = (S.bg || []).join('|');
+  if (key !== shownBg) { shownBg = key; tryImg(S.bg || [], (src) => { $('bg').style.backgroundImage = `url("${src}")`; $('bg').classList.add('img'); }); }
+  const who = $('who'); if (!who.dataset.k || who.dataset.k !== S.name) {
+   who.dataset.k = S.name; who.textContent = ''; who.classList.toggle('full', !!S.full);
+   if (S.pic) { const p = h('img', 'p'); p.src = S.pic; p.onerror = () => { p.remove(); who.prepend(h('div', 'ph', (S.name || '?').slice(0, 1))); }; who.append(p); } else who.append(h('div', 'ph', (S.name || '?').slice(0, 1)));
+   if (S.frame && !S.full) tryImg([S.frame], (src) => { const f = h('img', 'f'); f.src = src; who.append(f); });
+  }
+  const dish = $('dish'), dk = S.dish ? S.dish.pic + '|' + S.dish.name : '';
+  if (dish.dataset.k !== dk) { dish.dataset.k = dk; dish.textContent = ''; dish.classList.toggle('on', !!S.dish);
+   if (S.dish) { const im = h('img'); im.alt = ''; im.onerror = () => { im.remove(); dish.prepend(h('div', 'plate')); }; im.src = S.dish.pic; dish.append(im, h('small', '', S.dish.name)); } }
+  const log = $('log'); log.textContent = '';
+  for (const x of S.hist || []) {
+   if (x.who === 'me') log.append(h('div', 'me', x.text));
+   else if (x.who === 'sys') log.append(h('div', 'sys', x.text));
+   else { const d = h('div', 'them'); d.append(h('b', '', S.name), document.createTextNode(x.text)); log.append(d); }
+  }
+  if (busy) log.append(h('div', 'sys', L('…', '…')));
+  log.scrollTop = log.scrollHeight;
+  $('send').disabled = busy; $('text').disabled = busy;
+ }
+ async function load() { try { S = await window.sllm.auState(); } catch (e) { S = null; } render(); }
+ async function send() {
+  const t = $('text').value.trim(); if (!t || busy) return;
+  busy = true; $('err').textContent = ''; S.hist = (S.hist || []).concat([{ who: 'me', text: t }]); $('text').value = ''; render();
+  let r = null; try { r = await window.sllm.auSay(t); } catch (e) { r = { ok: false, error: String(e) }; }
+  busy = false;
+  if (!r || !r.ok) { $('err').textContent = (r && r.error) || ''; $('text').value = t; await load(); return; }
+  S = r; render();
+ }
+ $('send').onclick = () => { void send(); };
+ $('text').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); void send(); } });
+ $('close').onclick = () => { void window.sllm.auClose(); };
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !busy) void window.sllm.auClose(); });
+ if (window.sllm.onAuRefresh) window.sllm.onAuRefresh(() => { shownBg = ''; $('who').dataset.k = ''; void load(); });
+ document.addEventListener('sllm-language', () => render());
+ chrome(); void load();
+})();
+</script></body></html>

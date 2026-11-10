@@ -178,9 +178,10 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		every_playable_country = { limit = { is_ai = no } sllm_probe_contacts = { REQ = 0 } }
+		# 렉 줄이기(2026-10-24): 예전에는 AI 끼리 처음 만날 때도 매번 연락처를 전부 다시 읽었다 → 플레이어가 만났을 때만.
 		if = {
 			limit = { OR = { is_ai = no from = { is_ai = no } } }
+			every_playable_country = { limit = { is_ai = no } sllm_probe_contacts = { REQ = 0 } set_variable = { which = sllm_ct_m value = 1 } }
 			log = "SLLM:EVT/;/kind=first_contact/;/date=\\[GetDate]/;/a=\\[This.GetName]/;/b=\\[From.GetName]"
 		}
 	}

@@ -1,0 +1,27 @@
+# SLLM 연합 원정군(2026-11-05 사용자: 민간 방위군 모드처럼 따로 세력을 만들어 명령대로 움직이게).
+# 동맹이 보낸 함대를 갖는, AI 가 꺼진 세력. 게임 AI 가 명령을 덮어쓰지 않아 우리 스크립트(sllm_warroom.txt · sllm_warroom_xf.txt)대로만 움직인다.
+# 전쟁에는 끼지 않는다: 매달 우리·그 동맹이 적대하는 나라에 적대를 비춰 싸운다(휴전·평화·전쟁 점수에 영향 없음). 방식은 Live Space 의 구역 세력을 참고만 함(코드는 우리 것).
+sllm_wr_xf_type = {
+	government = no
+	observable = yes
+	show_in_contacts_list = no
+	uses_origins = no
+	needs_survey = no
+	playable = no
+	ai = {
+		enabled = no
+	}
+	faction = {
+		hostile = no
+		needs_border_access = no
+		generate_borders = no
+		needs_colony = no
+		auto_delete = no
+		hostile_when_attacked = yes
+	}
+	modules = {
+		exclusive_diplomacy_module = { contact_rule = always }
+		basic_technology_module = {}
+		standard_event_module = {}
+	}
+}

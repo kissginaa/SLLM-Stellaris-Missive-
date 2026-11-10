@@ -28,8 +28,9 @@ export class HolidayStore{
 export function holidayCommand(req:number,sid:string,idx:number,year:number,month:number,mode:'prepare'|'query'|'cancel'){
  if(![req,idx,year,month].every(Number.isSafeInteger)||req<1||idx<0||year<1||month<1||month>12||!/^\d+$/.test(sid)||!['prepare','query','cancel'].includes(mode))throw Error('HOLIDAY_INPUT');
  const key=`sllm_holiday_${year}_${month}`,log=(status:string)=>`log = "SLLM:HOLIDAYPAY/;/req=${req}/;/sid=[This.sllm_save_id]/;/year=${year}/;/month=${month}/;/status=${status}"`;
- const next=month===12?`${year+1}.1.1`:`${year}.${month+1}.1`;
  const pay=`if = { limit = { has_resource = { type = energy amount >= 150 } has_resource = { type = minerals amount >= 100 } has_resource = { type = food amount >= 300 } } add_resource = { energy = -150 minerals = -100 food = -300 } set_country_flag = ${key}_paid ${log('paid')} } else = { set_country_flag = ${key}_short ${log('short')} }`;
  const status=`if = { limit = { has_country_flag = ${key}_cancel } ${log('cancelled')} } else_if = { limit = { has_country_flag = ${key}_paid } ${log('paid')} } else_if = { limit = { has_country_flag = ${key}_short } ${log('short')} } else = { ${mode==='prepare'?pay:log('unprepared')} }`;
- return `effect every_playable_country = { limit = { is_ai = no check_variable = { which = sllm_idx value = ${idx} } check_variable = { which = sllm_save_id value = ${sid} } } if = { limit = { current_date >= ${year}.${month}.1 current_date < ${next} } ${mode==='cancel'?`set_country_flag = ${key}_cancel ${log('cancelled')}`:status} } else = { ${log('stale')} } }`;
+ // 2026-10-23: current_date 는 스텔라리스 트리거가 아니다(설치된 게임 script_documentation/triggers.log·1.0~4.5 목록 어디에도 없음) → 게임이 명령을 거부할 수 있어 뺐다.
+ // 달 확인은 앱이 보내기 전(h.month===c.month)과 회신 뒤(게임 날짜가 같은 달인지) 두 번 한다. 깃발 키에 연·월이 들어 있어 같은 달 중복 차감도 없다.
+ return `effect every_playable_country = { limit = { is_ai = no check_variable = { which = sllm_idx value = ${idx} } check_variable = { which = sllm_save_id value = ${sid} } } ${mode==='cancel'?`set_country_flag = ${key}_cancel ${log('cancelled')}`:status} }`;
 }

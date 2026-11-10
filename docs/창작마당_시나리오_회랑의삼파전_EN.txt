@@ -1,0 +1,58 @@
+[h1]🌌 SLLM Scenario — The Corridor Triangle[/h1]
+[b]Rule a small corridor state wedged between two great powers, and play their nobles' loyalty and betrayal against them.[/b]
+
+[b]Requires SLLM Missive (the main mod) and the SLLM app.[/b] Audiences, nobles and espionage in this scenario all run inside the SLLM app. With the mod alone you only get the map and the nations.
+
+[h2]📌 Notes[/h2]
+[list]
+[*]This is the first SLLM scenario pack. It is in alpha, so balance may be rough.
+[*][b]Please send suggestions, bug reports and fix requests on Discord:[/b] [url=https://discord.gg/vmsHtYAv6]https://discord.gg/vmsHtYAv6[/url]
+[*]SLLM was made with the help of AI ("vibe coding"). It is free, with no paid features.
+[*][b]While this mod is enabled, the vanilla galaxy sizes are hidden.[/b] Disable it to play a normal game.
+[/list]
+
+[h2]🗺️ The setting[/h2]
+The galaxy is split in two.
+[list]
+[*][b]The Galactic Alliance[/b] — a liberal republic of many species that sees itself as a beacon of liberty.
+[*][b]The Human Empire[/b] — an authoritarian human state built on order and hierarchy.
+[*][b]The Corridor[/b] — a small nation caught between them. [b]Your empire[/b] starts here.
+[/list]
+The two great powers' lands are split among [b]63 hereditary nobles[/b], each ruling a hub sector. A hand-drawn galaxy, both capitals with fallen-empire-grade buildings, and the Corridor's hub systems are all set up for you.
+
+[h2]✨ What you do[/h2]
+[b]👑 Noble politics[/b] — Every noble has a name, portrait, personality (honor, mercy, generosity, valor, calculation) and loyalty, and they are bound to each other by oaths, marriage pacts, accords, rivalries and back channels. Faction leaders, faction moods, border disputes, pleas for independence and revolts move real territory in the game.
+[b]🗝️ Secret audiences[/b] — Meet a noble or either sovereign one-on-one, in a venue such as a garden, a dining room or a limousine, and simply write what you want to say. Instead of fixed options, there are [i]hidden cards inside the conversation[/i]: ask for introductions, pry about other nobles, give gifts, open envoy channels, invite defection, incite revolt, swear private pledges, accuse or slander. You can also ask someone out, or propose. The app decides the outcome from the other side's hidden feelings, and the wrong words reach their sovereign.
+[b]🕵️ The Corridor intelligence bureau[/b] — Use espionage cards to scout nobles, spy on fleets, leak tips and forged documents, and broker a summit between the two sovereigns. The other side plants spies beside your nobles too.
+[b]⚔️ Tension and war[/b] — As tension builds between the great powers, total war (the Corridor Showdown) breaks out. The Corridor survives in the gap, or turns the tables.
+[b]🏰 Conquests and Corridor nobles[/b] — Turn conquered land into a puppet, raise one of your own leaders to nobility over it, or keep it as a crown domain. Your nobles can be loyal or betray you, and political marriages can tie them to enemy houses.
+[b]🗺️ Power Atlas[/b] — A live map of power, a power board and a relationship chart. Revolts, puppets and conquests show up on the map right away.
+[b]✏️ Name your realm[/b] — Rename labels such as the Corridor domain and "Corridor nobles" after your own nation.
+[b]🏛️ Domestic politics choice[/b] — At the start, choose whether to enable domestic politics (polls, referendums, court intrigue, emergency powers, etc.). Off is the default and recommended. Some SLLM app features (the planetary governor panel, public mood, the schedule, etc.) are not available in this scenario.
+
+[h2]🚀 Install and start[/h2]
+[olist]
+[*][b]Subscribe to the required mods:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3819625112]SLLM Missive[/url].
+[*]Install the [b]SLLM app[/b] following the instructions on the SLLM Missive page. You need the latest version that includes scenarios.
+[*]Enable those mods and this scenario in your Paradox Launcher playset.
+[*]New game → under galaxy size, pick [b]"SLLM: Corridor Triangle"[/b] and start with your own empire.
+[*]Run the game and the SLLM app together. Start from the [b]"Power Atlas"[/b] in your office.
+[/olist]
+
+[h2]⚠️ Compatibility[/h2]
+Do not use it with the following kinds of mods; they overwrite the same files or break the scenario's setup.
+[list]
+[*]Galaxy generation, galaxy size or map mods
+[*]Diplomacy overhauls that change diplomatic actions
+[*]UI mods that replace the main menu, loading screens or game logo
+[*]Mods that change sector rules or galaxy map graphics
+[*]Mods that force starting empires or spawn locations, or place great powers or crises from the start
+[*]Big overhauls of the leader/governor system or of AI war and diplomacy
+[*]Total conversions that replace the whole setting
+[/list]
+Portrait, ship model, music and quality-of-life mods are generally fine.
+
+[h2]💬 Discord · Support[/h2]
+Please post suggestions, bug reports and fix requests on [b]Discord[/b] — we see them much faster there than in the comments.
+👉 [url=https://discord.gg/vmsHtYAv6]https://discord.gg/vmsHtYAv6[/url]
+When reporting a bug, attach [b]Documents\Paradox Interactive\Stellaris\logs\error.log[/b] and the log bundle exported from the SLLM app (SLLM-Logs-….zip). It helps us fix things fast.

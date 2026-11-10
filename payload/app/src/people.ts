@@ -3,10 +3,13 @@
 // 명단에서 사라진 인물은 지우지 않고 gone(날짜)으로 남긴다(뒤에 추모관·작별 편지에서 쓴다).
 import * as fs from 'fs';
 import { logDiagnostic } from './diagnostics';
+import { parseLeaderAge } from './retired'; // 나이·수명(2026-10-23 은퇴 생활)
 
 export type LeaderClass = 'commander' | 'official' | 'scientist';
 export interface LeaderSeen { lid: number; name: string; cls: LeaderClass; lv: number; ruler: boolean; council: boolean; fleet?: string; traits?: string[]; /** 평의회 직책 번호(cabinet-meeting.ts COUNCIL_POS +1, 2026-10-19). 0·없음 = 모름 */ cpos?: number; /** 함대·과학선·구역(총독)을 맡음(모드 asg=1, 2026-10-19 내각 회의 홀로그램 참석) */ asg?: boolean } // traits: 이번 달에 특성을 읽었을 때만(tr=1) 들어 있다
-export interface Person extends LeaderSeen { first: string; last: string; gone?: string; names?: string[] }
+/** 나이·수명(2026-10-23 은퇴 생활): 모드 LEADER 줄 age·life·svc·imm. 옛 모드면 없음. */
+export interface LeaderAge { age?: number; life?: number; svc?: number; immortal?: boolean }
+export interface Person extends LeaderSeen, LeaderAge { first: string; last: string; gone?: string; names?: string[] }
 export interface PeopleSave { persons: Record<string, Person> }
 
 const CLS: LeaderClass[] = ['commander', 'official', 'scientist'];
@@ -20,7 +23,7 @@ export class PeopleCollector {
       if (!Number.isInteger(lid) || lid <= 0 || !name) return null;
       const cls = (CLS.includes(kv.cls as LeaderClass) ? kv.cls : 'official') as LeaderClass;
       const lv = Math.max(0, Math.min(20, Math.round(Number(kv.lv) || 0)));
-      this.cur.set(lid, { lid, name: name.slice(0, 60), cls, lv, ruler: kv.ruler === '1', council: kv.council === '1', ...(kv.tr === '1' ? { traits: [] } : {}), ...(kv.asg === '1' ? { asg: true } : {}), ...(Number(kv.cpos) > 0 && Number.isSafeInteger(Number(kv.cpos)) ? { cpos: Number(kv.cpos) } : {}) });
+      this.cur.set(lid, { ...parseLeaderAge(kv), lid, name: name.slice(0, 60), cls, lv, ruler: kv.ruler === '1', council: kv.council === '1', ...(kv.tr === '1' ? { traits: [] } : {}), ...(kv.asg === '1' ? { asg: true } : {}), ...(Number(kv.cpos) > 0 && Number.isSafeInteger(Number(kv.cpos)) ? { cpos: Number(kv.cpos) } : {}) });
       return null;
     }
     if (kind === 'LTRAIT') { // 특성 키(바닐라 지도자 특성). 같은 묶음의 LEADER 뒤에 온다

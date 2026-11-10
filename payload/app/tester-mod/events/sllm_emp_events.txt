@@ -1,0 +1,42 @@
+# 비상대권(2026-11-05, Advanced Policies 참고 — 우리식). 매달: 전쟁 중이면 평화 달 수를 0으로, 쥐고 있던 것도 정당해진다(그립 해제).
+# 전쟁 없이 석 달 → 앱에 「전쟁이 끝났다, 내려놓을지 쥘지」(ev=peace). 그대로 아홉 달이 되도록 정하지 않으면 쥔 것으로 굳는다(ev=hold_auto).
+# 쥐고 있으면 열두 달마다 평의회 반발(ev=backlash).
+namespace = sllm_emp
+
+country_event = {
+	id = sllm_emp.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		check_variable = { which = sllm_emp_lv value > 0 }
+	}
+	immediate = {
+		if = {
+			limit = { is_at_war = yes }
+			set_variable = { which = sllm_emp_peace value = 0 }
+			if = { limit = { has_country_flag = sllm_emp_hold } remove_country_flag = sllm_emp_hold remove_modifier = sllm_emp_grip }
+		}
+		else = {
+			change_variable = { which = sllm_emp_peace value = 1 }
+			if = {
+				limit = { check_variable = { which = sllm_emp_peace value = 3 } NOT = { has_country_flag = sllm_emp_hold } }
+				log = "SLLM:EMP/;/ev=peace"
+			}
+			else_if = {
+				limit = { check_variable = { which = sllm_emp_peace value >= 9 } NOT = { has_country_flag = sllm_emp_hold } }
+				sllm_emp_hold_on = yes
+				log = "SLLM:EMP/;/ev=hold_auto"
+			}
+			else_if = {
+				limit = { has_country_flag = sllm_emp_hold }
+				change_variable = { which = sllm_emp_held value = 1 }
+				if = {
+					limit = { check_variable = { which = sllm_emp_held value >= 12 } }
+					set_variable = { which = sllm_emp_held value = 0 }
+					log = "SLLM:EMP/;/ev=backlash"
+				}
+			}
+		}
+	}
+}

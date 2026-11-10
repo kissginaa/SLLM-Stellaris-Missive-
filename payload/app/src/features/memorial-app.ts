@@ -10,7 +10,7 @@ import { logDiagnostic } from '../diagnostics';
 import { redactKey } from '../aiclient';
 import { office, officeView, setOfficeMemorial, pushOffice } from './office-app';
 import { fleetView } from './fleet-app';
-import { peopleOf, onPeopleChanged, onLeaderOut } from './people-app';
+import { peopleOf, onPeopleChanged, onLeaderOut, onPeopleMonth } from './people-app';
 import { memOf, personaNote, personaJson } from './persona-app';
 import { addFarewell, lettersFrom } from './letters-app';
 import { gestaltCode } from './gestalt-app';
@@ -38,8 +38,12 @@ const unseen = (): number => (ctx.curSaveId ? saveOf(ctx.curSaveId).stones.filte
 const loc = () => traitLoc(ctx.flagProv.game(), selectedLanguage() === 'ko' ? 'ko' : 'en'); // i18n-data: 게임 지역화 폴더 고르기
 
 /** 모드 신호: 사망(death)·해임(fired). 그 순간 아직 명단에 있는 자료로 남긴다. */
+/** 처형 사건이 맡은 사망인지(execution-app, 2026-10-23). main.ts 가 꽂는다 — 처형은 추모·작별과 겹치지 않게 한 사건으로(06). */
+let execOwns: (sid: string, lid: number) => boolean = () => false;
+export function setMemorialExecutionCheck(f: (sid: string, lid: number) => boolean): void { execOwns = f; }
 function onOut(kv: Record<string, string>): void {
   const sid = ctx.curSaveId, lid = Number(kv.lid), why0 = kv.why; if (!sid || !Number.isInteger(lid) || lid <= 0 || (why0 !== 'death' && why0 !== 'fired')) return;
+  if (why0 === 'death' && execOwns(sid, lid)) return; // 처형된 인물(06)
   const s = saveOf(sid), key = 'p:' + lid, date = String(kv.date || ctx.gameDate || '').trim();
   if (s.stones.some((x) => x.key === key)) return;
   s.departed = s.departed.filter((d) => !(d.key === key && d.why === 'lost')); // 명단이 먼저 와서 행방 불명으로 올렸던 경우
@@ -92,7 +96,7 @@ function onMonth(): void {
   const roster = people.filter((p) => !p.gone).map((p) => p.last).sort().pop();
   if (roster) for (const p of people) {
     const key = 'p:' + p.lid;
-    if (p.gone && p.gone === roster && !s.stones.some((x) => x.key === key) && !s.departed.some((d) => d.key === key)) { s.departed.push({ key, lid: p.lid, name: p.name, role: p.ruler ? 'ruler' : p.cls, why: 'lost', date: p.gone, first: p.first }); ch = true; }
+    if (p.gone && p.gone === roster && !execOwns(sid, p.lid) && !s.stones.some((x) => x.key === key) && !s.departed.some((d) => d.key === key)) { s.departed.push({ key, lid: p.lid, name: p.name, role: p.ruler ? 'ruler' : p.cls, why: 'lost', date: p.gone, first: p.first }); ch = true; }
     if (!p.gone && s.departed.some((d) => d.key === key)) { s.departed = s.departed.filter((d) => d.key !== key); ch = true; } // 돌아옴(포로 석방 등)
   }
   if (ch) { save(); pushOffice(); }
@@ -112,6 +116,7 @@ export function registerMemorial(): void {
   setOfficeMemorial(unseen);
   onLeaderOut(onOut);
   onPeopleChanged(onMonth);
+  onPeopleMonth(onMonth); // 2026-11-03: 명단이 매달 오지 않으므로 작별 대기열은 달마다 처리
   ipcMain.handle('memorialList', async () => listView());
   ipcMain.handle('memorialSeen', async (_e, key: unknown) => { const sid = ctx.curSaveId; if (!sid) return null; const st = saveOf(sid).stones.find((x) => x.key === String(key)); if (st && !st.seen) { st.seen = true; save(); pushOffice(); } return st ? stoneView(st) : null; });
   /** 비문: 없으면 이때 한 번 AI. */

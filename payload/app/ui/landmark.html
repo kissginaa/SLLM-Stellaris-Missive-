@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Landmark</title>
+<!-- 성향별 특별한 곳(랜드마크, 2026-10-30). 앱: src/features/landmark-app.ts · 자료: src/landmark.ts. 입구: 외출 지도 → 특별한 곳.
+     몰입형(선술집·암시장과 같은 방식): 1600×900 무대. 그림(assets/outing/<성향>-landmark) 또는 앱이 그린 성향별 건물·군중.
+     가운데 건물 = 의식(장면 글) · 왼쪽 인물 = 대화(비주얼 노벨식 대화창) · 오른쪽 군중 앞 = 공개 연설(연설문 → 군중 반응, 연단 그림 없음).
+     그림 자리(13_랜드마크_그림_의뢰서.md): landmark/figures/(성향) — webp/png. 문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--c:#b98cff;--c2:#ffd27a;--text:#eef0f6;--dim:#9aa0b4;--red:#ff4d5e}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:#000;color:var(--text);font:15px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden;user-select:none}
+ button,input,textarea{font:inherit;color:var(--text)}
+ #drag{position:absolute;z-index:30;left:0;right:0;top:0;height:30px;-webkit-app-region:drag}
+ #hud{position:absolute;z-index:31;right:10px;top:6px;display:flex;gap:10px;align-items:center;-webkit-app-region:no-drag}
+ #hud .v{font-size:12px;color:var(--dim);padding:2px 10px;border-radius:10px;background:#0008} #x{background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer} #x:hover{color:#fff}
+ #stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:#05050a}
+ #cam{position:absolute;inset:0;transform-origin:0 0;transition:transform 1.1s cubic-bezier(.3,.7,.2,1)}
+ #scene,#artbg{position:absolute;inset:0;width:100%;height:100%} #artbg{background-size:cover;background-position:center;display:none}
+ .fx{position:absolute;inset:0;pointer-events:none} #vig{background:radial-gradient(ellipse at 50% 45%,transparent 50%,#000c 100%)}
+ #motes{overflow:hidden} #motes i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--c2);opacity:.6;box-shadow:0 0 8px var(--c2);animation:mote linear infinite} @keyframes mote{from{transform:translateY(0)}to{transform:translateY(-900px)}}
+ .crowd{transition:transform .4s} .crowd.cheer{animation:cheer .5s ease-in-out 6} @keyframes cheer{50%{transform:translateY(-10px)}} .crowd.boo{animation:boo .25s ease-in-out 10} @keyframes boo{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+ .spot{position:absolute;transform:translate(-50%,-50%);cursor:pointer;border-radius:50%}
+ .spot .glow{position:absolute;inset:10%;border-radius:50%;transition:box-shadow .3s,background .3s} .spot:hover .glow{box-shadow:0 0 40px 10px color-mix(in srgb,var(--c) 40%,transparent);background:color-mix(in srgb,var(--c) 6%,transparent)}
+ .spot .tag{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);white-space:nowrap;font-size:14px;padding:3px 12px;border-radius:12px;background:#000b;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);opacity:0;transition:opacity .3s} .spot:hover .tag{opacity:1}
+ .spot .tag small{color:var(--dim);margin-left:6px} .spot.always .tag{opacity:.9}
+ #title{position:absolute;left:0;right:0;top:46px;text-align:center;font-size:30px;font-weight:800;letter-spacing:.18em;color:#fff;text-shadow:0 0 18px var(--c);transition:opacity .8s;pointer-events:none}
+ #title{padding:14px 0 26px;top:30px;background:linear-gradient(#000b,#0000)} #fgL.onart #crowd{opacity:.5;filter:blur(1.3px)} #fgL.onart .fig{opacity:.9}
+ #title small{display:block;font-size:14px;letter-spacing:.05em;font-weight:400;color:var(--dim);text-shadow:none;margin-top:4px}
+ #cine{position:absolute;left:160px;right:160px;bottom:60px;z-index:8;display:none;padding:22px 28px;border-radius:12px;background:#07070ee8;border:1px solid color-mix(in srgb,var(--c) 60%,transparent);box-shadow:0 0 40px #000;font-size:19px;line-height:1.6}
+ #cine.on{display:block} #cine .word{display:block;text-align:center;font-size:44px;font-weight:800;color:var(--c2);text-shadow:0 0 20px var(--c);margin-bottom:8px}
+ #cine .meta{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:13px;color:var(--dim)}
+ .btn{padding:8px 18px;border-radius:20px;border:1px solid color-mix(in srgb,var(--c) 70%,transparent);background:#0b0b14;cursor:pointer} .btn:hover:not(:disabled){box-shadow:0 0 14px color-mix(in srgb,var(--c) 50%,transparent)} .btn:disabled{opacity:.45;cursor:default}
+ .btn.main{background:color-mix(in srgb,var(--c) 30%,#0b0b14);font-weight:700}
+ #talk{position:absolute;inset:0;z-index:9;display:none} #talk.on{display:block}
+ #talk .pf{position:absolute;left:90px;bottom:250px;width:420px;height:560px;background-size:contain;background-repeat:no-repeat;background-position:center bottom;display:none;filter:drop-shadow(0 0 30px #000c)} #talk .pf.on{display:block}
+ /* 인물 그림(배경 투명, 2026-10-31): 광장 왼쪽에 서 있음. 대화 중에는 큰 그림(.pf)이 대신 */
+ #figImg{position:absolute;left:150px;top:395px;width:300px;height:400px;background-size:contain;background-repeat:no-repeat;background-position:center bottom;display:none;pointer-events:none;filter:drop-shadow(0 6px 16px #000c) brightness(.95);-webkit-mask-image:linear-gradient(#000 88%,transparent)} #figImg.on{display:block} body.talking #figImg{opacity:0;transition:opacity .4s}
+ #fgL.hasfig .fig{display:none}
+ #vn{position:absolute;left:80px;right:80px;bottom:30px;min-height:200px;padding:20px 26px 14px;border-radius:12px;background:#08080fee;border:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
+ #vn .who{position:absolute;left:24px;top:-17px;padding:3px 16px;border-radius:6px;background:color-mix(in srgb,var(--c) 35%,#08080f);border:1px solid var(--c);font-weight:700;font-size:14px}
+ #vn .tools{position:absolute;right:16px;top:-17px;display:flex;gap:8px} #vn .tools button{padding:3px 12px;border-radius:6px;border:1px solid #ffffff33;background:#08080f;cursor:pointer;font-size:12px}
+ #vn .txt{min-height:84px;font-size:18px;line-height:1.55;white-space:pre-wrap} #vn .txt .sys{color:var(--dim);font-style:italic} #vn .txt .me{color:#ffe0a8}
+ #vn .in{display:flex;gap:10px;align-items:center;margin-top:10px;border-top:1px solid #ffffff14;padding-top:10px} #vn .in span{color:var(--c)} #vn .in input{flex:1;background:transparent;border:0;outline:0;font-size:16px}
+ #log{position:absolute;left:80px;right:80px;bottom:250px;max-height:300px;overflow:auto;display:none;padding:12px 18px;border-radius:10px;background:#05050ae8;border:1px solid #ffffff22;font-size:14px} #log.on{display:block} #log .me{color:#ffe0a8}
+ #speech{position:absolute;left:220px;right:220px;bottom:40px;z-index:9;display:none;padding:20px 24px;border-radius:12px;background:#08080fee;border:1px solid var(--c2);box-shadow:0 0 40px #000}
+ #speech.on{display:block} #speech h3{margin:0 0 6px;color:var(--c2)} #speech p{margin:0 0 10px;color:var(--dim)} #speech textarea{width:100%;height:120px;resize:none;padding:10px 12px;border-radius:8px;border:1px solid #ffffff22;background:#00000066;font-size:16px;line-height:1.5;outline:0}
+ #speech .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:var(--dim)}
+ .dots::after{content:'…';animation:dots 1s steps(3) infinite} @keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
+ #toast{position:absolute;z-index:28;left:50%;top:40px;transform:translateX(-50%);padding:7px 18px;border-radius:18px;background:#08080fee;border:1px solid var(--c);display:none;max-width:80%;font-size:14px} #toast.err{border-color:var(--red)}
+ #backBtn{position:absolute;left:24px;bottom:22px;z-index:6}
+ #door{position:absolute;inset:0;z-index:20;background:#000;opacity:1;pointer-events:none;transition:opacity 1.4s}
+</style></head>
+<body>
+<div id="drag"></div>
+<div id="hud"><span class="v" id="comp"></span><button id="x" type="button">✕</button></div>
+<div id="stage">
+ <div id="cam"><div id="artbg"></div><svg id="scene" viewBox="0 0 1600 900"></svg><div id="figImg"></div><div class="fx" id="motes"></div><div id="spots"></div></div>
+ <div class="fx" id="vig"></div><div id="title"></div>
+ <button class="btn" id="backBtn" type="button"></button>
+ <div id="cine"></div>
+ <div id="talk"><div class="pf"></div><div id="log"></div><div id="vn"><span class="who"></span><span class="tools"></span><div class="txt"></div><div class="in"><span>▸</span><input maxlength="500"></div></div></div>
+ <div id="speech"></div><div id="toast"></div><div id="door"></div>
+</div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+ let S = null, mode = 'plaza', shownThem = 0, drawnKey = '', typeTok = 0;
+ const SPOT = { monument: [800, 400, 520, 520], figure: [300, 640, 200, 300], podium: [1290, 650, 230, 260] };
+ const toast = (t, bad) => { const m = $('toast'); m.textContent = t || ''; m.className = bad ? 'err' : ''; m.style.display = t ? 'block' : 'none'; if (t) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4500); };
+ const call = async (p) => { const r = await p; if (r && r.state) S = r.state; if (r && !r.ok && r.error) toast(r.error, true); return r || {}; };
+ function fit() { const s = Math.min(innerWidth / 1600, innerHeight / 900); $('stage').style.transform = `translate(${-800 * s}px,${-450 * s}px) scale(${s})`; }
+ addEventListener('resize', fit); fit(); $('stage').addEventListener('scroll', (e) => { e.target.scrollTop = 0; e.target.scrollLeft = 0; });
+ async function typeInto(el, text, speed = 20) { const tk = ++typeTok; el.textContent = ''; for (let j = 1; j <= text.length; j++) { if (tk !== typeTok) return; el.textContent = text.slice(0, j); await sleep(speed); } }
+
+ // ---- 앱이 그린 성향별 건물
+ const MON = {
+  spiritualist: (c, c2) => `<path d="M560 600 V420 Q560 250 800 220 Q1040 250 1040 420 V600 Z" fill="#0c0a18"/><path d="M560 420 Q560 250 800 220 Q1040 250 1040 420" stroke="${c2}" stroke-width="3" fill="none"/><path d="M800 220 V100" stroke="${c2}" stroke-width="5"/><circle cx="800" cy="88" r="16" fill="none" stroke="${c2}" stroke-width="3"/><circle cx="800" cy="88" r="5" fill="${c2}"/><rect x="430" y="330" width="80" height="270" fill="#0c0a18"/><path d="M430 330 l40 -90 l40 90" fill="#0c0a18" stroke="${c}" stroke-width="2"/><rect x="1090" y="330" width="80" height="270" fill="#0c0a18"/><path d="M1090 330 l40 -90 l40 90" fill="#0c0a18" stroke="${c}" stroke-width="2"/>${[640, 720, 800, 880, 960].map((x) => `<path d="M${x - 18} 600 V470 a18 18 0 0 1 36 0 V600" fill="${c2}" opacity=".35"/>`).join('')}`,
+  militarist: (c, c2) => `<rect x="420" y="360" width="760" height="240" fill="#0e1016"/><path d="M420 360 h760" stroke="${c}" stroke-width="3"/>${[460, 600, 740, 880, 1020, 1140].map((x) => `<rect x="${x - 20}" y="300" width="40" height="60" fill="#0e1016"/>`).join('')}<rect x="760" y="200" width="80" height="160" fill="#0e1016" stroke="${c2}" stroke-width="2"/>${[520, 680, 920, 1080].map((x) => `<path d="M${x} 360 V250" stroke="#555" stroke-width="3"/><path d="M${x} 250 h46 v26 h-46" fill="${c}" opacity=".8"/>`).join('')}<path d="M600 140 l200 -30 l200 30 l-200 14 z" fill="#1a1e28" stroke="${c2}" stroke-width="1.5"/>`,
+  pacifist: (c, c2) => `<path d="M780 600 L790 180 L810 180 L820 600 Z" fill="#e8f4ff" opacity=".9"/><path d="M790 180 L800 150 L810 180" fill="#e8f4ff"/><ellipse cx="800" cy="610" rx="260" ry="30" fill="${c}" opacity=".25"/>${[-1, 1].map((s) => `<path d="M${800 + s * 60} 600 Q${800 + s * 160} 440 ${800 + s * 260} 600" stroke="${c}" stroke-width="3" fill="none" opacity=".7"/>`).join('')}${[420, 500, 1100, 1180].map((x) => `<circle cx="${x}" cy="520" r="60" fill="#14301e"/><rect x="${x - 6}" y="560" width="12" height="50" fill="#14301e"/>`).join('')}`,
+  authoritarian: (c, c2) => `<path d="M520 600 V280 H1080 V600 H900 V420 Q800 330 700 420 V600 Z" fill="#140a0c"/><path d="M520 280 H1080" stroke="${c2}" stroke-width="4"/><rect x="740" y="210" width="120" height="70" fill="#140a0c" stroke="${c2}" stroke-width="2"/><rect x="700" y="300" width="200" height="16" fill="${c2}" opacity=".7"/>${[560, 640, 960, 1040].map((x) => `<rect x="${x - 22}" y="300" width="44" height="200" fill="${c}" opacity=".75"/>`).join('')}`,
+  egalitarian: (c, c2) => `<path d="M480 600 V430 Q800 250 1120 430 V600 Z" fill="#0c140f"/><path d="M480 430 Q800 250 1120 430" stroke="${c}" stroke-width="3" fill="none"/>${Array.from({ length: 9 }, (_, i) => 520 + i * 70).map((x) => `<rect x="${x - 10}" y="440" width="20" height="160" fill="#18241c" stroke="${c}" stroke-width="1" opacity=".9"/>`).join('')}<rect x="460" y="590" width="680" height="16" fill="#18241c"/>`,
+  xenophile: (c, c2) => `<ellipse cx="640" cy="470" rx="120" ry="150" fill="#140c18" stroke="${c}" stroke-width="2"/><path d="M800 600 Q760 300 800 160 Q840 300 800 600" fill="#140c18" stroke="${c2}" stroke-width="2"/><rect x="900" y="380" width="200" height="220" rx="60" fill="#140c18" stroke="${c}" stroke-width="2"/><ellipse cx="800" cy="260" rx="260" ry="40" fill="none" stroke="${c2}" stroke-width="2" opacity=".7"/><ellipse cx="800" cy="300" rx="320" ry="56" fill="none" stroke="${c}" stroke-width="1.5" opacity=".5"/>`,
+  xenophobe: (c, c2) => `<rect x="380" y="380" width="840" height="220" fill="#0e121a"/>${Array.from({ length: 15 }, (_, i) => 400 + i * 56).map((x) => `<rect x="${x}" y="356" width="28" height="24" fill="#0e121a"/>`).join('')}<rect x="560" y="250" width="110" height="350" fill="#0e121a"/><rect x="930" y="250" width="110" height="350" fill="#0e121a"/><path d="M615 250 L460 40 L540 40 Z" fill="${c2}" opacity=".12"/><path d="M985 250 L1160 40 L1080 40 Z" fill="${c2}" opacity=".12"/><circle cx="615" cy="250" r="10" fill="${c2}"/><circle cx="985" cy="250" r="10" fill="${c2}"/><path d="M380 380 H1220" stroke="${c}" stroke-width="3"/>`,
+  materialist: (c, c2) => `<path d="M760 600 L780 120 L820 120 L840 600 Z" fill="#0a1218" stroke="${c}" stroke-width="2"/><path d="M800 120 V0" stroke="${c2}" stroke-width="2" opacity=".7"/><ellipse cx="800" cy="300" rx="200" ry="34" fill="none" stroke="${c}" stroke-width="3"/><circle cx="1000" cy="300" r="8" fill="${c2}"/><rect x="540" y="430" width="160" height="170" fill="#0a1218" stroke="${c}" stroke-width="1.5"/><rect x="900" y="400" width="180" height="200" fill="#0a1218" stroke="${c}" stroke-width="1.5"/>${Array.from({ length: 6 }, (_, i) => `<rect x="${560 + (i % 3) * 44}" y="${450 + Math.floor(i / 3) * 50}" width="26" height="30" fill="${c}" opacity=".35"/>`).join('')}`,
+ };
+ const person = (x, y, s, rim) => `<g transform="translate(${x},${y}) scale(${s})"><path d="M-30 0 C-30 -60 -20 -84 0 -86 C20 -84 30 -60 30 0 Z" fill="#05050a"/><circle cx="0" cy="-104" r="22" fill="#05050a"/><path d="M-20 -118 a22 22 0 0 1 40 0" stroke="${rim}" stroke-width="2" fill="none" opacity=".7"/></g>`;
+ function drawScene() {
+  const k = S.key, c = S.color, c2 = S.color2; drawnKey = k; document.documentElement.style.setProperty('--c', c); document.documentElement.style.setProperty('--c2', c2);
+  let s = `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05050c"/><stop offset=".7" stop-color="${c}" stop-opacity=".28"/><stop offset="1" stop-color="${c2}" stop-opacity=".18"/></linearGradient>
+   <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${c2}" stop-opacity=".35"/><stop offset="1" stop-color="${c2}" stop-opacity="0"/></radialGradient><filter id="bl"><feGaussianBlur stdDeviation="8"/></filter></defs>
+   <g id="bgL"><rect width="1600" height="900" fill="#05050c"/><rect width="1600" height="900" fill="url(#sky)"/>
+   ${Array.from({ length: 60 }, (_, i) => `<circle cx="${(i * 263) % 1600}" cy="${(i * 97) % 380}" r="${i % 3 ? 1 : 1.8}" fill="#fff" opacity="${0.3 + (i % 4) * 0.15}"/>`).join('')}
+   <ellipse cx="800" cy="380" rx="520" ry="320" fill="url(#halo)"/>
+   <g opacity=".25" filter="url(#bl)">${[[-1, 0], [1, 0]].map(([s]) => `<path d="M800 120 L${800 + s * 700} 900 L${800 + s * 520} 900 Z" fill="${c2}"/>`).join('')}</g>
+   ${MON[k] ? MON[k](c, c2) : ''}
+   <rect y="600" width="1600" height="300" fill="#07070c"/><path d="M0 600 H1600" stroke="${c}" stroke-opacity=".5" stroke-width="2"/>
+   <g stroke="#ffffff08">${Array.from({ length: 16 }, (_, i) => `<line x1="${800 + (i - 8) * 30}" y1="600" x2="${800 + (i - 8) * 180}" y2="900"/>`).join('')}</g></g><g id="fgL"><ellipse cx="800" cy="900" rx="700" ry="160" fill="#000" opacity=".35"/>
+   <g class="crowd" id="crowd">${Array.from({ length: 22 }, (_, i) => person(460 + (i % 11) * 68 + (i > 10 ? 34 : 0), i > 10 ? 860 : 800, i > 10 ? 1.05 : 0.85, c)).join('')}</g>
+   <g class="fig">${person(300, 700, 1.4, c2)}</g>
+   </g>`; // 연단 그림은 없앰(2026-10-31 사용자 결정) — 오른쪽 빛나는 자리를 누르면 연설
+  $('scene').innerHTML = s;
+  const mo = $('motes'); mo.innerHTML = ''; for (let i = 0; i < 26; i++) { const m = h('i'); m.style.left = (i * 61) % 1600 + 'px'; m.style.top = 900 + (i * 37) % 200 + 'px'; m.style.animationDuration = 14 + (i % 7) * 3 + 's'; m.style.animationDelay = -(i * 1.7) + 's'; mo.append(m); }
+ }
+ function drawSpots() {
+  const sp = $('spots'); sp.textContent = ''; $('backBtn').style.display = mode === 'plaza' ? '' : 'none'; if (mode !== 'plaza') return;
+  const add = (k, label, sub, f) => { const [x, y, w, hh] = SPOT[k], d = h('div', 'spot'); d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.width = w + 'px'; d.style.height = hh + 'px'; const t = h('div', 'tag', label); if (sub) t.append(h('small', '', sub)); d.append(h('div', 'glow'), t); d.onclick = f; sp.append(d); };
+  add('monument', S.ritual.name, S.ritual.counted ? L('올해 이미 함', 'done this year') : '', ritual);
+  add('figure', S.figure.name, L('대화', 'talk'), talk);
+  add('podium', '📣 ' + S.address.name, S.address.counted ? L('올해 민심 반영 끝', 'counted this year') : '', speech); sp.lastChild.classList.add('always'); // 연단 그림이 없으니 연설 자리는 이름표를 늘 보여 줌
+ }
+ function camTo(k) { const c = $('cam'); if (!k) { c.style.transform = ''; return; } const [x, y] = SPOT[k], z = k === 'monument' ? 1.25 : 1.5; const tx = Math.max(-(1600 * z - 1600), Math.min(0, 800 - x * z)), ty = Math.max(-(900 * z - 900), Math.min(0, 380 - y * z)); c.style.transform = `translate(${tx}px,${ty}px) scale(${z})`; }
+ function toPlaza() { mode = 'plaza'; document.body.classList.remove('talking'); camTo(null); ['cine', 'talk', 'speech'].forEach((id) => $(id).classList.remove('on')); $('title').style.opacity = 1; render(); }
+ // 의식
+ async function ritual() {
+  mode = 'ritual'; camTo('monument'); $('title').style.opacity = 0; drawSpots(); const r = await call(window.sllm.landmarkRitual()); if (!r.ok) return toPlaza();
+  const c = $('cine'); c.textContent = ''; c.classList.add('on'); const t = h('div', ''), meta = h('div', 'meta'); c.append(t, meta); await typeInto(t, r.text || S.ritual.text, 26);
+  meta.append(h('span', '', r.counted ? L('민심이 조금 오릅니다(+1, 올해 한 번).', 'Public mood rises a little (+1, once this year).') : L('올해는 이미 참석했습니다(민심 변화 없음).', 'Already attended this year (no mood change).'))); const b = h('button', 'btn', L('광장으로', 'Back to the square')); b.type = 'button'; b.onclick = toPlaza; meta.append(b);
+ }
+ // 대화
+ function talk() { mode = 'talk'; document.body.classList.add('talking'); camTo('figure'); $('title').style.opacity = 0; drawSpots(); shownThem = -1; drawTalk(); }
+ function drawTalk() {
+  const tk = $('talk'); tk.classList.toggle('on', mode === 'talk'); if (mode !== 'talk') return;
+  const pf = tk.querySelector('.pf'); pf.classList.toggle('on', !!S.art.figure); if (S.art.figure) pf.style.backgroundImage = `url(${S.art.figure})`;
+  const vn = $('vn'); vn.querySelector('.who').textContent = S.figure.name; const tools = vn.querySelector('.tools'); tools.textContent = '';
+  const tb = (t, f) => { const b = h('button', '', t); b.type = 'button'; b.onclick = f; tools.append(b); }; tb(L('지난 말', 'Log'), () => { $('log').classList.toggle('on'); drawLog(); }); tb(L('광장으로', 'Back to the square'), toPlaza);
+  const txt = vn.querySelector('.txt'), them = S.chat.filter((x) => x.who === 'them'), last = S.chat[S.chat.length - 1];
+  if (S.asking) { txt.textContent = ''; txt.append(h('div', 'me', `${L('나', 'Me')}: ${last && last.who === 'me' ? last.text : ''}`), h('div', 'sys dots', L('생각에 잠깁니다', 'Thinking'))); }
+  else if (txt.querySelector('.dots') && them.length === shownThem) { txt.textContent = ''; txt.append(h('div', 'sys', them.length ? them[them.length - 1].text : S.figure.greet)); } // 답을 못 받았을 때 「생각에 잠깁니다」가 남지 않게(2026-10-31 감사)
+  else if (them.length !== shownThem) { const first = shownThem < 0; shownThem = them.length; typeInto(txt, them.length ? them[them.length - 1].text : S.figure.greet + (first && S.comp.kind !== 'alone' ? '\n' + L(`(${S.comp.name} 님이 곁에서 듣고 있습니다)`, `(${S.comp.name} listens beside you)`) : '')); }
+  const inp = vn.querySelector('input'); inp.placeholder = L('무슨 말을 할까요? (Enter)', 'What do you say? (Enter)'); inp.disabled = S.asking; if (!S.asking) setTimeout(() => inp.focus({ preventScroll: true }), 0); drawLog();
+ }
+ function drawLog() { const lg = $('log'); if (!lg.classList.contains('on')) return; lg.textContent = ''; for (const c of S.chat) lg.append(h('div', c.who, c.who === 'me' ? `${L('나', 'Me')}: ${c.text}` : c.text)); lg.scrollTop = lg.scrollHeight; }
+ $('vn').querySelector('input').addEventListener('keydown', async (e) => { if (e.key !== 'Enter') return; const inp = e.target, t = inp.value.trim(); if (!t || S.asking) return; inp.value = ''; S.asking = true; S.chat.push({ who: 'me', text: t }); drawTalk(); await call(window.sllm.landmarkSay(t)); drawTalk(); });
+ // 연설
+ function speech() {
+  mode = 'speech'; camTo(null); $('title').style.opacity = 0; drawSpots(); const sp = $('speech'); sp.textContent = ''; sp.classList.add('on');
+  const ta = h('textarea'); ta.maxLength = 1200; ta.placeholder = L('연설문을 쓰세요. 이 군중이 무엇을 듣고 싶어 할지 생각해 보세요.', 'Write your speech. Think about what this crowd wants to hear.');
+  const go = h('button', 'btn main', L('군중 앞에서 말하기', 'Address the crowd')); go.type = 'button';
+  const row = h('div', 'row'); row.append(h('span', '', S.address.counted ? L('올해는 이미 민심에 반영됐습니다(반응만 봅니다).', 'Already counted toward mood this year (reaction only).') : L('군중 반응에 따라 민심이 잠깐 움직입니다(−2~+3, 올해 한 번).', 'The crowd\'s reaction moves public mood for a while (−2 to +3, once this year).')));
+  const bb = h('button', 'btn', L('그만두기', 'Never mind')); bb.type = 'button'; bb.onclick = toPlaza; const btns = h('span', ''); btns.style.display = 'flex'; btns.style.gap = '8px'; btns.append(bb, go); row.append(btns);
+  sp.append(h('h3', '', S.address.name), h('p', '', S.address.prompt), ta, row); setTimeout(() => ta.focus({ preventScroll: true }), 0);
+  go.onclick = async () => { const t = ta.value.trim(); if (!t) return; go.disabled = true; ta.disabled = true; go.textContent = ''; go.append(h('span', 'dots', L('군중이 귀를 기울입니다', 'The crowd listens'))); const r = await call(window.sllm.landmarkAddress(t)); if (!r.ok) { go.disabled = false; ta.disabled = false; go.textContent = L('군중 앞에서 말하기', 'Address the crowd'); return; } sp.classList.remove('on'); reaction(); };
+ }
+ async function reaction() {
+  const ls = S.address.last; if (!ls) return toPlaza(); const cr = document.getElementById('crowd'); cr.classList.remove('cheer', 'boo'); void cr.getBBox(); cr.classList.add(ls.score > 0 ? 'cheer' : ls.score < 0 ? 'boo' : 'x');
+  const c = $('cine'); c.textContent = ''; c.classList.add('on'); c.append(h('span', 'word', ls.word)); const t = h('div', ''), meta = h('div', 'meta'); c.append(t, meta); await typeInto(t, ls.reaction, 22);
+  meta.append(h('span', '', ls.counted ? (ls.score ? L(`민심이 잠깐 ${ls.score > 0 ? '+' : ''}${ls.score} 움직입니다(1년에 걸쳐 사라짐).`, `Public mood moves ${ls.score > 0 ? '+' : ''}${ls.score} for a while (fades over a year).`) : L('민심에는 변화가 없습니다.', 'No change in public mood.')) : L('올해는 이미 민심에 반영됐습니다.', 'Already counted toward mood this year.')));
+  const b = h('button', 'btn', L('광장으로', 'Back to the square')); b.type = 'button'; b.onclick = toPlaza; meta.append(b);
+ }
+ function render() {
+  if (!S || !S.ready) return; if (drawnKey !== S.key) drawScene();
+  const art = S.art.bg; $('artbg').style.display = art ? 'block' : 'none'; if (art) $('artbg').style.backgroundImage = `url(${art})`; const bgL = document.getElementById('bgL'); if (bgL) bgL.style.display = art ? 'none' : ''; const fgL = document.getElementById('fgL'); if (fgL) { fgL.classList.toggle('onart', !!art); fgL.classList.toggle('hasfig', !!S.art.figure); } const fi = $('figImg'); fi.classList.toggle('on', !!S.art.figure); if (S.art.figure) fi.style.backgroundImage = `url(${S.art.figure})`; document.body.classList.toggle('talking', mode === 'talk'); // 그림이 있으면 그린 건물·하늘만 숨기고 인물·연단·군중은 그림 위에
+  $('title').textContent = ''; $('title').append(document.createTextNode(S.place), h('small', '', L('건물을 눌러 의식에 참석하고, 왼쪽 인물과 이야기하고, 오른쪽 군중 앞에서 연설할 수 있습니다.', 'Click the building for the ceremony, talk to the figure on the left, or address the crowd on the right.')));
+  $('comp').textContent = S.comp.kind === 'alone' ? L('혼자 왔습니다', 'You came alone') : L(`${S.comp.name} 님과 함께`, `With ${S.comp.name}`);
+  $('backBtn').textContent = L('외출 지도로', 'Back to the map'); $('backBtn').style.display = mode === 'plaza' ? '' : 'none';
+  drawSpots(); if (mode === 'talk') drawTalk();
+ }
+ $('backBtn').onclick = () => window.sllm.landmarkClose();
+ $('x').onclick = () => window.sllm.landmarkClose();
+ document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('log').classList.contains('on')) $('log').classList.remove('on'); else if (mode !== 'plaza') toPlaza(); else window.sllm.landmarkClose(); });
+ document.addEventListener('sllm-language', () => { drawnKey = ''; render(); });
+ if (window.sllm.onLandmarkState) window.sllm.onLandmarkState((s) => { S = s; render(); });
+ window.sllm.landmarkState().then((s) => { S = s; render(); setTimeout(() => { $('door').style.opacity = 0; }, 150); });
+</script>
+</body></html>

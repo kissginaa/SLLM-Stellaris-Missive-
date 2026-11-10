@@ -1,0 +1,5 @@
+# SLLM - 관저 파티(2026-11-03). 우리 파티에 손님으로 온 타국 지도자의 나라에 붙인다(who = 우리). 앱: src/party.ts partyForeignCommand. +10, 달마다 1씩 줄어듦.
+sllm_party_guest_goodwill = {
+	opinion = { base = 10 }
+	decay = { base = 1 }
+}

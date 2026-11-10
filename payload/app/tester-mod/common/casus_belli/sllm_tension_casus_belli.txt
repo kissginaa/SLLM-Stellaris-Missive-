@@ -1,0 +1,10 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 긴장 100 에서 두 거대 세력이 서로 받는 명분(효과로만 생김). 90 밑으로 내려가면(깃발이 걷히면) 사라진다.
+cb_sllm_tn_showdown = {
+	show_in_diplomacy = yes
+	show_notification = yes
+	potential = { is_country_type = default }
+	is_valid = { always = no }
+	destroy_if = {
+		NOT = { has_country_flag = sllm_tn_cb_open }
+	}
+}

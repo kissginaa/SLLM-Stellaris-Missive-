@@ -80,7 +80,7 @@ export interface AddonManifest {
 export interface LanguageManifest { code: string; name: string; gameLanguage: string | null; system: string[]; aiLanguage: string; strings: Record<string, unknown> | string | null; patterns: unknown[] | string | null }
 /** 읽어 들인 언어 팩. strings 의 열쇠는 앱의 한국어 원문(영어 문구도 열쇠로 쓸 수 있음). */
 export interface LanguagePack { code: string; name: string; gameLanguage: string | null; system: string[]; aiLanguage: string; strings: Record<string, string>; patterns: Array<[string, string]>; addonId: string }
-const MAX_LANG_FILE = 4 * 1024 * 1024, MAX_STRINGS = 20000, MAX_PATTERNS = 1000;
+const MAX_LANG_FILE = 4 * 1024 * 1024, MAX_STRINGS = 20000, MAX_PATTERNS = 3000; // 패턴 상한 1000 → 3000(2026-11-03 중국어 팩: 앱 자체 뼈대가 이미 1000개를 넘음)
 /** 번역 표 검사: 문자열 → 문자열만, 길이 제한, 제어 문자 제거(줄바꿈·탭은 둠). */
 export function sanitizeStrings(v: unknown, warnings: string[]): Record<string, string> {
   const out: Record<string, string> = {};

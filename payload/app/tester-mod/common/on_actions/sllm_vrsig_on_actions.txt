@@ -1,0 +1,10 @@
+# SLLM 종속국 통치권 신호(2026-11-09) — 매달 묻지 않고 사건 때만(4.5: events 만). 이벤트 trigger 가 우리 표식이 없으면 바로 끝낸다.
+on_war_ended = {
+	events = { sllm_vrs.1 }
+}
+on_fleet_destroyed_victim = {
+	events = { sllm_vrs.3 }
+}
+on_fleet_contract_expired = {
+	events = { sllm_vrs.5 }
+}

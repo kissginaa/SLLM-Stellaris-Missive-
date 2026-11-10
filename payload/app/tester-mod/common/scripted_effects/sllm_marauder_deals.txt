@@ -1,0 +1,321 @@
+# SLLM 약탈자 대응(다음 업데이트, 2026-10-26 외부 건의 ②③). 앱: src/marauder-deals.ts · src/features/marauder-app.ts.
+# 바닐라 약탈자 이벤트(events/marauder_events.txt marauder.101·102 공물, marauder.31~33 습격 의뢰, marauder.34 용병 고용)를 그대로 따르고 대화로만 감싼다.
+# 수치(사용자 확정 2026-10-26): 위협 = 함대 전력이 그 약탈자보다 우세 이상이면 성공(대등은 대화한 AI 가 판단, 열세는 실패),
+#   딴 데로 돌리기 = 바닐라 습격 의뢰 가격(@raidcost 3000) ±15%, 새 대상이 우리 경쟁국이 아니면 1.5배(앱이 정한 값 COST), 용병 흥정 = 할인만 최대 15%(고용 뒤 에너지로 돌려줌).
+# 모두 플레이어 나라 범위에서 부른다. 회신: SLLM:MRD/;/op=…/;/req=…/;/status=…  같은 요청 번호는 한 번만 처리(sllm_mrd_last).
+# 상태:   effect every_playable_country = { limit = { is_ai = no } sllm_mrd_status = { REQ = 9 TID = 4 } }
+# 위협:   … sllm_mrd_withdraw = { REQ = 9 TID = 4 MIN = superior }   (MIN = superior | equivalent)
+# 돌리기: … sllm_mrd_redirect = { REQ = 9 TID = 4 TARGET = 7 COST = 3150 RIVAL = 1 }   (RIVAL 은 의뢰와 같음: 경쟁국이 아니면 앱이 1.5배로 셈)
+# 흥정:   … sllm_mrd_merc_deal = { REQ = 9 TID = 4 PCT = 10 }
+# 의뢰:   … sllm_mrd_hire = { REQ = 9 TID = 4 TARGET = 7 COST = 3000 RIVAL = 1 }   (RIVAL = 앱이 경쟁국 가격으로 셈(1)/아님(0, 1.5배). 건의 ①, 2026-10-26: 습격당하지 않을 때 대화로 습격을 맡김 — 바닐라 marauder.20 「습격 의뢰」와 같은 조건·같은 marauder.33)
+# 정산:   … sllm_mrd_merc_check = yes   (2026-11-09부터 모드가 매달 스스로 부른다 — events/sllm_mrd_events.txt sllm_mrd.1. 새로 고용한 그 약탈자의 용병 함대가 있으면 할인분을 돌려준다)
+
+# 약탈자 찾기: event_target:sllm_mr, 찾으면 플레이어 변수 sllm_mrd_ok = 1.
+sllm_mrd_find = {
+	set_variable = { which = sllm_mrd_ok value = 0 }
+	random_country = {
+		limit = {
+			is_variable_set = sllm_idx
+			check_variable = { which = sllm_idx value = $TID$ }
+			is_country_type = dormant_marauders
+		}
+		save_event_target_as = sllm_mr
+		event_target:sllm_player = { set_variable = { which = sllm_mrd_ok value = 1 } }
+	}
+}
+
+# 지금 이 약탈자의 자발 습격(marauder.101) 대상인가 → sllm_mrd_raid 1/0.
+sllm_mrd_raid_flag = {
+	set_variable = { which = sllm_mrd_raid value = 0 }
+	if = {
+		limit = {
+			check_variable = { which = sllm_mrd_ok value = 1 }
+			has_relation_flag = { who = event_target:sllm_mr flag = current_target }
+		}
+		set_variable = { which = sllm_mrd_raid value = 1 }
+	}
+}
+
+# 습격 정리: 바닐라 공물 선택지(marauder.102 hidden_effect)와 같은 정리. 쿨다운은 부르는 쪽이 정한다.
+sllm_mrd_end_raid = {
+	remove_country_flag = raid_target_of@event_target:sllm_mr
+	remove_country_flag = under_marauder_attack
+	remove_country_flag = marauder_tribute_1@event_target:sllm_mr
+	remove_country_flag = marauder_tribute_2@event_target:sllm_mr
+	remove_country_flag = marauder_tribute_3@event_target:sllm_mr
+	remove_country_flag = marauder_tribute_4@event_target:sllm_mr
+	remove_country_flag = marauder_tribute_5@event_target:sllm_mr
+	remove_country_flag = marauder_tribute_6@event_target:sllm_mr
+	remove_relation_flag = { who = event_target:sllm_mr flag = current_target }
+	event_target:sllm_mr = { remove_country_flag = raid_ongoing }
+	random_country = {
+		limit = {
+			is_country_type = marauder_raiders
+			event_target:sllm_mr = { has_country_flag = parent_of@prev }
+		}
+		random_controlled_fleet = {
+			limit = { has_fleet_flag = raiding_fleet }
+			delete_fleet = this
+		}
+		destroy_country = yes
+	}
+}
+
+sllm_mrd_status = {
+	save_event_target_as = sllm_player
+	set_variable = { which = sllm_mrd_req value = $REQ$ }
+	set_variable = { which = sllm_mrd_tid value = $TID$ } # F-39(2026-10-27)
+	set_variable = { which = sllm_mrd_pow value = -1 }
+	set_variable = { which = sllm_mrd_m value = 0 }
+	set_variable = { which = sllm_mrd_free value = 0 }
+	sllm_mrd_find = { TID = $TID$ }
+	sllm_mrd_raid_flag = yes
+	if = {
+		limit = { check_variable = { which = sllm_mrd_ok value = 1 } }
+		# 습격 의뢰를 받을 수 있나(바닐라 marauder.20 「습격 의뢰」 선택지 조건과 같음)
+		if = { limit = { event_target:sllm_mr = { NOR = { has_country_flag = raid_ongoing has_country_flag = raid_cooldown } } } set_variable = { which = sllm_mrd_free value = 1 } }
+		# 습격 대상 후보(건의 ①): 우리와 통신 중인 일반 AI 제국마다 한 줄 SLLM:MRDT. 끝에 변수는 지운다.
+		# f = 1 우리 경쟁국 + 2 우리와 전쟁 중 + 4 우리와 국경이 닿음 + 8 이미 약탈자 습격을 받는 중 + 16 경제가 우리보다 우세 이상
+		# tf = 그 제국 함대 전력이 이 약탈자에 비해 4 압도 3 우세 2 대등 1 열세 0 한심
+		every_country = {
+			limit = { is_variable_set = sllm_idx sllm_is_empire = yes is_ai = yes has_communications = event_target:sllm_player }
+			set_variable = { which = sllm_mrdt value = 0 }
+			if = { limit = { event_target:sllm_player = { is_rival = prev } } change_variable = { which = sllm_mrdt value = 1 } }
+			if = { limit = { is_at_war_with = event_target:sllm_player } change_variable = { which = sllm_mrdt value = 2 } }
+			if = { limit = { is_neighbor_of = event_target:sllm_player } change_variable = { which = sllm_mrdt value = 4 } }
+			if = { limit = { has_country_flag = under_marauder_attack } change_variable = { which = sllm_mrdt value = 8 } }
+			if = { limit = { relative_power = { who = event_target:sllm_player category = economy value >= superior } } change_variable = { which = sllm_mrdt value = 16 } }
+			if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = overwhelming } } set_variable = { which = sllm_mrdt_tf value = 4 } }
+			else_if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = superior } } set_variable = { which = sllm_mrdt_tf value = 3 } }
+			else_if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = equivalent } } set_variable = { which = sllm_mrdt_tf value = 2 } }
+			else_if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = inferior } } set_variable = { which = sllm_mrdt_tf value = 1 } }
+			else = { set_variable = { which = sllm_mrdt_tf value = 0 } }
+			set_variable = { which = sllm_mrdt_req value = $REQ$ } # F-39: 로그에는 변수로(2026-10-27)
+			set_variable = { which = sllm_mrdt_tid value = $TID$ }
+			log = "SLLM:MRDT/;/req=\\[This.sllm_mrdt_req]/;/tid=\\[This.sllm_mrdt_tid]/;/idx=\\[This.sllm_idx]/;/f=\\[This.sllm_mrdt]/;/tf=\\[This.sllm_mrdt_tf]"
+			clear_variable = sllm_mrdt
+			clear_variable = sllm_mrdt_tf
+			clear_variable = sllm_mrdt_req
+			clear_variable = sllm_mrdt_tid
+		}
+		# 우리 함대 전력이 그 약탈자에 비해: 4 압도 3 우세 2 대등 1 열세 0 한심
+		if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = overwhelming } } set_variable = { which = sllm_mrd_pow value = 4 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = superior } } set_variable = { which = sllm_mrd_pow value = 3 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = equivalent } } set_variable = { which = sllm_mrd_pow value = 2 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_mr category = fleet value = inferior } } set_variable = { which = sllm_mrd_pow value = 1 } }
+		else = { set_variable = { which = sllm_mrd_pow value = 0 } }
+		if = { limit = { event_target:sllm_mr = { has_country_flag = marauder_1 } } set_variable = { which = sllm_mrd_m value = 1 } }
+		else_if = { limit = { event_target:sllm_mr = { has_country_flag = marauder_2 } } set_variable = { which = sllm_mrd_m value = 2 } }
+		else_if = { limit = { event_target:sllm_mr = { has_country_flag = marauder_3 } } set_variable = { which = sllm_mrd_m value = 3 } }
+	}
+	log = "SLLM:MRD/;/op=status/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/tid=\\[This.sllm_mrd_tid]/;/found=\\[This.sllm_mrd_ok]/;/raid=\\[This.sllm_mrd_raid]/;/pow=\\[This.sllm_mrd_pow]/;/m=\\[This.sllm_mrd_m]/;/free=\\[This.sllm_mrd_free]"
+}
+
+sllm_mrd_withdraw = {
+	save_event_target_as = sllm_player
+	set_variable = { which = sllm_mrd_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_mrd_last } } set_variable = { which = sllm_mrd_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_mrd_last value >= $REQ$ } }
+		log = "SLLM:MRD/;/op=withdraw/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_mrd_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_mrd_last value = $REQ$ }
+		sllm_mrd_find = { TID = $TID$ }
+		sllm_mrd_raid_flag = yes
+		if = {
+			limit = { check_variable = { which = sllm_mrd_raid value = 0 } }
+			log = "SLLM:MRD/;/op=withdraw/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=noraid"
+		}
+		else_if = {
+			limit = { NOT = { relative_power = { who = event_target:sllm_mr category = fleet value >= $MIN$ } } }
+			log = "SLLM:MRD/;/op=withdraw/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=weak"
+		}
+		else = {
+			sllm_mrd_end_raid = yes
+			event_target:sllm_mr = { set_timed_country_flag = { flag = raid_cooldown days = @raidcooldown } }
+			log = "SLLM:MRD/;/op=withdraw/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+	}
+}
+
+sllm_mrd_redirect = {
+	save_event_target_as = sllm_player
+	set_variable = { which = sllm_mrd_req value = $REQ$ }
+	set_variable = { which = sllm_mrd_riv value = $RIVAL$ }
+	if = { limit = { NOT = { is_variable_set = sllm_mrd_last } } set_variable = { which = sllm_mrd_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_mrd_last value >= $REQ$ } }
+		log = "SLLM:MRD/;/op=redirect/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_mrd_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_mrd_last value = $REQ$ }
+		sllm_mrd_find = { TID = $TID$ }
+		sllm_mrd_raid_flag = yes
+		set_variable = { which = sllm_mrd_tok value = 0 }
+		random_country = {
+			limit = {
+				is_variable_set = sllm_idx
+				check_variable = { which = sllm_idx value = $TARGET$ }
+				sllm_is_empire = yes
+				is_ai = yes
+				NOT = { has_country_flag = under_marauder_attack }
+			}
+			save_event_target_as = sllm_mr_target
+			event_target:sllm_player = { set_variable = { which = sllm_mrd_tok value = 1 } }
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mrd_raid value = 0 } }
+			log = "SLLM:MRD/;/op=redirect/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=noraid"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_mrd_tok value = 0 } }
+			log = "SLLM:MRD/;/op=redirect/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_mrd_riv value = 1 } NOT = { is_rival = event_target:sllm_mr_target } }
+			log = "SLLM:MRD/;/op=redirect/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=norival"
+		}
+		else_if = {
+			limit = { resource_stockpile_compare = { resource = energy value < $COST$ } }
+			log = "SLLM:MRD/;/op=redirect/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+		}
+		else = {
+			add_resource = { energy = -$COST$ }
+			sllm_mrd_end_raid = yes
+			# 바닐라 습격 의뢰(marauder.32 → 33)와 같은 부름: 의뢰국(from) = 우리, raiding_marauder = 그 약탈자.
+			event_target:sllm_mr = { save_event_target_as = raiding_marauder }
+			event_target:sllm_mr_target = { country_event = { id = marauder.33 scopes = { from = event_target:sllm_player } } }
+			log = "SLLM:MRD/;/op=redirect/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+	}
+}
+
+# 습격 의뢰(건의 ①): 우리가 습격당하지 않고 그 약탈자가 다른 습격·쿨다운 중이 아닐 때, 에너지 COST 를 내고 TARGET 을 습격하게 한다.
+# 바닐라 marauder.32 → 33 과 같은 부름(의뢰국 from = 우리, raiding_marauder = 그 약탈자). 대상 조건은 돌리기와 같다.
+# 가격(앱이 셈): 우리 경쟁국이면 돌리기 가격, 아니면 1.5배. RIVAL = 1 로 왔는데 지금 경쟁국이 아니면 받지 않는다(status=norival).
+sllm_mrd_hire = {
+	save_event_target_as = sllm_player
+	set_variable = { which = sllm_mrd_req value = $REQ$ }
+	set_variable = { which = sllm_mrd_riv value = $RIVAL$ }
+	if = { limit = { NOT = { is_variable_set = sllm_mrd_last } } set_variable = { which = sllm_mrd_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_mrd_last value >= $REQ$ } }
+		log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_mrd_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_mrd_last value = $REQ$ }
+		sllm_mrd_find = { TID = $TID$ }
+		sllm_mrd_raid_flag = yes
+		set_variable = { which = sllm_mrd_tok value = 0 }
+		random_country = {
+			limit = {
+				is_variable_set = sllm_idx
+				check_variable = { which = sllm_idx value = $TARGET$ }
+				sllm_is_empire = yes
+				is_ai = yes
+				NOT = { has_country_flag = under_marauder_attack }
+			}
+			save_event_target_as = sllm_mr_target
+			event_target:sllm_player = { set_variable = { which = sllm_mrd_tok value = 1 } }
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mrd_ok value = 0 } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_mrd_raid value = 1 } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=raiding"
+		}
+		else_if = {
+			limit = { event_target:sllm_mr = { OR = { has_country_flag = raid_ongoing has_country_flag = raid_cooldown } } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=busy"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_mrd_tok value = 0 } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_mrd_riv value = 1 } NOT = { is_rival = event_target:sllm_mr_target } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=norival"
+		}
+		else_if = {
+			limit = { resource_stockpile_compare = { resource = energy value < $COST$ } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+		}
+		else = {
+			add_resource = { energy = -$COST$ }
+			event_target:sllm_mr = { save_event_target_as = raiding_marauder }
+			event_target:sllm_mr_target = { country_event = { id = marauder.33 scopes = { from = event_target:sllm_player } } }
+			log = "SLLM:MRD/;/op=hire/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+	}
+}
+
+# 용병 흥정: 그 약탈자(marauder_1~3)와 할인율을 적어 두고, 지금 있는 용병 함대는 「이미 본 것」으로 표시(흥정 전 고용분은 돌려주지 않음). 1년 동안 유효.
+sllm_mrd_merc_deal = {
+	save_event_target_as = sllm_player
+	set_variable = { which = sllm_mrd_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_mrd_last } } set_variable = { which = sllm_mrd_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_mrd_last value >= $REQ$ } }
+		log = "SLLM:MRD/;/op=merc/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_mrd_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_mrd_last value = $REQ$ }
+		set_variable = { which = sllm_mrd_m value = 0 }
+		sllm_mrd_find = { TID = $TID$ }
+		if = {
+			limit = { check_variable = { which = sllm_mrd_ok value = 1 } }
+			if = { limit = { event_target:sllm_mr = { has_country_flag = marauder_1 } } set_variable = { which = sllm_mrd_m value = 1 } }
+			else_if = { limit = { event_target:sllm_mr = { has_country_flag = marauder_2 } } set_variable = { which = sllm_mrd_m value = 2 } }
+			else_if = { limit = { event_target:sllm_mr = { has_country_flag = marauder_3 } } set_variable = { which = sllm_mrd_m value = 3 } }
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mrd_m value = 0 } }
+			log = "SLLM:MRD/;/op=merc/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else = {
+			every_owned_fleet = {
+				limit = { sllm_mrd_is_merc_fleet = yes }
+				set_fleet_flag = sllm_mrd_seen
+			}
+			set_variable = { which = sllm_mrd_pct value = $PCT$ }
+			set_variable = { which = sllm_mrd_deal_m value = 0 }
+			change_variable = { which = sllm_mrd_deal_m value = sllm_mrd_m }
+			set_timed_country_flag = { flag = sllm_mrd_deal days = 360 }
+			log = "SLLM:MRD/;/op=merc/;/req=\\[This.sllm_mrd_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+	}
+}
+
+# 매달 정산(모드가 매달 sllm_mrd.1 로, 2026-11-09): 흥정한 약탈자의 새 용병 함대 하나를 찾으면 그 고용 가격(바닐라 9000/6500/4000) × 할인율 을 돌려주고 흥정을 마친다.
+sllm_mrd_merc_check = {
+	if = {
+		limit = { has_country_flag = sllm_mrd_deal }
+		set_variable = { which = sllm_mrd_ref value = 0 }
+		random_owned_fleet = {
+			limit = {
+				NOT = { has_fleet_flag = sllm_mrd_seen }
+				OR = {
+					AND = { owner = { check_variable = { which = sllm_mrd_deal_m value = 1 } } OR = { has_fleet_flag = armada_of_the_voidborn has_fleet_flag = star_rider_flotilla has_fleet_flag = first_storm_wing } }
+					AND = { owner = { check_variable = { which = sllm_mrd_deal_m value = 2 } } OR = { has_fleet_flag = dwamak_bashers has_fleet_flag = unhinged_screamer_flotilla has_fleet_flag = frenzied_volunteer_squadron } }
+					AND = { owner = { check_variable = { which = sllm_mrd_deal_m value = 3 } } OR = { has_fleet_flag = her_chosen_champions has_fleet_flag = order_of_eternal_night has_fleet_flag = twilight_congregation } }
+				}
+			}
+			set_fleet_flag = sllm_mrd_seen
+			if = { limit = { OR = { has_fleet_flag = armada_of_the_voidborn has_fleet_flag = dwamak_bashers has_fleet_flag = her_chosen_champions } } owner = { set_variable = { which = sllm_mrd_ref value = 9000 } } }
+			else_if = { limit = { OR = { has_fleet_flag = star_rider_flotilla has_fleet_flag = unhinged_screamer_flotilla has_fleet_flag = order_of_eternal_night } } owner = { set_variable = { which = sllm_mrd_ref value = 6500 } } }
+			else = { owner = { set_variable = { which = sllm_mrd_ref value = 4000 } } }
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mrd_ref value > 0 } }
+			multiply_variable = { which = sllm_mrd_ref value = sllm_mrd_pct }
+			divide_variable = { which = sllm_mrd_ref value = 100 }
+			round_variable_to_closest = { which = sllm_mrd_ref value = 1 }
+			add_resource = { energy = 1 mult = sllm_mrd_ref }
+			remove_country_flag = sllm_mrd_deal
+			log = "SLLM:MRCREF/;/sid=\\[This.sllm_save_id]/;/amt=\\[This.sllm_mrd_ref]/;/pct=\\[This.sllm_mrd_pct]"
+		}
+	}
+}

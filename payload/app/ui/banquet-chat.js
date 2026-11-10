@@ -1,4 +1,5 @@
 (() => {
+ if(window.SLLM_FB)return; // 타국 만찬은 banquet-foreign.js 가 같은 화면을 쓴다(2026-10-23)
  const get=id=>document.getElementById(id);let busy=false,ended=false,last=null,ME='';
  // 플레이어 통치자 이름(2026-10-18: 「나」 대신)
  if(window.sllm.playerRuler)window.sllm.playerRuler().then(n=>{ME=n||'';if(last)render(last);},()=>{});

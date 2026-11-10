@@ -1,0 +1,8 @@
+# SLLM 여당·야당(2026-11-03). 앱: src/parliament.ts PARL, src/features/parliament-app.ts(회신 CIVIC). 파벌 scope.
+# 연정 참여(연정이 이어지는 동안, 끝나면 앱이 뗀다) · 법안 거래(2년). 반감·매수 스캔들은 로비의 sllm_lobby_spurned·sllm_lobby_scandal 을 함께 쓴다.
+sllm_parl_coalition = {
+	faction_approval = 0.1
+}
+sllm_parl_deal = {
+	faction_approval = 0.1
+}

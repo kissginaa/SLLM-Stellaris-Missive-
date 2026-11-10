@@ -1,0 +1,40 @@
+# 일정표 막대(2026-11-04): 우리 기능의 남은 날을 게임 「상황」 화면에 보여 준다. 앱 src/features/alarm-app.ts → sllm_alarm_bar_on(sllm_alarm.txt).
+# 막대는 sllm_al_total(전체 날 수)에 맞춰 차고, 다 차면 상황이 스스로 사라진다(앱이 알림을 따로 울림). 선택할 대응은 없다(기다림 하나).
+sllm_alarm_assim = {
+	picture = GFX_evt_georadiation_bell
+	situation_log_category = developments
+	stages = {
+		stage_1 = { icon = GFX_situation_stage_1 icon_background = GFX_situation_stage_frame_blue end = 1000 }
+	}
+	approach = {
+		name = sllm_alarm_wait
+		icon = GFX_situation_approach_shrug
+		icon_background = GFX_situation_approach_bg_green
+		default = yes
+		on_select = { custom_tooltip = sllm_alarm_wait_tt }
+	}
+	monthly_progress = {
+		base = 0
+		modifier = { add = value:sllm_alarm_rate desc = sllm_alarm_rate_desc }
+	}
+	on_progress_complete = { hidden_effect = { destroy_situation = this } }
+}
+sllm_alarm_vatech = {
+	picture = GFX_evt_georadiation_bell
+	situation_log_category = developments
+	stages = {
+		stage_1 = { icon = GFX_situation_stage_1 icon_background = GFX_situation_stage_frame_blue end = 1000 }
+	}
+	approach = {
+		name = sllm_alarm_wait
+		icon = GFX_situation_approach_shrug
+		icon_background = GFX_situation_approach_bg_green
+		default = yes
+		on_select = { custom_tooltip = sllm_alarm_wait_tt }
+	}
+	monthly_progress = {
+		base = 0
+		modifier = { add = value:sllm_alarm_rate desc = sllm_alarm_rate_desc }
+	}
+	on_progress_complete = { hidden_effect = { destroy_situation = this } }
+}

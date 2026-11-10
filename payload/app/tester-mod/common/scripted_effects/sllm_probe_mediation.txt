@@ -12,13 +12,13 @@ sllm_probe_med_wars = {
 	set_variable = { which = sllm_med_req value = $REQ$ }
 	save_event_target_as = sllm_med_viewer
 	every_country = {
-		limit = { is_ai = yes is_country_type = default is_variable_set = sllm_idx has_communications = prev is_at_war = yes }
+		limit = { is_ai = yes sllm_is_empire = yes is_variable_set = sllm_idx has_communications = prev is_at_war = yes }
 		set_variable = { which = sllm_med_rq value = prev.sllm_med_req }
 		set_country_flag = sllm_med_it
 		every_war = {
 			limit = {
 				attacker = { has_country_flag = sllm_med_it }
-				defender = { is_ai = yes is_country_type = default is_variable_set = sllm_idx has_communications = event_target:sllm_med_viewer }
+				defender = { is_ai = yes sllm_is_empire = yes is_variable_set = sllm_idx has_communications = event_target:sllm_med_viewer }
 				NOT = { any_war_participant = { is_ai = no } }
 			}
 			set_variable = { which = sllm_med_rq value = prev.sllm_med_rq }
@@ -39,12 +39,12 @@ sllm_probe_med_find = {
 	remove_country_flag = sllm_med_found
 	save_event_target_as = sllm_med_player
 	every_country = {
-		limit = { is_ai = yes is_country_type = default is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $A$ } has_communications = prev }
+		limit = { is_ai = yes sllm_is_empire = yes is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $A$ } has_communications = prev }
 		set_country_flag = sllm_med_it
 		every_war = {
 			limit = {
 				attacker = { has_country_flag = sllm_med_it }
-				defender = { is_ai = yes is_country_type = default is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $D$ } }
+				defender = { is_ai = yes sllm_is_empire = yes is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $D$ } }
 				NOT = { any_war_participant = { is_ai = no } }
 			}
 			save_event_target_as = sllm_med_war

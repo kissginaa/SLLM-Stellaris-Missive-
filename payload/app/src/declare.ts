@@ -37,14 +37,14 @@ export function warSide(wars: StateWar[] | undefined, warName: string): { side: 
 }
 export const declTitle = (side: WarSide, ko: boolean): string => (side === 'def' ? (ko ? '항전 선언문' : 'Declaration of Resistance') : side === 'att' ? (ko ? '전쟁 선언문' : 'Declaration of War') : (ko ? '전쟁 선언문' : 'War declaration'));
 /** AI 초안 요청: 통치자가 국민과 군에게 읽는 선언문. 실제 역사 연설을 베끼지 않게 한다. */
-export function declMessages(empire: string, war: string, enemy: string, side: WarSide, ethics: string[], gestalt: boolean, date: string, warInfo = ''): ChatMessage[] {
+export function declMessages(empire: string, war: string, enemy: string, side: WarSide, ethics: string[], gestalt: boolean, date: string, warInfo = '', front: string[] = []): ChatMessage[] { // front: 적과의 국경·영유권·점령(2026-10-26, frontier.ts frontierFactsUs)
   const sys = 'You write the address a head of state delivers to the nation and its armed forces at the outbreak of a war, in the game Stellaris. '
     + 'ORIGINAL text only: never copy or closely paraphrase any real-world speech. 8 to 14 short lines, one sentence per line, no numbering, no markdown, suitable to be read aloud over a broadcast. '
     + (side === 'def' ? 'We were attacked: a declaration of resistance — resolve, unity, the defense of home. ' : side === 'att' ? 'We opened the war: a declaration of war — the cause, the resolve, the call to arms. ' : '')
     + 'Ground the speech in the actual cause of the war given below (the casus belli and the relationship between the sides): a conquest speaks of claims and destiny, a liberation addresses the enemy\'s own people, a war of independence denounces the overlord, a defense speaks of home and resolve, a war against a galactic threat speaks for all. '
     + 'Reflect the empire\'s character. Output ONLY JSON: {"title":"short title","text":"line1\\nline2\\n..."}.';
   const traits = [ethics.length ? 'ethics: ' + ethics.join(', ') : '', gestalt ? 'a gestalt consciousness; speak as one collective' : ''].filter(Boolean).join('; ');
-  const usr = `Empire: ${String(empire || 'the empire').slice(0, 80)}${war ? '\nWar: ' + war.slice(0, 120) : ''}${enemy ? '\nEnemy: ' + enemy.slice(0, 120) : ''}${warInfo ? '\nCause of the war: ' + warInfo.slice(0, 400) : ''}${traits ? '\nCharacter — ' + traits : ''}${date ? '\nGame date: ' + date : ''}\nWrite the declaration.`;
+  const usr = `Empire: ${String(empire || 'the empire').slice(0, 80)}${war ? '\nWar: ' + war.slice(0, 120) : ''}${enemy ? '\nEnemy: ' + enemy.slice(0, 120) : ''}${warInfo ? '\nCause of the war: ' + warInfo.slice(0, 400) : ''}${front.length ? '\nBorders, claims and front with the enemy (facts; name only these systems): ' + front.join(' ').slice(0, 700) : ''}${traits ? '\nCharacter — ' + traits : ''}${date ? '\nGame date: ' + date : ''}\nWrite the declaration.`;
   return [{ role: 'system', content: sys }, { role: 'user', content: usr }];
 }
 export function parseDecl(raw: unknown): { title: string; text: string } | null {

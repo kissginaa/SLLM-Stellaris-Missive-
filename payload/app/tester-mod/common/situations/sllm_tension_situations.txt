@@ -1,0 +1,22 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 사람 플레이어마다 띄우는 막대. 값은 효과(sllm_tension.txt sllm_tn_bar_sync)만 움직인다(매달 진행 0).
+# 막대는 1~99 사이로만 움직여 끝나거나 실패하지 않는다. 고를 대응은 없다(지켜봄 하나). target = A 편 나라.
+sllm_tension = {
+	picture = GFX_evt_smear_campaign
+	situation_log_category = developments
+	start_value = 0
+	stages = {
+		sllm_tn_stage_0 = { icon = GFX_situation_stage_1 icon_background = GFX_situation_stage_frame_blue end = 25 }
+		sllm_tn_stage_1 = { icon = GFX_situation_stage_2 icon_background = GFX_situation_stage_frame_blue end = 50 }
+		sllm_tn_stage_2 = { icon = GFX_situation_stage_2 icon_background = GFX_situation_stage_frame_red end = 75 }
+		sllm_tn_stage_3 = { icon = GFX_situation_stage_3 icon_background = GFX_situation_stage_frame_red end = 100 }
+	}
+	approach = {
+		name = sllm_tn_watch
+		icon = GFX_situation_approach_shrug
+		icon_background = GFX_situation_approach_bg_yellow
+		default = yes
+		on_select = { custom_tooltip = sllm_tn_watch_tt }
+	}
+	monthly_progress = { base = 0 }
+	on_progress_complete = { }
+}

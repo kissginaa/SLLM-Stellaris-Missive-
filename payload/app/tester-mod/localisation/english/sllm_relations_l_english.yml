@@ -1,0 +1,7 @@
+﻿l_english:
+ sllm_trait_rel_discontent_commander:0 "Heavy Heart (Commander)"
+ sllm_trait_rel_discontent_commander_desc:0 "Unresolved personal conflicts break this leader's focus. Damage of the fleet and armies they command is reduced by 5%. Goes away once every conflict is settled."
+ sllm_trait_rel_discontent_official:0 "Heavy Heart (Official)"
+ sllm_trait_rel_discontent_official_desc:0 "Unresolved personal conflicts break this leader's focus. Job output on the planet they govern is reduced by 5%. Goes away once every conflict is settled."
+ sllm_trait_rel_discontent_scientist:0 "Heavy Heart (Scientist)"
+ sllm_trait_rel_discontent_scientist_desc:0 "Unresolved personal conflicts break this leader's focus. Survey and anomaly research speed are reduced by 5%, and research speed by 5% while on the council. Goes away once every conflict is settled."

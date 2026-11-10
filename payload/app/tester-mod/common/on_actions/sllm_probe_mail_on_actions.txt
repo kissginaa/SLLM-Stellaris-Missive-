@@ -14,3 +14,6 @@ on_becoming_subject = { events = { sllm_mail.20 } }
 # Status quo / white peace (root = actor, from = recipient, fromfrom = main attacker, fromfromfrom = main defender, fromfromfromfrom = war). 2026-10-18: on_war_ended also fires here, so the app needs to know it was not a defeat.
 on_status_quo = { events = { sllm_mail.21 } }
 on_status_quo_forced = { events = { sllm_mail.21 } }
+# 2026-10-28 X4 참고: 행성 주인 바뀜(점령·할양·거래)과 전쟁 승자 → 신문 국제면(앱이 같은 두 나라의 행성 소식을 묶음)
+on_colony_transfer = { events = { sllm_mail.22 } }
+on_war_won = { events = { sllm_mail.23 } }

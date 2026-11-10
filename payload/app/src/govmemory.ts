@@ -6,7 +6,14 @@ import * as fs from 'fs';
 export interface Memory { id: number; text: string; date: string; ts: number; branch?: number; other?: boolean }
 /** 시간선(분기). 세이브를 과거로 불러 게임 날짜가 뒤로 가면 새 분기가 갈라진다. fork = 갈라진 날짜. */
 export interface Branch { id: number; parent: number | null; fork: string }
-export interface BranchSet { cur: number; last: string; nextId: number; list: Branch[] }
+/** tls(2026-11-05): 모드가 매달 뽑는 시간선 번호 → 그 달이 속한 분기·날짜. tips: 분기별 마지막 번호. 옛 기록엔 없음. */
+export interface BranchSet { cur: number; last: string; nextId: number; list: Branch[]; tls?: Record<string, { b: number; d: string }>; tips?: Record<string, string> }
+/** 시간선 번호 글자(「123-45」) → 정규화한 열쇠. 0·빈 값·모양이 틀리면 null(모름). */
+export function tlKey(v: unknown): string | null {
+  const m = String(v ?? '').trim().match(/^(\d{1,3})(?:\.0+)?-(\d{1,3})(?:\.0+)?$/); if (!m) return null;
+  const a = Number(m[1]), b = Number(m[2]); return a >= 100 && a <= 999 && b >= 0 && b <= 999 ? `${a}-${b}` : null;
+}
+const TL_KEEP = 1200;
 export interface GovMemFile { next: number; govs: Record<string, Memory[]>; branches?: Record<string, BranchSet> }
 
 /** "2200.01.15" -> 비교 가능한 숫자. 모르면 NaN. */
@@ -50,6 +57,24 @@ export class GovMemoryStore {
     }
     if (Number.isNaN(last) || n > last) { b.last = date; this.save(); }
     return false;
+  }
+  /** 매달(MONTH): 이번 달 번호를 지금 분기에 적는다(tl). 날짜 규칙(track)은 따로 부른다. */
+  noteMonth(sid: string, tl: unknown, date: string): void {
+    const k = tlKey(tl); if (!sid || !k) return;
+    const b = this.bset(sid); const t = (b.tls ??= {});
+    t[k] = { b: b.cur, d: date }; (b.tips ??= {})[String(b.cur)] = k;
+    const ks = Object.keys(t); if (ks.length > TL_KEEP) for (const x of ks.slice(0, ks.length - TL_KEEP)) delete t[x];
+    this.save();
+  }
+  /** 불러오기(LOADED): 세이브에 든 번호로 어느 시간선의 어느 달인지 정확히 안다(2026-11-05).
+   *  · 지금 분기의 마지막 달 → 그냥 이어짐(false) · 다른 분기의 마지막 달 → 그 분기로 돌아감(true)
+   *  · 어떤 분기의 지난 달 → 그 분기에서 새로 갈라짐(true, 날짜가 앞으로 가도 알아챔) · 모르는 번호 → 예전 날짜 규칙(track). */
+  trackLoad(sid: string, date: string, tl: unknown): boolean {
+    const k = tlKey(tl); if (!sid) return false;
+    const b = this.bset(sid); const hit = k ? b.tls?.[k] : undefined;
+    if (!k || !hit || !b.list.some((x) => x.id === hit.b)) return this.track(sid, date);
+    if (b.tips?.[String(hit.b)] === k) { const moved = hit.b !== b.cur; b.cur = hit.b; b.last = date; this.save(); return moved; }
+    const id = b.nextId++; b.list.push({ id, parent: hit.b, fork: hit.d || date }); b.cur = id; b.last = date; (b.tips ??= {})[String(id)] = k; this.save(); return true;
   }
   currentBranch(sid: string): number { return this.bset(sid).cur; }
   /** 항목들을 이 시간선(own)과 되감기 전 다른 시간선(other)으로 나눈다. 항목은 id 와 branch, date 가 있어야 한다. */

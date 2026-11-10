@@ -114,6 +114,7 @@
  #addonList .sample{display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px} #addonList .sample i{width:12px;height:12px;border:1px solid var(--line2)}
  .pc .vars{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:4px} .pc .vt{position:relative;width:26px;height:32px;border:1px solid var(--line2);cursor:pointer;overflow:hidden;background:var(--bg)} .pc .vt img{width:100%;height:100%;object-fit:cover}
  .pc .vt b{position:absolute;top:0;right:0;font-size:9px;line-height:11px;width:11px;background:#000a;color:var(--bad)} .pc .vadd{font-size:10.5px;padding:1px 5px}
+ #modPor{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 8px;padding:7px 8px;border:1px solid var(--line2);background:var(--shade)} #modPor .st{font-size:11.5px;color:var(--dim)} #modPor label{font-size:11.5px;color:var(--dim);display:flex;gap:4px;align-items:center} #libgrid .lc .m{position:absolute;bottom:20px;left:4px;font-size:9.5px;line-height:14px;padding:0 3px;background:#000b;color:var(--hi);max-width:calc(100% - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
  #libBar{display:flex;flex-direction:column;gap:5px;margin:6px 0 8px;padding:7px 8px;border:1px solid var(--line2);background:var(--shade)}
  #libBar .row{display:flex;flex-wrap:wrap;gap:4px;align-items:center} #libBar .lbl{font-size:10.5px;color:var(--dim);letter-spacing:.1em;min-width:56px} #libBar .lbl2{min-width:0;margin-left:10px}
  #libBar .chips{display:flex;flex-wrap:wrap;gap:4px} #libBar .chip{font-size:11.5px;padding:2px 8px;margin:0;border:1px solid var(--line2);background:var(--bg);color:var(--dim);cursor:pointer;line-height:1.5}
@@ -149,7 +150,7 @@
  .media-brand-row img{flex:none;object-fit:contain;background:var(--panel);border:1px solid var(--line);border-radius:10px}
  .media-brand-row>div{min-width:0} #mediaStatus{color:var(--gold);font-size:12px;min-height:20px}
 .contact-card{border:1px solid var(--line);padding:10px;margin:8px 0;background:var(--shade)} .contact-card b{display:block;color:var(--gold)} #contactSearch{min-width:0;flex:1} #contactStatus{margin-top:8px}
-</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;900&display=swap"><style id="usercss"></style><link rel="stylesheet" href="terminal-ui.css"><script src="theme.js"></script><style>#mailbar{display:none!important}</style><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><script src="backstory-ui.js"></script><link rel="stylesheet" href="window-chrome.css"><link rel="stylesheet" href="terminal-layout.css"><script src="rotation-settings-ui.js"></script><link rel="stylesheet" href="rotation-settings-ui.css"></head><body class="fx">
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;900&display=swap"><style id="usercss"></style><link rel="stylesheet" href="terminal-ui.css"><link rel="stylesheet" href="state-docs.css"><script src="theme.js"></script><style>#mailbar{display:none!important}</style><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><script src="backstory-ui.js"></script><link rel="stylesheet" href="window-chrome.css"><link rel="stylesheet" href="terminal-layout.css"><script src="rotation-settings-ui.js"></script><link rel="stylesheet" href="rotation-settings-ui.css"></head><body class="fx">
 <div id="titlebar"><b>SLLM</b><span id="settitle">설정</span><span class="cap">SteLLaris Missive</span><span class="exp">실험</span><span class="sp"></span><span id="link" class="cap"><span class="dot">●</span> 대기</span><span id="status"></span><button id="btnInbox" class="ico tm-ico" title="외교 서신 수신함" aria-label="외교 서신 수신함"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5"/><path d="M4 7l8 6 8-6"/></svg><span class="tm-badge" id="mailBadge" hidden>0</span></button><button id="btnContacts" class="ico tm-ico" title="외교 단말기 연락처" aria-label="외교 단말기 연락처"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.6"/><path d="M8.2 8.2a5.4 5.4 0 000 7.6M15.8 8.2a5.4 5.4 0 010 7.6M5.4 5.4a9.4 9.4 0 000 13.2M18.6 5.4a9.4 9.4 0 010 13.2"/></svg></button><button id="btnSummit" class="ico" title="연방 정상회담" aria-label="연방 정상회담">🤝</button><button id="btnFaction" class="ico" title="내각 회의" aria-label="내각 회의">🏛</button><button id="btnChron" class="ico" title="제국별 연대기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M9 9h6M9 13h6"/></svg></button><button id="wmin" title="최소화">─</button><button id="wclose" title="아이콘으로 접기">✕</button><button id="wset" title="설정 닫기 (Esc)">✕</button></div>
 <div id="gateBar" hidden>정지한 상태로 진행하기를 권장합니다.</div>
 <main>
@@ -244,7 +245,7 @@
 <p class="hint">대화·편지·신문·라디오·의회·총독·연설에 공통 적용됩니다. 기존 기록과 직접 입력한 이름·페르소나는 보존합니다.</p>
 
   <div class="sec cap">색과 모양</div>
-  <label>색 테마 <select id="theme"><option value="stellaris">기본형</option><option value="terminal">어두운 단말기</option><option value="starfield">밝은 단말기 (스타필드풍)</option><optgroup label="가치관 테마"><option value="egalitarian">평등풍 · 푸른 미래 민주정</option><option value="authoritarian">권위풍 · 붉은 고전 권위정</option><option value="militarist">군국풍 · 작전 지휘소</option><option value="pacifist">평화풍 · 녹색 회의장</option><option value="materialist">물질풍 · 연구소</option><option value="spiritualist">정신풍 · 성전</option><option value="xenophile">외계친화풍 · 교류 광장</option><option value="xenophobe">외계혐오풍 · 성벽과 검문소</option><option value="machine">기계 지성 · 연산 코어</option><option value="hive">군체 의식 · 공명</option></optgroup><optgroup label="그 밖의 테마"><option value="holo">바닐라 홀로그램풍</option></optgroup><option value="custom">내가 고른 색</option></select></label>
+  <label>색 테마 <select id="theme"><option value="auto">자동 · 우리 제국에 맞춤</option><option value="stellaris">기본형</option><option value="terminal">어두운 단말기</option><option value="starfield">밝은 단말기 (스타필드풍)</option><optgroup label="가치관 테마"><option value="egalitarian">평등풍 · 푸른 미래 민주정</option><option value="authoritarian">권위풍 · 붉은 고전 권위정</option><option value="militarist">군국풍 · 작전 지휘소</option><option value="pacifist">평화풍 · 녹색 회의장</option><option value="materialist">물질풍 · 연구소</option><option value="spiritualist">정신풍 · 성전</option><option value="xenophile">외계친화풍 · 교류 광장</option><option value="xenophobe">외계혐오풍 · 성벽과 검문소</option><option value="machine">기계 지성 · 연산 코어</option><option value="hive">군체 의식 · 공명</option></optgroup><optgroup label="그 밖의 테마"><option value="holo">바닐라 홀로그램풍</option></optgroup><option value="custom">내가 고른 색</option></select></label>
   <div id="custom" hidden>
    <label>배경 <input type="color" id="c_bg"></label><label>칸 <input type="color" id="c_panel"></label><label>글자 <input type="color" id="c_text"></label><label>강조 <input type="color" id="c_hi"></label><label>제목 <input type="color" id="c_gold"></label>
   </div>
@@ -271,6 +272,8 @@
    <div class="row"><span class="lbl">계열</span><span id="libCls" class="chips"></span></div>
    <div class="row"><span class="lbl">옷</span><span id="libRole" class="chips"></span><span class="lbl lbl2">성별</span><span id="libSex" class="chips"></span><input id="libQ" type="search" placeholder="이름 검색" autocomplete="off"><span id="libCount"></span></div>
   </div>
+  <div class="hint">모드 초상화: 바닐라 라이브러리에 없는 초상화(모드 종족 등)는 앱이 켜진 모드의 모델·텍스처로 직접 그려 같은 목록에 넣습니다. 대화 상대를 열 때 자동으로 그리며, 아래 단추로 지금 세이브의 모든 제국을 한꺼번에 그릴 수도 있습니다. 모드 전용 셰이더를 쓰는 초상화는 비슷하게만 나올 수 있습니다(「근사」 표시).</div>
+  <div id="modPor"><button id="modPorDraw" type="button">모드 초상화 불러오기</button><button id="modPorRedraw" type="button" title="이미 그린 모드 초상화도 모두 다시 그립니다">다시 그리기</button><label><input id="modPorAuto" type="checkbox">대화 상대를 열 때 자동으로 그리기</label><span id="modPorSt" class="st"></span></div>
   <div id="libEmpty" class="hint" hidden>라이브러리 그림이 없습니다. 앱 폴더의 portrait-library.pak 파일이 있는지 확인해 주세요.</div>
   <div id="libgrid"></div>
   <div class="sec cap">종족 계열 기본 초상화</div>
@@ -291,10 +294,20 @@
 <section class="settings-panel" id="settings-panel-stories" role="tabpanel" aria-labelledby="settings-tab-stories" tabindex="0" hidden><h2>대화와 소식</h2><p class="settings-intro">AI의 편지와 소문, 신문 발행을 설정합니다.</p>
   <div class="sec cap">실험 기능</div>
   <label><input type="checkbox" id="mailOn"> (실험) AI가 먼저 보내는 편지 받기</label>
+  <label><input type="checkbox" id="childLimitOff"> 아이 수 제한 풀기</label>
+  <div class="hint">기본은 배우자마다 2명, 통치자 한 명당 모두 합쳐 8명까지입니다. 켜면 이 상한을 없앱니다(연 확률은 그대로이고, 아이가 많아질수록 아기방과 연락처가 길어집니다).</div>
+  <label><input type="checkbox" id="auditOn"> (하드코어) 국정감사</label>
+  <div class="hint">켜면 12년마다 의회가 국정감사를 엽니다. 그해 안에 집무실 「의회」에서 지난 12년의 일을 두고 의원들의 질의에 직접 답해야 하고, 답변에 따라 안정도와 민심이 오르내립니다. 출석을 거부하거나 넘기면 크게 떨어집니다.</div>
+  <label><input type="checkbox" id="noconfOn"> (하드코어) 불신임</label>
+  <div class="hint">켜면 자유로운 정부 형태에서 지지율이 석 달 이어서 25%(최근 국정감사가 논란이었으면 30%) 아래일 때 의회가 불신임안을 냅니다. 집무실 「의회」에서 직접 변론한 뒤 표결하며, 가결되면 3년 동안 레임덕(안정도·영향력 감소)에 빠집니다.</div>
+  <label>가족 사건 알림 <select id="familyNotify"><option value="all">모두</option><option value="big">큰 사건만</option><option value="off">끄기(신문에만)</option></select></label>
+  <div class="hint">민간인으로 사는 자녀의 소식을 알릴지 정합니다. 큰 사건은 결혼·수상 같은 큰 좋은 일과 나쁜 일입니다. 꺼도 사건은 일어나고 신문과 아기방 기록에는 남습니다.</div>
+  <label><input type="checkbox" id="emoWar"> (실험) 원한·야망이 아주 강한 AI가 실제로 선전포고하기</label>
+  <div class="hint">AI 제국은 실제로 겪은 일(전쟁·경쟁·대화·전력 차이)로 원한·감사·두려움·야망을 쌓습니다. 감정이 강해지면 위협을 느껴 연합을 짜거나, 원조를 보내거나, 도움을 청합니다. 이 항목을 켜면 원한이 아주 깊거나 야망이 큰 제국이, 자기가 더 강할 때 10년에 한 번까지 선전포고할 수 있습니다.</div>
   <div class="sec cap">엿들은 소문</div>
   <label><input type="checkbox" id="gossipOn"> AI끼리 나눈 대화(엿들은 소문) 만들기 — 게임 사실이 아니며 연대기에 남기지 않습니다</label>
-  <div class="sec cap">신문사</div>
-  <div class="hint">새해마다 켜 둔 신문사 중 하나가 무작위로 호를 냅니다. 모두 끄면 신문을 내지 않습니다.</div>
+  <div class="sec cap">신문 구독</div>
+  <div class="hint">새해마다 구독한 신문사 중 하나가 무작위로 호를 냅니다. 구독하지 않은 신문사는 기사를 쓰지 않아 LLM을 아낍니다. 집무실 신문 홈페이지에서도 구독·해지할 수 있습니다. 모두 끄면 신문을 내지 않습니다.</div>
   <div id="paperBox"></div>
   <div class="sec cap">호외</div>
   <label><input type="checkbox" id="extraOn"> 큰 사건(멸망·전쟁·위기·조공국화·전쟁 종결)이 나면 그 달 말에 호외 내기 — 기사는 한 건뿐입니다</label>
@@ -319,6 +332,7 @@
  <button id="mediaSave" class="primary">이름·페르소나 저장</button><button id="mediaResetPersona">기본 페르소나로</button>
  <div class="sec cap">브랜드 그림</div><div class="hint">PNG · JPG · WEBP, 8MB 이하. 정사각형·투명 배경을 권장합니다. 그림은 앱에 복사되어 원본을 옮겨도 유지됩니다.</div>
  <div class="media-brand-row"><img id="mediaPaperImage" width="64" height="64" alt="신문 브랜드"><div><b id="mediaPaperName"></b><div><button data-brand-pick="paper">신문 그림 변경</button><button data-brand-reset="paper">기본 그림</button></div></div></div>
+ <div class="media-brand-row"><img id="mediaWebImage" width="64" height="64" alt="홈페이지 로고"><div><b id="mediaWebName"></b><div class="hint">집무실 신문 홈페이지 머리에 나오는 둥근 로고입니다. 신문 그림과 따로 바꿉니다.</div><div><button data-brand-pick="web">홈페이지 로고 변경</button><button data-brand-reset="web">기본 그림</button></div></div></div>
  <div class="media-brand-row"><img id="mediaRadioImage" width="64" height="64" alt="방송 브랜드"><div><b id="mediaRadioName"></b><div><button data-brand-pick="radio">방송 그림 변경</button><button data-brand-reset="radio">기본 그림</button></div></div></div>
  <p id="mediaStatus" role="status" aria-live="polite"></p>
 </section>
@@ -330,11 +344,12 @@
 </section>
 <section class="settings-panel" id="settings-panel-council" role="tabpanel" aria-labelledby="settings-tab-council" tabindex="0" hidden><h2>은하 의회</h2><p class="settings-intro">의원의 발언 방식과 회의 길이를 조절합니다.</p>
   <div class="sec cap">은하 의회</div>
-  <label>발언권 방식 <select id="cmode"><option value="weighted">의석 비율 확률 (큰 제국이 더 자주)</option><option value="equal">공평하게 한 번씩 (제국마다 같은 기회)</option></select></label>
-  <label>발언권 횟수 <input type="number" id="slots" min="1" max="40" placeholder="자동" style="width:70px"> <button id="slotsAuto" title="참석한 제국 수만큼으로 되돌립니다">자동으로</button></label>
+  <label>발언권 방식 <select id="cmode"><option value="teams">찬성 · 반대 같은 수 (팀 안은 의석 비율)</option><option value="weighted">의석 비율 확률 (큰 제국이 더 자주)</option><option value="equal">공평하게 한 번씩 (제국마다 같은 기회)</option></select></label>
+  <label title="찬성 · 반대 방식에서 내가 한 번 발언할 때 각 편에서 몇 개국이 답할지 정합니다(1~4)">찬반 팀당 발언 수 <input type="number" id="teamTurns" min="1" max="4" style="width:56px"></label>
+  <label title="찬성 · 반대 방식에서는 쓰지 않습니다">발언권 횟수 <input type="number" id="slots" min="1" max="40" placeholder="자동" style="width:70px"> <button id="slotsAuto" title="참석한 제국 수만큼으로 되돌립니다">자동으로</button></label>
   <div class="hint">내가 의회 전체에 한 번 발언할 때마다 이만큼의 발언권이 생깁니다. 비워 두면 자동으로, 의회에 참석한 제국 수만큼입니다. 방식이 '의석 비율 확률'이면 발언권마다 가중치 비율의 확률로 제국이 뽑히고(작은 제국은 말을 못 할 수 있음), '공평하게 한 번씩'이면 제국이 무작위 순서로 한 번씩만 말합니다(횟수가 제국 수보다 적으면 그중 일부만). 한 번에 답하는 제국은 최대 8개국이라, 발언권이 더 많은 나라에 돌아가도 답은 8개국까지만 옵니다. 횟수를 줄이면 응답이 빨라지고 LLM 호출이 줄어듭니다.</div>
 
-  <label>플레이어 발언 횟수 한도 <input type="number" id="turns" min="1" max="100" value="20" style="width:70px"></label>
+  <input type="hidden" id="turns" value="20"><!-- 2026-10-29: 의회 발언 횟수 한도는 없앰(값만 남김) -->
   <label>연설 발언 횟수 한도 <input type="number" id="speechTurns" min="3" max="40" value="20" style="width:70px"></label>
   <div class="hint">연설에서 국민과 주고받을 수 있는 내 발언 횟수입니다(기본 20). 모두 쓰거나 "연설 마치기"를 누르면 그때의 국민 분위기로 결과가 정해집니다.</div>
   <div class="hint">회의 한 번에서 내가 할 수 있는 발언 횟수입니다(기본 20). 찬성이나 반대가 80%를 넘으면 강제 통과·부결을 누를 수 있습니다. 한도를 다 쓴 시점에 어느 쪽도 80%에 닿지 못하면 합의 실패로 끝나고 게임에는 아무것도 보내지 않습니다(기존 게임 표결이 그대로 진행됩니다). 줄이면 회의가 짧아지고 LLM 호출도 줄어듭니다.</div>
@@ -355,6 +370,9 @@
   <div class="sec cap">일시정지 확인</div>
   <label><input type="checkbox" id="pauseGate"> 게임이 진행 중이면 "정지한 상태로 진행하기를 권장합니다" 안내 표시</label>
   <div class="hint">게임이 한 달을 넘기는 신호가 오면 진행 중으로 봅니다. 일시정지(Space)한 뒤 [정지했습니다]를 누르면 대화할 수 있고, 게임을 다시 돌려 달이 넘어가면 다시 막힙니다.</div>
+  <div class="sec cap">자동 실행</div>
+  <label><input type="checkbox" id="gameWatcher"> 게임을 켜면 SLLM도 자동으로 켜기</label>
+  <div class="hint">켜면 Windows 시작 프로그램에 작은 감시기를 등록합니다. 감시기는 5초마다 스텔라리스가 켜졌는지만 확인하고, 게임이 켜졌을 때 SLLM이 꺼져 있으면 한 번 실행합니다. 게임 도중 SLLM을 닫으면 다시 켜지 않습니다. 끄면 등록을 지웁니다(Windows 전용).</div>
 </section>
 <section class="settings-panel" id="settings-panel-support" role="tabpanel" aria-labelledby="settings-tab-support" tabindex="0" hidden><h2>버그 신고·로그</h2>
   <p class="settings-intro">문제 설명과 진단 로그를 ZIP으로 저장해서 개발자에게 직접 전달합니다.</p>
@@ -408,8 +426,8 @@
   <p class="hint">가짜 게임 신호를 넣어 화면만 확인합니다. 게임이 연결돼 있으면 작동하지 않습니다.</p>
   <button id="devNewsTest">신문 시험 (F-01)</button> <button id="devSpeechTest">연설 시험 (F-02·F-26)</button> <button id="devSpeechCut">연설 잘린 응답 시험</button><br>
   <button id="devRadioTest">라디오 시험 (F-03·A-15·F-25)</button> <button id="devRadioIdle">라디오 쉼 안내 시험</button><br>
-  <button id="devCouncilGuest">의회 시험 — 비회원 가상 의석 (F-15)</button> <button id="devCouncilCheck">집계 재확인 시험 (A-16)</button> <button id="devSummitTest">연방 정상회담 시험 (A-01 화면)</button> <button id="devSummitAi">연방 시험 — 실제 AI 대화 (API 사용)</button> <button id="devFaction">내각 회의 시험 (AI·게임 없음)</button> <button id="devFactionAi">내각 회의 시험 — 실제 AI 대화 (API 사용)</button> <button id="devEffects">검증효과 한 번에 보기</button> <button id="devEspionage">첩보 대응 시험 (AI 없이)</button> <button id="devEspionageAi">첩보 대응 시험 (실제 AI)</button> <button id="devBanquet">지도자 만찬장 시험</button> <button id="devMediation">평화 중재 시험 (AI 없이)</button> <button id="devMediationAi">평화 중재 시험 (실제 AI)</button> <button id="devSummitReal">실제 연방 읽기 (A-01 2단계)</button> <button id="devGovReport">총독 보고 시험 (A-26)</button><br>
-  <button id="devDeliveryText">전송 실패 메시지 시험 (F-12)</button> <button id="devBehaviorPreview">대화 속내 미리보기 (A-17)</button><br>
+  <button id="devCouncilGuest">의회 시험 — 비회원 가상 의석 (F-15)</button> <button id="devCouncilCheck">집계 재확인 시험 (A-16)</button> <button id="devSummitTest">연방 정상회담 시험 (A-01 화면)</button> <button id="devSummitAi">연방 시험 — 실제 AI 대화 (API 사용)</button> <button id="devFaction">내각 회의 시험 (AI·게임 없음)</button> <button id="devFactionAi">내각 회의 시험 — 실제 AI 대화 (API 사용)</button> <button id="devEffects">검증효과 한 번에 보기</button> <button id="devEspionage">첩보 대응 시험 (AI 없이)</button> <button id="devEspionageAi">첩보 대응 시험 (실제 AI)</button> <button id="devBanquet">지도자 만찬장 시험</button> <button id="devMediation">평화 중재 시험 (AI 없이)</button> <button id="devMediationAi">평화 중재 시험 (실제 AI)</button> <button id="devSummitReal">실제 연방 읽기 (A-01 2단계)</button> <button id="devGovReport">총독 보고 시험 (A-26)</button> <button id="devSecAff">비서 호감 100으로</button> <button id="devChildMake">아이 바로 태어나기</button> <button id="devChildAge1">아이 1년 키우기</button> <button id="devChildAge6">아이 6년 키우기</button> <button id="devChildCivYear">민간인 자녀 한 해 사건</button><br>
+  <button id="devDeliveryText">전송 실패 메시지 시험 (F-12)</button> <button id="devBehaviorPreview">대화 속내 미리보기 (A-17)</button> <button id="devAiTruth" title="앱이 AI 제국마다 실제로 쥐고 있는 상태(감정·거래·물자 지원·자치도·협약·혼인·규탄 입장)와 이 세이브에서 한 번도 돌지 않은 기능을 보여 줍니다. 읽기만 합니다.">AI 제국 실제 상태</button><br>
   <button id="devClearTest">시험 데이터 지우기</button>
   <p id="devFeatStatus" role="status" data-i18n-skip style="white-space:pre-wrap;overflow-wrap:anywhere"></p>
   <textarea id="devFeatOut" readonly rows="10" hidden style="width:100%;box-sizing:border-box;font:12px monospace" aria-label="개발자 시험 결과"></textarea>
@@ -564,7 +582,7 @@
  window.sllm.onTalk((t) => { drawCountry(t); commTalk(t); if (t) $('tid').value = t.idx; if(t){dialogEnded=typeof t.ended==='boolean'?t.ended:false;$('send').disabled=dialogEnded;$('q').disabled=dialogEnded;$('q').placeholder=I18N(dialogEnded?'대화 종료 · 새 통신을 연결하세요':'회신 입력…');} }); // 새 통신마다 잠금을 푼다
  $('loreBtn').onclick = () => { // 제국 전기(2026-10-18): 모드 특수 제국 등 게임 전기가 없거나 부족할 때 직접 적는다
   const t = curTalk; if (!t || !t.name || !window.SLLMBackstory) return;
-  window.SLLMBackstory.open({ title: '제국 전기', name: t.name, intro: '이 제국의 역사·설정을 적으면 AI가 이 제국을 연기할 때 사실로 참고합니다. 같은 이름의 제국이면 다른 세이브에서도 씁니다. 비워 두면 게임·모드 전기를 씁니다.', placeholder: '이 제국의 기원, 역사, 가치관, 다른 제국과의 관계 등을 자유롭게 적어 주세요.', load: () => window.sllm.backstoryEmpire(t.name, t.idx), save: (text) => window.sllm.backstoryEmpireSet(t.name, text), onSaved: () => log('제국 전기를 저장했습니다. 다음 발언부터 반영됩니다.') });
+  window.SLLMBackstory.open({ title: '제국 전기', name: t.name, intro: '이 제국의 역사·설정을 적으면 AI가 이 제국을 연기할 때 사실로 참고합니다. 같은 이름의 제국이면 다른 세이브에서도 씁니다. 비워 두면 게임·모드 전기를 씁니다.', placeholder: '이 제국의 기원, 역사, 가치관, 다른 제국과의 관계 등을 자유롭게 적어 주세요.', load: () => window.sllm.backstoryEmpire(t.name, t.idx), kind: 'empire', save: (text, card) => window.sllm.backstoryEmpireSet(t.name, text, card), onSaved: () => log('제국 전기를 저장했습니다. 다음 발언부터 반영됩니다.') });
  };
  document.addEventListener('sllm-language', () => { try { drawCountry(curTalk); } catch (e) { /* 아직 그릴 준비 전 */ } }); // 언어를 바꾸면 빈 대화 상대 안내도 다시 번역(2026-10-18)
  window.sllm.onImages((st) => setImg(st));
@@ -664,7 +682,7 @@
  }
  // ---- 포트레이트 라이브러리: 미리 그려 둔 초상화를 계열별로 골라 제국·종족·계열·의원·통치자에 적용 ----
  const I18N = (t) => (window.SLLMI18n ? window.SLLMI18n.t(t) : t);
- const CLASS_KO2 = { biogenesis: '바이오제네시스', psionics: '사이오닉' };
+ const CLASS_KO2 = { biogenesis: '바이오제네시스', psionics: '사이오닉', mod: '모드 초상화' };
  const ROLE_KO = { default: '기본 옷', ruler: '통치자', governor: '총독', admiral: '제독', general: '장군', scientist: '과학자' };
  const LIB_TARGETS = [['country', '대화 상대 제국'], ['species', '대화 상대 종족'], ['class', '계열 기본'], ['delegate', '의회 의원'], ['ruler', '플레이어 통치자']];
  const LIB_SEX = [['', '모든 성별'], ['f', '♀ 여성'], ['m', '♂ 남성']];
@@ -684,7 +702,7 @@
    $('libEmpty').hidden = lib.available; $('libBar').hidden = !lib.available;
    if (!lib.available) return;
    const all = lib.items;
-   const classes = [...CLASS_KEYS.slice(1), 'biogenesis', 'psionics'].filter((k) => all.some((it) => it.cls === k));
+   const classes = [...CLASS_KEYS.slice(1), 'biogenesis', 'psionics', 'mod'].filter((k) => all.some((it) => it.cls === k));
    if (libSt.cls && !classes.includes(libSt.cls)) libSt.cls = '';
    libChips($('libTarget'), LIB_TARGETS.map(([v, t]) => [v, I18N(t)]), libSt.target, (v) => { libSt.target = v; libSave(); drawLib(); });
    libChips($('libCls'), [['', I18N('모든 계열'), all.length], ...classes.map((k) => [k, libClsName(k), all.filter((it) => it.cls === k).length])], libSt.cls, (v) => { libSt.cls = v; libSave(); drawLib(); });
@@ -707,6 +725,7 @@
        const im = document.createElement('img'); im.src = url; im.loading = 'lazy'; im.alt = ''; c.appendChild(im);
        const sx = libSexOf(it.id); if (sx) { const s2 = document.createElement('span'); s2.className = 'g'; s2.textContent = sx === 'f' ? '♀' : '♂'; c.appendChild(s2); }
        const nr = Object.keys(it.roles).length; if (nr > 1) { const r2 = document.createElement('span'); r2.className = 'r'; r2.textContent = '👔' + nr; r2.title = I18N('옷 종류') + ' ' + nr; c.appendChild(r2); }
+       if (it.mod) { const m2 = document.createElement('span'); m2.className = 'm'; m2.setAttribute('data-i18n-skip', ''); m2.textContent = (it.approx ? '≈ ' : '') + it.mod; m2.title = it.approx ? I18N('근사: 모드 전용 셰이더라 비슷하게만 그렸습니다') : it.mod; c.appendChild(m2); }
        const nm = document.createElement('div'); nm.className = 'n'; nm.dir = 'ltr'; nm.setAttribute('data-i18n-skip', ''); nm.textContent = libShort(it.id); c.appendChild(nm);
        c.onclick = async () => { if (await applyLib(it, role)) { g.querySelectorAll('.lc.ok').forEach((x) => x.classList.remove('ok')); c.classList.add('ok'); } };
        gr.appendChild(c);
@@ -724,6 +743,36 @@
  }
  { let tq = 0; $('libQ').oninput = () => { clearTimeout(tq); tq = setTimeout(() => { libSt.q = $('libQ').value; drawLib(); }, 150); }; }
  window.sllm.getPortraitLibrary().then((l) => { lib = l; drawLib(); }, () => {});
+ // ---- 모드 초상화 불러오기(2026-10-26) ----
+ const reloadLib = () => window.sllm.getPortraitLibrary().then((l) => { lib = l; drawLib(); }, () => {});
+ function modPorText(s) {
+   if (!s) return '';
+   if (s.running) return I18N('그리는 중…') + ' ' + s.done + ' / ' + s.total;
+   if (s.lastError === 'game_dir') return I18N('게임 폴더를 찾지 못했습니다. 설정 → 게임 연동에서 게임 폴더를 지정해 주세요.');
+   if (s.lastError) return I18N('오류') + ': ' + s.lastError;
+   const parts = [I18N('모드') + ' ' + s.mods, I18N('그림') + ' ' + s.items];
+   if (s.total) parts.push(I18N('이번에 그림') + ' ' + s.drawn + (s.approx ? ' (' + I18N('근사') + ' ' + s.approx + ')' : '') + (s.failed ? ' · ' + I18N('실패') + ' ' + s.failed : ''));
+   return parts.join(' · ');
+ }
+ async function modPorRun(redraw) {
+   if (!window.sllm.drawModPortraits) return;
+   $('modPorDraw').disabled = $('modPorRedraw').disabled = true; $('modPorSt').textContent = I18N('그리는 중…');
+   const poll = setInterval(() => window.sllm.getModPortraitState().then((s) => { $('modPorSt').textContent = modPorText(s); }, () => {}), 700);
+   try {
+     const s = await window.sllm.drawModPortraits(redraw);
+     $('modPorSt').textContent = modPorText(s);
+     if (s && s.total === 0 && !s.lastError) $('modPorSt').textContent += ' · ' + I18N('새로 그릴 모드 초상화가 없습니다');
+     if (s && s.failedKeys && s.failedKeys.length) log('[안내] ' + I18N('그리지 못한 초상화') + ': ' + s.failedKeys.slice(0, 12).join(', '));
+     reloadLib();
+   } finally { clearInterval(poll); $('modPorDraw').disabled = $('modPorRedraw').disabled = false; }
+ }
+ if (window.sllm.getModPortraitState) {
+   $('modPorDraw').onclick = () => modPorRun(false);
+   $('modPorRedraw').onclick = () => modPorRun(true);
+   $('modPorAuto').onchange = () => window.sllm.setModPortraitsAuto($('modPorAuto').checked);
+   window.sllm.getModPortraitState().then((s) => { $('modPorAuto').checked = s.enabled !== false; $('modPorSt').textContent = modPorText(s); }, () => {});
+   window.sllm.onPortraitLibraryChanged && window.sllm.onPortraitLibraryChanged(() => reloadLib());
+ } else $('modPor').hidden = true;
  function drawPGrid() { drawClassGrid('pgrid', 'class:', '', true); drawClassGrid('dgrid', 'delegate:', 'class:', true); drawClassGrid('lgrid', 'leader:', 'class:'); drawRuler(); }
  $('bgPick').onclick = async () => setImg(await window.sllm.pickImage({ kind: 'bg' }));
  $('bgClear').onclick = async () => setImg(await window.sllm.clearImage({ kind: 'bg' }));
@@ -775,7 +824,7 @@
  $('reloadCss').onclick = async () => { await loadCss(); log('[설정] 내 CSS를 다시 불러왔습니다.'); };
  loadCss();
  const mailOn = $('mailOn'), topOn = $('topOn'), hideOn = $('hideOn'), dockSel = $('dock');
- window.sllm.getSettings().then((st) => { themeSel.value = st.theme || 'stellaris'; for (const [k, id] of Object.entries(customIds)) $(id).value = (st.custom && st.custom[k]) || customDefaults[k]; showCustom(); applyTheme(themeSel.value, st.custom || {}); mailOn.checked = !!st.mailEnabled; topOn.checked = st.keepOnTop !== false; hideOn.checked = st.autoHide !== false; fxOn = st.fx !== false; $('fxOn').checked = fxOn; document.body.classList.toggle('fx', fxOn); dockSel.value = st.dock || 'right'; $('dockLock').checked = st.dockLock !== false; $('forceOverlay').checked = st.forceOverlay === true; $('corner').value = st.launcherCorner || 'br'; $('uiScale').value = Math.round((st.uiScale || 1) * 100); $('uiScaleV').textContent = $('uiScale').value + '%'; $('autoScale').checked = st.autoScale !== false; $('notifyOn').checked = st.notify !== false; $('autoTalk').checked = st.autoOpenOnTalk !== false; $('hotkey').value = st.hotkey === undefined ? 'Alt+F8' : st.hotkey; $('fadeOn').checked = st.fadeEnabled !== false; $('fadeOp').value = Math.round((st.fadeOpacity || 0.6) * 100); $('fadeOpV').textContent = $('fadeOp').value + '%'; });
+ window.sllm.getSettings().then((st) => { themeSel.value = st.theme || 'stellaris'; for (const [k, id] of Object.entries(customIds)) $(id).value = (st.custom && st.custom[k]) || customDefaults[k]; showCustom(); applyTheme(themeSel.value, st.custom || {}); mailOn.checked = !!st.mailEnabled; $('emoWar').checked = st.emotionWar === true; $('childLimitOff').checked = st.childLimitOff === true; $('gameWatcher').checked = st.gameWatcher === true; $('familyNotify').value = st.familyNotify || 'all'; topOn.checked = st.keepOnTop !== false; hideOn.checked = st.autoHide !== false; fxOn = st.fx !== false; $('fxOn').checked = fxOn; document.body.classList.toggle('fx', fxOn); dockSel.value = st.dock || 'right'; $('dockLock').checked = st.dockLock !== false; $('forceOverlay').checked = st.forceOverlay === true; $('corner').value = st.launcherCorner || 'br'; $('uiScale').value = Math.round((st.uiScale || 1) * 100); $('uiScaleV').textContent = $('uiScale').value + '%'; $('autoScale').checked = st.autoScale !== false; $('notifyOn').checked = st.notify !== false; $('autoTalk').checked = st.autoOpenOnTalk !== false; $('hotkey').value = st.hotkey === undefined ? 'Alt+F8' : st.hotkey; $('fadeOn').checked = st.fadeEnabled !== false; $('fadeOp').value = Math.round((st.fadeOpacity || 0.6) * 100); $('fadeOpV').textContent = $('fadeOp').value + '%'; });
  $('fxOn').onchange = () => { fxOn = $('fxOn').checked; document.body.classList.toggle('fx', fxOn); window.sllm.setWindowPrefs({ fx: fxOn }); };
  $('uiScale').oninput = () => { $('uiScaleV').textContent = $('uiScale').value + '%'; };
  $('uiScale').onchange = () => window.sllm.setWindowPrefs({ uiScale: $('uiScale').value / 100 });
@@ -860,11 +909,12 @@
  $('quitApp').onclick = () => window.sllm.quitApp();
  window.sllm.onPane((n) => { if (n === 'chat') { if (openPane) showPane(openPane); } else if (n !== openPane) showPane(n); });
  hideOn.onchange = () => window.sllm.setWindowPrefs({ autoHide: hideOn.checked });
- const DEV_FEATURE_IDS = ['devEffects', 'devNewsTest', 'devSpeechTest', 'devSpeechCut', 'devRadioTest', 'devRadioIdle', 'devCouncilGuest', 'devCouncilCheck', 'devSummitTest', 'devSummitAi', 'devFaction', 'devFactionAi', 'devBanquet', 'devEspionage', 'devEspionageAi', 'devMediation', 'devMediationAi', 'devSummitReal', 'devGovReport', 'devDeliveryText', 'devBehaviorPreview', 'devClearTest'];
+ const DEV_FEATURE_IDS = ['devAiTruth', 'devEffects', 'devNewsTest', 'devSpeechTest', 'devSpeechCut', 'devRadioTest', 'devRadioIdle', 'devCouncilGuest', 'devCouncilCheck', 'devSummitTest', 'devSummitAi', 'devFaction', 'devFactionAi', 'devBanquet', 'devEspionage', 'devEspionageAi', 'devMediation', 'devMediationAi', 'devSummitReal', 'devGovReport', 'devSecAff', 'devChildMake', 'devChildAge1', 'devChildAge6', 'devChildCivYear', 'devDeliveryText', 'devBehaviorPreview', 'devClearTest'];
  const setDevUi = (v) => { for (const id of ['devCouncilVote', 'devCouncilPercent', 'devCouncilNoAi', 'devVoteReset', ...DEV_FEATURE_IDS]) $(id).disabled = !v; $('devOn').checked = !!v; devOn = !!v; $('forceOverlay').disabled = !v; $('devTools').hidden = !v; };
- const setSlots = (st) => { $('turns').value = st.councilTurns > 0 ? st.councilTurns : 20; $('speechTurns').value = st.speechTurns > 0 ? st.speechTurns : 20; $('slots').value = st.councilSlots > 0 ? st.councilSlots : ''; $('cmode').value = st.councilMode === 'equal' ? 'equal' : 'weighted'; };
+ const setSlots = (st) => { $('turns').value = st.councilTurns > 0 ? st.councilTurns : 20; $('speechTurns').value = st.speechTurns > 0 ? st.speechTurns : 20; $('slots').value = st.councilSlots > 0 ? st.councilSlots : ''; $('cmode').value = st.councilMode === 'equal' || st.councilMode === 'weighted' ? st.councilMode : 'teams'; $('slots').disabled = $('cmode').value === 'teams'; $('slotsAuto').disabled = $('cmode').value === 'teams'; $('teamTurns').value = st.councilTeamTurns > 0 ? st.councilTeamTurns : 2; $('teamTurns').disabled = $('cmode').value !== 'teams'; };
  $('cmode').onchange = () => window.sllm.setWindowPrefs({ councilMode: $('cmode').value }).then(setSlots);
  $('slots').onchange = () => window.sllm.setWindowPrefs({ councilSlots: $('slots').value }).then(setSlots);
+ $('teamTurns').onchange = () => window.sllm.setWindowPrefs({ councilTeamTurns: $('teamTurns').value }).then(setSlots);
  // ---- AI 연결
  let AI = null, aiCur = null;
  let rotationDispose = null, rotationGeneration = 0;
@@ -972,6 +1022,11 @@
  $('btnSummit').onclick = async () => { const b = $('btnSummit'); b.disabled = true; try { const r = await window.sllm.summitOpen(); if (!r.ok) alert(r.error || '회담을 열지 못했습니다.'); } catch (e) { alert(e.message); } finally { b.disabled = false; } };
  $('devEffects').onclick = () => devFeature('devEffects', '게임 효과 검증', () => window.sllm.devEffects());
  $('devEspionage').onclick = () => devFeature('devEspionage', '첩보 대응 시험', () => window.sllm.devEspionage('scripted'));
+ $('devSecAff').onclick = () => devFeature('devSecAff', '비서 호감 100으로', () => window.sllm.devSecretaryAff(100));
+ $('devChildMake').onclick = () => devFeature('devChildMake', '아이 바로 태어나기', () => window.sllm.devChildMake()); // 통치자의 아이(2026-10-27): 확률·임신 기다림만 건너뜀
+ $('devChildAge1').onclick = () => devFeature('devChildAge1', '아이 1년 키우기', () => window.sllm.devChildAge(1));
+ $('devChildAge6').onclick = () => devFeature('devChildAge6', '아이 6년 키우기', () => window.sllm.devChildAge(6));
+ $('devChildCivYear').onclick = () => devFeature('devChildCivYear', '민간인 자녀 한 해 사건', () => window.sllm.devChildCivYear());
  $('devEspionageAi').onclick = () => devFeature('devEspionageAi', '첩보 대응 시험 (실제 AI)', () => window.sllm.devEspionage('ai'));
  $('devBanquet').onclick = () => devFeature('devBanquet', '지도자 만찬장 시험', () => window.sllm.devBanquet());
  $('devMediation').onclick = () => devFeature('devMediation', '평화 중재 시험', () => window.sllm.devMediation('scripted'));
@@ -991,8 +1046,15 @@
  $('devGovReport').onclick = () => devFeature('devGovReport', '총독 보고 시험', () => window.sllm.devGovReport());
  $('devDeliveryText').onclick = () => devFeature('devDeliveryText', '전송 실패 메시지 시험', () => window.sllm.devDeliveryText());
  $('devBehaviorPreview').onclick = () => devFeature('devBehaviorPreview', '대화 속내 미리보기', () => window.sllm.devBehaviorPreview());
+ $('devAiTruth').onclick = () => devFeature('devAiTruth', 'AI 제국 실제 상태', () => window.sllm.devAiTruth());
  $('devClearTest').onclick = () => devFeature('devClearTest', '시험 데이터 지우기', () => window.sllm.devClearTest());
  $('forceOverlay').onchange = () => window.sllm.setWindowPrefs({ forceOverlay: $('forceOverlay').checked });
+ $('childLimitOff').onchange = () => window.sllm.setWindowPrefs({ childLimitOff: $('childLimitOff').checked }); // 아이 수 제한 풀기
+ if ($('noconfOn')) { $('noconfOn').onchange = () => window.sllm.setWindowPrefs({ noconfOn: $('noconfOn').checked }); window.sllm.getSettings().then((st) => { $('noconfOn').checked = st.noconfOn === true; }); } // 불신임(하드코어, 2026-11-03)
+ if ($('auditOn')) { $('auditOn').onchange = () => window.sllm.setWindowPrefs({ auditOn: $('auditOn').checked }); window.sllm.getSettings().then((st) => { $('auditOn').checked = st.auditOn === true; }); } // 국정감사(하드코어, 2026-11-03)
+ $('gameWatcher').onchange = () => window.sllm.setWindowPrefs({ gameWatcher: $('gameWatcher').checked }); // 게임을 켜면 SLLM 자동 실행(2026-10-30)
+ $('familyNotify').onchange = () => window.sllm.setWindowPrefs({ familyNotify: $('familyNotify').value }); // 가족 사건 알림(2026-10-28)
+$('emoWar').onchange = () => window.sllm.setWindowPrefs({ emotionWar: $('emoWar').checked }); // 감정 기억 선전포고(알파 11)
  $('dockLock').onchange = () => window.sllm.setWindowPrefs({ dockLock: $('dockLock').checked });
  dockSel.onchange = () => window.sllm.setWindowPrefs({ dock: dockSel.value });
  $('resetPos').onclick = () => window.sllm.setWindowPrefs({ resetPos: true });
@@ -1025,14 +1087,14 @@
    const t = document.createElement('div'); t.textContent = '제안: ' + p.text; box.appendChild(t);
    const ok = document.createElement('button'); ok.textContent = '수락'; ok.className = 'primary';
    const no = document.createElement('button'); no.textContent = '거절'; no.style.marginLeft = '6px';
-   ok.onclick = async () => { if (p.confirm && !window.confirm('정말로 전쟁을 시작합니까? 되돌릴 수 없습니다.')) return; box.innerHTML = ''; try { const r = await window.sllm.accept(p.id); log('[결과] ' + r.text); } catch (e) { log('[오류] ' + e.message); } };
+   ok.onclick = async () => { if (p.confirm && !window.confirm('정말로 전쟁을 시작합니까? 되돌릴 수 없습니다.')) return; box.innerHTML = ''; try { const r = await window.sllm.accept(p.id); log('[결과] ' + r.text); if (r.say) log('[AI] ' + r.say); } catch (e) { log('[오류] ' + e.message); } };
    no.onclick = async () => { box.innerHTML = ''; await window.sllm.reject(p.id); log('[결과] 제안을 거절했습니다.'); };
    box.appendChild(ok); box.appendChild(no);
  };
  $('finish').onclick = async () => log('[대화] ' + await window.sllm.finish());
  $('peace').onclick = async () => log('[평화 시험] ' + await window.sllm.forcePeace(Number($('tid').value)));
  $('apply').onclick = async () => log('[전송] 요청 ' + await window.sllm.apply(Number($('tid').value), Number($('amt').value)));
-</script><script src="media-settings.js"></script><script src="terminal-ui.js"></script><script src="mailbox-ui.js"></script><script src="environment-ui.js"></script><script src="release-ui.js"></script><script src="response-language-ui.js"></script><script src="support-ui.js"></script></body></html>
+</script><script src="media-settings.js"></script><script src="state-docs.js"></script><script src="collectible-shop.js"></script><script src="curator-loan.js"></script><script src="artist-tour.js"></script><script src="terminal-ui.js"></script><script src="mailbox-ui.js"></script><script src="environment-ui.js"></script><script src="release-ui.js"></script><script src="response-language-ui.js"></script><script src="support-ui.js"></script><script src="addons-workshop.js"></script><script src="scenario-dev.js"></script></body></html>
 
 
 

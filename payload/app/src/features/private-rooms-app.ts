@@ -20,6 +20,7 @@ import { pick as L } from './settings-ui';
 import { secretaryRoomState, secretaryRoomReply } from './secretary-app';
 import { personaNote } from './persona-app';
 import { officeView } from './office-app';
+import { partyPhotoNote } from './party-app'; // 일지에 붙인 사진은 비서에게 글로(2026-11-03)
 
 let store:RoomRecords;
 let activityStore:RoomActivities;
@@ -173,7 +174,7 @@ export function registerPrivateRooms(router:LogRouter){
    if((r.kind==='journal'&&req.room!=='private')||(r.kind==='book'&&req.room!=='reading'))throw Error('INVALID_ROOM');
    const pages=Array.from(r.text);if(req.page*640>=pages.length)throw Error('INVALID_PAGE');
    subjectTitle=r.title;
-   reference=JSON.stringify({title:r.title,author:r.author,authorship:r.imported?"unverified external attribution":"recorded in this campaign",currentReader:a,visiblePages:pages.slice(req.page*640,req.page*640+640).join('')});
+   reference=JSON.stringify({title:r.title,author:r.author,authorship:r.imported?"unverified external attribution":"recorded in this campaign",currentReader:a,visiblePages:pages.slice(req.page*640,req.page*640+640).join('').replace(/\[\[📷:(\d{10,16})\]\]/g,(m,id)=>partyPhotoNote(a.sid,id)??L('[사진]','[Photo]'))});
   }
   if(req.broadcastId){
    if(req.recordId||!['private','secretary'].includes(req.room))throw Error('INVALID_ROOM');

@@ -1,0 +1,7 @@
+﻿l_english:
+ sllm_noconf_survived:0 "Survived No Confidence"
+ sllm_noconf_survived_desc:0 "The government beat parliament's motion of no confidence. The opposition has lost its momentum."
+ sllm_noconf_lameduck:0 "Lame Duck"
+ sllm_noconf_lameduck_desc:0 "Parliament passed a motion of no confidence. The government clings to office, but nobody listens to it any more."
+ sllm_noconf_dissolved:0 "Parliament Dissolved"
+ sllm_noconf_dissolved_desc:0 "The government dissolved parliament to escape a no-confidence vote. Protests fill every street."

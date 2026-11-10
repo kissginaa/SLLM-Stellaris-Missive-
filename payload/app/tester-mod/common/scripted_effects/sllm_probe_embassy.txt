@@ -13,13 +13,14 @@ sllm_probe_embassy = {
 		save_event_target_as = sllm_emb_t
 		set_variable = { which = sllm_emb_req value = prev.sllm_out_req }
 		# 첩보 수준(우리 → 상대, 0~100)을 구간으로: 0 없음 1 낮음(10+) 2 보통(30+) 3 높음(60+) 4 완전(90+)
+		# 2026-10-27 테스터 error.log: intel 조건은 event_target 을 대상으로 받지 않는다("intel target ... is invalid" → 늘 0). prev(= 상대 제국)로 가리킨다. 앱은 첩보망 침투 수준으로도 보완한다.
 		prev = {
 			set_variable = { which = sllm_emb_found value = 1 }
 			set_variable = { which = sllm_emb_iv value = 0 }
-			if = { limit = { intel = { who = event_target:sllm_emb_t value >= 90 } } set_variable = { which = sllm_emb_iv value = 4 } }
-			else_if = { limit = { intel = { who = event_target:sllm_emb_t value >= 60 } } set_variable = { which = sllm_emb_iv value = 3 } }
-			else_if = { limit = { intel = { who = event_target:sllm_emb_t value >= 30 } } set_variable = { which = sllm_emb_iv value = 2 } }
-			else_if = { limit = { intel = { who = event_target:sllm_emb_t value >= 10 } } set_variable = { which = sllm_emb_iv value = 1 } }
+			if = { limit = { intel = { who = prev value >= 90 } } set_variable = { which = sllm_emb_iv value = 4 } }
+			else_if = { limit = { intel = { who = prev value >= 60 } } set_variable = { which = sllm_emb_iv value = 3 } }
+			else_if = { limit = { intel = { who = prev value >= 30 } } set_variable = { which = sllm_emb_iv value = 2 } }
+			else_if = { limit = { intel = { who = prev value >= 10 } } set_variable = { which = sllm_emb_iv value = 1 } }
 		}
 		set_variable = { which = sllm_emb_intel value = prev.sllm_emb_iv }
 		# 상대가 우리에 대해 갖는 것

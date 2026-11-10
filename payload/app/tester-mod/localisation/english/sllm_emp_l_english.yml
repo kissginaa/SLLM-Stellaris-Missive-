@@ -1,0 +1,11 @@
+﻿l_english:
+ sllm_emp_1:0 "Emergency Powers: Alert"
+ sllm_emp_1_desc:0 "The realm is on alert under emergency powers declared through SLLM. Shipyards and garrisons work faster; the people are uneasy."
+ sllm_emp_2:0 "Emergency Powers: War Footing"
+ sllm_emp_2_desc:0 "The realm is on a war footing. The fleet fights harder and the yards never sleep, but daily life has grown hard."
+ sllm_emp_3:0 "Emergency Powers: Total Mobilisation"
+ sllm_emp_3_desc:0 "Everything for the war. Fleets, yards and armies are at full strength, and the people pay for it."
+ sllm_emp_grip:0 "Lingering Emergency Powers"
+ sllm_emp_grip_desc:0 "The war is over, yet the emergency powers remain. Authority tightens its hold, and trust drains away."
+ sllm_emp_return:0 "Powers Returned"
+ sllm_emp_return_desc:0 "The government laid down its emergency powers after the war. The people breathe easier."

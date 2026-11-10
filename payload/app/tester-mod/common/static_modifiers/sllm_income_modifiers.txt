@@ -1,0 +1,12 @@
+# SLLM 월간 수입·지출 단위 수정자(알파 11, 2026-10-25, DTP 기법 채용). 1 단위 = 매달 에너지 1 + 광물 1.
+# 앱이 배수(매달 얼마)와 기간을 정해 붙인다(src/unit-modifier.ts). 지금 쓰는 곳: 감정 기억의 「감사 원조」(매달 25씩 5년, sllm_emotion_acts.txt).
+sllm_aid_recv = {
+	icon = "gfx/interface/icons/modifiers/mod_resource_energy_add.dds"
+	country_base_energy_produces_add = 1
+	country_base_minerals_produces_add = 1
+}
+sllm_aid_paid = {
+	icon = "gfx/interface/icons/modifiers/mod_energy_upkeep_add.dds"
+	country_base_energy_produces_add = -1
+	country_base_minerals_produces_add = -1
+}

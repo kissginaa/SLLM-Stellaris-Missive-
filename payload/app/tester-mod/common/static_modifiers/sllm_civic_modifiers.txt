@@ -1,0 +1,36 @@
+# SLLM 시민 정치(2026-11-03 사용자 결정). 앱: src/civic.ts(REF·AMNESTY), src/features/civic-app.ts civicCommand. 국가 scope(모든 행성), 파벌 scope 는 _pol_.
+# 국민투표 통과(자유 정부) = 2년 안정도 +5 · 부결 뒤 강행 = 1년 안정도 −5. 특별사면(1년): 경범 +2/범죄 +5, 일반 +4/+10, 대사면 +6/+20. 정치범 포함 = 비권위 파벌 승인도 +, 권위 파벌 승인도 −.
+sllm_referendum_mandate = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 5
+}
+sllm_referendum_defied = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -5
+}
+sllm_amnesty_petty = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 2
+	planet_crime_add = 5
+}
+sllm_amnesty_general = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 4
+	planet_crime_add = 10
+}
+sllm_amnesty_grand = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 6
+	planet_crime_add = 20
+}
+sllm_amnesty_pol_up = {
+	faction_approval = 0.1
+}
+sllm_amnesty_pol_down = {
+	faction_approval = -0.1
+}

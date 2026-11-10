@@ -1,0 +1,26 @@
+# SLLM 외교 거래(2026-10-26, 사용자 확정). 앱: src/deals.ts. 효과: common/scripted_effects/sllm_deals.txt sllm_deal_opinion.
+# 우리가 거래의 약속(매달 지급·불가침·참전)을 어김 → 상대 호감 -50
+sllm_deal_broken = {
+	opinion = { base = -50 }
+	decay = { base = 1 }
+}
+# 우리가 동맹의 참전 요청을 거절 → 그 제국 호감 -30
+sllm_deal_cta_refused = {
+	opinion = { base = -30 }
+	decay = { base = 1 }
+}
+# 우리가 약속을 어긴 빚을 들어 요구했는데 우리가 또 거절 → 그 제국 호감 -30
+sllm_deal_hook_refused = {
+	opinion = { base = -30 }
+	decay = { base = 1 }
+}
+# 이름의 정치(2026-11-04): 굴욕 조항으로 우리 요구에 따라 수도 행성·성계 이름을 바꿈 → 그 제국 호감 -100(천천히 풀림, 약 16년)
+sllm_deal_humiliated = {
+	opinion = { base = -100 }
+	decay = { base = 0.5 }
+}
+# 빼앗았던 이름을 돌려줌 → 호감 +40
+sllm_deal_name_restored = {
+	opinion = { base = 40 }
+	decay = { base = 1 }
+}

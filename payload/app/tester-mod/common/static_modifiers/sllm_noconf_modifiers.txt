@@ -1,0 +1,18 @@
+# SLLM 불신임(2026-11-03 사용자 결정, 설정 「(하드코어) 불신임」). 앱: src/noconf.ts NOCONF, src/features/noconf-app.ts(civicCommand, 회신 CIVIC). 국가 scope.
+# 부결(살아남음) = 1년 안정도 +2 · 가결(레임덕) = 3년 안정도 −5·영향력 생산 −20% · 의회 해산 = 2년 안정도 −10.
+sllm_noconf_survived = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 2
+}
+sllm_noconf_lameduck = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -5
+	country_influence_produces_mult = -0.2
+}
+sllm_noconf_dissolved = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -10
+}

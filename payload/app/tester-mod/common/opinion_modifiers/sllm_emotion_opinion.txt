@@ -1,0 +1,24 @@
+# SLLM 감정 기억(알파 11, 2026-10-25): 전력 차이에서 오는 태도. AI 가 플레이어를 보는 관계. 앱이 3달마다 지우고 다시 붙인다.
+# 대화로 생긴 감사·원한은 이미 대화 결과(호감 변화)로 게임에 들어가므로 여기서 또 넣지 않는다(두 번 계산 방지).
+sllm_emo_wary = {
+	opinion = { base = -10 }
+	unique = yes
+}
+sllm_emo_arrogant = {
+	opinion = { base = -5 }
+	unique = yes
+}
+# 원한·두려움에서 오는 경계(2026-11-09, add_threat 대신). 그 AI 의 호감만 내려간다(은하 전체 위협 아님).
+# 분기마다 한 번 쌓이고 매달 조금씩 풀린다 → 감정이 가라앉으면 서서히 사라진다.
+sllm_emo_threat_3 = {
+	opinion = { base = -10 }
+	accumulative = yes
+	min = -50
+	decay = { base = 2 }
+}
+sllm_emo_threat_2 = {
+	opinion = { base = -6 }
+	accumulative = yes
+	min = -30
+	decay = { base = 1 }
+}

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>House Party</title>
+<!-- 관저 파티(2026-11-03, 매스 이펙트 3 시타델 파티처럼). 앱: src/features/party-app.ts · 규칙: src/party.ts. 입구: 개인실의 「관저 파티」 단추(private-rooms.js).
+     손님 고르기 → 세 장면(손님 맞이·한창·늦은 밤): 손님 초상화가 자리마다 서 있고, 둘이 앉은 자리에서 말풍선 수다(틀 문장), 장면마다 소동 하나.
+     손님을 눌러 직접 말을 걸면 AI(1:1 과 같은 셈법). 마지막에 단체 사진. 그림: party/<성향>-party.webp(19번 의뢰서), 없으면 앱이 그린 방. 문구는 L(한, 영)만. -->
+<style>
+ :root{--gold:#ffcf7a;--rose:#ff9ab8;--cyan:#7fe6ff;--text:#f2ece4;--dim:#a99f94}
+ *{box-sizing:border-box} [hidden]{display:none !important} html,body{margin:0;height:100%;background:#0d0a12;color:var(--text);font:14px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,input{font:inherit;color:var(--text)}
+ #drag{position:absolute;z-index:30;left:0;right:0;top:0;height:30px;-webkit-app-region:drag}
+ #x{position:absolute;z-index:31;right:12px;top:6px;background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer;-webkit-app-region:no-drag} #x:hover{color:#fff}
+ #title{position:absolute;z-index:31;left:16px;top:6px;color:var(--gold);font-weight:700;letter-spacing:.05em}
+ .b{padding:7px 13px;border-radius:8px;border:1px solid #6a5a7a;background:#1d1626;cursor:pointer} .b:hover:not(:disabled){border-color:var(--gold);color:var(--gold)} .b:disabled{opacity:.4;cursor:default}
+ .b.main{background:linear-gradient(#6a4a18,#3a280e);border-color:var(--gold);color:#ffe2a0;font-weight:700}
+ .note{color:var(--dim);font-size:12.5px}
+ /* 고르기 */
+ #pick{position:absolute;inset:40px 0 0 0;overflow:auto;padding:10px 28px 24px}
+ #pick h2{margin:6px 0 4px;color:var(--gold)} .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
+ .g{position:relative;border:1px solid #3a2e48;border-radius:12px;background:#17121f;padding:10px;cursor:pointer;text-align:center} .g.on{border-color:var(--gold);box-shadow:0 0 0 2px #ffcf7a55}
+ .g .pf{width:86px;height:86px;margin:0 auto 6px;border-radius:50%;overflow:hidden;background:#2a2236;display:flex;align-items:center;justify-content:center;font-size:30px;color:#cbb}
+ .g .pf img{width:100%;height:100%;object-fit:cover} .g .nm{font-weight:700} .g .rl{font-size:11.5px;color:var(--dim)} .g .tag{position:absolute;top:6px;right:8px;font-size:11px;color:var(--rose)}
+ .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+ .album div{padding:4px 0;border-top:1px solid #2a2236;font-size:12.5px}
+ /* 파티 */
+ #wrap{position:absolute;inset:34px 0 0 0;display:grid;grid-template-columns:1fr 340px}
+ #stageBox{position:relative;overflow:hidden}
+ #stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;border-radius:10px}
+ #bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#3a2440,#140d1a 70%);background-size:cover;background-position:center}
+ .spot{position:absolute;transform:translate(-50%,-50%);color:#ffffff55;font-size:13px;letter-spacing:.05em;pointer-events:none;padding:6px 14px;border-radius:30px;border:1px dashed #ffffff22}
+ body.art .spot{display:none}
+ .gu{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:left .9s ease,top .9s ease}
+ .gu .pf{width:92px;height:92px;border-radius:50%;overflow:hidden;background:#2a2236;border:3px solid #ffffff33;display:flex;align-items:center;justify-content:center;font-size:34px;color:#cbb;box-shadow:0 6px 18px #000a}
+ .gu.grp .pf{border-color:#f3c96b;box-shadow:0 0 0 3px #f3c96b55,0 6px 18px #000a}
+ .gu .pf img{width:100%;height:100%;object-fit:cover} .gu .nm{margin-top:4px;padding:1px 9px;border-radius:9px;background:#000b;font-size:12.5px;white-space:nowrap}
+ .gu.sel .pf{border-color:var(--gold);box-shadow:0 0 22px #ffcf7a88} .gu.inc .pf{border-color:var(--rose)}
+ .bub{position:absolute;transform:translate(-50%,-100%);max-width:300px;padding:8px 12px;border-radius:12px;background:#fff;color:#222;font-size:14px;line-height:1.4;box-shadow:0 6px 18px #000a;pointer-events:none;animation:pop .25s}
+ .bub:after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+ @keyframes pop{from{transform:translate(-50%,-90%) scale(.8);opacity:0}}
+ #banner{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);max-width:80%;padding:10px 18px;border-radius:12px;background:#1d1020ee;border:1px solid var(--rose);color:#ffe0ef;font-size:15px;display:none;text-align:center}
+ /* 2026-11-03 장면별 조명: 손님 맞이 = 따뜻하게, 한창 = 파티 조명, 늦은 밤 = 어둡고 푸르게 */
+ #mood{position:absolute;inset:0;pointer-events:none;transition:opacity 1.2s}
+ #mood.p0{background:linear-gradient(180deg,#ffb86b1c,#0000 65%)}
+ #mood.p1{background:radial-gradient(circle at 28% 72%,#ff4fd84d,transparent 32%),radial-gradient(circle at 68% 78%,#4fc3ff40,transparent 34%),radial-gradient(circle at 50% 20%,#ffe36b26,transparent 30%);mix-blend-mode:screen;animation:disco 5s ease-in-out infinite alternate}
+ #mood.p2{background:radial-gradient(ellipse at 50% 50%,#0000 45%,#00000090 100%),linear-gradient(#34449acc,#34449a99);mix-blend-mode:multiply}
+ @keyframes disco{to{filter:hue-rotate(170deg)}}
+ .fx{position:absolute;transform:translate(-50%,-100%);font-size:44px;pointer-events:none;filter:drop-shadow(0 4px 10px #000);animation:bob 1.4s ease-in-out infinite}
+ @keyframes bob{50%{margin-top:-10px}}
+ @media (prefers-reduced-motion:reduce){#mood,.fx{animation:none!important}}
+ #phase{position:absolute;left:18px;top:14px;padding:4px 12px;border-radius:14px;background:#000a;color:var(--gold);font-weight:700}
+ #side{border-left:1px solid #2a2236;background:#120e18;display:flex;flex-direction:column;min-height:0}
+ #log{flex:1;overflow:auto;padding:10px 12px;font-size:13px} #log div{margin:5px 0} #log .sys{color:var(--dim);font-style:italic} #log .me b{color:var(--cyan)} #log .them b{color:var(--gold)}
+ #talk{padding:10px;border-top:1px solid #2a2236} #talk input{width:100%;padding:8px;border-radius:8px;border:1px solid #3a2e48;background:#1a1422;margin:6px 0}
+ #ctl{padding:10px;border-top:1px solid #2a2236;display:flex;flex-direction:column;gap:8px}
+ /* 사진 */
+ #photo{position:absolute;inset:34px 0 0 0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:radial-gradient(ellipse at center,#2a1a30,#0d0a12 70%)}
+ #photo .frame{padding:22px 26px 16px;background:#f6f0e6;border-radius:6px;box-shadow:0 20px 50px #000;transform:rotate(-1.2deg)}
+ #photo .shot{position:relative;width:min(1000px,80vw);height:min(460px,46vh);background:#2a1a30 center/cover;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding-bottom:16px;overflow:hidden;flex-wrap:wrap}
+ #photo .shot{flex-direction:column;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:0}
+ #photo .row{display:flex;justify-content:center;align-items:flex-end;gap:4px} #photo .row.back{margin-bottom:-30px;transform:translateX(44px) scale(.9);transform-origin:50% 100%} #photo .row.back .nm{visibility:hidden}
+ #photo .shot .gu.host .pf{border-color:#f3c96b;box-shadow:0 0 0 3px #f3c96b66,0 6px 18px #000a}
+ #flash{position:fixed;inset:0;background:#fff;pointer-events:none;opacity:0;z-index:50} #flash.go{animation:flash .9s ease-out}
+ @keyframes flash{0%{opacity:0}8%{opacity:1}100%{opacity:0}}
+ @media (prefers-reduced-motion:reduce){#flash.go{animation-duration:.3s}}
+ #viewer{position:fixed;inset:0;background:#000d;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:40} #viewer img{max-width:88vw;max-height:78vh;box-shadow:0 20px 50px #000}
+ .album .has{cursor:pointer;color:var(--gold)} .album .has:hover{text-decoration:underline}
+ #photo .shot .gu{position:relative;transform:none} #photo .cap{color:#3a2a20;text-align:center;margin-top:10px;font-family:"Segoe Script","Malgun Gothic",cursive}
+</style></head><body>
+<div id="drag"></div><div id="title"></div><button id="x" type="button" title="닫기">✕</button>
+<div id="pick"></div>
+<div id="wrap" hidden><div id="stageBox"><div id="stage"><div id="bg"></div><div id="mood"></div><div id="spots"></div><div id="guests"></div><div id="bubs"></div><div id="phase"></div><div id="banner"></div></div></div>
+ <div id="side"><div id="log"></div><div id="talk"></div><div id="ctl"></div></div></div>
+<div id="photo"></div><div id="viewer"></div><div id="flash"></div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; };
+ const btn = (t, f, cls) => { const b = h('button', 'b' + (cls ? ' ' + cls : ''), t); b.type = 'button'; b.onclick = f; return b; };
+ let S = null, chosen = new Set(), sel = null, shownScene = -1, play = null, result = null;
+ const fit = () => { const box = $('stageBox'), s = Math.min(box.clientWidth / 1600, box.clientHeight / 900); $('stage').style.transform = `translate(${-800 * s}px,${-450 * s}px) scale(${s})`; };
+ addEventListener('resize', fit);
+ function pf(g, size) { const d = h('div', 'pf'); if (g.img) { const i = h('img'); i.src = g.img; i.alt = ''; d.append(i); } else d.textContent = (g.name || '?').trim().charAt(0); if (size) { d.style.width = d.style.height = size + 'px'; } return d; }
+ const roleName = (g) => g.role === 'partner' ? L('연인·배우자', 'Partner') : g.role;
+
+ const fCount = () => S.candidates.filter((c) => c.kind === 'foreign' && chosen.has(c.key)).length;
+ function drawPick() {
+  $('pick').hidden = false; $('wrap').hidden = true; $('photo').style.display = 'none'; const P = $('pick'); P.textContent = '';
+  P.append(h('h2', '', '🎉 ' + L('관저 파티', 'House party')), h('div', 'note', L('사교회와 달리 우리 사람들끼리 격식 없이 노는 자리입니다. 손님을 고르면 세 장면(손님 맞이 · 한창 · 늦은 밤)이 흘러가고, 손님끼리 수다를 떨거나 소동이 벌어집니다. 손님을 눌러 직접 말을 걸 수 있습니다. 마지막에 단체 사진을 찍으면 끝납니다.', 'Unlike the social gathering, this is an off-the-record night with your own people. Pick guests and three scenes play out (arrivals, in full swing, late night) — they chat, and things happen. Click a guest to talk to them. The party ends with a group photo.')));
+  P.append(h('div', 'note', L(`효과: 손님마다 신뢰 +3과 추억 한 줄 · 함께 어울린 지도자끼리 관계가 가까워짐 · 360일 동안 통합력 +1%${S.war || S.crisis ? ' · 지금은 ' + (S.war ? '전쟁' : '위기') + ' 중이라 함대 사격 속도·지상군 피해 +1%도' : ''}. 🌐 다른 나라 손님(둘까지, 전쟁 중인 나라 제외)은 그 나라의 호감 +10(서서히 줄어듦)과 함께 어울린 우리 지도자와 안면을 틉니다. 한 번 열면 ${180}일 뒤에 다시 열 수 있습니다.`, `Effects: +3 trust and a memory for each guest · leaders who mingled grow closer · +1% unity for 360 days${S.war || S.crisis ? ' · and since you are ' + (S.war ? 'at war' : 'in a crisis') + ', +1% fleet fire rate and army damage' : ''}. 🌐 Guests from other empires (up to 2, none from empires at war with you) give +10 opinion from their empire (fades slowly) and get to know the leaders they mingled with. You can host again 180 days later.`)));
+  if (S.wait > 0) P.append(h('div', 'note', L(`⏳ 지난 파티의 뒷정리 중 — ${S.wait}일 뒤에 다시 열 수 있습니다.`, `⏳ Still cleaning up after the last party — you can host again in ${S.wait} days.`)));
+  const g = h('div', 'grid'); for (const c of S.candidates) { const e = h('div', 'g' + (chosen.has(c.key) ? ' on' : '')); e.append(pf(c), h('div', 'nm', c.name), h('div', 'rl', roleName(c))); if (c.kind === 'partner') e.append(h('span', 'tag', '♥')); if (c.kind === 'foreign') { e.append(h('span', 'tag', '🌐')); e.title = L('다른 나라에서 온 친구 — 만찬에서 연락처를 주고받은 사이', 'A friend from another empire — you exchanged contacts at a dinner'); }
+   e.onclick = () => { if (chosen.has(c.key)) chosen.delete(c.key); else if (chosen.size < S.limits.max) { if (c.kind === 'foreign' && fCount() >= (S.limits.foreign || 2)) { alertNote(L(`다른 나라 손님은 ${S.limits.foreign || 2}명까지입니다.`, `Up to ${S.limits.foreign || 2} guests from other empires.`)); return; } chosen.add(c.key); } drawPick(); }; g.append(e); }
+  if (!S.candidates.length) g.append(h('div', 'note', L('부를 수 있는 사람이 없습니다. 게임을 읽은 뒤 다시 열어 주세요.', 'There is no one to invite yet. Open again after the game is read.')));
+  P.append(g); const bar = h('div', 'bar'); const go = btn(L(`파티 시작 (${chosen.size}/${S.limits.max}명)`, `Start the party (${chosen.size}/${S.limits.max})`), async () => { const r = await window.sllm.partyStart([...chosen]); if (r && !r.ok) alertNote(r.error); else { S = r.state; chosen.clear(); draw(); } }, 'main'); go.disabled = chosen.size < S.limits.min || S.wait > 0; bar.append(go, h('span', 'note', L(`${S.limits.min}~${S.limits.max}명 · 🌐 다른 나라 손님 ${fCount()}/${S.limits.foreign || 2}`, `${S.limits.min}–${S.limits.max} guests · 🌐 from other empires ${fCount()}/${S.limits.foreign || 2}`))); P.append(bar);
+  if (S.album && S.album.length) { const a = h('div', 'album'); a.append(h('h2', '', '📷 ' + L('사진첩', 'Album'))); for (const x of S.album) { const row = h('div', x.photo ? 'has' : '', `${x.photo ? '🖼 ' : ''}${x.date} — ${x.guests.join(', ')}${x.resolve ? ' ⚔' : ''}${x.foreign && x.foreign.length ? ' 🌐' : ''}`); if (x.photo) { row.title = L('사진 보기', 'View photo'); row.onclick = () => showPhoto(x.n); } a.append(row); } P.append(a); }
+ }
+ function alertNote(t) { const n = h('div', 'note', '⚠ ' + t); n.style.color = '#ff9a9a'; $('pick').append(n); setTimeout(() => n.remove(), 4000); }
+
+ function drawParty() {
+  $('pick').hidden = true; $('photo').style.display = 'none'; $('wrap').hidden = false; fit(); const P = S.party;
+  document.body.classList.toggle('art', !!S.art.bg); $('bg').style.backgroundImage = S.art.bg ? `url(${S.art.bg})` : '';
+  const sp = $('spots'); if (!sp.childElementCount) for (const s of S.spots) { const e = h('div', 'spot', s.name); e.style.left = s.x + '%'; e.style.top = s.y + '%'; sp.append(e); }
+  $('phase').textContent = `${P.phase + 1}/3 · ${P.phaseName}`; $('mood').className = 'p' + P.phase;
+  // 손님 자리
+  const pos = {}; const sc = P.scene || { seats: {} };
+  for (const [spot, ks] of Object.entries(sc.seats)) { const s = S.spots.find((x) => x.id === spot) || S.spots[0]; const grp = ks.length >= 3; ks.forEach((k, i) => { const off = (i - (ks.length - 1) / 2) * (grp ? 78 : 120); pos[k] = [s.x * 16 + off, s.y * 9 + 46 - (grp && i % 2 ? 34 : 0)]; }); } // 셋·넷 무리는 앞뒤로 엇갈려 옹기종기
+  const G = $('guests'); for (const g of P.guests) { let e = G.querySelector(`[data-k="${CSS.escape(g.key)}"]`); if (!e) { e = h('div', 'gu'); e.dataset.k = g.key; e.append(pf(g), h('div', 'nm', (g.foreign ? '🌐 ' : '') + g.name)); if (g.foreign) e.title = g.foreign.empire; e.onclick = () => { sel = g.key; drawSide(); markSel(); }; G.append(e); }
+   const p = pos[g.key] || [800, 700]; e.style.left = p[0] + 'px'; e.style.top = p[1] + 'px'; e.style.zIndex = String(Math.round(p[1])); e.classList.toggle('inc', !!(sc.incident && sc.incident.who.includes(g.key))); e.classList.toggle('grp', !!(sc.chats || []).some((c) => c.group && (c.who || []).includes(g.key))); }
+  markSel(); drawSide();
+  if (shownScene !== P.phase) { shownScene = P.phase; playScene(sc, pos); }
+ }
+ const markSel = () => { for (const e of $('guests').children) e.classList.toggle('sel', e.dataset.k === sel); };
+ function playScene(sc, pos) {
+  if (play) clearTimeout(play); $('bubs').textContent = ''; $('banner').style.display = 'none';
+  // 2026-11-03 사용자: 수다는 생략식으로 짧게 — 자리마다 동시에 말풍선(먼저 한 사람, 이어 다른 사람)
+  const bubble = (k, t) => { const p = pos[k] || [800, 600], b = h('div', 'bub', t); b.style.left = p[0] + 'px'; b.style.top = (p[1] - 120) + 'px'; $('bubs').append(b); };
+  // 2026-11-03 사교회처럼 셋·넷 무리: 한 사람씩 차례로 (둘이면 예전처럼 두 번)
+  const who = (c) => c.who || [c.a, c.b], nR = Math.max(2, ...(sc.chats || []).map((c) => who(c).length)); let i = 0;
+  const next = () => { $('bubs').textContent = '';
+   if (i < nR) { for (const c of sc.chats || []) { const k = who(c)[i]; if (k && c.lines[i]) bubble(k, c.lines[i]); } i++; play = setTimeout(next, 1700); return; }
+   if (sc.incident) { const bn = $('banner'), ic = sc.incident.icon || '✨'; bn.textContent = ic + ' ' + sc.incident.text; bn.style.display = 'block';
+    const ps = sc.incident.who.map((k) => pos[k]).filter(Boolean); if (ps.length) { const fx = h('div', 'fx', ic); fx.style.left = (ps.reduce((t, p) => t + p[0], 0) / ps.length) + 'px'; fx.style.top = (Math.min(...ps.map((p) => p[1])) - 130) + 'px'; $('bubs').append(fx); } } };
+  play = setTimeout(next, 900);
+ }
+ function drawSide() {
+  const P = S.party, log = $('log'); log.textContent = '';
+  for (const c of P.chat) { const d = h('div', c.who); if (c.who === 'sys') d.textContent = c.text; else { d.append(h('b', '', c.who === 'me' ? L(`나 → ${c.name}`, `Me → ${c.name}`) : c.name), document.createTextNode(': ' + c.text)); } log.append(d); }
+  log.scrollTop = log.scrollHeight;
+  const T = $('talk'); T.textContent = ''; const g = P.guests.find((x) => x.key === sel);
+  if (!g) T.append(h('div', 'note', L('손님을 누르면 직접 말을 걸 수 있습니다.', 'Click a guest to talk to them.')));
+  else { T.append(h('div', '', L(`${g.name}에게 말 걸기`, `Talk to ${g.name}`))); const inp = h('input'); inp.placeholder = g.talk ? L('하고 싶은 말…', 'Say something…') : L('이 손님과는 지금 이야기할 수 없습니다', 'You cannot talk with this guest right now'); inp.disabled = !g.talk || P.busy || P.over;
+   const send = async () => { const t = inp.value.trim(); if (!t) return; inp.value = ''; const r = await window.sllm.partyTalk({ key: g.key, text: t }); if (r && r.state) { S = r.state; drawSide(); } };
+   inp.onkeydown = (e) => { if (e.key === 'Enter' && !e.isComposing) send(); }; T.append(inp, btn(P.busy ? L('대답을 기다리는 중…', 'Waiting…') : L('말하기', 'Say'), send)); setTimeout(() => inp.focus(), 0); }
+  const C = $('ctl'); C.textContent = '';
+  if (!P.last) C.append(btn(L('다음 장면 ▶', 'Next scene ▶'), async () => { const r = await window.sllm.partyNext(); if (r && r.state) { S = r.state; draw(); } }, 'main'));
+  else C.append(btn('📸 ' + L('단체 사진 찍고 마치기', 'Take the group photo and end'), async () => { const r = await window.sllm.partyFinish(); if (r && r.state) { S = r.state; result = r.result || null; draw(); } }, 'main'));
+  C.append(h('div', 'note', L('장면을 넘기면 손님들이 자리를 옮기고 새로운 일이 벌어집니다.', 'Moving on shuffles the guests and new things happen.')));
+ }
+ function drawPhoto() {
+  $('pick').hidden = true; $('wrap').hidden = true; const F = $('photo'); F.style.display = 'flex'; F.textContent = ''; const P = S.party;
+  const fr = h('div', 'frame'), shot = h('div', 'shot'); if (S.art.bg) shot.style.backgroundImage = `url(${S.art.bg})`;
+  // 2026-11-03 기념사진처럼: 통치자가 앞줄 가운데, 손님은 양옆으로 번갈아, 많으면 뒷줄로 엇갈려
+  const person = (g, host) => { const e = h('div', 'gu' + (host ? ' host' : '')); e.append(pf(g, 84), h('div', 'nm', (host ? '👑 ' : '') + g.name)); return e; };
+  const gs = P.guests.slice(), all = S.host ? [{ ...S.host, host: true }, ...gs] : gs, nFront = all.length > 6 ? Math.ceil(all.length / 2) : all.length;
+  const front = all.slice(0, nFront), back = all.slice(nFront), mid = (arr) => { const out = []; arr.forEach((g, i) => (i % 2 ? out.unshift(g) : out.push(g))); return out; }; // 첫 사람(통치자)이 가운데
+  if (back.length) { const r = h('div', 'row back'); for (const g of mid(back)) r.append(person(g, false)); shot.append(r); }
+  const r = h('div', 'row front'); for (const g of mid(front)) r.append(person(g, !!g.host)); shot.append(r);
+  fr.append(shot, h('div', 'cap', `${S.date} · ${L('관저에서', 'At the residence')}`)); F.append(fr);
+  if (result && !snapped) { snapped = true; const fl = $('flash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go'); // 찰칵 + 사진 저장(한 번)
+   setTimeout(() => { const b = fr.getBoundingClientRect(), pad = 14; window.sllm.partySnap({ x: b.left - pad, y: b.top - pad, width: b.width + pad * 2, height: b.height + pad * 2 }).catch(() => {}); }, 1100); }
+  if (result) F.append(h('div', 'note', L(`손님 ${result.guests}명 신뢰 +${result.trust} · 가까워진 지도자 ${result.pairs}쌍 · ${result.buff ? '통합력 +1%' + (result.resolve ? ' · 함대 사격 속도·지상군 피해 +1%' : '') + ' (360일)' : '게임이 꺼져 있어 버프는 붙지 않았습니다'}${result.foreign ? ' · 🌐 ' + (result.goodwill ? `다른 나라 ${result.foreign}곳의 호감 +10` : '게임이 꺼져 있어 다른 나라 호감은 붙지 않았습니다') : ''}`, `${result.guests} guests +${result.trust} trust · ${result.pairs} pairs of leaders grew closer · ${result.buff ? '+1% unity' + (result.resolve ? ', +1% fire rate and army damage' : '') + ' (360 days)' : 'the game is not running, so no buff was applied'}${result.foreign ? ' · 🌐 ' + (result.goodwill ? `+10 opinion from ${result.foreign} other empire(s)` : 'the game is not running, so no foreign opinion was applied') : ''}`)));
+  F.append(btn(L('닫기', 'Close'), async () => { const r = await window.sllm.partyLeave(); if (r && r.state) { S = r.state; result = null; snapped = false; shownScene = -1; $('guests').textContent = ''; draw(); } }, 'main'));
+ }
+ let snapped = false;
+ async function showPhoto(n) { const r = await window.sllm.partyPhoto(n); if (!r || !r.ok) return; const V = $('viewer'); V.textContent = ''; const i = h('img'); i.src = r.src; i.alt = L('단체 사진', 'Group photo');
+  V.append(i, h('div', 'note', `${r.date} — ${(r.guests || []).join(', ')}`), btn(L('닫기', 'Close'), () => { V.style.display = 'none'; }, 'main')); V.style.display = 'flex'; V.onclick = (e) => { if (e.target === V) V.style.display = 'none'; }; }
+ function draw() { $('title').textContent = '🎉 ' + L('관저 파티', 'House party'); if (!S || !S.ready) { $('pick').textContent = L('세이브를 불러온 뒤에 열 수 있습니다.', 'Load a save first.'); return; } if (!S.party) drawPick(); else if (S.party.over) drawPhoto(); else drawParty(); }
+ $('x').onclick = () => window.sllm.partyClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.activeElement?.tagName !== 'INPUT') window.sllm.partyClose(); });
+ document.addEventListener('sllm-language', draw);
+ if (window.sllm.onPartyUpdate) window.sllm.onPartyUpdate((v) => { const was = S && S.party ? S.party.phase : -1; S = v; draw(); });
+ window.sllm.partyState().then((v) => { S = v; draw(); });
+</script></body></html>

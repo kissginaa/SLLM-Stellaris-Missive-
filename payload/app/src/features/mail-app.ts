@@ -6,7 +6,7 @@ import { app, ipcMain } from 'electron';
 import * as path from 'path';
 import { DeferredStore, LEAN_KO } from '../deferred';
 import { InboxStore, SavedLetter } from '../inbox-store';
-import { mailCountryFrom, newsFrom, pickMessages, parsePick, letterMessages, treatyLetterMessages, MailPlan, MailCountry, News, Letter, LETTER_ACTIONS, addYears, cmpDate, newsText, MAJOR_WORLD } from '../mail';
+import { mailCountryFrom, newsFrom, pickMessages, parsePick, letterMessages, treatyLetterMessages, MailPlan, MailCountry, News, Letter, LETTER_ACTIONS, addYears, cmpDate, newsText, MAJOR_WORLD, NOT_ON_RADIO, SOLO_NEWS, knownEmpire, GALAXY_WIDE } from '../mail';
 import { parseReply } from '../action';
 import type { Profile } from '../prompt';
 import type { SllmMessage } from '../protocol';
@@ -19,7 +19,7 @@ import { currentPaper, publishNews, makeGossip, noteExtra, publishExtra } from '
 import { speechStore, pushSpeech } from './speech-app';
 import { describe } from '../action';
 import { link } from '../app/game-link';
-import { terminalRequest, dialTerminal } from './terminal';
+import { terminalRequest, dialTerminal, terminal } from './terminal';
 import { ctx } from '../app/ctx';
 import { pick } from './settings-ui';
 
@@ -98,26 +98,31 @@ export async function writeTreatyLetter(d: { due: string; idx: number; name: str
 export function onMailSignal(m: SllmMessage) {
   if (m.kind === 'IDX' && m.kv.name) { const ii = Number(m.kv.idx); if (Number.isFinite(ii) && ii > 0) idxNames.set(ii, m.kv.name.slice(0, 60)); }
   if (m.kind === 'IDX' && m.kv.rel === 'self' && m.kv.name) { ctx.playerName = m.kv.name; const pi = Number(m.kv.idx); if (Number.isFinite(pi) && pi > 0) ctx.playerIdx = pi; }
-  if ((m.kind === 'MONTH' || m.kind === 'YEAR') && m.kv.date) { if (m.kind === 'MONTH') ctx.onMonthTick(); ctx.gameDate = m.kv.date; if (ctx.curSaveId) ctx.govMem().track(ctx.curSaveId, ctx.gameDate); void publishExtra(m.kv.date); }
+  if ((m.kind === 'MONTH' || m.kind === 'YEAR') && m.kv.date) { if (m.kind === 'MONTH') ctx.onMonthTick(); ctx.gameDate = m.kv.date; if (ctx.curSaveId) { ctx.govMem().track(ctx.curSaveId, ctx.gameDate); if (m.kind === 'MONTH') ctx.govMem().noteMonth(ctx.curSaveId, m.kv.tl, ctx.gameDate); } void publishExtra(m.kv.date); }
   const n = newsFrom(m);
   if (n) {
     mail.news.push(n);
+    // 우리가 끼지 않은 일인데 둘 다 모르는(통신 없는) 나라면 신문·라디오·호외에 싣지 않는다(2026-11-10). 위기·은하 공동체처럼 온 은하가 아는 일은 예외
+    const mine = ctx.playerIdx > 0 && (n.a === ctx.playerIdx || n.b === ctx.playerIdx) || (!!ctx.playerName && (n.aname === ctx.playerName || n.bname === ctx.playerName));
+    const unknown = !mine && !GALAXY_WIDE.has(n.kind) && !knownEmpire(n.a, n.aname, mail.countries, terminal.all) && !knownEmpire(n.b, n.bname, mail.countries, terminal.all);
+    if (!unknown) {
     noteExtra(n.kind, n.date || ctx.gameDate, newsText(n)); // 호외 후보(큰 사건)
     { // 성간 라디오: 세계 사건(NEWS)도 라디오 연대기와 대기열에 넣는다(F-03)
-      const text = newsText(n), date = n.date || ctx.gameDate, uid = ['news', n.kind, date, n.a ?? n.aname ?? '', n.b ?? n.bname ?? '', n.war ?? ''].join('|');
-      chronPut(RADIO_IDX, date, text, false, { name: '성간라디오 전용 연대기', world: true, uid });
-      if (radio.on && !radioAired().has(ctx.curSaveId, uid) && radio.q.push({ kind: 'news_' + n.kind, date, text, n: 0, id: uid })) radio.win?.webContents.send('radioQueue', radio.q.size);
+      const text = newsText(n), date = n.date || ctx.gameDate, uid = ['news', n.kind, date, n.a ?? n.aname ?? '', n.b ?? n.bname ?? '', n.war ?? '', n.planet ?? ''].join('|');
+      if (!NOT_ON_RADIO.has(n.kind)) chronPut(RADIO_IDX, date, text, false, { name: '성간라디오 전용 연대기', world: true, uid });
+      if (radio.on && !NOT_ON_RADIO.has(n.kind) && !radioAired().has(ctx.curSaveId, uid) && radio.q.push({ kind: 'news_' + n.kind, date, text, n: 0, id: uid })) radio.win?.webContents.send('radioQueue', radio.q.size);
     }
     { // 연대기: 플레이어와 AI 사이의 일, 또는 그 AI 의 새 지도자
       const ev = newsText(n);
       const other = (x: number | undefined) => x !== undefined && x > 0 && x !== ctx.playerIdx;
-      if (ctx.playerIdx > 0 && (n.a === ctx.playerIdx || n.b === ctx.playerIdx)) { const o = n.a === ctx.playerIdx ? n.b : n.a; if (other(o)) chronNote(o as number, ev); }
+      if (ctx.playerIdx > 0 && (n.a === ctx.playerIdx || n.b === ctx.playerIdx)) { const o = n.a === ctx.playerIdx ? n.b : n.a; if (other(o)) chronNote(o as number, ev); else if (SOLO_NEWS.has(n.kind) && n.kind !== 'ruler') chronNoteWorld(ev); } // 우리 나라 혼자 나오는 큰 일(거대 구조물·정부 개편 등)은 세계 소식으로
       else if (n.kind === 'ruler' && other(n.a)) chronNote(n.a as number, ev, false, true);
       else if (MAJOR_WORLD.has(n.kind)) { // AI 끼리는 큰 사건(전쟁·연방·연합·협정·위기·멸망·조공국화)만 남긴다. 번호가 없으면 이름으로, 그것도 없으면 세계 소식으로
         let put = false;
         for (const [x, nm] of [[n.a, n.aname], [n.b, n.bname]] as Array<[number | undefined, string | undefined]>) { if (x !== undefined && x > 0) { chronNote(x, ev, false, true); put = true; } else if (nm && chronNoteByName(nm, ev)) put = true; }
         if (!put) chronNoteWorld(ev);
       }
+    }
     }
     if (ctx.gameDate) mail.news = mail.news.filter((x) => !x.date || cmpDate(x.date, addYears(ctx.gameDate, -2)) >= 0);
   }

@@ -1,0 +1,9 @@
+﻿l_korean:
+ sllm_trait_ruler_child:0 "통치자의 자녀"
+ sllm_trait_ruler_child_desc:0 "통치자의 아이로 태어나 궁의 아기방에서 자랐습니다. 지도자 경험치 획득이 15% 늘어납니다."
+ sllm_trait_family_grief_commander:0 "가족을 잃은 슬픔(지휘관)"
+ sllm_trait_family_grief_commander_desc:0 "자식이나 부모를 잃은 슬픔에 잠겨 있습니다. 지휘하는 함대·지상군의 피해가 10% 줄어듭니다. 3년이 지나면 사라집니다."
+ sllm_trait_family_grief_official:0 "가족을 잃은 슬픔(관료)"
+ sllm_trait_family_grief_official_desc:0 "자식이나 부모를 잃은 슬픔에 잠겨 있습니다. 맡은 행성의 직업 산출이 10% 줄어듭니다. 3년이 지나면 사라집니다."
+ sllm_trait_family_grief_scientist:0 "가족을 잃은 슬픔(과학자)"
+ sllm_trait_family_grief_scientist_desc:0 "자식이나 부모를 잃은 슬픔에 잠겨 있습니다. 탐사·이상 현상 조사 속도가 10% 줄어듭니다. 평의회에 있으면 연구 속도도 10% 줄어듭니다. 3년이 지나면 사라집니다."

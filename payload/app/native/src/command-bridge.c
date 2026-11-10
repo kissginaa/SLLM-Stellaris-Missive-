@@ -17,20 +17,20 @@ static DWORD execute(BridgeRequest*r) {
     const BYTE signature[]={0x48,0x89,0x4c,0x24,0x08,0x55,0x53,0x56,0x57};
     if(dos->e_magic!=IMAGE_DOS_SIGNATURE||nt->Signature!=IMAGE_NT_SIGNATURE||
        nt->FileHeader.Machine!=IMAGE_FILE_MACHINE_AMD64||
-       nt->FileHeader.TimeDateStamp!=0x6abeaa3f||nt->OptionalHeader.SizeOfImage!=58662912||
-       memcmp(base+0xeba020,signature,sizeof(signature)))return UNSUPPORTED_BUILD;
+       nt->FileHeader.TimeDateStamp!=0x6ae49c1b||nt->OptionalHeader.SizeOfImage!=58687488||
+       memcmp(base+0xebf9f0,signature,sizeof(signature)))return UNSUPPORTED_BUILD;
     GameString filename={0};
     size_t len=strlen(r->filename);
     memcpy(filename.data.small,r->filename,len+1);
     filename.length=len;filename.capacity=15;
-    GameArray args={(void*)(base+0x22fe5b0),&filename,1,1};
+    GameArray args={(void*)(base+0x2302590),&filename,1,1};
     GameResult result={0};
     typedef GameResult*(*Run)(GameResult*,GameArray*,void*);
     typedef void(*Destroy)(GameResult*);
-    GameResult*returned=((Run)(base+0xeba020))(&result,&args,NULL);
+    GameResult*returned=((Run)(base+0xebf9f0))(&result,&args,NULL);
     r->gameStatus=(DWORD)(result.status&255);
     DWORD outcome=(returned==&result&&r->gameStatus==1)?RESULT_OK:COMMAND_FAILED;
-    ((Destroy)(base+0x160ff0))(&result);
+    ((Destroy)(base+0x160f20))(&result);
     return outcome;
 }
 

@@ -28,15 +28,32 @@
     const buttons = rooms.map(([id,ko,en],i) => {
       const b = document.createElement('button'); b.type='button'; b.className='corridor-door door-'+i;
       b.setAttribute('aria-label',pick(ko,en)+' · '+pick('열기','Open'));
-      const tip=document.createElement('span'); tip.textContent=pick(ko,en)+' · '+pick('열기','Open'); b.append(tip);
-      b.onclick=()=>onRoom(id); return b;
+      const tip=document.createElement('span'),name=document.createElement('b'),hint=document.createElement('small');
+      name.textContent=pick(ko,en); hint.textContent=pick('열기','OPEN')+' ▸'; tip.append(name,hint);
+      const glow=document.createElement('i'), cut=document.createElement('i'), lit=document.createElement('img'); glow.className='corridor-glow'; cut.className='corridor-cut'; lit.alt=''; lit.draggable=false; cut.append(lit); glow.append(cut); b.append(glow,tip);
+      b.onclick=()=>enter(b,id); return b;
     });
+    // Short walk toward the door before the room loads; instant when reduced motion is requested.
+    let entering=false;
+    function enter(door,id){
+      if(entering) return; entering=true;
+      if(matchMedia('(prefers-reduced-motion: reduce)').matches){ Promise.resolve(onRoom(id)).catch(()=>{}).finally(()=>{ entering=false; }); return; }
+      const r=root.getBoundingClientRect(), d=door.getBoundingClientRect();
+      root.style.transformOrigin=`${((d.left+d.width/2-r.left)/r.width*100).toFixed(1)}% ${((d.top+d.height/2-r.top)/r.height*100).toFixed(1)}%`;
+      door.classList.add('is-opening'); root.classList.add('corridor-entering');
+      setTimeout(()=>{
+        if(!alive) return;
+        // If the room did not open (e.g. an unsaved dialog kept us here), step back into the corridor.
+        Promise.resolve(onRoom(id)).catch(()=>{}).finally(()=>{ if(alive){ entering=false; root.classList.remove('corridor-entering'); door.classList.remove('is-opening'); } });
+      },300);
+    }
     root.replaceChildren(art,emblems,...buttons);
     let alive=true, seq=0;
     async function update(state) {
       const theme=themes.find(t=>t[0]===state?.applied) || themes[0];
       const ticket=++seq, url=state?.emblemUrl;
       root.dataset.style=theme[0]; art.src=assetBase+'/corridor-'+theme[0]+'.webp';
+      for(const b of buttons) b.querySelector('.corridor-glow img').src=art.src;
       emblems.replaceChildren();
       if(!safeImage(url)) return;
       const probe=new Image(); probe.src=url;
@@ -48,7 +65,7 @@
         mark.style.setProperty('--emblem',`url("${url}")`); emblems.append(mark);
       }
     }
-    return {update, destroy(){alive=false;seq++;root.replaceChildren();root.classList.remove('corridor-scene');}};
+    return {update, destroy(){alive=false;seq++;root.replaceChildren();root.classList.remove('corridor-scene','corridor-entering');root.style.transformOrigin='';delete root.dataset.style;}};
   }
   window.SLLMCorridorArt={mount,themes};
 })();

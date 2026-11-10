@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Social Gathering</title>
+<!-- 사교회 연회장(2026-10-23 사용자 요청: 「사교회스럽게, AI 그림으로, 대화하기는 그 사람들과 실제로 대화」). 앱: src/features/relations-app.ts · 규칙: src/social-hall.ts.
+     AI 배경 그림(assets/rooms/social-hall-v1.jpg, 식량 부족 해 = social-hall-poor-v1.jpg) 위 6자리에 손님 모임을 얹는다. 그림이 없으면 그라데이션 연회장.
+     모임을 누르면 그쪽으로 다가가고(확대) 오른쪽에서 대화 칸이 열린다. 말을 걸면 그 모임 사람들만 AI 로 답한다. 「자리 뜨기」 때 한 번만 결과를 정한다.
+     문구는 ui(한, 영)만(언어 팩 호환). 인물 이름·AI 대사는 data-i18n-skip. -->
+<style>
+ :root{--bg:#120d08;--panel:#1c140c;--text:#f3e9da;--dim:#b8a58b;--gold:#e8c27a;--gold2:#f6dca4;--rose:#e79a8a;--good:#9ad58a;--bad:#ef8a7a;--line:color-mix(in srgb,#e8c27a 38%,transparent);--line2:color-mix(in srgb,#e8c27a 16%,transparent)}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13.5px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,select,textarea{font:inherit;color:var(--text)}
+ button{cursor:pointer;border:1px solid var(--line);background:linear-gradient(#3a2a17,#24190d);padding:6px 13px;border-radius:999px;white-space:nowrap;transition:background .2s,color .2s}
+ button:hover:not(:disabled){background:var(--gold);color:#1a1108;border-color:var(--gold)} button:disabled{opacity:.45;cursor:default}
+ select,textarea{background:#0e0905;border:1px solid var(--line);border-radius:8px;padding:6px 9px;outline:none} textarea{resize:none}
+ /* 무대: 그림과 같은 16:9 를 창에 「덮어서」 맞춘다 → 자리 좌표(%)가 그림과 어긋나지 않는다 */
+ #view{position:absolute;inset:0;overflow:hidden}
+ #scene{position:absolute;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%);transition:transform .9s cubic-bezier(.2,.7,.2,1),filter .9s}
+ #bg{position:absolute;inset:0;background-size:cover;background-position:center;
+  background-image:radial-gradient(ellipse 9% 7% at 30% 12%,#ffe2a888,transparent 70%),radial-gradient(ellipse 9% 7% at 70% 12%,#ffe2a888,transparent 70%),radial-gradient(ellipse 12% 9% at 50% 8%,#fff0c8aa,transparent 70%),
+   linear-gradient(180deg,transparent 0 36%,#2b1c10 36% 37%,transparent 37%),repeating-linear-gradient(90deg,#24180d 0 7%,#2e2011 7% 7.4%),linear-gradient(#3b2814,#1a120a 45%,#2a1d10 46%,#120c07)}
+ #bg.poor{filter:saturate(.75) brightness(.82)}
+ #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 45%,transparent 55%,#0008 100%)}
+ .bokeh{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#ffe2a8 0,#ffe2a800 70%);filter:blur(2px);animation:drift linear infinite;opacity:.0}
+ @keyframes drift{0%{transform:translateY(0);opacity:0}15%{opacity:.55}85%{opacity:.45}100%{transform:translateY(-14vh);opacity:0}}
+ /* 모임 */
+ .grp{position:absolute;transform:translate(-50%,-100%) scale(var(--s));transform-origin:50% 100%;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:opacity .5s,filter .5s}
+ .grp .floor{position:absolute;bottom:-16px;left:50%;width:calc(100% + 60px);height:36px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#ffd99055,transparent 70%);transition:background .3s}
+ .grp .spot{font-size:11.5px;letter-spacing:.06em;color:var(--gold2);background:#0009;border:1px solid var(--line2);padding:1px 10px;border-radius:999px;margin-bottom:6px;opacity:.0;transition:opacity .25s;white-space:nowrap}
+ .grp .ppl{display:flex;align-items:flex-end}
+ .gst{display:flex;flex-direction:column;align-items:center;margin:0 -6px;position:relative}
+ .gst .pt{width:84px;height:104px;border-radius:46% 46% 40% 40%;overflow:hidden;border:2px solid #e8c27acc;background:linear-gradient(#4a3520,#20160c);box-shadow:0 8px 18px #000a,0 0 0 3px #0006;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--gold)}
+ .gst:nth-child(even) .pt{transform:translateY(-8px)}
+ .gst .pt img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+ .gst .nm{margin-top:4px;font-size:12px;font-weight:700;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#000a;padding:0 8px;border-radius:6px;text-shadow:0 1px 2px #000}
+ .grp .mark{position:absolute;top:-4px;right:-10px;font-size:12px;background:#000b;border:1px solid var(--line);border-radius:999px;padding:0 8px;color:var(--gold2)}
+ .grp:hover .spot,.grp.on .spot{opacity:1} .grp:hover .floor{background:radial-gradient(ellipse,#ffd990aa,transparent 70%)} .grp:hover .pt{border-color:var(--gold2);box-shadow:0 8px 18px #000a,0 0 22px #ffd99088}
+ body.talking .grp:not(.on){opacity:.25;filter:blur(1.5px) brightness(.6);pointer-events:none}
+ body.talking #scene{filter:brightness(.9)}
+ /* 위 막대 */
+ #top{position:absolute;left:0;right:0;top:0;height:48px;display:flex;align-items:center;gap:10px;padding:0 14px;-webkit-app-region:drag;z-index:40;background:linear-gradient(#000c,#0000)}
+ #top button,#top .chip{-webkit-app-region:no-drag}
+ #ttl{font:600 15px "Malgun Gothic",serif;letter-spacing:.08em;color:var(--gold2);text-shadow:0 0 14px #e8c27a66} .sp{flex:1}
+ .chip{border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:12px;color:var(--gold)} .chip.warn{color:var(--rose);border-color:color-mix(in srgb,var(--rose) 50%,transparent)}
+ #x{background:none;border-color:transparent;font-size:18px;padding:0 8px}
+ #hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:20;background:#000b;border:1px solid var(--line2);border-radius:999px;padding:6px 18px;color:var(--dim);font-size:12.5px;transition:opacity .4s;white-space:nowrap}
+ body.talking #hint{opacity:0}
+ #empty{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:20;background:#000c;border:1px solid var(--line);border-radius:14px;padding:18px 26px;text-align:center;max-width:460px}
+ /* 대화 칸 */
+ #talk{position:absolute;top:56px;right:14px;bottom:14px;width:min(460px,40vw);z-index:30;display:flex;flex-direction:column;background:linear-gradient(170deg,#24190ef2,#140d07f2);border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 60px #000c;transform:translateX(calc(100% + 30px));transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+ body.talking #talk{transform:none}
+ #talk .hd{display:flex;align-items:center;gap:8px;padding:12px 14px 8px;border-bottom:1px solid var(--line2)}
+ #talk .hd b{color:var(--gold2);font-size:14.5px;flex:1}
+ #faces{display:flex;gap:10px;padding:10px 14px 4px;overflow-x:auto}
+ .face{display:flex;flex-direction:column;align-items:center;cursor:pointer;flex:0 0 auto;width:76px}
+ .face .pt{width:62px;height:62px;border-radius:50%;overflow:hidden;border:2px solid var(--line);background:#2a1d10;display:flex;align-items:center;justify-content:center;color:var(--gold)}
+ .face .pt img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+ .face .nm{font-size:11.5px;max-width:76px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dim)}
+ .face.to .pt{border-color:var(--gold2);box-shadow:0 0 0 2px var(--gold),0 0 16px #e8c27a99} .face.to .nm{color:var(--gold2);font-weight:700}
+ .face.speak .pt{animation:pulse 1.1s ease-in-out infinite}
+ @keyframes pulse{50%{box-shadow:0 0 0 3px var(--gold2),0 0 22px #f6dca4}}
+ #note{padding:2px 14px 6px;font-size:11.5px;color:var(--dim)}
+ #log{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:8px}
+ .ln{max-width:88%;padding:7px 11px;border-radius:12px;background:#2f2214;border:1px solid var(--line2);animation:pop .35s ease-out}
+ .ln b{display:block;font-size:11.5px;color:var(--gold)} .ln.me{align-self:flex-end;background:#4a3518;border-color:var(--line)} .ln.me b{color:var(--gold2);text-align:right}
+ .ln.sys{align-self:center;background:none;border:none;color:var(--dim);font-size:12px;font-style:italic;text-align:center}
+ .ln.typing span{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:var(--gold);animation:dot 1s infinite} .ln.typing span:nth-child(2){animation-delay:.15s} .ln.typing span:nth-child(3){animation-delay:.3s}
+ @keyframes dot{50%{opacity:.2;transform:translateY(-3px)}} @keyframes pop{from{opacity:0;transform:translateY(6px)}}
+ #err{color:var(--bad);font-size:12px;padding:0 14px}
+ #inp{padding:8px 14px 12px;border-top:1px solid var(--line2)}
+ #toRow{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-bottom:6px} #toRow .chip{color:var(--gold2)} #toAll{padding:0 8px;font-size:11px}
+ #inp .r{display:flex;gap:8px;align-items:flex-end} #q{flex:1;height:58px}
+ /* 결과 알림 */
+ #toast{position:absolute;left:50%;bottom:70px;transform:translate(-50%,20px);z-index:50;background:#1c140cf2;border:1px solid var(--line);border-radius:12px;padding:10px 18px;min-width:280px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s}
+ #toast.on{opacity:1;transform:translate(-50%,0)} #toast div{margin:2px 0} #toast .good{color:var(--good)} #toast .friction{color:var(--bad)} #toast .none{color:var(--dim)}
+ /* 소개 대화상자 */
+ #intro{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:#0008}
+ #intro.on{display:flex} #intro .box{background:linear-gradient(170deg,#2a1d10,#160f08);border:1px solid var(--line);border-radius:16px;padding:18px 20px;width:min(520px,92vw);box-shadow:0 18px 60px #000c}
+ #intro h3{margin:0 0 4px;color:var(--gold2);font-size:15px} #intro p{margin:4px 0 10px;color:var(--dim);font-size:12.5px}
+ #intro .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap} #intro select{flex:1;min-width:140px}
+ #introOut{margin-top:10px;font-size:13px;line-height:1.6} #introOut .res{font-size:12px;color:var(--gold)}
+</style></head>
+<body>
+<div id="view"><div id="scene"><div id="bg"></div><div id="vig"></div></div></div>
+<div id="top"><span id="ttl"></span><span id="q1" class="chip" data-i18n-skip></span><span id="qual" class="chip warn" hidden></span><span class="sp"></span>
+ <button id="introBtn" type="button"></button><button id="finBtn" type="button"></button><button id="x" type="button" aria-label="close">✕</button></div>
+<div id="hint"></div>
+<aside id="talk" aria-live="polite">
+ <div class="hd"><b id="tSpot"></b><button id="leave" type="button"></button></div>
+ <div id="faces"></div><div id="note"></div>
+ <div id="log"></div><div id="err"></div>
+ <div id="inp"><div id="toRow"><span id="toLbl"></span><span id="toWho" class="chip" data-i18n-skip></span><button id="toAll" type="button" hidden></button></div>
+  <div class="r"><textarea id="q"></textarea><button id="send" type="button"></button></div></div>
+</aside>
+<div id="toast"></div>
+<div id="intro"><div class="box"><h3 id="iTtl"></h3><p id="iTxt"></p><div class="r"><select id="iA" data-i18n-skip></select><span>↔</span><select id="iB" data-i18n-skip></select><button id="iGo" type="button"></button><button id="iNo" type="button"></button></div><div id="introOut"></div></div></div>
+<script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+(() => {
+ const $ = (id) => document.getElementById(id);
+ const ui = (ko, en) => window.SLLMI18n?.pick ? window.SLLMI18n.pick(ko, en) : ko;
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; };
+ const skip = (e) => { e.setAttribute('data-i18n-skip', ''); return e; };
+ // 자리 좌표(무대 %) = 그림 주문서의 6자리(2026-10-24 GPT 그림 적용: 바는 의자와 겹치지 않게 2.5% 왼쪽). x·y = 모임 발밑 가운데, s = 크기(원근)
+ const SPOT = { buffet: [20, 76, 1.0], window: [50, 53, .7], bar: [77.5, 75, 1.0], lounge: [33, 61, .82], piano: [66, 61, .82], balcony: [88, 49, .64] };
+ const SPOT_NM = { buffet: ['음식 탁자 곁', 'By the buffet'], window: ['큰 창가', 'By the tall windows'], bar: ['바', 'At the bar'], lounge: ['소파 쉼터', 'Lounge sofas'], piano: ['피아노 곁', 'By the piano'], balcony: ['발코니', 'On the balcony'] };
+ const RES = { good: ['즐거운 대화였습니다 — 조금 가까워진 듯합니다', 'A pleasant talk — you seem a little closer'], none: ['정중했지만 별다른 일은 없었습니다', 'Polite, but nothing much came of it'], friction: ['말이 엇갈려 어색함이 남았습니다', 'You talked past each other; some awkwardness lingers'] };
+ let S = null, IMG = { images: {}, defaults: {} }, cur = '', to = '', busy = false, lastImg = '';
+ const pic = (seed) => { const k = (S && S.playerCls) || 'human'; return (window.SLLMVariant && SLLMVariant.pick(IMG.images, ['delegate:' + k, 'class:' + k], seed, IMG.defaults[k])) || null; };
+ const season = () => (S && S.season) || null;
+ const groups = () => (season() && season().groups) || [];
+ const grp = (spot) => groups().find((g) => g.spot === spot);
+ function portrait(cls, name) { const fr = h('div', 'pt'), u = pic(name); if (u) { const im = h('img'); im.src = u; im.alt = ''; im.onerror = () => { fr.textContent = '👤'; }; fr.append(im); } else fr.textContent = '👤'; return fr; }
+ // 배경 그림: 식량 부족 해 그림 → 보통 그림 → 그라데이션
+ function setBg() {
+  const poor = season() && season().quality === 'poor', want = poor ? 'social-hall-poor-v1.jpg' : 'social-hall-v1.jpg'; if (want === lastImg) return; lastImg = want;
+  const bg = $('bg'), tryImg = (f, next) => { const im = new Image(); im.onload = () => { bg.style.backgroundImage = `url("assets/rooms/${f}")`; bg.classList.toggle('poor', poor && f === 'social-hall-v1.jpg'); }; im.onerror = next; im.src = 'assets/rooms/' + f; };
+  tryImg(want, () => { if (poor) tryImg('social-hall-v1.jpg', () => bg.classList.toggle('poor', true)); });
+ }
+ function bokeh() { const sc = $('scene'); for (let i = 0; i < 22; i++) { const b = h('div', 'bokeh'), sz = 6 + Math.random() * 18; b.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random() * 100}%;top:${25 + Math.random() * 60}%;animation-duration:${9 + Math.random() * 10}s;animation-delay:${-Math.random() * 18}s`; sc.append(b); } }
+ function statics() {
+  document.title = ui('사교회', 'Social gathering');
+  $('introBtn').textContent = ui('🤝 두 사람 소개하기', '🤝 Introduce two guests'); $('finBtn').textContent = ui('사교회 마치기', 'Close the gathering'); $('x').title = ui('닫기 (사교회는 마치기 전까지 이어집니다)', 'Close (the gathering continues until you close it)');
+  $('leave').textContent = ui('자리 뜨기', 'Step away'); $('send').textContent = ui('말하기', 'Say'); $('toLbl').textContent = ui('말 거는 상대:', 'Speaking to:'); $('toAll').textContent = ui('모두에게', 'Everyone');
+  $('q').placeholder = ui('편하게 말을 건네 보세요… (Enter 전송, Shift+Enter 줄바꿈)', 'Say something… (Enter to send, Shift+Enter for a new line)');
+  $('hint').textContent = ui('모여 있는 사람들을 눌러 대화에 끼어 보세요.', 'Click a circle of guests to join their conversation.');
+  $('iTtl').textContent = ui('두 사람 소개하기', 'Introduce two guests'); $('iTxt').textContent = ui('서로 잘 모르는 두 사람을 이어 줍니다. 어떻게 될지는 두 사람에게 달렸습니다(같은 두 사람은 행사에 한 번).', 'Bring together two people who barely know each other. How it goes is up to them (once per pair per gathering).');
+  $('iGo').textContent = ui('소개하기', 'Introduce'); $('iNo').textContent = ui('닫기', 'Close');
+ }
+ function drawTop() {
+  const s = season(); $('ttl').textContent = '🥂 ' + (s ? ui(`${s.year}년 사교회`, `${s.year} Social Gathering`) : ui('사교회', 'Social Gathering'));
+  $('q1').textContent = S && S.empire || ''; $('qual').hidden = !(s && s.quality === 'poor'); $('qual').textContent = ui('식량 부족 — 소박한 대접', 'Food short — modest hospitality');
+  const off = !s || s.rulerAttends !== true; $('introBtn').disabled = off || busy; $('finBtn').disabled = off || busy;
+ }
+ function drawHall() {
+  const sc = $('scene'); for (const e of sc.querySelectorAll('.grp,#empty')) e.remove();
+  const s = season();
+  if (!s || s.rulerAttends !== true) { const e = h('div'); e.id = 'empty'; e.textContent = s && s.stage !== 'closed' ? ui('사교회에 참석하면 연회장에 들어올 수 있습니다.', 'Attend the gathering to enter the hall.') : ui('사교회가 끝났습니다. 결과는 집무실 「사교회」에서 볼 수 있습니다.', 'The gathering is over. See the results under “Social gathering” in the office.'); sc.append(e); return; }
+  if (!groups().length) { const e = h('div'); e.id = 'empty'; e.textContent = ui('아직 아무도 오지 않았습니다.', 'Nobody has arrived yet.'); sc.append(e); return; }
+  for (const g of groups()) {
+   const [x, y, s2] = SPOT[g.spot] || [50, 60, .8], d = h('div', 'grp' + (g.spot === cur ? ' on' : '')); d.style.left = x + '%'; d.style.top = y + '%'; d.style.setProperty('--s', s2); d.style.zIndex = Math.round(y);
+   d.append(h('div', 'floor'), h('div', 'spot', ui(...(SPOT_NM[g.spot] || ['모임', 'Circle']))));
+   const ppl = h('div', 'ppl'); for (const m of g.members) { const c = h('div', 'gst'); c.append(portrait(m.cls, m.name), skip(h('div', 'nm', m.name + (m.retired ? ' · ' + ui('은퇴', 'retired') : '')))); ppl.append(c); } d.append(ppl);
+   if (g.judged) d.append(h('div', 'mark', '💬 ' + ui('이야기함', 'Talked')));
+   d.title = g.members.map((m) => m.name).join(', '); d.onclick = () => enter(g.spot); sc.append(d);
+  }
+ }
+ function drawTalk() {
+  const g = cur && grp(cur); document.body.classList.toggle('talking', !!g);
+  const sc = $('scene');
+  if (g) { const [x, y] = SPOT[g.spot] || [50, 60]; const k = 1.45; sc.style.transformOrigin = `${x}% ${y - 8}%`; sc.style.transform = `translate(-50%,-50%) translate(${(50 - x) * 0.28}vw,0) scale(${k})`; }
+  else { sc.style.transform = 'translate(-50%,-50%)'; return; }
+  $('tSpot').textContent = ui(...(SPOT_NM[g.spot] || ['모임', 'Circle']));
+  if (to && !g.members.some((m) => m.pid === to)) to = '';
+  const f = $('faces'); f.replaceChildren();
+  const speaking = new Set(); if (busy) for (const m of g.members) if (!to || m.pid === to) speaking.add(m.pid);
+  for (const m of g.members) { const c = h('div', 'face' + (m.pid === to ? ' to' : '') + (speaking.has(m.pid) ? ' speak' : '')); c.append(portrait(m.cls, m.name), skip(h('div', 'nm', m.name))); c.title = ui('이 사람에게 말하기', 'Speak to this person'); c.onclick = () => { to = to === m.pid ? '' : m.pid; drawTalk(); $('q').focus(); }; f.append(c); }
+  $('note').textContent = g.judged ? ui('이 모임과는 이미 이야기를 나눴습니다. 더 이야기해도 결과는 바뀌지 않습니다.', 'You already talked with this circle. Talking more will not change the outcome.') : ui('얼굴을 누르면 그 사람에게, 아니면 모두에게 말합니다. 자리를 뜰 때 대화가 어땠는지가 정해집니다.', 'Click a face to speak to that person, or speak to everyone. How it went is settled when you step away.');
+  const lg = $('log'), atEnd = lg.scrollTop + lg.clientHeight >= lg.scrollHeight - 10; lg.replaceChildren();
+  if (!g.lines.length) lg.append(h('div', 'ln sys', ui('대화가 잠시 멈추고, 모두 당신을 돌아보며 미소 짓습니다.', 'The chatter pauses; everyone turns to you with a smile.')));
+  for (const l of g.lines) { const d = h('div', 'ln' + (l.ruler ? ' me' : '')); d.append(skip(h('b', '', l.ruler ? (l.name || ui('통치자', 'Ruler')) : l.name)), skip(h('div', '', l.text))); lg.append(d); }
+  if (busy) { const d = h('div', 'ln typing'); d.append(h('span'), h('span'), h('span')); lg.append(d); }
+  if (atEnd || busy) requestAnimationFrame(() => { lg.scrollTop = lg.scrollHeight; });
+  const m = to && g.members.find((x) => x.pid === to); $('toWho').textContent = m ? m.name : ui('모두', 'Everyone'); $('toAll').hidden = !m;
+  $('send').disabled = busy || !!(S && S.busy); $('leave').disabled = busy;
+ }
+ function render(st) { if (st) S = st; setBg(); drawTop(); drawHall(); drawTalk(); }
+ function toast(lines) { const t = $('toast'); t.replaceChildren(); for (const o of lines) { const d = h('div', o.result); d.append(skip(h('b', '', o.name)), document.createTextNode(' — ' + ui(...RES[o.result]))); t.append(d); } if (!lines.length) return; t.classList.add('on'); clearTimeout(toast.tm); toast.tm = setTimeout(() => t.classList.remove('on'), 5200); }
+ function enter(spot) { if (busy) return; cur = spot; to = ''; $('err').textContent = ''; render(); setTimeout(() => $('q').focus(), 400); }
+ async function leave() {
+  if (busy || !cur) return; const spot = cur; busy = true; drawTalk(); drawTop();
+  let r = null; try { r = await window.sllm.socialLeave(spot); } catch (e) { r = { ok: false, error: String(e) }; }
+  busy = false; cur = ''; to = ''; if (r && r.state) S = r.state; render(); if (r && r.ok) toast(r.outcome || []); else if (r) $('err').textContent = r.error || '';
+ }
+ async function send() {
+  const text = $('q').value.trim(); if (!text || busy || !cur) return; $('err').textContent = '';
+  const g = grp(cur); if (g) g.lines = [...g.lines, { ruler: true, name: (S && S.ruler) || ui('통치자', 'Ruler'), text }]; // 내 말은 바로 보인다
+  $('q').value = ''; busy = true; drawTalk(); drawTop();
+  let r = null; try { r = await window.sllm.socialTalk(cur, text, to); } catch (e) { r = { ok: false, error: String(e) }; }
+  busy = false; if (r && r.state) S = r.state; if (r && !r.ok) { $('err').textContent = r.error || ''; $('q').value = text; } render(); $('q').focus();
+ }
+ $('send').onclick = send; $('leave').onclick = leave; $('toAll').onclick = () => { to = ''; drawTalk(); };
+ $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); void send(); } });
+ // 소개
+ function fillIntro() { const all = groups().flatMap((g) => g.members); for (const sel of [$('iA'), $('iB')]) { const v = sel.value; sel.replaceChildren(new Option(ui('— 고르기 —', '— choose —'), '')); for (const m of all) sel.append(new Option(m.name, m.pid, false, m.pid === v)); } }
+ $('introBtn').onclick = () => { fillIntro(); $('introOut').replaceChildren(); $('intro').classList.add('on'); };
+ $('iNo').onclick = () => $('intro').classList.remove('on');
+ $('iGo').onclick = async () => {
+  const a = $('iA').value, b = $('iB').value, out = $('introOut'); out.replaceChildren();
+  if (!a || !b || a === b) { out.textContent = ui('서로 다른 두 사람을 골라 주세요.', 'Pick two different people.'); return; }
+  $('iGo').disabled = true; out.textContent = ui('두 사람을 이어 주는 중…', 'Introducing them…');
+  let r = null; try { r = await window.sllm.socialIntro(a, b); } catch (e) { r = { ok: false, error: String(e) }; }
+  $('iGo').disabled = false; out.replaceChildren(); if (r && r.state) S = r.state;
+  if (!r || !r.ok) { out.textContent = (r && r.error) || ui('소개하지 못했습니다.', 'Could not introduce them.'); return; }
+  out.append(skip(h('div', '', r.text || '')), h('div', 'res', { good: ui('→ 가까워진 듯합니다', '→ They seem to get along'), none: ui('→ 별일 없었습니다', '→ Nothing much came of it'), friction: ui('→ 어색한 분위기가 남았습니다', '→ Some awkwardness lingered') }[r.result] || ''));
+ };
+ $('finBtn').onclick = async () => {
+  if (busy) return; if (!window.confirm(ui('사교회를 마칠까요? 이야기하던 모임은 지금 결과가 정해지고, 나머지 손님들의 교류도 마무리됩니다.', 'Close the gathering? Any circle you are talking with is settled now, and the other guests wrap up their own mingling.'))) return;
+  busy = true; drawTop(); try { await window.sllm.socialFinish(); } catch (e) { $('err').textContent = String(e); } busy = false;
+ };
+ $('x').onclick = () => window.sllm.socialHallClose();
+ document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('intro').classList.contains('on')) $('intro').classList.remove('on'); else if (cur) void leave(); else window.sllm.socialHallClose(); });
+ statics(); bokeh();
+ document.addEventListener('sllm-language', () => { statics(); render(); });
+ if (window.sllm.onSocialUpdate) window.sllm.onSocialUpdate((v) => { if (busy) { S = v; return; } render(v); });
+ window.sllm.getImageState().then((st) => { IMG = st || IMG; }, () => {}).then(() => window.sllm.socialState()).then((st) => render(st));
+})();
+</script>
+</body></html>

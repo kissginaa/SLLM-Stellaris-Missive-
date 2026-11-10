@@ -1,6 +1,8 @@
 (() => {
   const catalog = window.SLLMCatalog || {};
   let lang = /^ko(?:-|$)/i.test(navigator.language) ? 'ko' : 'en'; // 기본 언어(ko·en). 언어 팩이면 'en'(빠진 문구는 영어)
+  let dialect = null; // 단일 의식 말투(알파 11): [[RegExp, 글]] — 번역 뒤에 한 번 더 바꾼다(기계·군체 제국의 창). 같은 말에 두 번 들어가도 같은 결과가 나오게 짠다
+  const dia = (s) => { if (!dialect) return s; let t = String(s); for (const [re, to] of dialect) t = t.replace(re, to); return t; };
   let code = lang, pack = null; // code = 실제 화면 언어(언어 팩 코드 포함), pack = {strings, patterns:[[RegExp, 글]]}(2026-10-18)
   const originals = new WeakMap(), attributes = new WeakMap();
   const protectedContent = 'script,style,textarea,input,[data-i18n-skip],#log,#gvLog,#hist,.mail-body,#chronBox,#gossipBox,#sheet,#subtitle,#rx,.tm-name,#nm,#sub,#curWho,#mediaPaperName,#mediaRadioName';
@@ -10,7 +12,8 @@
     for (const [pattern, replacement] of pack.patterns) if (pattern.test(key)) return key.replace(pattern, replacement);
     return null;
   }
-  function text(value) {
+  function text(value) { return dia(textBase(value)); }
+  function textBase(value) {
     if (lang !== 'en') return value;
     const s = String(value), key = s.trim().replace(/\s+/g,' ');
     if (pack) { const p = packText(s, key); if (p !== null) return p; }
@@ -52,8 +55,10 @@
   function refresh(){if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;localize(document.body);localizeTitle();document.documentElement.lang=code;});}
   // language() 는 예전처럼 'ko'|'en'(언어 팩이면 'en'). code() 가 실제 언어. pick(ko,en) 은 언어 팩 표까지 본다.
   const norm=(x)=>String(x).trim().replace(/\s+/g,' ');
-  const pick=(ko,en)=>{if(lang!=='en')return ko;if(pack){const k=norm(ko),p=pack.strings[k]??pack.strings[norm(en)];if(p)return p;for(const [re,to] of pack.patterns)if(re.test(k))return k.replace(re,to);}return en;};
-  window.SLLMI18n={t:text,language:()=>lang,code:()=>code,pick,refresh};
+  const pick=(ko,en)=>dia(pickBase(ko,en));
+  const pickBase=(ko,en)=>{if(lang!=='en')return ko;if(pack){const k=norm(ko),p=pack.strings[k]??pack.strings[norm(en)];if(p)return p;for(const [re,to] of pack.patterns)if(re.test(k))return k.replace(re,to);}return en;};
+  const setDialect=(rules)=>{const next=Array.isArray(rules)&&rules.length?rules:null;if(JSON.stringify(next&&next.map(([r,t])=>[String(r),t]))===JSON.stringify(dialect&&dialect.map(([r,t])=>[String(r),t])))return;dialect=next;refresh();document.dispatchEvent(new Event('sllm-language'));}; // 바뀔 때만 다시 그린다
+  window.SLLMI18n={t:text,language:()=>lang,code:()=>code,pick,refresh,setDialect};
   function compile(p){
     if(!p||!p.strings)return null;
     const patterns=[];for(const [a,b] of (p.patterns||[])){try{patterns.push([new RegExp(a),b]);}catch(e){/* 메인에서 이미 검사함 */}}

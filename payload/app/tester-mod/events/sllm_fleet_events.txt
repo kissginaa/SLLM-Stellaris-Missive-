@@ -15,7 +15,7 @@ country_event = {
 			change_variable = { which = sllm_bt_n value = 1 }
 			set_variable = { which = sllm_bt_kind value = 1 }
 			if = {
-				limit = { from = { OR = { is_country_type = default is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
+				limit = { from = { OR = { sllm_is_empire = yes is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
 				set_variable = { which = sllm_bt_kind value = 0 }
 			}
 			log = "SLLM:BATTLE/;/res=won/;/n=\\[This.sllm_bt_n]/;/date=\\[GetDate]/;/kind=\\[This.sllm_bt_kind]/;/fleet=\\[FromFrom.GetName]/;/enemy=\\[From.GetName]/;/efleet=\\[FromFromFrom.GetName]"
@@ -46,7 +46,7 @@ country_event = {
 			change_variable = { which = sllm_bt_n value = 1 }
 			set_variable = { which = sllm_bt_kind value = 1 }
 			if = {
-				limit = { from = { OR = { is_country_type = default is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
+				limit = { from = { OR = { sllm_is_empire = yes is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
 				set_variable = { which = sllm_bt_kind value = 0 }
 			}
 			log = "SLLM:BATTLE/;/res=lost/;/n=\\[This.sllm_bt_n]/;/date=\\[GetDate]/;/kind=\\[This.sllm_bt_kind]/;/fleet=\\[FromFrom.GetName]/;/enemy=\\[From.GetName]/;/efleet=\\[FromFromFrom.GetName]"
@@ -84,7 +84,7 @@ planet_event = {
 			set_variable = { which = sllm_bt_n value = fromfrom.sllm_bt_n }
 			set_variable = { which = sllm_bt_kind value = 1 }
 			if = {
-				limit = { from = { OR = { is_country_type = default is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
+				limit = { from = { OR = { sllm_is_empire = yes is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
 				set_variable = { which = sllm_bt_kind value = 0 }
 			}
 			log = "SLLM:BATTLE/;/type=ground/;/res=won/;/n=\\[This.sllm_bt_n]/;/date=\\[GetDate]/;/kind=\\[This.sllm_bt_kind]/;/fleet=/;/enemy=\\[From.GetName]/;/efleet="
@@ -116,7 +116,7 @@ country_event = {
 			change_variable = { which = sllm_bt_n value = 1 }
 			set_variable = { which = sllm_bt_kind value = 1 }
 			if = {
-				limit = { fromfrom = { OR = { is_country_type = default is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
+				limit = { fromfrom = { OR = { sllm_is_empire = yes is_country_type = fallen_empire is_country_type = awakened_fallen_empire } } }
 				set_variable = { which = sllm_bt_kind value = 0 }
 			}
 			log = "SLLM:BATTLE/;/type=ground/;/res=lost/;/n=\\[This.sllm_bt_n]/;/date=\\[GetDate]/;/kind=\\[This.sllm_bt_kind]/;/fleet=\\[From.GetName]/;/enemy=\\[FromFrom.GetName]/;/efleet="
@@ -140,6 +140,7 @@ country_event = {
 	id = sllm_fleet.10
 	hide_window = yes
 	is_triggered_only = yes
+	trigger = { is_ai = no } # 렉 줄이기(2026-10-24): AI 나라는 이벤트를 아예 건너뛴다(안쪽 is_ai = no 와 같은 뜻)
 	immediate = {
 		if = {
 			limit = { is_ai = no }

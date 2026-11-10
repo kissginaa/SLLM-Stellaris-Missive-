@@ -1,0 +1,16 @@
+# SLLM 합동 작전(2026-11-04). 받는 쪽이 플레이어를 보는 호감.
+# 우리가 빌려 온 동맹 함대를 잃음 → 그 나라 -30(서서히 사라짐)
+sllm_fo_fleet_lost = {
+	opinion = { base = -30 }
+	decay = { base = 1 }
+}
+# 빌려 온 함대를 하나도 잃지 않고 돌려줌 → +15
+sllm_fo_fleet_returned = {
+	opinion = { base = 15 }
+	decay = { base = 1 }
+}
+# 우리가 원정군을 보내 줌 → 받은 나라 +25
+sllm_fo_fleet_aid = {
+	opinion = { base = 25 }
+	decay = { base = 1 }
+}

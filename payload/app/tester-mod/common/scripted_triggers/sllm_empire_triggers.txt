@@ -1,0 +1,9 @@
+# 「일반 제국」 판정(2026-11-06). 예전에는 곳곳에서 is_country_type = default 로 걸렀다.
+# 시나리오 모드가 열강을 특수 나라 종류(바닐라 외교창을 막은 종류)로 바꿔도 SLLM 기능(서신·거래·소식·감정 등)이 그대로 돌도록,
+# 그 나라에 sllm_special_empire 깃발을 달면 일반 제국으로 친다. 본편은 시나리오 이름을 모른다.
+sllm_is_empire = {
+	OR = {
+		is_country_type = default
+		has_country_flag = sllm_special_empire
+	}
+}

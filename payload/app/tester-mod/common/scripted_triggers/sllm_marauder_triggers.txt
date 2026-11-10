@@ -1,0 +1,14 @@
+# SLLM 약탈자 대응(2026-10-26). 함대 범위: 바닐라 약탈자 용병 함대 9종(marauder.34 고용 선택지의 함대 플래그).
+sllm_mrd_is_merc_fleet = {
+	OR = {
+		has_fleet_flag = armada_of_the_voidborn
+		has_fleet_flag = star_rider_flotilla
+		has_fleet_flag = first_storm_wing
+		has_fleet_flag = dwamak_bashers
+		has_fleet_flag = unhinged_screamer_flotilla
+		has_fleet_flag = frenzied_volunteer_squadron
+		has_fleet_flag = her_chosen_champions
+		has_fleet_flag = order_of_eternal_night
+		has_fleet_flag = twilight_congregation
+	}
+}

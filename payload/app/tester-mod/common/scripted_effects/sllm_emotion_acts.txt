@@ -1,0 +1,114 @@
+# SLLM 감정 기억 → 실제 게임 행동(알파 11, 2026-10-25, 사용자 결정 「다 넣어」). 群星AI mod 의 AI 행동을 우리 방식으로.
+# 앱(src/emotion-acts.ts)이 3달마다 한 번, 감정 수치로 「할 수 있는 행동」만 골라 아래 효과를 부른다. 게임 쪽은 실제 상황(자원·전쟁·전력·쿨다운)을 다시 확인한다.
+# 범위: This = AI 제국, event_target:sllm_player = 플레이어(앱 명령이 먼저 저장). 결과는 SLLM:EMOACT 줄로 앱에 알린다.
+
+# 강대국 경계·오만(전력 차이). 매 분기 지우고 지금 전력으로 다시 붙인다(남아 있지 않게).
+sllm_emo_clear_stance = {
+	remove_opinion_modifier = { who = event_target:sllm_player modifier = sllm_emo_wary }
+	remove_opinion_modifier = { who = event_target:sllm_player modifier = sllm_emo_arrogant }
+}
+sllm_emo_wary = { add_opinion_modifier = { who = event_target:sllm_player modifier = sllm_emo_wary } }
+sllm_emo_arrogant = { add_opinion_modifier = { who = event_target:sllm_player modifier = sllm_emo_arrogant } }
+
+# 원한·두려움 → 그 AI 한 나라만 플레이어를 경계(호감 하락, 쌓이되 상한 있음). AMT 3 = 원한, 2 = 두려움.
+# 2026-11-09 사용자 결정: add_threat 는 쓰지 않는다. 바닐라 add_threat 은 「온 은하가 경계하는 침략자」 위협이라
+#   (거리에 따라 모든 나라가 느끼고 한 달에 0.25 씩만 줄어듦) 원한 품은 AI 하나가 분기마다 행성 파괴급 위협(3)을 은하 전체에 쌓았다.
+sllm_emo_threat = {
+	add_opinion_modifier = { who = event_target:sllm_player modifier = sllm_emo_threat_$AMT$ }
+}
+# 포위 심리: 다음 분기까지 이어지게 넉넉히(200일) 다시 붙인다
+sllm_emo_coalition = {
+	remove_modifier = sllm_emo_coalition
+	add_modifier = { modifier = sllm_emo_coalition days = 200 }
+}
+sllm_emo_coalition_end = {
+	remove_modifier = sllm_emo_coalition
+}
+
+# 감사 → 원조 협정: 매달 에너지·광물 25씩 5년(=각 1500). 단위 수정자 × 배수(DTP 기법, sllm_income_modifiers.txt).
+# 받는 쪽(플레이어)은 협정이 한 번에 하나만(같은 수정자를 덮어쓰지 않게). 주는 AI 는 자기 창고가 넉넉할 때만.
+sllm_emo_aid = {
+	if = {
+		limit = {
+			NOT = { is_at_war_with = event_target:sllm_player }
+			NOT = { has_country_flag = sllm_emo_aid_cd }
+			event_target:sllm_player = { NOT = { has_country_flag = sllm_aid_active } }
+			has_resource = { type = energy amount >= 1500 }
+			has_resource = { type = minerals amount >= 1500 }
+		}
+		set_variable = { which = sllm_mod_mult value = 25 }
+		remove_modifier = sllm_aid_paid
+		add_modifier = { modifier = sllm_aid_paid days = 1800 multiplier = sllm_mod_mult }
+		clear_variable = sllm_mod_mult
+		event_target:sllm_player = {
+			set_variable = { which = sllm_mod_mult value = 25 }
+			remove_modifier = sllm_aid_recv
+			add_modifier = { modifier = sllm_aid_recv days = 1800 multiplier = sllm_mod_mult }
+			clear_variable = sllm_mod_mult
+			set_timed_country_flag = { flag = sllm_aid_active days = 1800 }
+		}
+		set_timed_country_flag = { flag = sllm_emo_aid_cd days = 1800 }
+		log = "SLLM:EMOACT/;/idx=\\[This.sllm_idx]/;/act=aid"
+	}
+}
+
+# 두려움·감사 + 다른 나라와 전쟁 중 → 도움 요청(앱이 편지·알림으로)
+sllm_emo_help = {
+	if = {
+		limit = {
+			is_at_war = yes
+			NOT = { is_at_war_with = event_target:sllm_player }
+			is_subject = no
+			NOT = { has_country_flag = sllm_emo_help_cd }
+		}
+		set_timed_country_flag = { flag = sllm_emo_help_cd days = 1800 }
+		log = "SLLM:EMOACT/;/idx=\\[This.sllm_idx]/;/act=help"
+	}
+}
+
+# 선전포고(설정에서 켰을 때만 앱이 부른다). KIND: 1 복수(원한) 2 틈탐(야망, 플레이어가 다른 전쟁 중). 10년에 한 번.
+sllm_emo_war = {
+	if = {
+		limit = {
+			NOT = { is_at_war = yes }
+			is_subject = no
+			sllm_is_empire = yes
+			NOT = { has_country_flag = sllm_emo_war_cd }
+			NOT = { has_ethic = ethic_pacifist }
+			NOT = { has_ethic = ethic_fanatic_pacifist }
+			OR = {
+				relative_power = { who = event_target:sllm_player category = fleet value = superior }
+				relative_power = { who = event_target:sllm_player category = fleet value = overwhelming }
+			}
+			OR = {
+				check_variable = { which = sllm_emo_kind value = 1 }
+				event_target:sllm_player = { is_at_war = yes }
+			}
+		}
+		set_timed_country_flag = { flag = sllm_emo_war_cd days = 3600 }
+		if = {
+			limit = { check_variable = { which = sllm_emo_kind value = 1 } }
+			add_casus_belli = { type = cb_sllm_revenge who = event_target:sllm_player days = 5 }
+			declare_war = { target = event_target:sllm_player attacker_war_goal = wg_sllm_revenge }
+		}
+		else = {
+			add_casus_belli = { type = cb_sllm_humiliation who = event_target:sllm_player days = 5 }
+			declare_war = { target = event_target:sllm_player attacker_war_goal = wg_sllm_humiliation }
+		}
+		# 게임이 전쟁 목표를 거절했을 때(sllm_probe_diplo 와 같은 대비)
+		if = {
+			limit = { NOT = { is_at_war_with = event_target:sllm_player } }
+			declare_war = { target = event_target:sllm_player }
+		}
+		set_variable = { which = sllm_emo_w value = 0 }
+		if = { limit = { is_at_war_with = event_target:sllm_player } set_variable = { which = sllm_emo_w value = 1 } }
+		log = "SLLM:EMOACT/;/idx=\\[This.sllm_idx]/;/act=war/;/kind=\\[This.sllm_emo_kind]/;/war=\\[This.sllm_emo_w]"
+		clear_variable = sllm_emo_w
+	}
+	clear_variable = sllm_emo_kind
+}
+
+# 감정 지도(sllm_emotion_map_mode.txt) 깃발: 매 분기 지우고 앱이 가장 센 감정 하나만 다시 붙인다.
+sllm_emo_flags_clear = {
+	remove_country_flag = sllm_emf_grudge_1 remove_country_flag = sllm_emf_grudge_2 remove_country_flag = sllm_emf_gratitude_1 remove_country_flag = sllm_emf_gratitude_2 remove_country_flag = sllm_emf_fear_1 remove_country_flag = sllm_emf_fear_2 remove_country_flag = sllm_emf_ambition_1 remove_country_flag = sllm_emf_ambition_2
+}

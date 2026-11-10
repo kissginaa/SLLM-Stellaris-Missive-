@@ -1,0 +1,95 @@
+# SLLM 종속국 통치권 신호(2026-11-09 사용자: 「매달 확인이 필요 없는 것은 바뀔 때만」 · 회랑 방식).
+# 예전: 앱이 매달 콘솔로 「대리전이 아직 이어지나」(VRPXW)·「징발 함대가 살아 있나·돌아왔나」(VRLVC)를 물었다(종속국 쪽·종주국 쪽 둘 다).
+# 지금: 게임 사건 때만 모드가 같은 줄을 req=0 으로 남긴다. 앱은 해마다 1월에 한 번만 예전처럼 물어 놓친 것을 바로잡는다.
+#   sllm_vrs.1 — 전쟁이 끝남(on_war_ended) → 하루 뒤 sllm_vrs.2 가 대리전 표식(sllm_vr_pxt)이 붙은 나라를 본다.
+#   sllm_vrs.3 — 징발 표식(sllm_vr_levied)이 붙은 함대가 격침됨(on_fleet_destroyed_victim) · sllm_vrs.5 — 그 함대의 임대가 끝남(on_fleet_contract_expired)
+#                → 하루 뒤 sllm_vrs.4 가 징발 중인 나라(sllm_vr_lvon)마다 남은 수를 알린다.
+# 줄: VRPXW(req=0, tid = 종속국 번호 · 0 이면 우리가 종주국 명령으로 치른 대리전, war=0) · VRLVC(req=0, tid = 종속국 번호 · 0 이면 우리 함대가 징발됨, left, leased)
+namespace = sllm_vrs
+
+country_event = {
+	id = sllm_vrs.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { any_country = { has_country_flag = sllm_vr_pxt } }
+	immediate = {
+		every_playable_country = { limit = { is_ai = no } country_event = { id = sllm_vrs.2 days = 1 } }
+	}
+}
+# 이 범위 = 플레이어(Root)
+country_event = {
+	id = sllm_vrs.2
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no }
+	immediate = {
+		every_country = {
+			limit = { has_country_flag = sllm_vr_pxt is_variable_set = sllm_vr_pxv }
+			set_variable = { which = sllm_vr_pw value = 0 }
+			if = {
+				limit = { check_variable = { which = sllm_vr_pxv value = 0 } }
+				if = { limit = { is_at_war_with = root } set_variable = { which = sllm_vr_pw value = 1 } }
+			}
+			else = {
+				random_country = {
+					limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = prev.sllm_vr_pxv } }
+					if = { limit = { is_at_war_with = prev } prev = { set_variable = { which = sllm_vr_pw value = 1 } } }
+				}
+			}
+			if = {
+				limit = { check_variable = { which = sllm_vr_pw value = 0 } }
+				log = "SLLM:VRPXW/;/req=0/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_vr_pxv]/;/war=0"
+				remove_country_flag = sllm_vr_pxt
+				clear_variable = sllm_vr_pxv
+			}
+			clear_variable = sllm_vr_pw
+		}
+	}
+}
+# 징발 함대 격침(This = 잃은 나라, FromFrom = 격침된 함대)
+country_event = {
+	id = sllm_vrs.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = fromfrom fromfrom = { has_fleet_flag = sllm_vr_levied } }
+	immediate = {
+		every_playable_country = { limit = { is_ai = no } country_event = { id = sllm_vrs.4 days = 1 } }
+	}
+}
+# 이 범위 = 플레이어(Root): 징발 중인 나라마다 left(표식 붙은 함대 중 살아 있는 수)·leased(그중 아직 빌려준 상태)
+country_event = {
+	id = sllm_vrs.4
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no }
+	immediate = {
+		every_country = {
+			limit = { has_country_flag = sllm_vr_lvon }
+			set_variable = { which = sllm_vr_ll value = 0 }
+			set_variable = { which = sllm_vr_lsd value = 0 }
+			every_owned_fleet = {
+				limit = { has_fleet_flag = sllm_vr_levied }
+				prev = { change_variable = { which = sllm_vr_ll value = 1 } }
+				if = { limit = { is_leased = yes } prev = { change_variable = { which = sllm_vr_lsd value = 1 } } }
+			}
+			set_variable = { which = sllm_vr_lt value = 0 }
+			if = { limit = { is_variable_set = sllm_idx NOT = { is_same_value = root } } set_variable = { which = sllm_vr_lt value = sllm_idx } }
+			log = "SLLM:VRLVC/;/req=0/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_vr_lt]/;/left=\\[This.sllm_vr_ll]/;/leased=\\[This.sllm_vr_lsd]"
+			if = {
+				limit = { NOT = { any_owned_fleet = { has_fleet_flag = sllm_vr_levied is_leased = yes } } }
+				every_owned_fleet = { limit = { has_fleet_flag = sllm_vr_levied } remove_fleet_flag = sllm_vr_levied }
+				remove_country_flag = sllm_vr_lvon
+			}
+		}
+	}
+}
+# 징발 함대 임대 끝(This = 함대)
+fleet_event = {
+	id = sllm_vrs.5
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { has_fleet_flag = sllm_vr_levied }
+	immediate = {
+		every_playable_country = { limit = { is_ai = no } country_event = { id = sllm_vrs.4 days = 1 } }
+	}
+}

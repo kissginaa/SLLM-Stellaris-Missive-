@@ -1,0 +1,267 @@
+# SLLM 대립 긴장도(시나리오 전용 기능, 2026-11-05 사용자) — 두 거대 세력 A↔B 사이 긴장 0~100 하나.
+# 평소 게임에서는 아무 일도 안 한다. 시나리오 모드가 첫날 sllm_tn_begin 을 불러야 켜진다(전역 깃발 sllm_tn_on).
+#   켜기:  sllm_tn_begin = { A = event_target:<가> B = event_target:<나> START = 60 FLOOR = 20 }   (FLOOR: 저절로는 이 밑으로 안 내려감)
+#   끄기:  sllm_tn_end = yes
+#   더하기(시나리오 이벤트·앱): sllm_tn_shift = { N = 5 }   (N 은 음수 가능, 어느 범위에서 불러도 됨)
+# 값은 A 나라 변수 sllm_tn. 단계 sllm_tn_st: 0 평온(<25) · 1 냉랭(<50) · 2 위기(<75) · 3 동원(<90) · 4 일촉즉발(<100) · 5 개전 명분(100)
+# 매달(events/sllm_tension_events.txt sllm_tn.1): 저절로 −1 · 상대 국경(안·이웃 성계)에 모인 군함 함대 1개 이상 +1, 3개 이상 +2(양쪽 따로) · 10% 확률 국경 마찰 +3
+#   둘이 전쟁 중이면 100 고정, 전쟁이 끝나면 70 으로.
+# 플레이어(사람)마다 게임 「상황」 막대(sllm_tension)를 띄워 같은 값을 보여 준다(1~99 로 잘라 막대가 끝나지 않게).
+# 로그 자리 TENSION(앱 src/features/tension-app.ts): TNN(이름 줄) → TN(매달) · TNWAR · TNPEACE · TNST(단계 바뀜) · TNADD(앱 요청 회신)
+
+sllm_tn_begin = {
+	set_global_flag = sllm_tn_on
+	$A$ = {
+		set_country_flag = sllm_tn_side_a
+		set_variable = { which = sllm_tn value = $START$ }
+		set_variable = { which = sllm_tn_floor value = $FLOOR$ }
+		set_variable = { which = sllm_tn_st value = -1 }
+		set_variable = { which = sllm_tn_d value = 0 }
+	}
+	$B$ = { set_country_flag = sllm_tn_side_b }
+	sllm_tn_find = yes
+	event_target:sllm_tn_a = { sllm_tn_refresh = yes }
+}
+sllm_tn_end = {
+	remove_global_flag = sllm_tn_on
+	every_playable_country = {
+		every_situation = { limit = { is_situation_type = sllm_tension } destroy_situation = this }
+	}
+	every_country = {
+		limit = { OR = { has_country_flag = sllm_tn_side_a has_country_flag = sllm_tn_side_b } }
+		remove_country_flag = sllm_tn_cb_open
+		remove_modifier = sllm_tn_mobilized
+		remove_modifier = sllm_tn_brink
+	}
+}
+
+# 두 편을 전역 이름표로(어느 범위에서 불러도 됨)
+sllm_tn_find = {
+	random_country = { limit = { has_country_flag = sllm_tn_side_a } save_global_event_target_as = sllm_tn_a }
+	random_country = { limit = { has_country_flag = sllm_tn_side_b } save_global_event_target_as = sllm_tn_b }
+}
+
+# 값 자르기(This = A): 바닥 ~ 100
+sllm_tn_clamp = {
+	set_variable = { which = sllm_tn_t value = sllm_tn }
+	subtract_variable = { which = sllm_tn_t value = sllm_tn_floor }
+	if = { limit = { check_variable = { which = sllm_tn_t value < 0 } } set_variable = { which = sllm_tn value = sllm_tn_floor } }
+	if = { limit = { check_variable = { which = sllm_tn value > 100 } } set_variable = { which = sllm_tn value = 100 } }
+	if = { limit = { check_variable = { which = sllm_tn value < 0 } } set_variable = { which = sllm_tn value = 0 } }
+}
+
+# 매달(This = A)
+sllm_tn_month = {
+	set_variable = { which = sllm_tn_d value = 0 }
+	set_variable = { which = sllm_tn_fa value = 0 }
+	set_variable = { which = sllm_tn_fb value = 0 }
+	set_variable = { which = sllm_tn_inc value = 0 }
+	if = {
+		limit = { is_at_war_with = event_target:sllm_tn_b }
+		set_variable = { which = sllm_tn value = 100 }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_tn_war } }
+			set_country_flag = sllm_tn_war
+			log = "SLLM:TNWAR/;/date=\\[GetDate]/;/a=\\[This.sllm_tn_ai]/;/b=\\[This.sllm_tn_bi]"
+		}
+	}
+	else_if = {
+		limit = { has_country_flag = sllm_tn_war }
+		remove_country_flag = sllm_tn_war
+		set_variable = { which = sllm_tn value = 70 }
+		log = "SLLM:TNPEACE/;/date=\\[GetDate]/;/a=\\[This.sllm_tn_ai]/;/b=\\[This.sllm_tn_bi]"
+	}
+	else = {
+		set_variable = { which = sllm_tn_d value = -1 }
+		every_owned_fleet = {
+			limit = { sllm_tn_fleet_near = { WHO = event_target:sllm_tn_b } }
+			event_target:sllm_tn_a = { change_variable = { which = sllm_tn_fa value = 1 } }
+		}
+		event_target:sllm_tn_b = {
+			every_owned_fleet = {
+				limit = { sllm_tn_fleet_near = { WHO = event_target:sllm_tn_a } }
+				event_target:sllm_tn_a = { change_variable = { which = sllm_tn_fb value = 1 } }
+			}
+		}
+		if = { limit = { check_variable = { which = sllm_tn_fa value >= 3 } } change_variable = { which = sllm_tn_d value = 2 } }
+		else_if = { limit = { check_variable = { which = sllm_tn_fa value >= 1 } } change_variable = { which = sllm_tn_d value = 1 } }
+		if = { limit = { check_variable = { which = sllm_tn_fb value >= 3 } } change_variable = { which = sllm_tn_d value = 2 } }
+		else_if = { limit = { check_variable = { which = sllm_tn_fb value >= 1 } } change_variable = { which = sllm_tn_d value = 1 } }
+		random = {
+			chance = 10
+			change_variable = { which = sllm_tn_d value = 3 }
+			set_variable = { which = sllm_tn_inc value = 1 }
+		}
+		change_variable = { which = sllm_tn value = sllm_tn_d }
+	}
+	sllm_tn_clamp = yes
+	sllm_tn_refresh = yes
+	log = "SLLM:TN/;/date=\\[GetDate]/;/v=\\[This.sllm_tn]/;/d=\\[This.sllm_tn_d]/;/st=\\[This.sllm_tn_st]/;/fa=\\[This.sllm_tn_fa]/;/fb=\\[This.sllm_tn_fb]/;/inc=\\[This.sllm_tn_inc]/;/a=\\[This.sllm_tn_ai]/;/b=\\[This.sllm_tn_bi]"
+}
+
+# 단계·막대 다시 맞추기(This = A). 단계가 바뀌면 두 나라 효과를 갈고, 사람 플레이어에게 알린다.
+sllm_tn_refresh = {
+	# 앱이 나라를 알아보게: 통신 번호(sllm_idx)를 A 에 적고, 이름은 그 범위 안에서 찍는다
+	set_variable = { which = sllm_tn_ai value = 0 }
+	set_variable = { which = sllm_tn_bi value = 0 }
+	if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_tn_ai value = sllm_idx } }
+	if = { limit = { event_target:sllm_tn_b = { is_variable_set = sllm_idx } } set_variable = { which = sllm_tn_bi value = event_target:sllm_tn_b.sllm_idx } }
+	log = "SLLM:TNN/;/date=\\[GetDate]/;/side=a/;/idx=\\[This.sllm_tn_ai]/;/name=\\[This.GetName]"
+	event_target:sllm_tn_b = { log = "SLLM:TNN/;/date=\\[GetDate]/;/side=b/;/idx=\\[Prev.sllm_tn_bi]/;/name=\\[This.GetName]" }
+
+	set_variable = { which = sllm_tn_was value = sllm_tn_st }
+	set_variable = { which = sllm_tn_st value = 0 }
+	if = { limit = { check_variable = { which = sllm_tn value >= 25 } } set_variable = { which = sllm_tn_st value = 1 } }
+	if = { limit = { check_variable = { which = sllm_tn value >= 50 } } set_variable = { which = sllm_tn_st value = 2 } }
+	if = { limit = { check_variable = { which = sllm_tn value >= 75 } } set_variable = { which = sllm_tn_st value = 3 } }
+	if = { limit = { check_variable = { which = sllm_tn value >= 90 } } set_variable = { which = sllm_tn_st value = 4 } }
+	if = { limit = { check_variable = { which = sllm_tn value >= 100 } } set_variable = { which = sllm_tn_st value = 5 } }
+	# 바뀐 폭 sllm_tn_dd = 지금 단계 − 지난 단계(변수끼리 비교 대신 차이로 본다)
+	set_variable = { which = sllm_tn_dd value = sllm_tn_st }
+	subtract_variable = { which = sllm_tn_dd value = sllm_tn_was }
+	if = {
+		limit = { NOT = { check_variable = { which = sllm_tn_dd value = 0 } } }
+		sllm_tn_stage_fx = { WHO = event_target:sllm_tn_b }
+		event_target:sllm_tn_b = { sllm_tn_stage_fx = { WHO = event_target:sllm_tn_a } }
+		log = "SLLM:TNST/;/date=\\[GetDate]/;/st=\\[This.sllm_tn_st]/;/was=\\[This.sllm_tn_was]/;/v=\\[This.sllm_tn]/;/a=\\[This.sllm_tn_ai]/;/b=\\[This.sllm_tn_bi]"
+		# 처음 켤 때(was = -1)는 알리지 않는다
+		if = {
+			limit = { check_variable = { which = sllm_tn_was value >= 0 } }
+			if = {
+				limit = { check_variable = { which = sllm_tn_dd value > 0 } check_variable = { which = sllm_tn_st value >= 2 } }
+				every_playable_country = {
+					limit = { is_ai = no }
+					if = { limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value = 2 } } } country_event = { id = sllm_tn.12 } }
+					if = { limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value = 3 } } } country_event = { id = sllm_tn.13 } }
+					if = { limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value = 4 } } } country_event = { id = sllm_tn.14 } }
+					if = { limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value = 5 } } } country_event = { id = sllm_tn.15 } }
+				}
+			}
+			if = {
+				limit = { check_variable = { which = sllm_tn_dd value < 0 } check_variable = { which = sllm_tn_was value >= 2 } }
+				every_playable_country = { limit = { is_ai = no } country_event = { id = sllm_tn.20 } }
+			}
+		}
+	}
+
+	# 막대: 1~99 로 자른 값
+	set_variable = { which = sllm_tn_bar value = sllm_tn }
+	if = { limit = { check_variable = { which = sllm_tn_bar value < 1 } } set_variable = { which = sllm_tn_bar value = 1 } }
+	if = { limit = { check_variable = { which = sllm_tn_bar value > 99 } } set_variable = { which = sllm_tn_bar value = 99 } }
+	every_playable_country = {
+		limit = { is_ai = no NOT = { any_situation = { is_situation_type = sllm_tension } } }
+		start_situation = {
+			type = sllm_tension
+			target = event_target:sllm_tn_a
+			effect = { set_variable = { which = sllm_tn_shown value = 0 } }
+		}
+	}
+	every_playable_country = {
+		limit = { is_ai = no }
+		every_situation = {
+			limit = { is_situation_type = sllm_tension }
+			sllm_tn_bar_sync = yes
+		}
+	}
+}
+
+# 막대 맞추기(This = 상황). 막대는 우리만 움직이므로(매달 진행 0) 지금 보여 주는 값 sllm_tn_shown 과의 차이를 2의 거듭제곱 걸음으로 더한다.
+sllm_tn_bar_sync = {
+	set_variable = { which = sllm_tn_g value = event_target:sllm_tn_a.sllm_tn_bar }
+	subtract_variable = { which = sllm_tn_g value = sllm_tn_shown }
+	sllm_tn_step = { N = 64 NEG = -64 }
+	sllm_tn_step = { N = 32 NEG = -32 }
+	sllm_tn_step = { N = 16 NEG = -16 }
+	sllm_tn_step = { N = 8 NEG = -8 }
+	sllm_tn_step = { N = 4 NEG = -4 }
+	sllm_tn_step = { N = 2 NEG = -2 }
+	sllm_tn_step = { N = 1 NEG = -1 }
+	set_variable = { which = sllm_tn_shown value = event_target:sllm_tn_a.sllm_tn_bar }
+}
+sllm_tn_step = {
+	if = {
+		limit = { check_variable = { which = sllm_tn_g value >= $N$ } }
+		add_situation_progress = $N$
+		subtract_variable = { which = sllm_tn_g value = $N$ }
+	}
+	if = {
+		limit = { check_variable = { which = sllm_tn_g value <= $NEG$ } }
+		add_situation_progress = $NEG$
+		change_variable = { which = sllm_tn_g value = $N$ }
+	}
+}
+
+# 단계 효과(This = 한 편, WHO = 다른 편). 먼저 다 걷고 지금 단계에 맞게 다시 붙인다.
+sllm_tn_stage_fx = {
+	remove_opinion_modifier = { who = $WHO$ modifier = sllm_tn_crisis }
+	remove_opinion_modifier = { who = $WHO$ modifier = sllm_tn_brink_op }
+	remove_modifier = sllm_tn_mobilized
+	remove_modifier = sllm_tn_brink
+	remove_country_flag = sllm_tn_cb_open
+	if = {
+		limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value >= 2 } } }
+		add_opinion_modifier = { who = $WHO$ modifier = sllm_tn_crisis }
+	}
+	if = {
+		limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value >= 3 } } }
+		add_modifier = { modifier = sllm_tn_mobilized days = -1 }
+	}
+	if = {
+		limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value >= 4 } } }
+		add_modifier = { modifier = sllm_tn_brink days = -1 }
+		add_opinion_modifier = { who = $WHO$ modifier = sllm_tn_brink_op }
+	}
+	# 100: 서로 칠 명분이 열린다(전쟁을 강제하지는 않음). 90 밑으로 내려가면 명분이 사라진다(sllm_tension_casus_belli.txt destroy_if).
+	if = {
+		limit = { event_target:sllm_tn_a = { check_variable = { which = sllm_tn_st value >= 5 } } }
+		set_country_flag = sllm_tn_cb_open
+		add_casus_belli = { type = cb_sllm_tn_showdown who = $WHO$ days = 3600 }
+	}
+}
+
+# 긴장 더하기·빼기(어느 범위에서든). 시나리오 이벤트가 직접 부르거나, 앱이 sllm_tn_add 로 부른다.
+sllm_tn_shift = {
+	if = {
+		limit = { has_global_flag = sllm_tn_on any_country = { has_country_flag = sllm_tn_side_a } any_country = { has_country_flag = sllm_tn_side_b } }
+		sllm_tn_find = yes
+		event_target:sllm_tn_a = {
+			change_variable = { which = sllm_tn value = $N$ }
+			sllm_tn_clamp = yes
+			sllm_tn_refresh = yes
+		}
+	}
+}
+# 앱 요청(This = 플레이어). 회신 TNADD ok(1 적용 · 0 시나리오 아님) v(지금 값).
+# sllm_tn_shift 와 같은 일을 여기 바로 적었다(부르면 효과 겹침이 5단 — add→shift→refresh→bar_sync→step. 4단을 넘기지 않는다, 앱 자체 검사 signals: effects nesting).
+sllm_tn_add = {
+	set_variable = { which = sllm_tn_req value = $REQ$ }
+	set_variable = { which = sllm_tn_ok value = 0 }
+	set_variable = { which = sllm_tn_v value = -1 }
+	if = {
+		limit = { has_global_flag = sllm_tn_on any_country = { has_country_flag = sllm_tn_side_a } any_country = { has_country_flag = sllm_tn_side_b } }
+		sllm_tn_find = yes
+		event_target:sllm_tn_a = {
+			change_variable = { which = sllm_tn value = $N$ }
+			sllm_tn_clamp = yes
+			sllm_tn_refresh = yes
+		}
+		set_variable = { which = sllm_tn_ok value = 1 }
+		set_variable = { which = sllm_tn_v value = event_target:sllm_tn_a.sllm_tn }
+	}
+	log = "SLLM:TNADD/;/req=\\[This.sllm_tn_req]/;/sid=\\[This.sllm_save_id]/;/ok=\\[This.sllm_tn_ok]/;/v=\\[This.sllm_tn_v]"
+}
+# 앱 조회(This = 플레이어): 켜져 있으면 이름 줄과 TN 줄을 바로 찍는다(값은 바꾸지 않음). 끝 줄 TNQ ok.
+sllm_tn_query = {
+	set_variable = { which = sllm_tn_req value = $REQ$ }
+	set_variable = { which = sllm_tn_ok value = 0 }
+	if = {
+		limit = { has_global_flag = sllm_tn_on any_country = { has_country_flag = sllm_tn_side_a } any_country = { has_country_flag = sllm_tn_side_b } }
+		sllm_tn_find = yes
+		set_variable = { which = sllm_tn_ok value = 1 }
+		event_target:sllm_tn_a = {
+			sllm_tn_refresh = yes
+			log = "SLLM:TN/;/date=\\[GetDate]/;/q=\\[Prev.sllm_tn_req]/;/v=\\[This.sllm_tn]/;/d=0/;/st=\\[This.sllm_tn_st]/;/fa=\\[This.sllm_tn_fa]/;/fb=\\[This.sllm_tn_fb]/;/inc=0/;/a=\\[This.sllm_tn_ai]/;/b=\\[This.sllm_tn_bi]"
+		}
+	}
+	log = "SLLM:TNQ/;/req=\\[This.sllm_tn_req]/;/sid=\\[This.sllm_save_id]/;/ok=\\[This.sllm_tn_ok]"
+}

@@ -1,0 +1,36 @@
+# SLLM 지도 이름표(알파 11, 2026-10-25). 성계 번호 없이 「그 제국의 수도 성계」로 가리킨다(사용자 결정: 번호표는 AI 가 말한 성계를 할 때).
+# 앱(src/emotion-acts.ts)이 3달마다 감정 명령과 함께 부른다. 범위: This = AI 제국, event_target:sllm_player = 플레이어.
+# 매번 그 제국 수도 성계의 이름표를 치우고, 지금 상황에 맞는 것만 다시 세운다(협정이 끝나거나 전쟁이 끝나면 다음 분기에 사라짐).
+#   원조 협정국: 이 제국이 우리에게 원조를 보내는 중(sllm_aid_paid)
+#   선전포고국: 감정 기억으로 우리에게 선전포고했고(sllm_emo_war_cd) 아직 전쟁 중
+sllm_mark_put = {
+	if = {
+		limit = { exists = star NOT = { any_system_megastructure = { is_megastructure_type = sllm_mark_$KIND$ } } }
+		star = { save_event_target_as = sllm_mk_loc }
+		spawn_megastructure = { type = sllm_mark_$KIND$ name = "sllm_mark_$KIND$_name" planet = event_target:sllm_mk_loc orbit_distance = 0 }
+	}
+}
+sllm_mark_clear_here = {
+	every_system_megastructure = {
+		limit = { OR = { is_megastructure_type = sllm_mark_aid is_megastructure_type = sllm_mark_war } }
+		remove_megastructure = this
+	}
+}
+sllm_emo_marks = {
+	if = {
+		limit = { exists = capital_scope }
+		capital_scope = {
+			solar_system = {
+				sllm_mark_clear_here = yes
+				if = {
+					limit = { owner = { has_modifier = sllm_aid_paid } }
+					sllm_mark_put = { KIND = aid }
+				}
+				if = {
+					limit = { owner = { has_country_flag = sllm_emo_war_cd is_at_war_with = event_target:sllm_player } }
+					sllm_mark_put = { KIND = war }
+				}
+			}
+		}
+	}
+}

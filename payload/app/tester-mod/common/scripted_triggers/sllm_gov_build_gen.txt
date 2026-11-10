@@ -1,0 +1,1580 @@
+# 자동 생성(tools/gen-gov-build.js, 2026-11-05) — 손으로 고치지 말고 생성기를 다시 돌릴 것.
+# 총독 방침 직접 건설: 항목별 지을 수 있는가(연구·조건·국고)
+# district district_city
+sllm_gov_p1_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_1 }
+	num_free_districts = { type = district_city value > 0 }
+	OR = { NOT = { exists = owner } AND = { exists = owner owner = { OR = { is_regular_empire = yes AND = { is_country_type = primitive is_hive_empire = no } is_country_type = mechanocalibrator } } } } NOT = { has_deposit = d_crashed_slaver_ship } OR = { uses_district_set = district_resort uses_district_set = standard uses_district_set = hive_world uses_district_set = machine_world uses_district_set = shattered_ring_world uses_district_set = volcanic_world } is_special_colony_type = no NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	hidden_trigger = { is_special_colony_type = no } custom_tooltip = { fail_text = arcology_project_construction_fail_tt NOT = { has_carrier_flag = arcology_project_construction } }
+	if = { limit = { NOT = { has_modifier = wooden_planet } } owner = { resource_stockpile_compare = { resource = minerals value >= 500 } } } if = { limit = { has_modifier = wooden_planet } owner = { resource_stockpile_compare = { resource = food value >= 500 } } }
+}
+
+# district district_hive
+sllm_gov_p2_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_2 }
+	num_free_districts = { type = district_hive value > 0 }
+	exists = owner owner = { OR = { is_hive_empire = yes is_country_type = swarm } is_wilderness_empire = no } OR = { uses_district_set = standard uses_district_set = volcanic_world uses_district_set = hive_world uses_district_set = machine_world uses_district_set = shattered_ring_world } NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	hidden_trigger = { NOT = { has_modifier = resort_colony } } custom_tooltip = { fail_text = arcology_project_construction_fail_tt NOT = { has_carrier_flag = arcology_project_construction } }
+	owner = { resource_stockpile_compare = { resource = minerals value >= 500 } }
+}
+
+# district district_nexus
+sllm_gov_p3_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_3 }
+	num_free_districts = { type = district_nexus value > 0 }
+	exists = owner owner = { OR = { is_machine_empire = yes is_country_type = ai_empire } } OR = { uses_district_set = standard uses_district_set = volcanic_world uses_district_set = hive_world uses_district_set = machine_world uses_district_set = shattered_ring_world } NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	hidden_trigger = { NOT = { has_modifier = resort_colony } } custom_tooltip = { fail_text = arcology_project_construction_fail_tt NOT = { has_carrier_flag = arcology_project_construction } }
+	owner = { resource_stockpile_compare = { resource = minerals value >= 500 } }
+}
+
+# district district_arcology_housing
+sllm_gov_p4_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_4 }
+	num_free_districts = { type = district_arcology_housing value > 0 }
+	uses_district_set = city_world NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	owner = { resource_stockpile_compare = { resource = alloys value >= 500 } }
+}
+
+# district district_rw_city
+sllm_gov_p5_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_5 }
+	num_free_districts = { type = district_rw_city value > 0 }
+	exists = owner owner = { is_gestalt = no } uses_district_set = ring_world NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } }
+}
+
+# district district_hab_science
+sllm_gov_p6_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_6 }
+	num_free_districts = { type = district_hab_science value > 0 }
+	owner = { has_technology = tech_basic_science_lab_1 }
+	uses_district_set = habitat
+	hidden_trigger = { OR = { NOT = { exists = owner } owner = { has_technology = tech_basic_science_lab_1 } has_deposit = d_payback_habitat_research } }
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } }
+}
+
+# district district_hab_housing
+sllm_gov_p7_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_7 }
+	num_free_districts = { type = district_hab_housing value > 0 }
+	uses_district_set = habitat NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } }
+}
+
+# district district_ark_city
+sllm_gov_p8_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_8 }
+	num_free_districts = { type = district_ark_city value > 0 }
+	OR = { NOT = { exists = owner } uses_district_set = nomad } NAND = { is_capital = yes owner = { has_menace_perk = menp_behemoth_mind_meld } }
+	uses_district_set = nomad
+	owner = { resource_stockpile_compare = { resource = alloys value >= 250 } }
+}
+
+# zone zone_research
+sllm_gov_p9_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_9 }
+	OR = { AND = { num_districts = { type = district_mindlink value > 0 } check_variable = { which = sllm_gov_zf_district_mindlink value > 0 } } AND = { num_districts = { type = district_city value > 0 } check_variable = { which = sllm_gov_zf_district_city value > 0 } } AND = { num_districts = { type = district_prison value > 0 } check_variable = { which = sllm_gov_zf_district_prison value > 0 } } AND = { num_districts = { type = district_slave value > 0 } check_variable = { which = sllm_gov_zf_district_slave value > 0 } } AND = { num_districts = { type = district_hive value > 0 } check_variable = { which = sllm_gov_zf_district_hive value > 0 } } AND = { num_districts = { type = district_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_nexus value > 0 } } AND = { num_districts = { type = district_prison_industrial value > 0 } check_variable = { which = sllm_gov_zf_district_prison_industrial value > 0 } } AND = { num_districts = { type = district_battle_thrall value > 0 } check_variable = { which = sllm_gov_zf_district_battle_thrall value > 0 } } AND = { num_districts = { type = district_srw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_srw_commercial value > 0 } } AND = { num_districts = { type = district_arcology_housing value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_housing value > 0 } } AND = { num_districts = { type = district_arcology_leisure value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_leisure value > 0 } } AND = { num_districts = { type = district_polytechnic value > 0 } check_variable = { which = sllm_gov_zf_district_polytechnic value > 0 } } AND = { num_districts = { type = district_rw_city value > 0 } check_variable = { which = sllm_gov_zf_district_rw_city value > 0 } } AND = { num_districts = { type = district_rw_hive value > 0 } check_variable = { which = sllm_gov_zf_district_rw_hive value > 0 } } AND = { num_districts = { type = district_rw_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_rw_nexus value > 0 } } AND = { num_districts = { type = district_rw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_rw_commercial value > 0 } } AND = { num_districts = { type = district_rw_science value > 0 } check_variable = { which = sllm_gov_zf_district_rw_science value > 0 } } AND = { num_districts = { type = district_craglands value > 0 } check_variable = { which = sllm_gov_zf_district_craglands value > 0 } } AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_habitat_research
+sllm_gov_p10_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_10 }
+	OR = { AND = { num_districts = { type = district_hab_science value > 0 } check_variable = { which = sllm_gov_zf_district_hab_science value > 0 } } }
+	always = yes
+	always = yes
+	owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } }
+}
+
+# zone zone_research_arcology
+sllm_gov_p11_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_11 }
+	OR = { AND = { num_districts = { type = district_arcology_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_1 value > 0 } } AND = { num_districts = { type = district_arcology_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_2 value > 0 } } AND = { num_districts = { type = district_arcology_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_research_ring_world
+sllm_gov_p12_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_12 }
+	OR = { AND = { num_districts = { type = district_rw_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_1 value > 0 } } AND = { num_districts = { type = district_rw_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_2 value > 0 } } AND = { num_districts = { type = district_rw_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_minerals_physics
+sllm_gov_p13_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_13 }
+	OR = { AND = { num_districts = { type = district_mining value > 0 } check_variable = { which = sllm_gov_zf_district_mining value > 0 } } AND = { num_districts = { type = district_melting value > 0 } check_variable = { which = sllm_gov_zf_district_melting value > 0 } } AND = { num_districts = { type = district_hollow_mountains value > 0 } check_variable = { which = sllm_gov_zf_district_hollow_mountains value > 0 } } }
+	has_deposit = d_sky_mountain
+	hidden_trigger = { has_deposit = d_sky_mountain }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_research_nexus
+sllm_gov_p14_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_14 }
+	OR = { AND = { num_districts = { type = district_nexus_1 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_1 value > 0 } } AND = { num_districts = { type = district_nexus_2 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_2 value > 0 } } AND = { num_districts = { type = district_nexus_3 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_research_hive
+sllm_gov_p15_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_15 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_research_unity
+sllm_gov_p16_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_16 }
+	OR = { AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = no } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_research_unity_gestalt
+sllm_gov_p17_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_17 }
+	OR = { AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = yes } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_reactor_physics
+sllm_gov_p18_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_18 }
+	OR = { AND = { num_districts = { type = district_ark_generator value > 0 } check_variable = { which = sllm_gov_zf_district_ark_generator value > 0 } } }
+	hidden_trigger = { owner? = { has_technology = tech_physics_1 } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_vultaum_reality_computer
+sllm_gov_p19_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_19 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_vultaum_reality_computer value < 1 in_construction = any }
+	owner = { has_technology = tech_secrets_vultaum }
+	exists = owner NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = minor_artifacts value >= 50 } } if = { limit = { owner = { is_wilderness_empire = yes } } owner = { resource_stockpile_compare = { resource = biomass value >= 200 } } }
+}
+
+# building building_institute
+sllm_gov_p20_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_20 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_institute value < 1 in_construction = any }
+	owner = { has_technology = tech_global_research_initiative }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_regular_empire = yes } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_research_zone = yes }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } }
+}
+
+# building building_supercomputer
+sllm_gov_p21_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_21 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_supercomputer value < 1 in_construction = any }
+	owner = { has_technology = tech_global_research_initiative }
+	exists = owner owner = { is_gestalt = yes is_wilderness_empire = no } NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_research_zone = yes }
+	has_major_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } }
+}
+
+# building building_archaeostudies_faculty
+sllm_gov_p22_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_22 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_archaeostudies_faculty value < 1 in_construction = any }
+	owner = { has_technology = tech_archaeostudies }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_wilderness_empire = no }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = minor_artifacts value >= 50 } }
+}
+
+# building building_research_efficiency_1
+sllm_gov_p23_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_23 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_research_efficiency_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_basic_science_lab_2 }
+	exists = owner owner = { is_wilderness_empire = no } NOT = { has_modifier = resort_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 80 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 200 } }
+}
+
+# building building_research_upkeep_1
+sllm_gov_p24_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_24 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_research_upkeep_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_basic_science_lab_2 }
+	exists = owner owner = { is_wilderness_empire = no } NOT = { has_modifier = resort_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 100 } }
+}
+
+# building building_engineering_facility_1
+sllm_gov_p25_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_25 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_engineering_facility_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_engineering_1 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_wilderness_empire = no } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_research_engineering_zone = yes has_any_unspecialized_research_zone = yes }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 40 } } }
+}
+
+# building building_physics_lab_1
+sllm_gov_p26_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_26 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_physics_lab_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_physics_1 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_wilderness_empire = no } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_research_physics_zone = yes has_any_unspecialized_research_zone = yes }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 40 } } }
+}
+
+# building building_biolab_1
+sllm_gov_p27_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_27 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_research value > 0 } }
+	num_buildings = { type = building_biolab_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_society_1 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_wilderness_empire = no } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_research_society_zone = yes has_any_unspecialized_research_zone = yes }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 40 } } }
+}
+
+# upgrade building_engineering_facility_2
+sllm_gov_p28_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_28 }
+	num_buildings = { type = building_engineering_facility_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_engineering_facility_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_engineering_2 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# upgrade building_engineering_facility_3
+sllm_gov_p29_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_29 }
+	num_buildings = { type = building_engineering_facility_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_engineering_facility_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_engineering_3 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 80 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 100 } }
+}
+
+# upgrade building_physics_lab_2
+sllm_gov_p30_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_30 }
+	num_buildings = { type = building_physics_lab_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_physics_lab_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_physics_2 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# upgrade building_physics_lab_3
+sllm_gov_p31_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_31 }
+	num_buildings = { type = building_physics_lab_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_physics_lab_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_physics_3 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 80 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 100 } }
+}
+
+# upgrade building_biolab_2
+sllm_gov_p32_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_32 }
+	num_buildings = { type = building_biolab_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_biolab_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_society_2 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_wilderness_empire = no }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } }
+}
+
+# upgrade building_biolab_3
+sllm_gov_p33_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_33 }
+	num_buildings = { type = building_biolab_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_biolab_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_society_3 }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 80 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 100 } }
+}
+
+# zone zone_foundry
+sllm_gov_p34_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_34 }
+	OR = { AND = { num_districts = { type = district_mindlink value > 0 } check_variable = { which = sllm_gov_zf_district_mindlink value > 0 } } AND = { num_districts = { type = district_city value > 0 } check_variable = { which = sllm_gov_zf_district_city value > 0 } } AND = { num_districts = { type = district_prison value > 0 } check_variable = { which = sllm_gov_zf_district_prison value > 0 } } AND = { num_districts = { type = district_slave value > 0 } check_variable = { which = sllm_gov_zf_district_slave value > 0 } } AND = { num_districts = { type = district_hive value > 0 } check_variable = { which = sllm_gov_zf_district_hive value > 0 } } AND = { num_districts = { type = district_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_nexus value > 0 } } AND = { num_districts = { type = district_prison_industrial value > 0 } check_variable = { which = sllm_gov_zf_district_prison_industrial value > 0 } } AND = { num_districts = { type = district_battle_thrall value > 0 } check_variable = { which = sllm_gov_zf_district_battle_thrall value > 0 } } AND = { num_districts = { type = district_srw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_srw_commercial value > 0 } } AND = { num_districts = { type = district_arcology_housing value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_housing value > 0 } } AND = { num_districts = { type = district_arcology_leisure value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_leisure value > 0 } } AND = { num_districts = { type = district_hab_housing value > 0 } check_variable = { which = sllm_gov_zf_district_hab_housing value > 0 } } AND = { num_districts = { type = district_rw_city value > 0 } check_variable = { which = sllm_gov_zf_district_rw_city value > 0 } } AND = { num_districts = { type = district_rw_hive value > 0 } check_variable = { which = sllm_gov_zf_district_rw_hive value > 0 } } AND = { num_districts = { type = district_rw_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_rw_nexus value > 0 } } AND = { num_districts = { type = district_rw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_rw_commercial value > 0 } } AND = { num_districts = { type = district_rw_science value > 0 } check_variable = { which = sllm_gov_zf_district_rw_science value > 0 } } AND = { num_districts = { type = district_craglands value > 0 } check_variable = { which = sllm_gov_zf_district_craglands value > 0 } } AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_foundry_arcology
+sllm_gov_p35_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_35 }
+	OR = { AND = { num_districts = { type = district_arcology_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_1 value > 0 } } AND = { num_districts = { type = district_arcology_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_2 value > 0 } } AND = { num_districts = { type = district_arcology_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_foundry_ring_world
+sllm_gov_p36_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_36 }
+	OR = { AND = { num_districts = { type = district_rw_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_1 value > 0 } } AND = { num_districts = { type = district_rw_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_2 value > 0 } } AND = { num_districts = { type = district_rw_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_foundry_nexus
+sllm_gov_p37_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_37 }
+	OR = { AND = { num_districts = { type = district_nexus_1 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_1 value > 0 } } AND = { num_districts = { type = district_nexus_2 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_2 value > 0 } } AND = { num_districts = { type = district_nexus_3 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_foundry_hive
+sllm_gov_p38_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_38 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_foundry
+sllm_gov_p39_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_39 }
+	OR = { AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = yes } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_industrial
+sllm_gov_p40_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_40 }
+	OR = { AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = no } }
+	hidden_trigger = { owner? = { is_nomadic = yes is_gestalt = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_shipwright
+sllm_gov_p41_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_41 }
+	OR = { AND = { num_districts = { type = district_ark_military value > 0 } check_variable = { which = sllm_gov_zf_district_ark_military value > 0 } } }
+	owner? = { has_technology = tech_doctrine_navy_size_1 }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_ministry_production
+sllm_gov_p42_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_42 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_foundry value > 0 } }
+	num_buildings = { type = building_ministry_production value < 1 in_construction = any }
+	owner = { has_technology = tech_global_production_strategy }
+	exists = owner owner = { is_regular_empire = yes } NOR = { has_modifier = resort_colony has_modifier = slave_colony } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_industrial_zone = yes }
+	has_major_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# building building_production_center
+sllm_gov_p43_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_43 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_foundry value > 0 } }
+	num_buildings = { type = building_production_center value < 1 in_construction = any }
+	owner = { has_technology = tech_global_production_strategy }
+	exists = owner owner = { is_gestalt = yes is_wilderness_empire = no } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_industrial_zone = yes }
+	has_major_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# building building_foundry_efficiency_1
+sllm_gov_p44_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_44 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_foundry value > 0 } }
+	num_buildings = { type = building_foundry_efficiency_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_alloys_2 }
+	exists = owner owner = { is_wilderness_empire = no } NOR = { has_modifier = resort_colony has_modifier = slave_colony owner = { is_wilderness_empire = yes } }
+	if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 80 } } } if = { limit = { has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } } } if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = minerals value >= 1500 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 150 } } } if = { limit = { has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 600 } } }
+}
+
+# building building_foundry_upkeep_1
+sllm_gov_p45_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_45 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_foundry value > 0 } }
+	num_buildings = { type = building_foundry_upkeep_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_alloys_1 }
+	exists = owner owner = { is_wilderness_empire = no } NOT = { has_modifier = resort_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 100 } }
+}
+
+# building building_foundry_1
+sllm_gov_p46_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_46 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_foundry value > 0 } }
+	NOT = { num_buildings = { type = building_foundry_1 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_basic_industry }
+	NOR = { has_modifier = resort_colony has_modifier = slave_colony } AND = { exists = owner owner = { is_wilderness_empire = no } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } AND = { has_any_industrial_zone = yes NOR = { has_building = building_foundry_1 has_building = building_foundry_2 has_building = building_foundry_3 } } AND = { owner = { is_nomadic = yes } tiered_building_below_cap = { BUILDING = foundry } } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# upgrade building_foundry_2
+sllm_gov_p47_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_47 }
+	num_buildings = { type = building_foundry_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_foundry_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_alloys_1 }
+	exists = owner owner = { is_wilderness_empire = no } is_special_colony_type = no
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 100 } }
+}
+
+# upgrade building_foundry_3
+sllm_gov_p48_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_48 }
+	num_buildings = { type = building_foundry_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_foundry_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_alloys_2 }
+	exists = owner owner = { is_wilderness_empire = no } is_special_colony_type = no
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 80 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } }
+}
+
+# zone zone_factory
+sllm_gov_p49_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_49 }
+	OR = { AND = { num_districts = { type = district_mindlink value > 0 } check_variable = { which = sllm_gov_zf_district_mindlink value > 0 } } AND = { num_districts = { type = district_city value > 0 } check_variable = { which = sllm_gov_zf_district_city value > 0 } } AND = { num_districts = { type = district_prison value > 0 } check_variable = { which = sllm_gov_zf_district_prison value > 0 } } AND = { num_districts = { type = district_slave value > 0 } check_variable = { which = sllm_gov_zf_district_slave value > 0 } } AND = { num_districts = { type = district_hive value > 0 } check_variable = { which = sllm_gov_zf_district_hive value > 0 } } AND = { num_districts = { type = district_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_nexus value > 0 } } AND = { num_districts = { type = district_prison_industrial value > 0 } check_variable = { which = sllm_gov_zf_district_prison_industrial value > 0 } } AND = { num_districts = { type = district_battle_thrall value > 0 } check_variable = { which = sllm_gov_zf_district_battle_thrall value > 0 } } AND = { num_districts = { type = district_srw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_srw_commercial value > 0 } } AND = { num_districts = { type = district_arcology_housing value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_housing value > 0 } } AND = { num_districts = { type = district_arcology_leisure value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_leisure value > 0 } } AND = { num_districts = { type = district_hab_housing value > 0 } check_variable = { which = sllm_gov_zf_district_hab_housing value > 0 } } AND = { num_districts = { type = district_rw_city value > 0 } check_variable = { which = sllm_gov_zf_district_rw_city value > 0 } } AND = { num_districts = { type = district_rw_hive value > 0 } check_variable = { which = sllm_gov_zf_district_rw_hive value > 0 } } AND = { num_districts = { type = district_rw_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_rw_nexus value > 0 } } AND = { num_districts = { type = district_rw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_rw_commercial value > 0 } } AND = { num_districts = { type = district_rw_science value > 0 } check_variable = { which = sllm_gov_zf_district_rw_science value > 0 } } AND = { num_districts = { type = district_craglands value > 0 } check_variable = { which = sllm_gov_zf_district_craglands value > 0 } } AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_factory_arcology
+sllm_gov_p50_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_50 }
+	OR = { AND = { num_districts = { type = district_arcology_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_1 value > 0 } } AND = { num_districts = { type = district_arcology_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_2 value > 0 } } AND = { num_districts = { type = district_arcology_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_3 value > 0 } } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_factory_ring_world
+sllm_gov_p51_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_51 }
+	OR = { AND = { num_districts = { type = district_rw_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_1 value > 0 } } AND = { num_districts = { type = district_rw_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_2 value > 0 } } AND = { num_districts = { type = district_rw_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_3 value > 0 } } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_factory_nexus
+sllm_gov_p52_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_52 }
+	OR = { AND = { num_districts = { type = district_nexus_1 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_1 value > 0 } } AND = { num_districts = { type = district_nexus_2 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_2 value > 0 } } AND = { num_districts = { type = district_nexus_3 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_3 value > 0 } } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_factory_hive
+sllm_gov_p53_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_53 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	hidden_trigger ={ owner? = { country_uses_consumer_goods = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_factory_efficiency_1
+sllm_gov_p54_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_54 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_factory value > 0 } }
+	num_buildings = { type = building_factory_efficiency_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_luxuries_2 }
+	exists = owner owner = { country_uses_consumer_goods = yes } NOT = { has_modifier = resort_colony has_modifier = slave_colony }
+	if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 80 } } } if = { limit = { has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 200 } } } if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = minerals value >= 1500 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 150 } } } if = { limit = { has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 600 } } }
+}
+
+# building building_factory_upkeep_1
+sllm_gov_p55_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_55 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_factory value > 0 } }
+	num_buildings = { type = building_factory_upkeep_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_luxuries_1 }
+	exists = owner owner = { country_uses_consumer_goods = yes } NOT = { has_modifier = resort_colony has_modifier = slave_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 100 } }
+}
+
+# building building_factory_1
+sllm_gov_p56_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_56 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_factory value > 0 } }
+	NOT = { num_buildings = { type = building_factory_1 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_basic_industry }
+	exists = owner owner = { OR = { country_uses_consumer_goods = yes has_origin = origin_fear_of_the_dark } } NOR = { has_modifier = resort_colony has_modifier = slave_colony } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } owner = { has_valid_civic = civic_machine_obsessional_directive } AND = { has_any_factory_zone = yes NOR = { has_building = building_factory_1 has_building = building_factory_2 has_building = building_factory_3 } } AND = { owner = { is_nomadic = yes } tiered_building_below_cap = { BUILDING = factory } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# upgrade building_factory_2
+sllm_gov_p57_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_57 }
+	num_buildings = { type = building_factory_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_factory_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_luxuries_1 }
+	exists = owner owner = { country_uses_consumer_goods = yes } NOT = { has_modifier = resort_colony has_modifier = slave_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 100 } }
+}
+
+# upgrade building_factory_3
+sllm_gov_p58_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_58 }
+	num_buildings = { type = building_factory_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_factory_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_luxuries_2 }
+	exists = owner owner = { country_uses_consumer_goods = yes } NOT = { has_modifier = resort_colony has_modifier = slave_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 80 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 200 } }
+}
+
+# district district_mining
+sllm_gov_p59_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_59 }
+	num_free_districts = { type = district_mining value > 0 }
+	owner = { has_technology = tech_mechanized_mining }
+	OR = { uses_district_set = standard uses_district_set = shattered_ring_world } OR = { NOT = { exists = owner } AND = { exists = owner owner = { is_wilderness_empire = no } } } NOT = { has_modifier = resort_colony }
+	custom_tooltip = { fail_text = arcology_project_construction_fail_tt NOT = { has_carrier_flag = arcology_project_construction } }
+	owner = { resource_stockpile_compare = { resource = minerals value >= 300 } }
+}
+
+# district district_hab_mining
+sllm_gov_p60_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_60 }
+	num_free_districts = { type = district_hab_mining value > 0 }
+	owner = { has_technology = tech_mechanized_mining }
+	uses_district_set = habitat
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } }
+}
+
+# zone zone_subterranean_urban
+sllm_gov_p61_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_61 }
+	OR = { AND = { num_districts = { type = district_mining value > 0 } check_variable = { which = sllm_gov_zf_district_mining value > 0 } } AND = { num_districts = { type = district_melting value > 0 } check_variable = { which = sllm_gov_zf_district_melting value > 0 } } AND = { num_districts = { type = district_hollow_mountains value > 0 } check_variable = { which = sllm_gov_zf_district_hollow_mountains value > 0 } } }
+	owner? = { is_subterranean_empire = yes }
+	hidden_trigger = { owner? = { is_subterranean_empire = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_minerals
+sllm_gov_p62_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_62 }
+	OR = { AND = { num_districts = { type = district_mining value > 0 } check_variable = { which = sllm_gov_zf_district_mining value > 0 } } AND = { num_districts = { type = district_melting value > 0 } check_variable = { which = sllm_gov_zf_district_melting value > 0 } } AND = { num_districts = { type = district_hab_mining value > 0 } check_variable = { which = sllm_gov_zf_district_hab_mining value > 0 } } AND = { num_districts = { type = district_hollow_mountains value > 0 } check_variable = { which = sllm_gov_zf_district_hollow_mountains value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_minerals_nexus
+sllm_gov_p63_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_63 }
+	OR = { AND = { num_districts = { type = district_nexus_1 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_1 value > 0 } } AND = { num_districts = { type = district_nexus_2 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_2 value > 0 } } AND = { num_districts = { type = district_nexus_3 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_minerals_hive
+sllm_gov_p64_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_64 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_crystal_mines
+sllm_gov_p65_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_65 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_subterranean_urban value > 0 } num_zones = { type = zone_minerals_physics value > 0 } num_zones = { type = zone_minerals value > 0 } num_zones = { type = zone_minerals_nexus value > 0 } }
+	num_buildings = { type = building_crystal_mines value < 1 in_construction = any }
+	owner = { has_technology = tech_mine_rare_crystals }
+	owner = { is_wilderness_empire = no is_nomadic = no } has_rare_crystals_deposit = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 200 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 20 } } }
+}
+
+# building building_mineral_purification_plant
+sllm_gov_p66_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_66 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_subterranean_urban value > 0 } num_zones = { type = zone_minerals_physics value > 0 } num_zones = { type = zone_minerals value > 0 } num_zones = { type = zone_minerals_nexus value > 0 } }
+	num_buildings = { type = building_mineral_purification_plant value < 1 in_construction = any }
+	owner = { has_technology = tech_mineral_purification_1 }
+	owner = { is_wilderness_empire = no } NOR = { has_modifier = resort_colony is_planet_class = pc_ringworld_habitable is_planet_class = pc_cybrex } OR = { NOT = { is_planet_class = pc_habitat } AND = { is_planet_class = pc_habitat check_modifier_value = { modifier = district_hab_mining_max_add value > 0 } } } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_mining_district_or_building = yes owner = { is_nomadic = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 200 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 20 } } }
+}
+
+# building building_mining_districts_1
+sllm_gov_p67_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_67 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_subterranean_urban value > 0 } num_zones = { type = zone_minerals_physics value > 0 } num_zones = { type = zone_minerals value > 0 } num_zones = { type = zone_minerals_nexus value > 0 } }
+	num_buildings = { type = building_mining_districts_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_mechanized_mining }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_mining_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# upgrade building_mineral_purification_hub
+sllm_gov_p68_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_68 }
+	num_buildings = { type = building_mineral_purification_plant value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_mineral_purification_hub value > 0 in_construction = yes } }
+	owner = { has_technology = tech_mineral_purification_2 }
+	exists = owner owner = { is_wilderness_empire = no } OR = { owner = { is_ai = no } has_any_mining_district_or_building = yes owner = { is_nomadic = yes } }
+	has_upgraded_capital = yes NOT = { has_modifier = resort_colony }
+	if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } if = { limit = { has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } } } if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = minerals value >= 900 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 90 } } } if = { limit = { has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } } }
+}
+
+# upgrade building_mining_districts_2
+sllm_gov_p69_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_69 }
+	num_buildings = { type = building_mining_districts_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_mining_districts_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_mining_1 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_mining_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# upgrade building_mining_districts_3
+sllm_gov_p70_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_70 }
+	num_buildings = { type = building_mining_districts_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_mining_districts_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_mining_2 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_mining_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 80 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 100 } }
+}
+
+# upgrade building_mining_districts_4
+sllm_gov_p71_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_71 }
+	num_buildings = { type = building_mining_districts_3 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_mining_districts_4 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_mining_3 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_mining_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 2000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } }
+}
+
+# district district_generator
+sllm_gov_p72_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_72 }
+	num_free_districts = { type = district_generator value > 0 }
+	owner = { has_technology = tech_power_plant_1 }
+	OR = { uses_district_set = standard uses_district_set = shattered_ring_world } OR = { NOT = { exists = owner } AND = { exists = owner owner = { is_wilderness_empire = no } } } NOT = { has_modifier = resort_colony }
+	custom_tooltip = { fail_text = arcology_project_construction_fail_tt NOT = { has_carrier_flag = arcology_project_construction } }
+	owner = { resource_stockpile_compare = { resource = minerals value >= 300 } }
+}
+
+# district district_hab_energy
+sllm_gov_p73_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_73 }
+	num_free_districts = { type = district_hab_energy value > 0 }
+	owner = { has_technology = tech_power_plant_1 }
+	uses_district_set = habitat
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } }
+}
+
+# district district_rw_urban_1
+sllm_gov_p74_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_74 }
+	num_free_districts = { type = district_rw_urban_1 value > 0 }
+	exists = owner uses_district_set = ring_world
+	owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } }
+}
+
+# district district_ark_generator
+sllm_gov_p75_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_75 }
+	num_free_districts = { type = district_ark_generator value > 0 }
+	owner = { has_technology = tech_power_plant_1 }
+	uses_district_set = nomad
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } }
+}
+
+# zone zone_energy
+sllm_gov_p76_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_76 }
+	OR = { AND = { num_districts = { type = district_generator value > 0 } check_variable = { which = sllm_gov_zf_district_generator value > 0 } } AND = { num_districts = { type = district_geothermal value > 0 } check_variable = { which = sllm_gov_zf_district_geothermal value > 0 } } AND = { num_districts = { type = district_hab_energy value > 0 } check_variable = { which = sllm_gov_zf_district_hab_energy value > 0 } } AND = { num_districts = { type = district_rw_generator value > 0 } check_variable = { which = sllm_gov_zf_district_rw_generator value > 0 } } AND = { num_districts = { type = district_photosynthesis_fields value > 0 } check_variable = { which = sllm_gov_zf_district_photosynthesis_fields value > 0 } } AND = { num_districts = { type = district_ark_generator value > 0 } check_variable = { which = sllm_gov_zf_district_ark_generator value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_energy_ring_world
+sllm_gov_p77_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_77 }
+	OR = { AND = { num_districts = { type = district_rw_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_1 value > 0 } } AND = { num_districts = { type = district_rw_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_2 value > 0 } } AND = { num_districts = { type = district_rw_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_energy_nexus
+sllm_gov_p78_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_78 }
+	OR = { AND = { num_districts = { type = district_nexus_1 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_1 value > 0 } } AND = { num_districts = { type = district_nexus_2 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_2 value > 0 } } AND = { num_districts = { type = district_nexus_3 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_energy_hive
+sllm_gov_p79_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_79 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_engine_bypass
+sllm_gov_p80_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_80 }
+	OR = { AND = { num_districts = { type = district_ark_generator value > 0 } check_variable = { which = sllm_gov_zf_district_ark_generator value > 0 } } }
+	owner? = { has_technology = tech_afterburners_1 }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_energy_grid
+sllm_gov_p81_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_81 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_energy value > 0 } num_zones = { type = zone_energy_ring_world value > 0 } num_zones = { type = zone_energy_nexus value > 0 } }
+	num_buildings = { type = building_energy_grid value < 1 in_construction = any }
+	owner = { has_technology = tech_power_hub_1 }
+	NOT = { has_modifier = resort_colony } exists = owner owner = { is_wilderness_empire = no } OR = { NOT = { is_planet_class = pc_habitat } AND = { is_planet_class = pc_habitat check_modifier_value = { modifier = district_hab_energy_max_add value > 0 } } } OR = { owner = { is_ai = no } has_any_generator_district_or_building = yes }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# building building_mote_harvesters
+sllm_gov_p82_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_82 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_energy value > 0 } num_zones = { type = zone_energy_ring_world value > 0 } num_zones = { type = zone_energy_nexus value > 0 } }
+	num_buildings = { type = building_mote_harvesters value < 1 in_construction = any }
+	owner = { has_technology = tech_mine_volatile_motes }
+	owner = { is_wilderness_empire = no is_nomadic = no } has_volatile_motes_deposit = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 200 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 20 } } }
+}
+
+# building building_generator_districts_1
+sllm_gov_p83_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_83 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_energy value > 0 } num_zones = { type = zone_energy_ring_world value > 0 } num_zones = { type = zone_energy_nexus value > 0 } }
+	num_buildings = { type = building_generator_districts_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_power_plant_1 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_generator_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# upgrade building_energy_nexus
+sllm_gov_p84_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_84 }
+	num_buildings = { type = building_energy_grid value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_energy_nexus value > 0 in_construction = yes } }
+	owner = { has_technology = tech_power_hub_2 }
+	NOT = { has_modifier = resort_colony } exists = owner owner = { is_wilderness_empire = no } OR = { owner = { is_ai = no } has_any_generator_district_or_building = yes }
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 60 } } } if = { limit = { has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } } } if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = minerals value >= 900 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 90 } } } if = { limit = { has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 200 } } }
+}
+
+# upgrade building_generator_districts_2
+sllm_gov_p85_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_85 }
+	num_buildings = { type = building_generator_districts_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_generator_districts_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_power_plant_2 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_generator_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# upgrade building_generator_districts_3
+sllm_gov_p86_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_86 }
+	num_buildings = { type = building_generator_districts_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_generator_districts_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_power_plant_3 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_generator_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 80 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 100 } }
+}
+
+# upgrade building_generator_districts_4
+sllm_gov_p87_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_87 }
+	num_buildings = { type = building_generator_districts_3 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_generator_districts_4 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_power_plant_4 }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_generator_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 2000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 200 } }
+}
+
+# district district_farming
+sllm_gov_p88_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_88 }
+	num_free_districts = { type = district_farming value > 0 }
+	owner = { has_technology = tech_industrial_farming }
+	OR = { uses_district_set = standard uses_district_set = shattered_ring_world } NOT = { AND = { exists = owner owner = { is_ai = yes country_uses_food = no } } } OR = { NOT = { exists = owner } AND = { exists = owner owner = { is_wilderness_empire = no } } } NOT = { has_modifier = resort_colony }
+	custom_tooltip = { fail_text = arcology_project_construction_fail_tt NOT = { has_carrier_flag = arcology_project_construction } }
+	if = { limit = { NOT = { has_modifier = wooden_planet } } owner = { resource_stockpile_compare = { resource = minerals value >= 300 } } } if = { limit = { has_modifier = wooden_planet } owner = { resource_stockpile_compare = { resource = food value >= 300 } } } if = { limit = { AND = { exists = owner owner = { is_anglers_empire = yes } planet = { has_climate = wet } } } owner = { resource_stockpile_compare = { resource = minerals value >= -50 } } }
+}
+
+# district district_ark_basic
+sllm_gov_p89_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_89 }
+	num_free_districts = { type = district_ark_basic value > 0 }
+	owner = { has_technology = tech_industrial_farming }
+	uses_district_set = nomad
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } } if = { limit = { AND = { exists = owner owner = { is_anglers_empire = yes } planet = { has_climate = wet } } } owner = { resource_stockpile_compare = { resource = alloys value >= -50 } } }
+}
+
+# zone zone_agrarian_anglers
+sllm_gov_p90_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_90 }
+	OR = { AND = { num_districts = { type = district_farming value > 0 } check_variable = { which = sllm_gov_zf_district_farming value > 0 } } AND = { num_districts = { type = district_rw_farming value > 0 } check_variable = { which = sllm_gov_zf_district_rw_farming value > 0 } } AND = { num_districts = { type = district_orchard_forests value > 0 } check_variable = { which = sllm_gov_zf_district_orchard_forests value > 0 } } }
+	owner? = { has_valid_civic = civic_agrarian_idyll is_anglers_empire = yes } is_wet = yes
+	hidden_trigger = { owner? = { has_valid_civic = civic_agrarian_idyll is_anglers_empire = yes } is_wet = yes }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_anglers
+sllm_gov_p91_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_91 }
+	OR = { AND = { num_districts = { type = district_farming value > 0 } check_variable = { which = sllm_gov_zf_district_farming value > 0 } } AND = { num_districts = { type = district_rw_farming value > 0 } check_variable = { which = sllm_gov_zf_district_rw_farming value > 0 } } AND = { num_districts = { type = district_orchard_forests value > 0 } check_variable = { which = sllm_gov_zf_district_orchard_forests value > 0 } } }
+	hidden_trigger = { owner? = { is_anglers_empire = yes } } OR = { is_wet = yes owner = { is_nomadic = yes } }
+	hidden_trigger = { owner? = { is_anglers_empire = yes } } OR = { is_wet = yes owner = { is_nomadic = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_agrarian_urban
+sllm_gov_p92_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_92 }
+	OR = { AND = { num_districts = { type = district_farming value > 0 } check_variable = { which = sllm_gov_zf_district_farming value > 0 } } AND = { num_districts = { type = district_rw_farming value > 0 } check_variable = { which = sllm_gov_zf_district_rw_farming value > 0 } } AND = { num_districts = { type = district_orchard_forests value > 0 } check_variable = { which = sllm_gov_zf_district_orchard_forests value > 0 } } }
+	owner? = { has_valid_civic = civic_agrarian_idyll } if = { limit = { owner = { is_anglers_empire = yes } } is_wet = no }
+	hidden_trigger = { owner? = { has_valid_civic = civic_agrarian_idyll } if = { limit = { owner = { is_anglers_empire = yes } } is_wet = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_food
+sllm_gov_p93_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_93 }
+	OR = { AND = { num_districts = { type = district_farming value > 0 } check_variable = { which = sllm_gov_zf_district_farming value > 0 } } AND = { num_districts = { type = district_rw_farming value > 0 } check_variable = { which = sllm_gov_zf_district_rw_farming value > 0 } } AND = { num_districts = { type = district_orchard_forests value > 0 } check_variable = { which = sllm_gov_zf_district_orchard_forests value > 0 } } }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_food_ring_world
+sllm_gov_p94_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_94 }
+	OR = { AND = { num_districts = { type = district_rw_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_1 value > 0 } } AND = { num_districts = { type = district_rw_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_2 value > 0 } } AND = { num_districts = { type = district_rw_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_3 value > 0 } } }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_food_hive
+sllm_gov_p95_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_95 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_food
+sllm_gov_p96_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_96 }
+	OR = { AND = { num_districts = { type = district_ark_basic value > 0 } check_variable = { which = sllm_gov_zf_district_ark_basic value > 0 } } }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	hidden_trigger = { owner? = { is_wilderness_empire = no } } OR = { owner = { is_anglers_empire = no } is_wet = no }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_food_processing_facility
+sllm_gov_p97_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_97 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_agrarian_anglers value > 0 } num_zones = { type = zone_anglers value > 0 } num_zones = { type = zone_agrarian_urban value > 0 } num_zones = { type = zone_food value > 0 } }
+	num_buildings = { type = building_food_processing_facility value < 1 in_construction = any }
+	owner = { has_technology = tech_food_processing_1 }
+	exists = owner owner = { is_wilderness_empire = no } NOR = { is_planet_class = pc_machine has_modifier = resort_colony } OR = { owner = { is_ai = no } has_any_farming_district_or_building = yes } owner = { OR = { is_ai = no country_uses_food = yes } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# building building_gas_extractors
+sllm_gov_p98_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_98 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_agrarian_anglers value > 0 } num_zones = { type = zone_anglers value > 0 } num_zones = { type = zone_agrarian_urban value > 0 } num_zones = { type = zone_food value > 0 } }
+	num_buildings = { type = building_gas_extractors value < 1 in_construction = any }
+	owner = { has_technology = tech_mine_exotic_gases }
+	owner = { is_wilderness_empire = no is_nomadic = no } has_exotic_gases_deposit = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 200 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 20 } } }
+}
+
+# building building_farming_districts_1
+sllm_gov_p99_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_99 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_agrarian_anglers value > 0 } num_zones = { type = zone_anglers value > 0 } num_zones = { type = zone_agrarian_urban value > 0 } num_zones = { type = zone_food value > 0 } }
+	num_buildings = { type = building_farming_districts_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_industrial_farming }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_farming_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# upgrade building_food_processing_center
+sllm_gov_p100_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_100 }
+	num_buildings = { type = building_food_processing_facility value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_food_processing_center value > 0 in_construction = yes } }
+	owner = { has_technology = tech_food_processing_2 }
+	owner = { is_wilderness_empire = no }
+	exists = owner has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 60 } } } if = { limit = { has_ringworld_output_boost = no } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } } } if = { limit = { owner? = { is_nomadic = no } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = minerals value >= 900 } } } if = { limit = { owner? = { is_nomadic = yes } has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 90 } } } if = { limit = { has_ringworld_output_boost = yes } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 200 } } }
+}
+
+# upgrade building_farming_districts_2
+sllm_gov_p101_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_101 }
+	num_buildings = { type = building_farming_districts_1 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_farming_districts_2 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_eco_simulation }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_farming_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } }
+}
+
+# upgrade building_farming_districts_3
+sllm_gov_p102_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_102 }
+	num_buildings = { type = building_farming_districts_2 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_farming_districts_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_gene_crops }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_farming_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 800 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 80 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 100 } }
+}
+
+# upgrade building_farming_districts_4
+sllm_gov_p103_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_103 }
+	num_buildings = { type = building_farming_districts_3 value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_farming_districts_4 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_nano_vitality_crops }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no } has_any_capped_planet_farming_district = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 2000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 200 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 200 } }
+}
+
+# zone zone_trade
+sllm_gov_p104_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_104 }
+	OR = { AND = { num_districts = { type = district_mindlink value > 0 } check_variable = { which = sllm_gov_zf_district_mindlink value > 0 } } AND = { num_districts = { type = district_city value > 0 } check_variable = { which = sllm_gov_zf_district_city value > 0 } } AND = { num_districts = { type = district_resort value > 0 } check_variable = { which = sllm_gov_zf_district_resort value > 0 } } AND = { num_districts = { type = district_prison value > 0 } check_variable = { which = sllm_gov_zf_district_prison value > 0 } } AND = { num_districts = { type = district_slave value > 0 } check_variable = { which = sllm_gov_zf_district_slave value > 0 } } AND = { num_districts = { type = district_hive value > 0 } check_variable = { which = sllm_gov_zf_district_hive value > 0 } } AND = { num_districts = { type = district_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_nexus value > 0 } } AND = { num_districts = { type = district_prison_industrial value > 0 } check_variable = { which = sllm_gov_zf_district_prison_industrial value > 0 } } AND = { num_districts = { type = district_battle_thrall value > 0 } check_variable = { which = sllm_gov_zf_district_battle_thrall value > 0 } } AND = { num_districts = { type = district_srw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_srw_commercial value > 0 } } AND = { num_districts = { type = district_arcology_housing value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_housing value > 0 } } AND = { num_districts = { type = district_arcology_leisure value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_leisure value > 0 } } AND = { num_districts = { type = district_hab_housing value > 0 } check_variable = { which = sllm_gov_zf_district_hab_housing value > 0 } } AND = { num_districts = { type = district_rw_city value > 0 } check_variable = { which = sllm_gov_zf_district_rw_city value > 0 } } AND = { num_districts = { type = district_rw_hive value > 0 } check_variable = { which = sllm_gov_zf_district_rw_hive value > 0 } } AND = { num_districts = { type = district_rw_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_rw_nexus value > 0 } } AND = { num_districts = { type = district_rw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_rw_commercial value > 0 } } AND = { num_districts = { type = district_rw_science value > 0 } check_variable = { which = sllm_gov_zf_district_rw_science value > 0 } } AND = { num_districts = { type = district_craglands value > 0 } check_variable = { which = sllm_gov_zf_district_craglands value > 0 } } AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	exists = owner owner = { is_wilderness_empire = no } OR = { owner = { is_ai = no } has_any_research_zone = no has_any_industrial_zone = no }
+	always = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_waystation_trade
+sllm_gov_p105_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_105 }
+	OR = { AND = { num_districts = { type = district_ark_basic value > 0 } check_variable = { which = sllm_gov_zf_district_ark_basic value > 0 } } }
+	owner? = { is_nomadic = yes has_technology = tech_waystation_2 }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_galactic_stock_exchange
+sllm_gov_p106_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_106 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_trade value > 0 } }
+	num_buildings = { type = building_galactic_stock_exchange value < 1 in_construction = any }
+	owner = { has_technology = tech_galactic_markets }
+	owner? = { is_regular_empire = yes } NOR = { has_modifier = resort_colony has_modifier = slave_colony has_modifier = penal_colony }
+	orbital_ring_and_arkship_equivalent_absent = { RING = ring_galactic_stock_exchange ARKSHIP = arkship_galactic_stock_exchange }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# building building_commercial_megaplex
+sllm_gov_p107_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_107 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_trade value > 0 } }
+	num_buildings = { type = building_commercial_megaplex value < 1 in_construction = any }
+	owner = { has_technology = tech_interstellar_economics }
+	exists = owner owner = { is_regular_empire = yes } NOR = { has_modifier = slave_colony has_modifier = penal_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# building building_commercial_zone
+sllm_gov_p108_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_108 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_commercial_zone value > 0 in_construction = yes } }
+	owner = { has_technology = tech_interplanetary_commerce }
+	exists = owner owner = { is_regular_empire = yes } NOR = { has_modifier = slave_colony has_modifier = penal_colony } NOT = { has_building = building_low_tech_capital } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } owner = { is_megacorp = yes } has_any_trade_zone = yes NOR = { has_building = building_commercial_zone has_building = building_commercial_megaplex } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 40 } } }
+}
+
+# district district_ark_military
+sllm_gov_p109_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_109 }
+	num_free_districts = { type = district_ark_military value > 0 }
+	owner = { has_technology = tech_planetary_defenses }
+	uses_district_set = nomad exists = owner owner = { NAND = { has_origin = origin_forever_cruise NOT = { has_country_flag = forever_cruise_over } } }
+	owner = { resource_stockpile_compare = { resource = alloys value >= 150 } }
+}
+
+# zone zone_fortress
+sllm_gov_p110_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_110 }
+	OR = { AND = { num_districts = { type = district_mindlink value > 0 } check_variable = { which = sllm_gov_zf_district_mindlink value > 0 } } AND = { num_districts = { type = district_city value > 0 } check_variable = { which = sllm_gov_zf_district_city value > 0 } } AND = { num_districts = { type = district_prison value > 0 } check_variable = { which = sllm_gov_zf_district_prison value > 0 } } AND = { num_districts = { type = district_slave value > 0 } check_variable = { which = sllm_gov_zf_district_slave value > 0 } } AND = { num_districts = { type = district_hive value > 0 } check_variable = { which = sllm_gov_zf_district_hive value > 0 } } AND = { num_districts = { type = district_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_nexus value > 0 } } AND = { num_districts = { type = district_prison_industrial value > 0 } check_variable = { which = sllm_gov_zf_district_prison_industrial value > 0 } } AND = { num_districts = { type = district_battle_thrall value > 0 } check_variable = { which = sllm_gov_zf_district_battle_thrall value > 0 } } AND = { num_districts = { type = district_srw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_srw_commercial value > 0 } } AND = { num_districts = { type = district_arcology_housing value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_housing value > 0 } } AND = { num_districts = { type = district_arcology_leisure value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_leisure value > 0 } } AND = { num_districts = { type = district_hab_housing value > 0 } check_variable = { which = sllm_gov_zf_district_hab_housing value > 0 } } AND = { num_districts = { type = district_rw_city value > 0 } check_variable = { which = sllm_gov_zf_district_rw_city value > 0 } } AND = { num_districts = { type = district_rw_hive value > 0 } check_variable = { which = sllm_gov_zf_district_rw_hive value > 0 } } AND = { num_districts = { type = district_rw_nexus value > 0 } check_variable = { which = sllm_gov_zf_district_rw_nexus value > 0 } } AND = { num_districts = { type = district_rw_commercial value > 0 } check_variable = { which = sllm_gov_zf_district_rw_commercial value > 0 } } AND = { num_districts = { type = district_rw_science value > 0 } check_variable = { which = sllm_gov_zf_district_rw_science value > 0 } } AND = { num_districts = { type = district_craglands value > 0 } check_variable = { which = sllm_gov_zf_district_craglands value > 0 } } AND = { num_districts = { type = district_ark_city value > 0 } check_variable = { which = sllm_gov_zf_district_ark_city value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_fortress_arcology
+sllm_gov_p111_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_111 }
+	OR = { AND = { num_districts = { type = district_arcology_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_1 value > 0 } } AND = { num_districts = { type = district_arcology_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_2 value > 0 } } AND = { num_districts = { type = district_arcology_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_arcology_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_fortress_ring_world
+sllm_gov_p112_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_112 }
+	OR = { AND = { num_districts = { type = district_rw_urban_1 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_1 value > 0 } } AND = { num_districts = { type = district_rw_urban_2 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_2 value > 0 } } AND = { num_districts = { type = district_rw_urban_3 value > 0 } check_variable = { which = sllm_gov_zf_district_rw_urban_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_fortress_nexus
+sllm_gov_p113_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_113 }
+	OR = { AND = { num_districts = { type = district_nexus_1 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_1 value > 0 } } AND = { num_districts = { type = district_nexus_2 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_2 value > 0 } } AND = { num_districts = { type = district_nexus_3 value > 0 } check_variable = { which = sllm_gov_zf_district_nexus_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_fortress_hive
+sllm_gov_p114_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_114 }
+	OR = { AND = { num_districts = { type = district_hive_1 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_1 value > 0 } } AND = { num_districts = { type = district_hive_2 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_2 value > 0 } } AND = { num_districts = { type = district_hive_3 value > 0 } check_variable = { which = sllm_gov_zf_district_hive_3 value > 0 } } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	hidden_trigger = { exists = owner owner = { is_wilderness_empire = no } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# zone zone_ark_missile_silos
+sllm_gov_p115_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_115 }
+	OR = { AND = { num_districts = { type = district_ark_military value > 0 } check_variable = { which = sllm_gov_zf_district_ark_military value > 0 } } }
+	owner? = { has_technology = tech_missiles_2 }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 500 } } }
+}
+
+# building building_dread_encampment
+sllm_gov_p116_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_116 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_fortress value > 0 } }
+	num_buildings = { type = building_dread_encampment value < 1 in_construction = any }
+	exists = owner owner = { has_valid_civic = civic_reanimated_armies }
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } }
+}
+
+# building building_military_academy
+sllm_gov_p117_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_117 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_fortress value > 0 } }
+	NOT = { num_buildings = { type = building_military_academy value > 0 in_construction = yes } }
+	owner = { has_technology = tech_centralized_command }
+	exists = owner owner = { is_wilderness_empire = no NOT = { has_valid_civic = civic_reanimated_armies } } NOR = { has_modifier = resort_colony has_modifier = penal_colony }
+	OR = { has_major_upgraded_capital = yes AND = { exists = owner owner = { has_valid_civic = civic_machine_tactical_algorithms } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } if = { limit = { exists = owner owner = { NOT = { has_valid_civic = civic_machine_tactical_algorithms } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } } }
+}
+
+# building building_planetary_shield_generator
+sllm_gov_p118_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_118 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_fortress value > 0 } }
+	num_buildings = { type = building_planetary_shield_generator value < 1 in_construction = any }
+	owner = { has_technology = tech_planetary_shield_generator }
+	exists = owner owner = { is_wilderness_empire = no is_nomadic = no }
+	has_upgraded_capital = yes orbital_ring_and_arkship_equivalent_absent = { RING = ring_orbital_shield_generator ARKSHIP = arkship_shield_generator }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } }
+}
+
+# building building_stronghold
+sllm_gov_p119_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_119 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_fortress value > 0 } }
+	NOT = { num_buildings = { type = building_stronghold value > 0 in_construction = yes } }
+	owner = { has_technology = tech_planetary_defenses }
+	exists = owner NOT = { has_modifier = resort_colony } owner = { is_wilderness_empire = no }
+	exists = owner OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } has_any_fortress_zone = yes AND = { num_buildings = { type = building_stronghold value < 2 } num_buildings = { type = building_fortress value < 2 } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 40 } } }
+}
+
+# upgrade building_fortress
+sllm_gov_p120_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_120 }
+	num_buildings = { type = building_stronghold value > 0 }
+	free_jobs <= 100
+	NOT = { num_buildings = { type = building_fortress value > 0 in_construction = yes } }
+	owner = { has_technology = tech_global_defense_grid }
+	exists = owner owner = { is_wilderness_empire = no }
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# building building_luxury_residence
+sllm_gov_p121_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_121 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_luxury_residence value > 0 in_construction = yes } }
+	OR = { NOT = { is_planet_class = pc_habitat } AND = { exists = owner owner = { is_void_dweller_empire = yes } } } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } free_amenities < 500 days_passed = 0 } NOR = { has_modifier = slave_colony has_modifier = penal_colony } exists = owner owner = { is_regular_empire = yes NOT = { has_valid_civic = civic_shared_burden } } NOT = { has_building = building_low_tech_capital } owner? = { OR = { NOT = { has_origin = origin_forever_cruise } has_country_flag = forever_cruise_over } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# building building_communal_housing
+sllm_gov_p122_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_122 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_communal_housing value > 0 in_construction = yes } }
+	exists = owner OR = { NOT = { is_planet_class = pc_habitat } owner = { is_void_dweller_empire = yes } } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } free_amenities < 500 days_passed = 0 } NOR = { has_modifier = slave_colony has_modifier = penal_colony } owner = { is_regular_empire = yes has_valid_civic = civic_shared_burden }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# building building_drone_storage
+sllm_gov_p123_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_123 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_drone_storage value > 0 in_construction = yes } }
+	exists = owner owner = { is_machine_empire = yes } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } free_amenities < 500 days_passed = 0 }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# building building_hive_warren
+sllm_gov_p124_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_124 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_hive_warren value > 0 in_construction = yes } }
+	exists = owner owner = { is_hive_empire = yes is_wilderness_empire = no } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } free_amenities < 500 days_passed = 0 }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# upgrade building_paradise_dome
+sllm_gov_p125_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_125 }
+	num_buildings = { type = building_luxury_residence value > 0 }
+	NOT = { num_buildings = { type = building_paradise_dome value > 0 in_construction = yes } }
+	owner = { has_technology = tech_paradise_dome }
+	has_building = building_luxury_residence OR = { NOT = { is_planet_class = pc_habitat } AND = { exists = owner owner = { is_void_dweller_empire = yes } } } NOR = { has_modifier = slave_colony has_modifier = penal_colony } owner? = { OR = { NOT = { has_origin = origin_forever_cruise } has_country_flag = forever_cruise_over } }
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# upgrade building_communal_housing_large
+sllm_gov_p126_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_126 }
+	num_buildings = { type = building_communal_housing value > 0 }
+	NOT = { num_buildings = { type = building_communal_housing_large value > 0 in_construction = yes } }
+	owner = { has_technology = tech_paradise_dome }
+	exists = owner has_building = building_communal_housing owner = { is_regular_empire = yes has_valid_civic = civic_shared_burden } OR = { NOT = { is_planet_class = pc_habitat } owner = { is_void_dweller_empire = yes } } NOR = { has_modifier = slave_colony has_modifier = penal_colony }
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# upgrade building_drone_megastorage
+sllm_gov_p127_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_127 }
+	num_buildings = { type = building_drone_storage value > 0 }
+	NOT = { num_buildings = { type = building_drone_megastorage value > 0 in_construction = yes } }
+	owner = { has_technology = tech_micro_replicators }
+	has_building = building_drone_storage
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# upgrade building_expanded_warren
+sllm_gov_p128_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_128 }
+	num_buildings = { type = building_hive_warren value > 0 }
+	NOT = { num_buildings = { type = building_expanded_warren value > 0 in_construction = yes } }
+	owner = { has_technology = tech_housing_2 }
+	exists = owner has_building = building_hive_warren owner = { is_wilderness_empire = no }
+	has_upgraded_capital = yes
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = rare_crystals value >= 50 } }
+}
+
+# building building_holo_theatres
+sllm_gov_p129_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_129 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_holo_theatres value > 0 in_construction = yes } }
+	owner = { has_technology = tech_holo_entertainment }
+	exists = owner NOR = { has_modifier = slave_colony has_modifier = penal_colony } owner = { is_regular_empire = yes NOT = { has_valid_civic = civic_dystopian_society } } OR = { has_carrier_flag = ignore_ai_building_limitations owner = { is_ai = no } free_amenities < 500 } NOT = { has_building = building_low_tech_capital }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# building building_medical_1
+sllm_gov_p130_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_130 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	num_buildings = { type = building_medical_1 value < 1 in_construction = any }
+	owner = { has_technology = tech_basic_health }
+	exists = owner NOR = { has_modifier = slave_colony has_modifier = penal_colony } owner = { is_regular_empire = yes is_individual_machine = no } OR = { has_carrier_flag = ignore_ai_building_limitations free_amenities < 500 owner = { is_ai = no } } NAND = { buildings_stop_pop = yes owner = { is_ai = yes } } NOT = { has_building = building_low_tech_capital }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# upgrade building_hyper_entertainment_forum
+sllm_gov_p131_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_131 }
+	num_buildings = { type = building_holo_theatres value > 0 }
+	num_buildings = { type = building_hyper_entertainment_forum value < 1 in_construction = any }
+	owner = { has_technology = tech_hyper_entertainment_forum }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } }
+}
+
+# upgrade building_medical_3
+sllm_gov_p132_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_132 }
+	num_buildings = { type = building_medical_2 value > 0 }
+	NOT = { num_buildings = { type = building_medical_3 value > 0 in_construction = yes } }
+	owner = { has_technology = tech_frontier_hospital }
+	exists = owner has_upgraded_capital = yes OR = { owner = { OR = { has_valid_civic = civic_private_healthcare_corporate is_ai = no } } AND = { NOT = { has_available_jobs = entertainer } NOT = { has_forbidden_jobs = entertainer } planet_stability < 55 free_amenities < 5 } AND = { has_branch_office = yes branch_office_owner = { has_valid_civic = civic_private_healthcare_corporate } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = exotic_gases value >= 50 } }
+}
+
+# building building_precinct_house
+sllm_gov_p133_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_133 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_precinct_house value > 0 in_construction = yes } }
+	owner = { has_technology = tech_planetary_government }
+	owner = { is_regular_empire = yes NOT = { has_valid_civic = civic_civil_education } } NOT = { has_modifier = slave_colony }
+	hidden_trigger = { OR = { owner = { is_ai = no } AND = { NOT = { has_forbidden_jobs = enforcer } NOT = { has_available_jobs = enforcer } } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# building building_state_academy
+sllm_gov_p134_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_134 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	num_buildings = { type = building_state_academy value < 3 in_construction = any }
+	owner = { has_technology = tech_planetary_government }
+	exists = owner owner = { has_valid_civic = civic_civil_education } NOT = { has_modifier = slave_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# building building_sentinel_posts
+sllm_gov_p135_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_135 }
+	free_building_slots > 0
+	OR = { num_zones = { type = zone_default value > 0 } num_zones = { type = zone_trade value > 0 } }
+	NOT = { num_buildings = { type = building_sentinel_posts value > 0 in_construction = yes } }
+	owner = { has_technology = tech_planetary_government }
+	exists = owner owner = { is_gestalt = yes } owner = { is_wilderness_empire = no }
+	hidden_trigger = { OR = { owner = { is_ai = no } AND = { NOT = { has_building = building_sentinel_posts } NOT = { has_forbidden_jobs = patrol_drone } NOT = { has_available_jobs = patrol_drone } } } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 400 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 40 } } }
+}
+
+# upgrade building_hall_judgment
+sllm_gov_p136_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_136 }
+	num_buildings = { type = building_precinct_house value > 0 }
+	NOT = { num_buildings = { type = building_hall_judgment value > 0 in_construction = yes } }
+	owner = { has_technology = tech_colonial_centralization }
+	owner = { is_regular_empire = yes NOT = { has_valid_civic = civic_civil_education } } NOT = { has_modifier = slave_colony } if = { limit = { owner = { is_ai = yes } } NOT = { has_forbidden_jobs = enforcer } NOT = { has_available_jobs = enforcer } }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# upgrade building_center_of_guidance
+sllm_gov_p137_ok = {
+	NOT = { has_planet_flag = sllm_gov_blk_137 }
+	num_buildings = { type = building_state_academy value > 0 }
+	NOT = { num_buildings = { type = building_center_of_guidance value > 0 in_construction = yes } }
+	owner = { has_technology = tech_colonial_centralization }
+	owner = { has_valid_civic = civic_civil_education } NOT = { has_modifier = slave_colony }
+	if = { limit = { owner? = { is_nomadic = no } } owner = { resource_stockpile_compare = { resource = minerals value >= 600 } } } if = { limit = { owner? = { is_nomadic = yes } } owner = { resource_stockpile_compare = { resource = alloys value >= 60 } } } owner = { resource_stockpile_compare = { resource = volatile_motes value >= 50 } }
+}
+
+# 방침 research: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_research_any = {
+	OR = {
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 foundry: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_foundry_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 factory: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_factory_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 mining: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_mining_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 generator: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_generator_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 farming: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_farming_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 urban: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_urban_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_stronghold value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 200 } free_jobs_of_type = { job = battle_thrall value >= 200 } free_jobs_of_type = { job = knight value >= 200 } free_jobs_of_type = { job = warrior_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_fortress value > 0 } OR = { free_jobs_of_type = { job = soldier value >= 400 } free_jobs_of_type = { job = battle_thrall value >= 400 } free_jobs_of_type = { job = knight value >= 400 } free_jobs_of_type = { job = warrior_drone value >= 400 } } }
+	}
+}
+
+# 방침 fortress: 헐 수 있는 건물(방침 밖)
+sllm_gov_prune_fortress_any = {
+	OR = {
+		AND = { num_buildings = { type = building_physics_lab_1 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_2 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_physics_lab_3 value > 0 } OR = { free_jobs_of_type = { job = physicist value >= 200 } free_jobs_of_type = { job = calculator_physicist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_1 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_2 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_biolab_3 value > 0 } OR = { free_jobs_of_type = { job = biologist value >= 200 } free_jobs_of_type = { job = calculator_biologist value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_1 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_2 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_engineering_facility_3 value > 0 } OR = { free_jobs_of_type = { job = engineer value >= 200 } free_jobs_of_type = { job = calculator_engineer value >= 200 } free_jobs_of_type = { job = fe_archivist value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_1 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 200 } free_jobs_of_type = { job = fabricator value >= 200 } } }
+		AND = { num_buildings = { type = building_foundry_2 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 400 } free_jobs_of_type = { job = fabricator value >= 400 } } }
+		AND = { num_buildings = { type = building_foundry_3 value > 0 } OR = { free_jobs_of_type = { job = foundry value >= 600 } free_jobs_of_type = { job = fabricator value >= 600 } } }
+		AND = { num_buildings = { type = building_factory_1 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 200 } free_jobs_of_type = { job = artisan_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_factory_2 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 400 } free_jobs_of_type = { job = artisan_drone value >= 400 } } }
+		AND = { num_buildings = { type = building_factory_3 value > 0 } OR = { free_jobs_of_type = { job = artisan value >= 600 } free_jobs_of_type = { job = artisan_drone value >= 600 } } }
+		AND = { num_buildings = { type = building_commercial_zone value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+		AND = { num_buildings = { type = building_commercial_megaplex value > 0 } OR = { free_jobs_of_type = { job = trader value >= 200 } free_jobs_of_type = { job = logistics_drone value >= 200 } } }
+	}
+}
+
+# 헐 거리가 있는가: 지금 방침 밖 건물 한 채 몫 일자리가 비었고 · 실업자 없음 · (빈 건물 칸 없음 또는 에너지 적자)
+sllm_gov_prune_due = {
+	num_unemployed < 100
+	OR = {
+		free_building_slots < 1
+		owner = { resource_income_compare = { resource = energy value < 0 } }
+	}
+	OR = {
+		AND = { has_planet_flag = sllm_gov_research sllm_gov_prune_research_any = yes }
+		AND = { has_planet_flag = sllm_gov_foundry sllm_gov_prune_foundry_any = yes }
+		AND = { has_planet_flag = sllm_gov_factory sllm_gov_prune_factory_any = yes }
+		AND = { has_planet_flag = sllm_gov_mining sllm_gov_prune_mining_any = yes }
+		AND = { has_planet_flag = sllm_gov_generator sllm_gov_prune_generator_any = yes }
+		AND = { has_planet_flag = sllm_gov_farming sllm_gov_prune_farming_any = yes }
+		AND = { has_planet_flag = sllm_gov_urban sllm_gov_prune_urban_any = yes }
+		AND = { has_planet_flag = sllm_gov_fortress sllm_gov_prune_fortress_any = yes }
+	}
+}

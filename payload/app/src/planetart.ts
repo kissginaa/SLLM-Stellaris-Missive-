@@ -2,6 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { decodeDds, encodePng, shrink } from './flagrender';
+import { imageJob } from './image-pool';
 
 /** 행성 종류 번호(sllm_pl_pc) -> 게임 그림 파일 이름. */
 export const PLANET_PIC: Record<number, string> = {
@@ -26,3 +27,15 @@ export function planetPicUrl(gameDir: string | null, pc: number): string | null 
   return url;
 }
 export function clearPlanetPicCache(): void { cache.clear(); }
+/** 같은 그림을 작업 스레드에서(2026-10-27 최적화, 총독 화면 IPC 용). 파일만 여기서 읽는다. */
+export async function planetPicUrlAsync(gameDir: string | null, pc: number): Promise<string | null> {
+  const name = PLANET_PIC[pc];
+  if (!gameDir || !name) return null;
+  const key = gameDir + '|' + pc;
+  if (cache.has(key)) return cache.get(key) ?? null;
+  let bytes: Buffer | null = null;
+  try { bytes = fs.readFileSync(path.join(gameDir, 'gfx', 'event_pictures', name + '.dds')); } catch { /* 없으면 그림으로 대신한다 */ }
+  const url = bytes ? (await imageJob({ op: 'planet', bytes, maxW: 450 })).url : null;
+  cache.set(key, url);
+  return url;
+}

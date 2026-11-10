@@ -6,9 +6,9 @@ import {ctx} from '../app/ctx';
 import {settings} from '../app/settings';
 import {safeSend} from '../safe-send';
 import {logDiagnostic} from '../diagnostics';
-import {randomUUID} from 'crypto';
+import {randomUUID,createHash} from 'crypto';
 import {spyPressResult} from '../espionage';
-import {SpyState,newSpy,spyFixture,spyChoose,spyConsequences,spyMessages,parseSpyEvidence,parseSpyVerdict,advanceSpy,scriptedEvidence,withdrawSpy,SPY_TURNS_PER_EVIDENCE,spyPenaltyPlan,spyApplyCommand} from '../espionage';
+import {SpyState,newSpy,spyFixture,spyChoose,spyConsequences,spyMessages,parseSpyEvidence,parseSpyVerdict,advanceSpy,scriptedEvidence,withdrawSpy,SPY_TURNS_PER_EVIDENCE,spyPenaltyPlan,spyApplyCommand,spyLawyerFee,isSpyLawyer,spyCanHireLawyer,spyHireLawyer,spyLawyerCommand} from '../espionage';
 import {link} from '../app/game-link';
 import {LogRouter,SLOT} from '../app/log-router';
 import {terminalRequest,terminalReplies,terminal} from './terminal';
@@ -16,10 +16,14 @@ import {chronNote} from './chronicle-app';
 import { pick } from './settings-ui';
 import { openScandalPress } from './press-app'; // 국내 기자회견 = 실제 인터뷰 화면(2026-10-20)
 import { moodNudge } from './mood-app';
+import { scenarioLocked } from './scenario-locks-app'; // 시나리오에서는 은하재판소를 치운다(2026-11-06)
 const L = pick; // 한국어·영어·언어 팩(2026-10-19 영어 화면 점검)
 export const espionage={win:null as BrowserWindow|null,state:null as SpyState|null,busy:false};
 const view=()=>({state:espionage.state,busy:espionage.busy,effects:espionage.state?spyConsequences(espionage.state):null});
-const push=()=>safeSend(espionage.win,'espionageState',view());
+// 대면 심리(1인칭 법정, 2026-10-27 사용자)는 전체 화면. 기자회견·처음 안내는 창 그대로. 심리가 끝나도 창을 닫을 때까지 전체 화면을 유지한다.
+export const spyWantsFullScreen=(s:SpyState|null):boolean=>!!s&&s.route==='face'&&s.evidence.length>0;
+function syncFullScreen(){const w=espionage.win;if(!w||w.isDestroyed())return;const want=spyWantsFullScreen(espionage.state);if(w.isFullScreen()!==want)w.setFullScreen(want);}
+const push=()=>{syncFullScreen();safeSend(espionage.win,'espionageState',view());};
 const file=()=>path.join(app.getPath('userData'),'sllm_espionage_preview.json');
 function commit(s:SpyState){const tmp=file()+'.tmp';fs.writeFileSync(tmp,JSON.stringify({version:1,state:s},null,2),'utf8');fs.renameSync(tmp,file());espionage.state=s;}
 function show(){if(espionage.win&&!espionage.win.isDestroyed()){espionage.win.show();espionage.win.focus();push();return;}
@@ -55,6 +59,7 @@ export async function applySpy():Promise<void>{
  * 상대 제국이 해명을 요구한다 — 알림을 누르면 창이 열린다. 진행 중인 청문회가 있으면 새로 열지 않는다. 끝나면 기존 제재가 게임에 적용된다(applySpy). */
 export function openGameHearing(o:{opponent:string;operation:string;facts:string[];key:string;idx?:number}):boolean{
  const sid=ctx.curSaveId;if(!sid||!o.opponent)return false;
+ if(scenarioLocked('galcourt')){logDiagnostic('info','espionage.game_skip',{reason:'scenario'});return false;} // 회랑의 삼파전: 은하재판소 없음
  const cur=espionage.state;if(cur&&cur.phase!=='finished'){logDiagnostic('info','espionage.game_skip',{reason:'busy'});return false;}
  const id='game-'+o.key.slice(0,120);if(cur&&cur.incident.id===id)return false;
  const c=terminal.items.find(x=>x.name===o.opponent&&x.type==='default'),idx=o.idx||c?.idx||[...ctx.mailCountries].find(([,m])=>m.name===o.opponent)?.[0]||0;
@@ -66,7 +71,7 @@ export function openGameHearing(o:{opponent:string;operation:string;facts:string
 /** 알림에서 청문회 창 열기 */
 export function showHearing():void{if(espionage.state&&espionage.state.phase!=='finished')show();}
 export function registerEspionage(router:LogRouter){
- router.on(SLOT.SPY_APPLY,'espionage:apply',m=>{if(m.kind==='SPYAPPLY')terminalReplies.get('SPYAPPLY:'+m.kv.req)?.(m);});
+ router.on(SLOT.SPY_APPLY,'espionage:apply',m=>{if(m.kind==='SPYAPPLY'||m.kind==='SPYLAWYER')terminalReplies.get(m.kind+':'+m.kv.req)?.(m);});
  ipcMain.handle('devEspionage',async(_e,mode:unknown,tid:unknown)=>{try{if(!settings.devMode||!['scripted','ai'].includes(String(mode))||espionage.busy)throw new Error(L('개발자 모드와 진행 상태를 확인하세요.', 'Check developer mode and the current progress.'));
   const idx=Number(tid)||0;let incident=spyFixture();
   if(idx){const c=terminal.items.find(c=>c.idx===idx&&c.type==='default');if(!ctx.gameRunning||terminal.sid!==ctx.curSaveId||!c)throw new Error(L('게임을 켜고 연락처를 갱신한 뒤, 대상 번호에 통신 가능한 제국 번호를 넣으세요.', 'Start the game and refresh contacts, then enter a reachable empire number as the target.'));incident={...incident,id:'spy-game-test-'+Date.now(),opponent:c.name,opponentIdx:idx,sid:ctx.curSaveId,facts:['시험 사건(작전 내용은 가상) · 상대 제국은 실제 게임 제국입니다. 심리가 끝나면 제재가 게임에 적용됩니다.']};}
@@ -91,6 +96,18 @@ export function registerEspionage(router:LogRouter){
     if(s.phase!=='demand')throw new Error(L('대응 방식을 이미 선택했습니다.', 'A response has already been chosen.'));
     const evidence=action==='face'?(s.mode==='ai'?parseSpyEvidence(await ctx.ai.chat(spyMessages(s,'evidence'),{purpose:'espionage-evidence',json:true,maxTokens:1700,conversationId:conversationOf(s)})):scriptedEvidence()):[];
     next=spyChoose(s,action,evidence);
+   }else if(action==='lawyer'){ // 은하 변호사(2026-10-27): 재판 시작 때 한 번, 비용은 실제 게임 사건이면 게임에서 낸다
+    if(!isSpyLawyer(input))throw new Error(L('변호사를 골라 주세요.','Choose a lawyer.'));
+    if(!spyCanHireLawyer(s))throw new Error(L('변호사는 재판을 시작할 때(첫 발언 전)만 선임할 수 있습니다.','A lawyer can only be hired at the start of the hearing (before the first statement).'));
+    const lw=spyLawyerFee(input,s.evidence.filter(e=>!e.closed).length);
+    if(lw.energy+lw.influence>0&&s.incident.source==='game'){
+     const sid=s.incident.sid||'';if(!sid||sid!==ctx.curSaveId||!ctx.gameRunning)throw new Error(L('게임이 켜져 있어야 변호사 비용을 낼 수 있습니다.','The game must be running to pay the lawyer.'));
+     const req=++link.reqCounter,mark=createHash('sha256').update(s.incident.id).digest('hex').slice(0,24);
+     const st=(await terminalRequest(spyLawyerCommand(req,sid,mark,input,s.evidence.filter(e=>!e.closed).length),'SPYLAWYER',req)).kv.status;
+     if(st==='short')throw new Error(L(`자원이 모자랍니다(에너지 ${lw.energy} · 영향력 ${lw.influence} 필요).`,`Not enough resources (needs ${lw.energy} energy and ${lw.influence} influence).`));
+     if(st!=='applied'&&st!=='duplicate')throw new Error(L('비용 결과를 확인하지 못했습니다.','Could not confirm the payment.'));
+    }
+    next=spyHireLawyer(s,input);
    }else if(action==='say'){
     const text=typeof input==='string'?input.trim():'';
     if(s.phase!=='hearing'||!text||text.length>1600)throw new Error(L('해명을 1~1600자로 입력하세요.', 'Enter an explanation of 1–1600 characters.'));

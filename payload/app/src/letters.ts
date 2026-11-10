@@ -31,7 +31,7 @@ export const FAVOR_KINDS = Object.keys(FAVORS) as FavorKind[];
 export const LETTER_TRAIT = 'sllm_trait_letter_trusted';
 
 export interface Cand { key: string; lid: number; kind: LetterKind; detail: string; date: string }
-export interface Favor { kind: FavorKind; state: 'open' | 'pending' | 'granted' | 'declined' | 'failed'; note?: string }
+export interface Favor { kind: FavorKind; state: 'open' | 'pending' | 'granted' | 'declined' | 'failed'; note?: string; cid?: string } // cid: 게임 쪽 중복 방지 번호(다시 눌러도 같은 번호 → 두 번 적용되지 않음)
 export interface Letter {
   id: number; key: string; lid: number; name: string; role: string; date: string;
   kinds: Array<{ kind: LetterKind; detail: string }>;
@@ -189,5 +189,5 @@ export function favorCommand(req: number, sid: string, cid: string, lid: number,
   const afford = energy > 0 ? `if = { limit = { prev = { resource_stockpile_compare = { resource = energy value < ${energy} } } } ${log('poor')} } else = { prev = { set_variable = { which = ${mark} value = 1 } } ${give} }` : `prev = { set_variable = { which = ${mark} value = 1 } } ${give}`;
   // every_owned_leader 안: THIS = 그 인물, PREV = 플레이어 국가.
   const body = `if = { limit = { prev = { is_variable_set = ${mark} } } ${log('duplicate')} } else = { ${afford} }`;
-  return `effect every_playable_country = { limit = { is_ai = no check_variable = { which = sllm_save_id value = ${sid} } } set_variable = { which = sllm_let_found value = 0 } every_owned_leader = { limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = ${lid} } } prev = { set_variable = { which = sllm_let_found value = 1 } } ${body} } if = { limit = { check_variable = { which = sllm_let_found value = 0 } } ${log('no_target')} } clear_variable = sllm_let_found }`;
+  return `effect every_playable_country = { limit = { is_ai = no check_variable = { which = sllm_save_id value = ${sid} } } set_variable = { which = sllm_let_found value = 0 } every_owned_leader = { limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = ${lid} } } prev = { set_variable = { which = sllm_let_found value = 1 } } set_variable = { which = sllm_tr_m value = 12 } ${body} } if = { limit = { check_variable = { which = sllm_let_found value = 0 } } ${log('no_target')} } clear_variable = sllm_let_found }`;
 }

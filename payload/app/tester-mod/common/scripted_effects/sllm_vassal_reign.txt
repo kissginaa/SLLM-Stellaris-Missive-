@@ -1,0 +1,538 @@
+# 종속국 통치권(2026-11-05 사용자: Vassals Expanded and Reworked 를 참고만 해서 우리 식으로). 앱: src/features/vassal-reign-app.ts · 규칙: src/vassal-reign.ts
+# 앱 명령이 every_playable_country(플레이어, This = Root) 안에서 sllm_vr_me(우리)·sllm_vr_t(종속국)를 저장한 뒤 부른다.
+# 회신 VRSET st: 0 없음 · 3 영향력 부족 · 4 에너지 부족 · 6 게임이 받아들이지 않음(돌려줌) · 7 쿨다운 · 8 이미 있음 · 9 됨
+
+# ---- ① 괴뢰 통치자 ----
+# 후보: 종속국 지도자(지금 통치자 빼고) + 우리 지도자(통치자·후계자 빼고). 번호 sllm_vr_ln 은 두 쪽을 이어서 매긴다.
+sllm_vr_leaders = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_lc value = 0 }
+	event_target:sllm_vr_t = {
+		every_owned_leader = {
+			limit = { is_ruler = no }
+			sllm_vr_leader_line = { SIDE = 1 }
+		}
+	}
+	every_owned_leader = {
+		limit = { is_ruler = no is_heir = no }
+		sllm_vr_leader_line = { SIDE = 2 }
+	}
+	log = "SLLM:VRLEND/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]"
+}
+sllm_vr_leader_line = {
+	root = { change_variable = { which = sllm_vr_lc value = 1 } }
+	set_variable = { which = sllm_vr_ln value = root.sllm_vr_lc }
+	set_variable = { which = sllm_vr_lk value = 0 }
+	set_variable = { which = sllm_vr_ls value = $SIDE$ } # 1 = 종속국 사람(t) · 2 = 우리 사람(me) — 로그 문자열엔 매개변수를 넣지 않고 변수로(F-39)
+	if = { limit = { leader_class = official } set_variable = { which = sllm_vr_lk value = 1 } }
+	else_if = { limit = { leader_class = commander } set_variable = { which = sllm_vr_lk value = 2 } }
+	else_if = { limit = { leader_class = scientist } set_variable = { which = sllm_vr_lk value = 3 } }
+	log = "SLLM:VRLDR/;/req=\\[Root.sllm_vr_req]/;/n=\\[This.sllm_vr_ln]/;/side=\\[This.sllm_vr_ls]/;/cls=\\[This.sllm_vr_lk]/;/name=\\[This.GetName]"
+}
+# 앉히기: OWNER = sllm_vr_t(종속국 사람) / sllm_vr_me(우리 사람, MOVE = yes 면 그 나라로 넘긴다). MOD = 새 통치자 수정자.
+sllm_vr_install = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_st value = 0 }
+	event_target:$OWNER$ = {
+		random_owned_leader = {
+			limit = { is_variable_set = sllm_vr_ln check_variable = { which = sllm_vr_ln value = $N$ } is_ruler = no }
+			save_event_target_as = sllm_vr_pick
+		}
+	}
+	if = {
+		limit = { exists = event_target:sllm_vr_pick }
+		if = {
+			limit = { event_target:sllm_vr_t = { has_country_flag = sllm_vr_install_cd } }
+			set_variable = { which = sllm_vr_st value = 7 }
+		}
+		else_if = {
+			limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+			set_variable = { which = sllm_vr_st value = 3 }
+		}
+		else = {
+			event_target:sllm_vr_t = { ruler = { save_event_target_as = sllm_vr_old } }
+			if = { limit = { always = $MOVE$ } event_target:sllm_vr_pick = { set_owner = event_target:sllm_vr_t } }
+			event_target:sllm_vr_t = { assign_leader = event_target:sllm_vr_pick }
+			if = {
+				limit = { event_target:sllm_vr_t = { ruler = { is_same_value = event_target:sllm_vr_pick } } }
+				add_resource = { influence = -$COST$ }
+				event_target:sllm_vr_t = {
+					add_modifier = { modifier = $MOD$ days = $DAYS$ }
+					add_modifier = { modifier = sllm_vr_grudge days = 1080 }
+					set_timed_country_flag = { flag = sllm_vr_install_cd days = 3600 }
+				}
+				if = {
+					limit = { exists = event_target:sllm_vr_old }
+					event_target:sllm_vr_old = {
+						set_leader_flag = sllm_vr_deposed
+						log = "SLLM:VRNAME/;/req=\\[Root.sllm_vr_req]/;/k=old/;/name=\\[This.GetName]"
+					}
+				}
+				event_target:sllm_vr_pick = {
+					set_leader_flag = sllm_vr_puppet_ruler
+					log = "SLLM:VRNAME/;/req=\\[Root.sllm_vr_req]/;/k=new/;/name=\\[This.GetName]"
+				}
+				set_variable = { which = sllm_vr_st value = 9 }
+			}
+			else = {
+				if = { limit = { always = $MOVE$ } event_target:sllm_vr_pick = { set_owner = event_target:sllm_vr_me } }
+				set_variable = { which = sllm_vr_st value = 6 }
+			}
+		}
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+
+# ---- ② 대리전 ----
+# 대상: 종속국의 이웃 가운데 우리·그 종속국·우리 종속국·그 종주국(우리)·우리 연방·방위조약 상대가 아니고, 아직 그 종속국과 싸우지 않는 나라.
+sllm_vr_targets = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_gc value = 0 }
+	every_country = {
+		limit = {
+			sllm_is_empire = yes
+			NOT = { is_same_value = event_target:sllm_vr_me }
+			NOT = { is_same_value = event_target:sllm_vr_t }
+			NOT = { has_overlord = event_target:sllm_vr_me }
+			NOT = { event_target:sllm_vr_me = { has_overlord = prev } }
+			NOT = { has_overlord = event_target:sllm_vr_t }
+			NOT = { is_in_federation_with = event_target:sllm_vr_me }
+			NOT = { has_defensive_pact = event_target:sllm_vr_me }
+			NOT = { is_at_war_with = event_target:sllm_vr_t }
+			is_neighbor_of = event_target:sllm_vr_t
+		}
+		root = { change_variable = { which = sllm_vr_gc value = 1 } }
+		set_variable = { which = sllm_vr_gn value = root.sllm_vr_gc }
+		log = "SLLM:VRTGT/;/req=\\[Root.sllm_vr_req]/;/n=\\[This.sllm_vr_gn]/;/name=\\[This.GetName]"
+	}
+	log = "SLLM:VRTEND/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]"
+}
+# 선포: COST = 영향력(우리), E = 지원금(우리 → 종속국 에너지). 대상에는 sllm_vr_px_<종속국 번호> 표식(월 점검용).
+sllm_vr_proxy = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_st value = 0 }
+	random_country = {
+		limit = { is_variable_set = sllm_vr_gn check_variable = { which = sllm_vr_gn value = $N$ } NOT = { is_at_war_with = event_target:sllm_vr_t } }
+		save_event_target_as = sllm_vr_g
+	}
+	if = {
+		limit = { exists = event_target:sllm_vr_g }
+		if = {
+			limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+			set_variable = { which = sllm_vr_st value = 3 }
+		}
+		else_if = {
+			limit = { resource_stockpile_compare = { resource = energy value < $E$ } }
+			set_variable = { which = sllm_vr_st value = 4 }
+		}
+		else = {
+			add_resource = { influence = -$COST$ energy = -$E$ }
+			event_target:sllm_vr_g = { set_country_flag = sllm_vr_px_$TID$ set_country_flag = sllm_vr_pxt set_variable = { which = sllm_vr_pxv value = $TID$ } } # pxt·pxv: 전쟁이 끝날 때 모드가 스스로 알린다(2026-11-09, events/sllm_vrsig_events.txt)
+			event_target:sllm_vr_t = {
+				add_resource = { energy = $E$ }
+				add_casus_belli = { type = cb_sllm_vr_proxy who = event_target:sllm_vr_g days = 360 }
+				declare_war = { target = event_target:sllm_vr_g attacker_war_goal = wg_sllm_vr_proxy }
+			}
+			set_variable = { which = sllm_vr_st value = 9 }
+		}
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 지시값만 받기(주저·거절 때도 지시는 내렸다).
+sllm_vr_pay = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	if = {
+		limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+		set_variable = { which = sllm_vr_st value = 3 }
+	}
+	else = {
+		add_resource = { influence = -$COST$ }
+		set_variable = { which = sllm_vr_st value = 9 }
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 선포가 실제로 안 됐으면 돌려준다(앱이 바로 다음에 점검해서 부른다).
+sllm_vr_refund = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	add_resource = { influence = $COST$ energy = $E$ }
+	event_target:sllm_vr_t = { add_resource = { energy = -$E$ } }
+	set_variable = { which = sllm_vr_st value = 9 }
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 대리전이 이어지는지: 표식이 붙은 나라와 종속국이 아직 싸우면 war=1. 끝났으면 표식을 치운다.
+sllm_vr_proxy_chk = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_w value = 0 }
+	every_country = {
+		limit = { has_country_flag = sllm_vr_px_$TID$ }
+		if = {
+			limit = { exists = event_target:sllm_vr_t is_at_war_with = event_target:sllm_vr_t }
+			root = { set_variable = { which = sllm_vr_w value = 1 } }
+		}
+		else = {
+			remove_country_flag = sllm_vr_px_$TID$
+			if = { limit = { is_variable_set = sllm_vr_pxv check_variable = { which = sllm_vr_pxv value = $TID$ } } remove_country_flag = sllm_vr_pxt clear_variable = sllm_vr_pxv }
+		}
+	}
+	log = "SLLM:VRPXW/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/war=\\[This.sllm_vr_w]"
+}
+
+# ---- ③ 간섭 반감 ----
+sllm_vr_meddle = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	event_target:sllm_vr_t = {
+		remove_modifier = sllm_vr_meddle_1
+		remove_modifier = sllm_vr_meddle_2
+		remove_modifier = sllm_vr_meddle_3
+		if = { limit = { always = $ON$ } add_modifier = { modifier = sllm_vr_meddle_$TIER$ days = $DAYS$ } }
+	}
+	set_variable = { which = sllm_vr_st value = 9 }
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+
+# ---- ④ 정책·종족 권리 동조: 한 번에 하나(정책 먼저, 그다음 종족 권리). 번호 C 는 src/vassal-reign.ts POLICY_ALIGN·RIGHT_ALIGN 차례. ----
+sllm_vr_align = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_done value = 0 }
+	sllm_vr_pol = { G = war_philosophy O = unrestricted_wars C = 1 }
+	sllm_vr_pol = { G = war_philosophy O = liberation_wars C = 2 }
+	sllm_vr_pol = { G = war_philosophy O = no_wars C = 3 }
+	sllm_vr_pol = { G = orbital_bombardment O = orbital_bombardment_selective C = 4 }
+	sllm_vr_pol = { G = orbital_bombardment O = orbital_bombardment_indiscriminate C = 5 }
+	sllm_vr_pol = { G = border_policy O = border_policy_open C = 6 }
+	sllm_vr_pol = { G = border_policy O = border_policy_closed C = 7 }
+	sllm_vr_pol = { G = first_contact_protocol O = first_contact_proactive C = 8 }
+	sllm_vr_pol = { G = first_contact_protocol O = first_contact_cautious C = 9 }
+	sllm_vr_pol = { G = first_contact_protocol O = first_contact_attack_allowed C = 10 }
+	sllm_vr_pol = { G = slavery O = slavery_not_allowed C = 11 }
+	sllm_vr_pol = { G = slavery O = slavery_allowed C = 12 }
+	sllm_vr_pol = { G = purge O = purge_not_allowed C = 13 }
+	sllm_vr_pol = { G = purge O = purge_displacement_only C = 14 }
+	sllm_vr_pol = { G = artificial_intelligence_policy O = ai_outlawed C = 15 }
+	sllm_vr_pol = { G = artificial_intelligence_policy O = ai_servitude C = 16 }
+	sllm_vr_pol = { G = artificial_intelligence_policy O = ai_full_rights C = 17 }
+	sllm_vr_pol = { G = refugees O = refugees_not_allowed C = 18 }
+	sllm_vr_pol = { G = refugees O = refugees_only_citizens C = 19 }
+	sllm_vr_pol = { G = refugees O = refugees_allowed C = 20 }
+	sllm_vr_pol = { G = population_controls O = population_controls_not_allowed C = 21 }
+	sllm_vr_pol = { G = population_controls O = population_controls_allowed C = 22 }
+	sllm_vr_pol = { G = resettlement O = resettlement_not_allowed C = 23 }
+	sllm_vr_pol = { G = resettlement O = resettlement_allowed C = 24 }
+	if = {
+		limit = { check_variable = { which = sllm_vr_done value = 0 } event_target:sllm_vr_t = { is_gestalt = no } }
+		event_target:sllm_vr_t = {
+			every_owned_species = {
+				limit = { NOR = { has_trait = trait_hive_mind has_trait = trait_machine_unit has_trait = trait_mechanical } }
+				sllm_vr_right = { T = citizenship_full C = 101 }
+				sllm_vr_right = { T = citizenship_limited C = 102 }
+				sllm_vr_slave = { C = 103 }
+				sllm_vr_life = { T = living_standard_good C = 104 }
+				sllm_vr_life = { T = living_standard_normal C = 105 }
+				sllm_vr_life = { T = living_standard_subsistence C = 106 }
+			}
+		}
+	}
+	if = { limit = { check_variable = { which = sllm_vr_done value > 0 } } set_variable = { which = sllm_vr_st value = 9 } }
+	else = { set_variable = { which = sllm_vr_st value = 0 } }
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 정책 하나(This = 플레이어): sllm_vr_me(앞쪽 = 우리, 역방향 = 우리 종주국)가 O 이고, 종속국은 O 가 아니며, 게임이 그 정책을 허락할 때만.
+sllm_vr_pol = {
+	if = {
+		limit = {
+			check_variable = { which = sllm_vr_done value = 0 }
+			event_target:sllm_vr_me = { has_policy_flag = $O$ }
+			event_target:sllm_vr_t = { NOT = { has_policy_flag = $O$ } can_set_policy = { policy = $G$ option = $O$ } }
+		}
+		event_target:sllm_vr_t = { set_policy = { policy = $G$ option = $O$ cooldown = yes } }
+		set_variable = { which = sllm_vr_done value = $C$ }
+		log = "SLLM:VRALN/;/req=\\[This.sllm_vr_req]/;/k=\\[This.sllm_vr_done]/;/sp=-"
+	}
+}
+# 시민권(This = 종속국의 종족): 우리가 이 종족에게 T 를 주고, 종속국은 아니면.
+sllm_vr_right = {
+	if = {
+		limit = {
+			root = { check_variable = { which = sllm_vr_done value = 0 } }
+			has_citizenship_type = { country = event_target:sllm_vr_me type = $T$ }
+			NOT = { has_citizenship_type = { country = event_target:sllm_vr_t type = $T$ } }
+			NOT = { has_citizenship_type = { country = event_target:sllm_vr_t type = citizenship_purge } }
+		}
+		set_citizenship_type = { country = event_target:sllm_vr_t type = $T$ cooldown = yes }
+		root = { set_variable = { which = sllm_vr_done value = $C$ } }
+		log = "SLLM:VRALN/;/req=\\[Root.sllm_vr_req]/;/k=\\[Root.sllm_vr_done]/;/sp=\\[This.GetName]"
+	}
+}
+# 노예화는 종속국이 노예제를 허용할 때만, 그리고 그 나라 주 종족에게는 하지 않는다.
+sllm_vr_slave = {
+	if = {
+		limit = {
+			root = { check_variable = { which = sllm_vr_done value = 0 } }
+			event_target:sllm_vr_t = { has_policy_flag = slavery_allowed }
+			NOT = { is_same_species = event_target:sllm_vr_t }
+			has_citizenship_type = { country = event_target:sllm_vr_me type = citizenship_slavery }
+			NOT = { has_citizenship_type = { country = event_target:sllm_vr_t type = citizenship_slavery } }
+			NOT = { has_citizenship_type = { country = event_target:sllm_vr_t type = citizenship_purge } }
+		}
+		set_citizenship_type = { country = event_target:sllm_vr_t type = citizenship_slavery cooldown = yes }
+		root = { set_variable = { which = sllm_vr_done value = $C$ } }
+		log = "SLLM:VRALN/;/req=\\[Root.sllm_vr_req]/;/k=\\[Root.sllm_vr_done]/;/sp=\\[This.GetName]"
+	}
+}
+# 생활 수준: 공동 부담·디스토피아·노동자 협동 국가는 건너뛴다(그 나라 전용 생활 수준). 노예·숙청 대상은 건너뛴다.
+sllm_vr_life = {
+	if = {
+		limit = {
+			root = { check_variable = { which = sllm_vr_done value = 0 } }
+			event_target:sllm_vr_t = { NOR = { has_valid_civic = civic_shared_burden has_valid_civic = civic_dystopian_society has_valid_civic = civic_worker_coop } }
+			has_living_standard = { country = event_target:sllm_vr_me type = $T$ }
+			NOT = { has_living_standard = { country = event_target:sllm_vr_t type = $T$ } }
+			NOT = { has_citizenship_type = { country = event_target:sllm_vr_t type = citizenship_slavery } }
+			NOT = { has_citizenship_type = { country = event_target:sllm_vr_t type = citizenship_purge } }
+		}
+		set_living_standard = { country = event_target:sllm_vr_t type = $T$ cooldown = yes }
+		root = { set_variable = { which = sllm_vr_done value = $C$ } }
+		log = "SLLM:VRALN/;/req=\\[Root.sllm_vr_req]/;/k=\\[Root.sllm_vr_done]/;/sp=\\[This.GetName]"
+	}
+}
+
+# ---- ⑤ 종속국 쟁탈 ----
+# 후보: 우리와 국경이 닿은 남의 종속국(그 종주국이 우리 연방·방위조약 상대가 아닐 때). cb = 이미 명분을 얻은 곳.
+sllm_vr_prizes = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_zc value = 0 }
+	every_country = {
+		limit = {
+			has_any_overlord = yes
+			NOT = { has_overlord = event_target:sllm_vr_me }
+			is_neighbor_of = event_target:sllm_vr_me
+			overlord = {
+				NOT = { is_same_value = event_target:sllm_vr_me }
+				NOT = { is_in_federation_with = event_target:sllm_vr_me }
+				NOT = { has_defensive_pact = event_target:sllm_vr_me }
+			}
+		}
+		root = { change_variable = { which = sllm_vr_zc value = 1 } }
+		set_variable = { which = sllm_vr_zn value = root.sllm_vr_zc }
+		set_variable = { which = sllm_vr_zf value = 0 }
+		if = { limit = { has_country_flag = sllm_vr_prize } set_variable = { which = sllm_vr_zf value = 1 } }
+		overlord = { save_event_target_as = sllm_vr_zo }
+		event_target:sllm_vr_zo = { log = "SLLM:VRPZ/;/req=\\[Root.sllm_vr_req]/;/n=\\[Prev.sllm_vr_zn]/;/cb=\\[Prev.sllm_vr_zf]/;/ov=\\[This.GetName]/;/name=\\[Prev.GetName]" }
+	}
+	log = "SLLM:VRPZEND/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]"
+}
+sllm_vr_prize_cb = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_st value = 0 }
+	random_country = {
+		limit = { is_variable_set = sllm_vr_zn check_variable = { which = sllm_vr_zn value = $N$ } has_any_overlord = yes NOT = { has_overlord = event_target:sllm_vr_me } }
+		save_event_target_as = sllm_vr_z
+		overlord = { save_event_target_as = sllm_vr_zo }
+	}
+	if = {
+		limit = { exists = event_target:sllm_vr_z exists = event_target:sllm_vr_zo }
+		if = {
+			limit = { event_target:sllm_vr_z = { has_country_flag = sllm_vr_prize } }
+			set_variable = { which = sllm_vr_st value = 8 }
+		}
+		else_if = {
+			limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+			set_variable = { which = sllm_vr_st value = 3 }
+		}
+		else = {
+			add_resource = { influence = -$COST$ }
+			add_casus_belli = { type = cb_sllm_vr_prize who = event_target:sllm_vr_zo days = $DAYS$ }
+			event_target:sllm_vr_z = { set_timed_country_flag = { flag = sllm_vr_prize days = $DAYS$ } }
+			set_variable = { which = sllm_vr_st value = 9 }
+		}
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 쟁탈 전쟁에서 이겼을 때(war goal on_accept, This = 이긴 우리, From = 진 종주국): 표식 붙은 종속국을 우리 종속국으로 + 그 나라 종족에서 새 통치자.
+sllm_vr_prize_won = {
+	save_event_target_as = sllm_vr_win
+	from = {
+		every_subject = {
+			limit = { has_country_flag = sllm_vr_prize }
+			remove_country_flag = sllm_vr_prize
+			set_subject_of = { who = event_target:sllm_vr_win }
+			species = { save_event_target_as = sllm_vr_zsp }
+			create_leader = {
+				class = official
+				species = event_target:sllm_vr_zsp
+				name = random
+				skill = 3
+				effect = { save_event_target_as = sllm_vr_zr }
+			}
+			assign_leader = event_target:sllm_vr_zr
+			add_modifier = { modifier = sllm_vr_puppet days = 1800 }
+			log = "SLLM:VRWAR/;/k=prize/;/sid=\\[Root.sllm_save_id]/;/name=\\[This.GetName]/;/ov=\\[Prev.GetName]"
+		}
+	}
+}
+# 대리전에서 종속국이 이겼을 때(This = 종속국, From = 진 나라): 종주국(우리)에게 알린다.
+sllm_vr_proxy_won = {
+	add_resource = { influence = 50 }
+	from = {
+		add_modifier = { modifier = humiliated days = 1800 }
+	}
+	log = "SLLM:VRWAR/;/k=proxy/;/name=\\[This.GetName]/;/foe=\\[From.GetName]"
+}
+
+# ---- ⑥ 함대 징발 · ⑦ 함대 헌납(2026-11-05) ----
+# 종속국 전투 함대 목록(빌려줄 수 있는 것: scripted_triggers/sllm_fleetorder_triggers.txt sllm_fo_lendable_fleet). cnt = 이동 가능한 전투 함대 수(헌납 때 마지막 함대 보호).
+sllm_vr_fleets = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_fc value = 0 }
+	set_variable = { which = sllm_vr_fcnt value = 0 }
+	event_target:sllm_vr_t = {
+		every_owned_fleet = {
+			limit = { is_civilian = no is_mobile = yes }
+			root = { change_variable = { which = sllm_vr_fcnt value = 1 } }
+		}
+		every_owned_fleet = {
+			limit = { sllm_fo_lendable_fleet = yes NOT = { has_fleet_flag = sllm_vr_levied } }
+			root = { change_variable = { which = sllm_vr_fc value = 1 } }
+			set_variable = { which = sllm_vr_fn value = root.sllm_vr_fc }
+			set_variable = { which = sllm_vr_fp value = trigger:fleet_power }
+			log = "SLLM:VRFLT/;/req=\\[Root.sllm_vr_req]/;/n=\\[This.sllm_vr_fn]/;/pow=\\[This.sllm_vr_fp]/;/name=\\[This.GetName]"
+		}
+	}
+	log = "SLLM:VRFEND/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/cnt=\\[This.sllm_vr_fcnt]"
+}
+# 징발: 고른 함대를 DAYS 동안 우리 지휘 아래(소유는 종속국 그대로).
+sllm_vr_levy = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_st value = 0 }
+	event_target:sllm_vr_t = {
+		random_owned_fleet = {
+			limit = { is_variable_set = sllm_vr_fn check_variable = { which = sllm_vr_fn value = $N$ } sllm_fo_lendable_fleet = yes NOT = { has_fleet_flag = sllm_vr_levied } }
+			save_event_target_as = sllm_vr_f
+		}
+	}
+	if = {
+		limit = { exists = event_target:sllm_vr_f }
+		if = {
+			limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+			set_variable = { which = sllm_vr_st value = 3 }
+		}
+		else = {
+			add_resource = { influence = -$COST$ }
+			event_target:sllm_vr_f = {
+				give_fleet = { controller = event_target:sllm_vr_me days = $DAYS$ }
+				set_fleet_flag = sllm_vr_levied
+				set_fleet_stance = aggressive
+				log = "SLLM:VRNAME/;/req=\\[Root.sllm_vr_req]/;/k=new/;/name=\\[This.GetName]"
+			}
+			event_target:sllm_vr_t = { set_country_flag = sllm_vr_lvon } # 징발 함대를 잃거나 돌려받으면 모드가 스스로 알린다(2026-11-09, events/sllm_vrsig_events.txt)
+			set_variable = { which = sllm_vr_st value = 9 }
+		}
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 징발 점검: left = 표식 붙은 함대 중 살아 있는 수, leased = 그중 아직 우리 지휘 아래. 다 돌아왔으면 표식을 치운다.
+sllm_vr_levy_chk = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_ll value = 0 }
+	set_variable = { which = sllm_vr_lsd value = 0 }
+	event_target:sllm_vr_t = {
+		every_owned_fleet = {
+			limit = { has_fleet_flag = sllm_vr_levied }
+			root = { change_variable = { which = sllm_vr_ll value = 1 } }
+			if = { limit = { is_leased = yes } root = { change_variable = { which = sllm_vr_lsd value = 1 } } }
+		}
+		if = {
+			limit = { NOT = { any_owned_fleet = { has_fleet_flag = sllm_vr_levied is_leased = yes } } }
+			every_owned_fleet = { limit = { has_fleet_flag = sllm_vr_levied } remove_fleet_flag = sllm_vr_levied }
+		}
+	}
+	log = "SLLM:VRLVC/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/left=\\[This.sllm_vr_ll]/;/leased=\\[This.sllm_vr_lsd]"
+}
+# 헌납: 고른 함대의 주인을 우리로. 마지막 이동 가능한 전투 함대면 st 5. MOD = 종속국에 거는 원망 수정자(DAYS 일).
+sllm_vr_tithe = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_st value = 0 }
+	event_target:sllm_vr_t = {
+		random_owned_fleet = {
+			limit = { is_variable_set = sllm_vr_fn check_variable = { which = sllm_vr_fn value = $N$ } is_civilian = no is_mobile = yes is_leased = no }
+			save_event_target_as = sllm_vr_f
+		}
+	}
+	if = {
+		limit = { exists = event_target:sllm_vr_f }
+		if = {
+			limit = { event_target:sllm_vr_t = { NOT = { count_owned_fleet = { count >= 2 limit = { is_civilian = no is_mobile = yes } } } } }
+			set_variable = { which = sllm_vr_st value = 5 }
+		}
+		else_if = {
+			limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+			set_variable = { which = sllm_vr_st value = 3 }
+		}
+		else = {
+			add_resource = { influence = -$COST$ }
+			event_target:sllm_vr_f = {
+				if = { limit = { is_in_combat = no } remove_auto_move_target = yes }
+				set_owner = event_target:sllm_vr_me
+				log = "SLLM:VRNAME/;/req=\\[Root.sllm_vr_req]/;/k=new/;/name=\\[This.GetName]"
+			}
+			event_target:sllm_vr_t = { add_modifier = { modifier = $MOD$ days = $DAYS$ } }
+			if = {
+				limit = { event_target:sllm_vr_f = { is_owned_by = event_target:sllm_vr_me } }
+				set_variable = { which = sllm_vr_st value = 9 }
+			}
+			else = {
+				add_resource = { influence = $COST$ }
+				event_target:sllm_vr_t = { remove_modifier = $MOD$ }
+				set_variable = { which = sllm_vr_st value = 6 }
+			}
+		}
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+
+# ---- 역방향: AI 종주국이 플레이어에게(2026-11-05, src/features/overlord-pressure-app.ts). 감싸기: sllm_vr_t = 플레이어, sllm_vr_me = 종주국 ----
+# 명령 거절: 종주국 관계 −60(sllm_overlord_defied) + 우리 충성도 매달 −1(DAYS 일).
+sllm_vo_defy = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	event_target:sllm_vr_me = { add_opinion_modifier = { who = event_target:sllm_vr_t modifier = sllm_overlord_defied } }
+	event_target:sllm_vr_t = { add_modifier = { modifier = sllm_vo_defiance days = $DAYS$ } }
+	set_variable = { which = sllm_vr_st value = 9 }
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# 감시관 받아들임(DAYS 일).
+sllm_vo_minder = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	event_target:sllm_vr_t = { add_modifier = { modifier = sllm_vo_minder days = $DAYS$ } }
+	set_variable = { which = sllm_vr_st value = 9 }
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}
+# AI 이웃이 우리 종속국을 노린다(감싸기: sllm_vr_me = 플레이어). 우리를 싫어하는(관계 0 미만) AI 하나가, 국경이 닿은 우리 종속국 하나에 대해
+# 우리에게 쓸 전쟁명분 cb_sllm_vr_prize 를 얻는다(DAYS 일). 그 종속국에 sllm_vr_prize 표식 → 이기면 sllm_vr_prize_won 이 넘긴다.
+sllm_vo_prize_ai = {
+	set_variable = { which = sllm_vr_req value = $REQ$ }
+	set_variable = { which = sllm_vr_st value = 0 }
+	random_country = {
+		limit = {
+			is_ai = yes
+			sllm_is_empire = yes
+			NOT = { has_overlord = event_target:sllm_vr_me }
+			NOT = { event_target:sllm_vr_me = { has_overlord = prev } }
+			NOT = { is_in_federation_with = event_target:sllm_vr_me }
+			NOT = { has_defensive_pact = event_target:sllm_vr_me }
+			opinion = { who = event_target:sllm_vr_me value < 0 }
+			any_country = { has_overlord = event_target:sllm_vr_me is_neighbor_of = prev NOT = { has_country_flag = sllm_vr_prize } }
+		}
+		save_event_target_as = sllm_vo_foe
+	}
+	if = {
+		limit = { exists = event_target:sllm_vo_foe }
+		random_country = {
+			limit = { has_overlord = event_target:sllm_vr_me is_neighbor_of = event_target:sllm_vo_foe NOT = { has_country_flag = sllm_vr_prize } }
+			set_timed_country_flag = { flag = sllm_vr_prize days = $DAYS$ }
+			event_target:sllm_vo_foe = { add_casus_belli = { type = cb_sllm_vr_prize who = event_target:sllm_vr_me days = $DAYS$ } }
+			event_target:sllm_vo_foe = { log = "SLLM:VOPZ/;/req=\\[Root.sllm_vr_req]/;/name=\\[Prev.GetName]/;/foe=\\[This.GetName]" }
+			root = { set_variable = { which = sllm_vr_st value = 9 } }
+		}
+	}
+	log = "SLLM:VRSET/;/req=\\[This.sllm_vr_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_vr_st]"
+}

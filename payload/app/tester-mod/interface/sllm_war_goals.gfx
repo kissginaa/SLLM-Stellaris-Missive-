@@ -1,0 +1,18 @@
+# SLLM war goal icons (2026-11-08) - fixes "lacks a valid icon"; same art as vanilla war_goals_view.gfx
+spriteTypes = {
+	spriteType = {
+		name = "GFX_wg_sllm_tn_showdown"
+		texturefile = "gfx/interface/icons/diplomacy/diplomacy_war.dds"
+		noOfFrames = 2
+	}
+	spriteType = {
+		name = "GFX_wg_sllm_vr_proxy"
+		texturefile = "gfx/interface/icons/diplomacy/diplomacy_war.dds"
+		noOfFrames = 2
+	}
+	spriteType = {
+		name = "GFX_wg_sllm_vr_prize"
+		texturefile = "gfx/interface/icons/diplomacy/diplomacy_war.dds"
+		noOfFrames = 2
+	}
+}

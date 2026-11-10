@@ -1,0 +1,30 @@
+# SLLM 사이버전·여론 공작(2026-11-04 사용자): 게임 AI 가 우리에게 건 여론 첩보 작전(비방 공작·외교 사건 조작)이 끝나면 우리 제국에 「해외발 여론 공작」 상황을 띄운다.
+# This = 작전, From = 작전 대상(우리), owner = 작전한 나라. 이미 상황이 진행 중이거나 끝난 지 2년이 안 됐으면 띄우지 않는다.
+namespace = sllm_cyber
+
+espionage_operation_event = {
+	id = sllm_cyber.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		OR = {
+			has_espionage_type = operation_smear_campaign
+			has_espionage_type = operation_diplomatic_incident
+		}
+		owner = { is_ai = yes sllm_is_empire = yes }
+		from = { is_ai = no is_variable_set = sllm_save_id NOT = { has_country_flag = sllm_cy_active } NOT = { has_country_flag = sllm_cy_cooldown } }
+	}
+	immediate = {
+		owner = { save_event_target_as = sllm_cy_attacker }
+		from = {
+			if = {
+				limit = { event_target:sllm_cy_attacker = { is_variable_set = sllm_idx } }
+				set_variable = { which = sllm_cy_from value = event_target:sllm_cy_attacker.sllm_idx }
+			}
+			else = { set_variable = { which = sllm_cy_from value = 0 } }
+			set_variable = { which = sllm_cy_ap value = 0 }
+			start_situation = { type = sllm_cyber_situation target = this }
+			log = "SLLM:CYBER/;/ev=start/;/sid=\\[This.sllm_save_id]/;/from=\\[This.sllm_cy_from]/;/date=\\[GetDate]/;/name=\\[sllm_cy_attacker.GetName]"
+		}
+	}
+}

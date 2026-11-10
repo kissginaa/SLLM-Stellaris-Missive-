@@ -1,0 +1,15 @@
+# SLLM 외교 노선(2026-11-04) — 해마다 1월 1일 은하 판세를 한 번 읽는다(플레이어 국가만). 앱이 「올해의 판세」와 노선 압력을 계산한다.
+namespace = sllm_tmp
+
+country_event = {
+	id = sllm_tmp.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		is_variable_set = sllm_save_id
+	}
+	immediate = {
+		sllm_tmp_ctx = { REQ = 0 }
+	}
+}

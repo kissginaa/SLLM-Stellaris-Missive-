@@ -1,0 +1,4 @@
+# SLLM 정기 송금(2026-11-09) — 매달 맥박(4.5: events 만). 칸이 없으면 이벤트 trigger 에서 바로 끝난다.
+on_monthly_pulse_country = {
+	events = { sllm_mt.1 }
+}

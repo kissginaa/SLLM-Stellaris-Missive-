@@ -1,0 +1,116 @@
+# SLLM 총독 방침(2026-11-03 사용자): 맡긴 행성에 소폭 버프. 앱 src/govpolicy.ts govPolicyCommand 가 붙이고 뗀다.
+# 방침: 건설 속도 +15%, 방침 직업 생산 +3% · 기질: 꼼꼼 건설비 -5%, 대담 건설 속도 +10% · 숙련(맡긴 지 360일, events/sllm_gov_events.txt): 건설 속도 +10%, 모든 직업 생산 +3%
+
+sllm_gov_mandate_research = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_researchers_produces_mult = 0.03
+}
+sllm_gov_mandate_foundry = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_metallurgists_produces_mult = 0.03
+}
+sllm_gov_mandate_factory = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_artisans_produces_mult = 0.03
+}
+sllm_gov_mandate_mining = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_miners_produces_mult = 0.03
+}
+sllm_gov_mandate_generator = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_technician_produces_mult = 0.03
+}
+sllm_gov_mandate_farming = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_farmers_produces_mult = 0.03
+}
+sllm_gov_mandate_urban = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_jobs_trade_produces_mult = 0.03
+}
+sllm_gov_mandate_fortress = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_soldiers_produces_mult = 0.03
+}
+# 통합력·교역(2026-11-04): 준비만 — 앱 GOV_POLICIES_NEXT. 건설 목록이 생기면 앱에서 맡길 수 있다.
+sllm_gov_mandate_unity = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_jobs_unity_produces_mult = 0.03
+}
+sllm_gov_mandate_trade = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.15
+	planet_traders_produces_mult = 0.03
+}
+sllm_gov_temper_frugal = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_buildings_cost_mult = -0.05
+}
+sllm_gov_temper_bold = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.10
+}
+sllm_gov_veteran = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_building_build_speed_mult = 0.10
+	planet_jobs_produces_mult = 0.03
+}
+
+# 행성 할당량(2026-11-05, common/scripted_effects/sllm_gov_quota.txt): 준비 → 1·2·3단계(생산 +10·20·30%, 안정도 -5·10·15) → 마무리 축제 / 무너짐
+sllm_quota_p0 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -2
+}
+sllm_quota_p1 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_jobs_produces_mult = 0.10
+	planet_stability_add = -5
+}
+sllm_quota_p2 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_jobs_produces_mult = 0.20
+	planet_stability_add = -10
+}
+sllm_quota_p3 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_jobs_produces_mult = 0.30
+	planet_stability_add = -15
+}
+sllm_quota_done = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 5
+}
+sllm_quota_fail = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -5
+	planet_jobs_produces_mult = -0.05
+}

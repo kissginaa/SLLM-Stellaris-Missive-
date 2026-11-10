@@ -145,12 +145,58 @@ export function radioMessages(player: string, date: string, facts: string[], rec
 }
 
 /** 방송 대본 해석: JSON(조각나도 가능한 만큼). 실패하면 빈 배열. */
-export function parseRadio(raw: string): RadioLine[] {
-  const t = String(raw ?? '').replace(/```(?:json)?/g, '');
-  const out: RadioLine[] = [];
-  const re = /"who"\s*:\s*"(announcer|reporter|cohost)"\s*,\s*"text"\s*:\s*"((?:[^"\\]|\\.)*)"/g; let m: RegExpExecArray | null;
-  while ((m = re.exec(t))) { let s = m[2]; try { s = JSON.parse('"' + m[2] + '"'); } catch { /* 그대로 */ } s = String(s).trim(); if (s) out.push({ who: m[1] as 'announcer' | 'reporter' | 'cohost', text: s.slice(0, 300) }); }
-  return out.slice(0, 8);
+/** 화자 이름표를 announcer/cohost/reporter 로 맞춘다(대소문자·띄어쓰기·한국어·동의어). 모르면 null. */
+function radioRole(v: unknown): RadioLine['who'] | null {
+  const k = String(v ?? '').toLowerCase().replace(/[\s_\-*:.()[\]"']/g, '');
+  if (!k) return null;
+  if (/^(announcer|anchor|host|mainhost|presenter|newscaster|아나운서|앵커|진행자|사회자)/.test(k)) return 'announcer';
+  if (/^(cohost|co|secondhost|guest|analyst|commentator|panelist|공동진행자|패널|해설자|게스트)/.test(k)) return 'cohost';
+  if (/^(reporter|fieldreporter|correspondent|journalist|기자|현장기자|특파원|리포터)/.test(k)) return 'reporter';
+  return null;
+}
+const RADIO_TEXT_KEYS = ['text', 'line', 'content', 'dialogue', 'dialog', 'say', 'says', 'message', 'speech', 'utterance'];
+const RADIO_WHO_KEYS = ['who', 'speaker', 'role', 'name', 'character', 'host', 'voice'];
+/** 2026-10-22 실제 로그: Player2 가 1,300~1,600자를 돌려줬는데 정해진 모양("who" 바로 뒤 "text", 소문자 역할)이 아니어서 0줄로 버려졌다.
+ * JSON(이중 인코딩 포함)을 실제로 읽고, 키 이름·순서·역할 표기가 달라도 받아들인다. 마지막으로 "Announcer: …" 같은 일반 글도 읽는다.
+ * format 을 주면, 8줄이 다 있는데 역할 표시만 빠지거나 틀린 경우 순서대로(진행자 → 상대) 역할을 붙인다. */
+export function parseRadio(raw: string, format?: 'studio' | 'field'): RadioLine[] {
+  let t = String(raw ?? '').replace(/```(?:json)?/gi, '').trim();
+  const lines: { who: RadioLine['who'] | null; text: string }[] = [];
+  const add = (who: unknown, text: unknown) => { const s = typeof text === 'string' ? text.replace(/^[\s*_]+|[\s*_]+$/g, '').trim() : ''; if (s) lines.push({ who: radioRole(who), text: s.slice(0, 300) }); };
+  const fromValue = (v: unknown): boolean => {
+    if (typeof v === 'string') { try { return fromValue(JSON.parse(v)); } catch { return false; } } // 이중 인코딩된 JSON
+    let arr: unknown = v;
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      const o = v as Record<string, unknown>;
+      arr = o.lines ?? o.script ?? o.dialogue ?? o.dialog ?? o.conversation ?? o.broadcast ?? Object.values(o).find(Array.isArray);
+      if (!Array.isArray(arr) && arr && typeof arr === 'object') return fromValue(arr);
+    }
+    if (!Array.isArray(arr)) return false;
+    for (const item of arr) {
+      if (typeof item === 'string') { const m = /^\s*\**\s*([^:：]{1,30}?)\s*\**\s*[:：]\s*(.+)$/s.exec(item); if (m) add(m[1], m[2]); else add(null, item); continue; }
+      if (!item || typeof item !== 'object') continue;
+      const o = item as Record<string, unknown>, keys = Object.keys(o), lower = (k: string) => keys.find((x) => x.toLowerCase() === k);
+      const textKey = RADIO_TEXT_KEYS.map(lower).find(Boolean), whoKey = RADIO_WHO_KEYS.map(lower).find(Boolean);
+      if (textKey) { add(whoKey ? o[whoKey] : null, o[textKey]); continue; }
+      if (keys.length === 1) add(keys[0], o[keys[0]]); // {"announcer": "…"}
+    }
+    return lines.length > 0;
+  };
+  const a = t.search(/[[{]/), z = Math.max(t.lastIndexOf('}'), t.lastIndexOf(']'));
+  let parsed = false;
+  for (const candidate of [t, a >= 0 && z > a ? t.slice(a, z + 1) : '']) { if (!candidate || parsed) continue; try { parsed = fromValue(JSON.parse(candidate)); } catch { /* 아래 방식으로 */ } }
+  if (!parsed) {
+    if (/\\"/.test(t) && !/[^\\]"who"/.test(t)) t = t.replace(/\\"/g, '"'); // 따옴표가 한 번 더 이스케이프된 조각
+    const re = /"(?:who|speaker|role)"\s*:\s*"([^"]{1,30})"\s*,\s*"(?:text|line|content)"\s*:\s*"((?:[^"\\]|\\.)*)"|"(?:text|line|content)"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"(?:who|speaker|role)"\s*:\s*"([^"]{1,30})"/gi; let m: RegExpExecArray | null;
+    while ((m = re.exec(t))) { const who = m[1] ?? m[4], body = m[2] ?? m[3]; let s = body; try { s = JSON.parse('"' + body + '"'); } catch { /* 그대로 */ } add(who, s); }
+    if (!lines.length) for (const row of t.split(/\r?\n/)) { const m2 = /^\s*[-*]*\s*\**\s*([^:：*]{1,30}?)\s*\**\s*[:：]\s*(.+)$/.exec(row); if (m2 && radioRole(m2[1])) add(m2[1], m2[2]); }
+  }
+  const out = lines.slice(0, 8);
+  if (format && out.length === 8) { // 두 사람이 번갈아 말하는 대본: 역할 표시가 빠졌거나 어긋났으면 순서로 정한다
+    const second = format === 'studio' ? 'cohost' : 'reporter';
+    out.forEach((l, i) => { l.who = i % 2 === 0 ? 'announcer' : second; });
+  }
+  return out.filter((l): l is RadioLine => l.who !== null);
 }
 
 /** 네 차례의 왕복 대화가 완성된 경우에만 방송한다. */

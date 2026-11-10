@@ -1,0 +1,200 @@
+# 정책으로 보는 호감(2026-11-05) — 자동 생성: 앱 src/policy-view.ts policyOpinionFile(). 손으로 고치지 말 것(표를 고치고 다시 만든다).
+# ROOT = 호감을 갖는 쪽(AI 제국), FROM = 보는 대상(플레이어). 통신이 있어야 서로의 내정을 안다.
+
+sllm_pol_purge = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -15
+			has_policy_flag = purge_not_allowed
+			FROM = { has_policy_flag = purge_allowed }
+		}
+		modifier = {
+			add = -5
+			has_policy_flag = purge_not_allowed
+			FROM = { has_policy_flag = purge_displacement_only }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = purge_allowed
+			FROM = { has_policy_flag = purge_allowed }
+		}
+	}
+}
+
+sllm_pol_refugees = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -5
+			has_policy_flag = refugees_allowed
+			FROM = { has_policy_flag = refugees_not_allowed }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = refugees_allowed
+			FROM = { has_policy_flag = refugees_allowed }
+		}
+	}
+}
+
+sllm_pol_ai = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -10
+			has_policy_flag = ai_full_rights
+			FROM = { OR = { has_policy_flag = ai_outlawed has_policy_flag = ai_servitude } }
+		}
+		modifier = {
+			add = -5
+			has_policy_flag = ai_outlawed
+			FROM = { has_policy_flag = ai_full_rights }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = ai_full_rights
+			FROM = { has_policy_flag = ai_full_rights }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = ai_outlawed
+			FROM = { has_policy_flag = ai_outlawed }
+		}
+	}
+}
+
+sllm_pol_war = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -10
+			has_policy_flag = no_wars
+			FROM = { has_policy_flag = unrestricted_wars }
+		}
+		modifier = {
+			add = -5
+			has_policy_flag = liberation_wars
+			FROM = { has_policy_flag = unrestricted_wars }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = no_wars
+			FROM = { has_policy_flag = no_wars }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = liberation_wars
+			FROM = { has_policy_flag = liberation_wars }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = unrestricted_wars
+			FROM = { has_policy_flag = unrestricted_wars }
+		}
+	}
+}
+
+sllm_pol_contact = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -10
+			OR = { has_policy_flag = first_contact_proactive has_policy_flag = first_contact_cautious }
+			FROM = { has_policy_flag = first_contact_attack_allowed }
+		}
+		modifier = {
+			add = 5
+			has_policy_flag = first_contact_attack_allowed
+			FROM = { has_policy_flag = first_contact_attack_allowed }
+		}
+	}
+}
+
+sllm_pol_terms = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -5
+			has_policy_flag = benevolent_terms
+			FROM = { has_policy_flag = oppressive_terms }
+		}
+		modifier = {
+			add = 3
+			has_policy_flag = benevolent_terms
+			FROM = { has_policy_flag = benevolent_terms }
+		}
+		modifier = {
+			add = 3
+			has_policy_flag = oppressive_terms
+			FROM = { has_policy_flag = oppressive_terms }
+		}
+	}
+}
+
+sllm_pol_presapient = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -10
+			has_policy_flag = pre_sapients_protect
+			FROM = { OR = { has_policy_flag = pre_sapients_eat has_policy_flag = pre_sapients_purge } }
+		}
+		modifier = {
+			add = 3
+			has_policy_flag = pre_sapients_protect
+			FROM = { has_policy_flag = pre_sapients_protect }
+		}
+	}
+}
+
+sllm_pol_popcontrol = {
+	trigger = {
+		is_ai = yes
+		FROM = { is_ai = no }
+		has_communications = FROM
+	}
+	opinion = {
+		base = 0
+		modifier = {
+			add = -5
+			has_policy_flag = population_controls_not_allowed
+			FROM = { has_policy_flag = population_controls_allowed }
+		}
+	}
+}

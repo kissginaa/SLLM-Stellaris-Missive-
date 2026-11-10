@@ -1,0 +1,260 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 12.1 — 스텔라체스 · 관저 파티 · 시민 정치와 의회 · 원시문명 관측 · 총독에게 행성 맡기기 (0.1.0-alpha.12.1)[/h1]
+
+알파 12 이후의 업데이트입니다. 카지노에 함대 오토배틀러 [b]스텔라체스[/b]가 생겼고, 개인실에서 우리 사람들끼리 노는 [b]관저 파티[/b]를 열 수 있습니다. 집무실에는 [b]여론조사·국민투표·특별사면[/b], 여당·야당이 있는 [b]의회[/b], [b]로비[/b], [b]원시문명 관측[/b], [b]총독에게 행성 맡기기[/b]가 들어왔습니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]♟️ 스텔라체스 (카지노)[/h2]
+[list]
+[*]카지노 정거장 안의 1인용 [b]함선 오토배틀러[/b]입니다. 판돈은 금고에서 나가고, 끝까지 버틴 만큼 배당을 받습니다(카지노가 약간 유리). 게임 효과는 없습니다.
+[*]30라운드 · 목숨 3 · 시간 제한 없음. 상점에서 함선을 사서 8칸 판에 배치하면 [b]실시간 전투[/b]가 펼쳐집니다(함선 그림, 사격·미사일·함재기·수리 연출, 1·2배속·건너뛰기).
+[*][b]10개 종족 × 5척 = 함선 50척[/b](구매 비용 1~5). 같은 함선 3척이 모이면 별이 오릅니다.
+[*]시너지 세 갈래: [b]종족[/b](2·3·4·5단계) · [b]무기 9종[/b](질량 투사기·자동포·레일건·레이저·플라스마·광선창·미사일·어뢰·함재기) · [b]역할 5종[/b](초계·전열·포격·습격·항모, 2·4·6단계).
+[*][b]아이템[/b]: 부품 8종 → 완성 36종(롤토체스식 조합). 끌어다 놓아 장착하고, 「조합표」에서 아이콘으로 확인합니다. 정해진 라운드에 고르고, 일반 라운드를 이기면 [b]20% 확률로 적 잔해에서 부품[/b]이 떨어집니다.
+[*]자재: 라운드 수입 5 + [b]이자(10당 1, 최대 5)[/b] + 승리 1 + 연승·연패 보너스.
+[*][b]보스 6[/b]: 5 그레이트 칸의 무리 · 10 차원의 공포 · 15 에테르 드레이크 · 20 [b]언비든 또는 프레소린[/b](판마다 50%) · 25 세타나 · 30 [b]후반 렉의 화신[/b](화면이 멈춘 척 「(응답 없음)」…). 보스를 하나라도 이기면 언제든 철수해 그 단계 배당을 받을 수 있습니다.
+[*][b]혼돈 모드[/b](라운드마다 변칙 규칙, 배당 ×1.5) · [b]하드 모드[/b](보스 능력치 ×2.5 — 그레이트 칸만 ×2, 일반 적 ×1.5, 피해 ×1.25, 후반 배당 증가, 점수 ×2). 최고 기록은 일반·하드 따로 남습니다.
+[/list]
+
+[h2]🎉 관저 파티 (개인실)[/h2]
+[list]
+[*]사교회와 달리 [b]우리 사람들끼리[/b] 격식 없이 노는 자리입니다. 개인실의 「🎉 관저 파티」로 엽니다. 180일마다 한 번.
+[*]손님 2~10명: 우리 지도자(통치자 제외) · 연인·배우자(비서 포함) · [b]타국 만찬에서 연락처를 주고받은 다른 나라 지도자[/b] 최대 2명(전쟁 중인 나라 제외).
+[*]성향별 [b]관저 파티장 그림 8종[/b] 위에서 세 장면(손님 맞이 · 한창 · 늦은 밤)이 흘러갑니다. 장면마다 조명이 바뀌고, 손님들이 자리를 옮기며 수다를 떨고, 가끔은 서너 명이 모인 [b]무리[/b]가 생깁니다.
+[*][b]소동 29가지[/b](술 대결, 계단 괴담, 소파 카드 게임, 술 쏟기…). 손님을 눌러 직접 말을 걸 수 있습니다(그때만 AI).
+[*]마지막에 [b]단체 사진[/b]: 통치자가 가운데, 손님은 앞뒤 두 줄로. 사진은 그림으로 저장돼 [b]개인 일지 → 📷 사진첩[/b]에 모이고, 일지에 [b]다꾸처럼 사진을 붙일[/b] 수 있습니다(마스킹 테이프 인화지).
+[*]효과: 손님 신뢰 +3, 함께 어울린 지도자끼리 관계 +, 통합력 +1%(360일), 전쟁·위기 중이면 함대 사격 속도·지상군 피해 +1%, 다른 나라 손님의 나라는 호감 +10. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🗳️ 시민 정치 (집무실)[/h2]
+[list]
+[*][b]여론조사[/b]: 3개월마다 신문사별로 발표되고(신문사마다 약간 다른 성향), 신문에도 실립니다.
+[*][b]국민투표[/b]: 정책을 선포할 때 국민투표에 부칠 수 있습니다(2년에 1번). 통과하면 2년 동안 안정도 +5·민심 +3. 부결인데 강행하면 1년 안정도 −5·민심 −4 — [b]민주제에서는 부결되면 강행할 수 없습니다[/b].
+[*][b]특별사면[/b]: 국경일·행성 기념일이 든 달에만, 1년에 1번. 경범 사면 · 일반 사면 · 대사면(안정도 +2/+4/+6, 범죄 +5/+10/+20, 1년). 정치범을 포함하면 파벌 반응이 갈립니다.
+[*]정부 형태에 따라 달라집니다: 독재·제정은 「관제 조사」(늘 80% 이상)·「요식 투표」(늘 통과, 외국 언론이 비웃음), 단일 의식 제국에는 없습니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🏛️ 의회 · 국정감사 · 불신임 · 로비[/h2]
+[list]
+[*][b]여당·야당[/b]: 200석을 파벌 지지율대로 나눠 의석이 생깁니다. 과반이 안 되면 [b]연정[/b]이 필요하고, 이름 있는 [b]야당 대표와 영수회담[/b](AI, 말 5번까지)을 할 수 있습니다. 가끔 탈당·영입·장외 투쟁 같은 [b]원내 공방[/b]이 벌어집니다. 독재·제정은 「관제 의회」.
+[*][b]국정감사[/b](설정에서 켜기, 기본 꺼짐): 12년마다 1월에 감사 기간이 열립니다. 지난 12년의 실제 기록으로 의제가 나오고(AI), 답변에 따라 안정도·민심·신문이 움직입니다. 안 받으면 불출석 처리.
+[*][b]불신임[/b](설정에서 켜기, 기본 꺼짐): 자유 정부에서 지지율이 25% 아래로 석 달 이어지면 불신임안이 올라옵니다. 직접 변론(연설, AI 채점)하거나 의회를 해산할 수 있고, 표결에는 정부 의석이 반영됩니다. 가결되면 「레임덕」(3년 안정도 −5·영향력 −20%).
+[*][b]로비[/b]: 이익단체가 찾아옵니다. 「공식 지원」은 국고로 들어오고 공개되며, 「뒷돈」은 금고로 들어오지만 나중에 들킬 수 있습니다(들키면 2년 안정도 −6·민심 −6). 공개 고발도 할 수 있습니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🔭 원시문명 관측 (집무실)[/h2]
+[list]
+[*]우리가 아는 원시문명의 시대·인지도·관측소를 한 화면에서 봅니다. 자동으로 매달 읽지 않고, [b]처음 접촉할 때와 화면을 열 때만[/b] 게임에 묻습니다(게임 부담 ↓).
+[*][b]관찰 보고서[/b](틀 문장, 고르면 AI가 실제 보고서처럼) · 변화 기록 · [b]방송 감청[/b](산업 시대 이상: 라디오·TV·위성 방송, 인지도에 따라 내용이 바뀜).
+[*][b]개입[/b]: 기술 선물 · 역병 의료 지원 · 고의 노출 · 은폐 작전 · 관측소 임무 바꾸기.
+[*][b]하늘의 목소리[/b]: 원시문명에게 직접 말을 겁니다. 말마다 위험도(속삭임~온 세상이 올려다봄)만큼 인지도가 오르고, 계시를 받았다는 사람·미치광이 취급·현자 대접 같은 후일담이 이어집니다.
+[*]계몽·정복 뒤에는 그 일을 기억하는 제국으로 남습니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🪐 총독에게 행성 맡기기 (집무실 「행성 총독」)[/h2]
+[list]
+[*]「행성 맡기기」에서 행성을 총독에게 맡기면, 총독이 권하는 [b]방침 8가지[/b](연구·합금·소비재·광업·발전·농업·도시·교역·요새) 중 하나로 게임의 [b]행성 자동화[/b]가 건물·지구·특화를 짓습니다. 비용은 게임 그대로입니다.
+[*]게임 행성 화면의 자동화에서 [b]「총독 방침」[/b]을 한 번 켜 주세요(「특화 건설」과 같이 켜면 서로 다른 것을 지을 수 있습니다).
+[*][b]총독 관할[/b]: 건설 속도 +15%, 방침에 맞는 직업 생산 +3%. 총독 기질에 따라 꼼꼼함(건설비 −5%, 광물 1,000 아래면 공사 쉼) · 보통(300 아래면 쉼) · 대담함(건설 속도 +10%, 쉬지 않음).
+[*][b]맡긴 지 1년[/b]이 지나면 총독이 손에 익어 [b]「숙련된 총독」[/b]: 건설 속도 +10%, 모든 직업 생산 +3%. 방침을 바꾸면 처음부터 다시 익힙니다.
+[*]총독 말은 틀 문장(AI 없음)이고, 게임 명령은 맡기거나 거둘 때만 보냅니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🔧 성능 · 버그 수정[/h2]
+[list]
+[*][b]게임 부담 줄이기[/b]: 지도자 명단을 매달 읽지 않고, 지도자에 바뀐 일이 있던 달·1년에 한 번·집무실 연락처를 열 때만 읽습니다.
+[*]카지노를 닫거나 앱을 끌 때 포커 칩과 진행 중인 블랙잭 판돈이 사라지던 문제를 고쳤습니다(금고로 돌려줌).
+[/list]
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 12.1 — StellaChess · House Party · Civic Politics & Parliament · Pre-FTL Observation · Entrust Planets to Governors (0.1.0-alpha.12.1)[/h1]
+
+An update following Alpha 12. The casino now has a fleet auto-battler, [b]StellaChess[/b], and you can throw a [b]house party[/b] for your own people from the private room. The Office gains [b]polls, referendums and pardons[/b], a [b]parliament[/b] with government and opposition, [b]lobbying[/b], [b]pre-FTL observation[/b], and [b]entrusting planets to governors[/b].
+
+⚠️ [b]Mod files changed.[/b] Update this mod (Workshop) and the app together, then fully restart the game.
+
+[h2]♟️ StellaChess (Casino)[/h2]
+[list]
+[*]A single-player [b]fleet auto-battler[/b] inside the casino station. The buy-in comes from your vault and you are paid by how far you get (the house has a slight edge). No game effects.
+[*]30 rounds · 3 lives · no time limit. Buy ships in the shop, place them on an 8-slot board and watch a [b]real-time battle[/b] (ship art, gunfire, missiles, strike craft, repairs; 1×/2× speed or skip).
+[*][b]10 species × 5 ships = 50 ships[/b] (cost 1–5). Three copies of a ship raise its star level.
+[*]Three kinds of synergy: [b]species[/b] (tiers 2/3/4/5) · [b]9 weapon classes[/b] (mass driver, autocannon, railgun, laser, plasma, lance, missile, torpedo, strike craft) · [b]5 roles[/b] (picket, line, artillery, raider, carrier; tiers 2/4/6).
+[*][b]Items[/b]: 8 components → 36 completed items (TFT-style recipes). Drag and drop to equip; check the icon recipe book. Picks come on set rounds, and winning a regular round has a [b]20% chance to salvage a component[/b] from the wreckage.
+[*]Materials: 5 per round + [b]interest (1 per 10, up to 5)[/b] + 1 per win + streak bonus.
+[*][b]6 bosses[/b]: 5 Great Khan's Horde · 10 Dimensional Horror · 15 Ether Drake · 20 [b]the Unbidden or the Prethoryn[/b] (50% per run) · 25 Cetana · 30 the [b]Late-Game Lag Avatar[/b] (the screen pretends to freeze: "(Not Responding)"…). After beating any boss you may retreat at any time for that stage's payout.
+[*][b]Chaos mode[/b] (a twist each round, payout ×1.5) · [b]Hard mode[/b] (bosses ×2.5 — Great Khan ×2, regular foes ×1.5, damage ×1.25, bigger late payouts, score ×2). Best records are kept separately for normal and hard.
+[/list]
+
+[h2]🎉 House Party (Private Room)[/h2]
+[list]
+[*]Unlike the social gathering, this is an off-the-record night [b]with your own people[/b]. Open it with "🎉 House party" in the private room. Once every 180 days.
+[*]2–10 guests: your leaders (not the ruler) · lovers and spouses (the secretary included) · up to 2 [b]foreign leaders you exchanged contacts with at foreign banquets[/b] (not from empires at war with you).
+[*]Three scenes (arrivals · in full swing · late night) play out over [b]8 party-venue paintings by ethic[/b]. The lighting changes each scene, guests move around and chat, and now and then a [b]group[/b] of three or four gathers.
+[*][b]29 incidents[/b] (drinking contests, ghost stories on the stairs, card games on the sofa, spilled drinks…). Click a guest to talk to them (AI only then).
+[*]It ends with a [b]group photo[/b]: the ruler in the middle, guests in two staggered rows. The photo is saved as a picture in [b]Personal journal → 📷 Photo album[/b], and you can [b]paste photos into journal entries[/b] scrapbook-style (taped prints).
+[*]Effects: guest trust +3, leaders who mingled grow closer, unity +1% (360 days), +1% fire rate and army damage if held in war or crisis, +10 opinion from foreign guests' empires. [i](mod file change)[/i]
+[/list]
+
+[h2]🗳️ Civic Politics (Office)[/h2]
+[list]
+[*][b]Polls[/b]: published every 3 months by each newspaper (each with a slight lean) and printed in the papers.
+[*][b]Referendums[/b]: put a policy to a vote when you proclaim it (once every 2 years). A pass gives stability +5 and mood +3 for 2 years; forcing a rejected policy costs stability −5 for a year and mood −4 — [b]democracies cannot force a rejected policy[/b].
+[*][b]Special pardons[/b]: only in a month with a national holiday or planet holiday, once a year. Petty · general · grand (stability +2/+4/+6, crime +5/+10/+20 for a year). Including political prisoners splits the factions.
+[*]Depends on government: autocracies and empires get "staged polls" (always 80%+) and "rubber-stamp votes" (always pass, mocked abroad); gestalt empires have none of this. [i](mod file change)[/i]
+[/list]
+
+[h2]🏛️ Parliament · Audits · No-Confidence · Lobbying[/h2]
+[list]
+[*][b]Government and opposition[/b]: 200 seats split by faction support. Without a majority you need a [b]coalition[/b], and you can hold [b]summits with the named opposition leader[/b] (AI, up to 5 lines). Floor fights happen now and then — defections, crossings, street protests. Autocracies and empires get a "rubber-stamp parliament".
+[*][b]National audit[/b] (turn on in Settings, off by default): every 12 years an audit opens in January. The agenda comes from what actually happened in the last 12 years (AI), and your answers move stability, mood and the papers. Skipping it counts as a no-show.
+[*][b]No-confidence[/b] (turn on in Settings, off by default): in free governments, approval below 25% for three months brings a motion. Defend yourself with a speech (AI-scored) or dissolve parliament; government seats count in the vote. If it passes: "lame duck" (stability −5, influence −20% for 3 years).
+[*][b]Lobbying[/b]: interest groups come calling. "Official support" goes to the treasury and is public; "bribes" go to your vault but may come out later (stability −6, mood −6 for 2 years). You can also denounce them publicly. [i](mod file change)[/i]
+[/list]
+
+[h2]🔭 Pre-FTL Observation (Office)[/h2]
+[list]
+[*]See the age, awareness and observation posts of the primitive civilizations you know on one screen. It does not poll every month — it asks the game [b]only on first contact and when you open the screen[/b] (less game load).
+[*][b]Observation reports[/b] (template text, or AI-written like a real report if you choose) · change log · [b]broadcast interception[/b] (industrial age and up: radio, TV, satellite; content changes with awareness).
+[*][b]Interventions[/b]: gift of technology · plague medical aid · deliberate sighting · cover-up operation · change the post's mission.
+[*][b]Voice from the Sky[/b]: speak to a primitive civilization directly. Each line raises awareness by its risk (a whisper … the whole world looks up), followed by aftermaths — prophets, madmen, sages.
+[*]After uplift or conquest they remain as an empire that remembers what you did. [i](mod file change)[/i]
+[/list]
+
+[h2]🪐 Entrust Planets to Governors (Office → Planetary governors)[/h2]
+[list]
+[*]In "Entrust planets", hand a planet to its governor and the game's [b]planet automation[/b] builds buildings, districts and zones by one of [b]8 mandates[/b] the governor recommends (research, alloys, consumer goods, mining, energy, farming, urban & trade, fortress). Costs are the game's own.
+[*]Turn on [b]"Governor's Mandate"[/b] once in the planet's automation menu (running it together with "Designation construction" may build conflicting things).
+[*][b]Mandate bonus[/b]: build speed +15%, mandate jobs output +3%. By the governor's temper: careful (building cost −5%, pauses below 1,000 minerals) · steady (pauses below 300) · bold (build speed +10%, never pauses).
+[*]After [b]a year[/b] the governor becomes [b]"Seasoned"[/b]: build speed +10%, all jobs output +3%. Changing the mandate starts over.
+[*]Governor lines are templates (no AI), and game commands are sent only when you hand over or withdraw a mandate. [i](mod file change)[/i]
+[/list]
+
+[h2]🔧 Performance · Fixes[/h2]
+[list]
+[*][b]Less game load[/b]: the leader roster is no longer read every month — only in months when something changed for a leader, once a year, and when you open the Office contacts.
+[*]Fixed poker chips and an unfinished blackjack bet vanishing when closing the casino or quitting the app (they now return to the vault).
+[/list]
+
+When the app update prompt appears, apply it, update the mod too, and restart the game.
+
+===== Discord (한국어) — 1/3 =====
+
+# SLLM 알파 12.1 — 스텔라체스 · 관저 파티 · 시민 정치와 의회 · 원시문명 관측 · 총독에게 행성 맡기기 (0.1.0-alpha.12.1)
+
+⚠️ **모드 파일이 바뀌었습니다.** 창작마당 모드와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+## ♟️ 스텔라체스 (카지노)
+- 카지노 안의 1인용 **함선 오토배틀러**. 판돈은 금고에서, 버틴 만큼 배당(카지노가 약간 유리). 게임 효과 없음.
+- 30라운드 · 목숨 3 · 시간 제한 없음. 8칸 판에 배치하면 **실시간 전투**(함선 그림, 사격·미사일·함재기·수리 연출, 배속·건너뛰기).
+- **10개 종족 × 5척 = 50척**(비용 1~5), 같은 함선 3척이면 별 업.
+- 시너지: **종족**(2·3·4·5) · **무기 9종**(질량 투사기·자동포·레일건·레이저·플라스마·광선창·미사일·어뢰·함재기) · **역할 5종**(초계·전열·포격·습격·항모, 2·4·6).
+- **아이템**: 부품 8 → 완성 36(롤토체스식). 끌어다 놓아 장착, 아이콘 조합표. 정해진 라운드 + 일반 라운드 승리 시 **20% 부품 드랍**.
+- 자재: 라운드 5 + **이자(10당 1, 최대 5)** + 승리 1 + 연승·연패 보너스.
+- **보스 6**: 그레이트 칸의 무리 · 차원의 공포 · 에테르 드레이크 · **언비든 또는 프레소린**(50%) · 세타나 · **후반 렉의 화신**(「(응답 없음)」…). 보스를 이기면 언제든 철수 가능.
+- **혼돈 모드**(배당 ×1.5) · **하드 모드**(보스 ×2.5 — 그레이트 칸만 ×2, 일반 적 ×1.5, 피해 ×1.25, 후반 배당 ↑, 점수 ×2).
+
+## 🎉 관저 파티 (개인실)
+- **우리 사람들끼리** 노는 파티. 180일마다. 손님 2~10명: 우리 지도자 · 연인·배우자(비서 포함) · 타국 만찬에서 연락처를 주고받은 다른 나라 지도자 최대 2명.
+- 성향별 **파티장 그림 8종**, 세 장면(손님 맞이 · 한창 · 늦은 밤)마다 조명이 바뀌고, 수다·**서너 명 무리**·**소동 29가지**. 손님을 눌러 직접 말 걸기(그때만 AI).
+- **단체 사진**(통치자 가운데, 두 줄) → **개인 일지 📷 사진첩**에 저장, 일지에 **다꾸처럼 사진 붙이기**.
+- 효과: 손님 신뢰 +3 · 지도자끼리 관계 + · 통합력 +1%(360일) · 전쟁·위기 중이면 사격 속도·지상군 피해 +1% · 다른 나라 손님의 나라 호감 +10.
+
+===== Discord (한국어) — 2/3 =====
+
+## 🗳️ 시민 정치 (집무실)
+- **여론조사**: 3개월마다 신문사별 발표, 신문에도 실림.
+- **국민투표**: 정책 선포 때 부칠 수 있음(2년에 1번). 통과 = 2년 안정도 +5·민심 +3, 부결 강행 = 1년 안정도 −5·민심 −4. **민주제는 부결되면 강행 불가**.
+- **특별사면**: 국경일·행성 기념일이 든 달, 1년에 1번. 경범·일반·대사면(안정도 +2/+4/+6, 범죄 +5/+10/+20).
+- 독재·제정은 「관제 조사」·「요식 투표」, 단일 의식 제국에는 없음.
+
+## 🏛️ 의회 · 국정감사 · 불신임 · 로비
+- **여당·야당**: 200석을 파벌 지지율대로. 과반이 안 되면 **연정**, 이름 있는 **야당 대표와 영수회담**(AI), 가끔 탈당·영입·장외 투쟁. 독재·제정은 「관제 의회」.
+- **국정감사**(설정에서 켜기, 기본 꺼짐): 12년마다 1월. 지난 12년 실제 기록으로 의제(AI), 답변에 따라 안정도·민심·신문.
+- **불신임**(설정에서 켜기, 기본 꺼짐): 지지율 25% 아래 석 달 → 불신임안. 변론(연설, AI 채점) 또는 의회 해산. 가결 = 「레임덕」(3년 안정도 −5·영향력 −20%).
+- **로비**: 「공식 지원」은 국고로(공개), 「뒷돈」은 금고로(들키면 2년 안정도 −6·민심 −6). 공개 고발도 가능.
+
+## 🔭 원시문명 관측 (집무실)
+- 아는 원시문명의 시대·인지도·관측소를 한눈에. **처음 접촉할 때와 화면을 열 때만** 게임에 물음(게임 부담 ↓).
+- **관찰 보고서**(틀 문장 또는 AI) · 변화 기록 · **방송 감청**(라디오·TV·위성, 인지도에 따라 내용 변화).
+- **개입**: 기술 선물 · 역병 의료 지원 · 고의 노출 · 은폐 작전 · 관측소 임무 바꾸기.
+- **하늘의 목소리**: 직접 말 걸기. 말의 위험도만큼 인지도가 오르고, 계시·미치광이·현자 같은 후일담이 이어짐.
+- 계몽·정복 뒤에는 그 일을 기억하는 제국으로 남음.
+
+===== Discord (한국어) — 3/3 =====
+
+## 🪐 총독에게 행성 맡기기 (집무실 「행성 총독」)
+- 행성을 총독에게 맡기면 총독이 권하는 **방침 8가지**(연구·합금·소비재·광업·발전·농업·도시·교역·요새) 중 하나로 게임 **행성 자동화**가 건물·지구·특화를 지음. 비용은 게임 그대로.
+- 게임 행성 화면 자동화에서 **「총독 방침」**을 한 번 켜 주세요(「특화 건설」과 같이 켜면 충돌할 수 있음).
+- **총독 관할**: 건설 속도 +15%, 방침 직업 생산 +3%. 기질: 꼼꼼함(건설비 −5%, 광물 1,000 아래면 쉼) · 보통(300 아래면 쉼) · 대담함(건설 속도 +10%, 안 쉼).
+- **맡긴 지 1년** → **「숙련된 총독」**: 건설 속도 +10%, 모든 직업 생산 +3%. 방침을 바꾸면 처음부터.
+- 총독 말은 틀 문장(AI 없음), 게임 명령은 맡기거나 거둘 때만.
+
+## 🔧 성능 · 버그 수정
+- **게임 부담 줄이기**: 지도자 명단을 매달 읽지 않고, 바뀐 일이 있던 달·1년에 한 번·집무실 연락처를 열 때만 읽음.
+- 카지노를 닫거나 앱을 끌 때 포커 칩·블랙잭 판돈이 사라지던 문제 수정(금고로 돌려줌).
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Discord (English) — 1/4 =====
+
+# SLLM Alpha 12.1 — StellaChess · House Party · Civic Politics & Parliament · Pre-FTL Observation · Entrust Planets (0.1.0-alpha.12.1)
+
+⚠️ **Mod files changed.** Update the Workshop mod and the app together, then fully restart the game.
+
+## ♟️ StellaChess (Casino)
+- A single-player **fleet auto-battler** in the casino. Buy-in from your vault, paid by how far you get (slight house edge). No game effects.
+- 30 rounds · 3 lives · no time limit. Place ships on an 8-slot board for a **real-time battle** (ship art, gunfire, missiles, strike craft, repairs; speed up or skip).
+- **10 species × 5 ships = 50 ships** (cost 1–5); three copies raise the star level.
+- Synergies: **species** (2/3/4/5) · **9 weapon classes** (mass driver, autocannon, railgun, laser, plasma, lance, missile, torpedo, strike craft) · **5 roles** (picket, line, artillery, raider, carrier; 2/4/6).
+- **Items**: 8 components → 36 completed items (TFT-style). Drag and drop, icon recipe book. Set item rounds + a **20% component drop** on regular-round wins.
+- Materials: 5 per round + **interest (1 per 10, up to 5)** + 1 per win + streak bonus.
+- **6 bosses**: Great Khan's Horde · Dimensional Horror · Ether Drake · **the Unbidden or the Prethoryn** (50%) · Cetana · the **Late-Game Lag Avatar** ("(Not Responding)"…). Retreat any time after a boss win.
+- **Chaos mode** (payout ×1.5) · **Hard mode** (bosses ×2.5 — Great Khan ×2, regular foes ×1.5, damage ×1.25, bigger late payouts, score ×2).
+
+===== Discord (English) — 2/4 =====
+
+## 🎉 House Party (Private Room)
+- An off-the-record party **with your own people**, every 180 days. 2–10 guests: your leaders · lovers and spouses (secretary included) · up to 2 foreign leaders you met at foreign banquets.
+- **8 venue paintings by ethic**; lighting changes over three scenes (arrivals · full swing · late night), with chatter, **groups of three or four** and **29 incidents**. Click a guest to talk (AI only then).
+- **Group photo** (ruler in the middle, two rows) → saved to **Personal journal 📷 Photo album**, and you can **paste photos into journal entries** scrapbook-style.
+- Effects: guest trust +3 · leaders grow closer · unity +1% (360 days) · +1% fire rate and army damage in war or crisis · +10 opinion from foreign guests' empires.
+
+
+## 🗳️ Civic Politics (Office)
+- **Polls**: every 3 months per newspaper, printed in the papers.
+- **Referendums**: put a policy to a vote when proclaiming it (once every 2 years). Pass = stability +5 and mood +3 for 2 years; forcing a rejection = stability −5 for a year, mood −4. **Democracies cannot force a rejected policy.**
+- **Special pardons**: in a month with a national or planet holiday, once a year. Petty · general · grand (stability +2/+4/+6, crime +5/+10/+20).
+- Autocracies and empires get "staged polls" and "rubber-stamp votes"; gestalt empires have none.
+
+===== Discord (English) — 3/4 =====
+
+## 🏛️ Parliament · Audits · No-Confidence · Lobbying
+- **Government and opposition**: 200 seats by faction support. No majority → **coalition**; **summits with the named opposition leader** (AI); occasional defections, crossings and street protests. Autocracies and empires get a "rubber-stamp parliament".
+- **National audit** (Settings, off by default): every 12 years in January. Agenda from the last 12 years' real record (AI); answers move stability, mood and the papers.
+- **No-confidence** (Settings, off by default): approval under 25% for three months → a motion. Defend with a speech (AI-scored) or dissolve parliament. Passed = "lame duck" (stability −5, influence −20% for 3 years).
+- **Lobbying**: "official support" goes to the treasury (public); "bribes" go to the vault (if exposed: stability −6, mood −6 for 2 years). You can denounce them too.
+
+## 🔭 Pre-FTL Observation (Office)
+- Age, awareness and observation posts of the primitives you know, on one screen. Asks the game **only on first contact and when you open the screen** (less load).
+- **Observation reports** (template or AI) · change log · **broadcast interception** (radio, TV, satellite; content follows awareness).
+- **Interventions**: gift of technology · plague medical aid · deliberate sighting · cover-up · change the post's mission.
+- **Voice from the Sky**: speak to them directly. Each line raises awareness by its risk, with aftermaths — prophets, madmen, sages.
+- After uplift or conquest they remain as an empire that remembers.
+
+===== Discord (English) — 4/4 =====
+
+## 🪐 Entrust Planets to Governors (Office → Planetary governors)
+- Hand a planet to its governor and the game's **planet automation** builds by one of **8 mandates** they recommend (research, alloys, consumer goods, mining, energy, farming, urban & trade, fortress). Costs are the game's own.
+- Turn on **"Governor's Mandate"** once in the planet's automation menu (it may clash with "Designation construction").
+- **Mandate bonus**: build speed +15%, mandate jobs +3%. Temper: careful (cost −5%, pauses below 1,000 minerals) · steady (below 300) · bold (build speed +10%, never pauses).
+- **After a year** → **"Seasoned Governor"**: build speed +10%, all jobs +3%. Changing the mandate starts over.
+- Governor lines are templates (no AI); game commands only when handing over or withdrawing.
+
+## 🔧 Performance · Fixes
+- **Less game load**: the leader roster is read only in months when a leader changed, once a year, and when you open Office contacts.
+- Fixed poker chips and blackjack bets vanishing when closing the casino or quitting (returned to the vault).
+
+When the app update prompt appears, apply it, update the mod too, and restart the game.

@@ -1,0 +1,164 @@
+# SLLM - 신문·홈페이지 실시간 소식(2026-11-10 사용자: 「사건이 터지면 모드가 보내면 날짜도 정확하고 정보도 정확」).
+# 앱(mail.ts newsFrom/newsText)이 SLLM:NEWS 줄을 연대기 한 줄로 바꿔 신문·홈페이지 실시간 소식에 쓴다. 숨은 이벤트, 기록만 한다.
+# a= 는 번호(없으면 -1, 앱이 이름으로 찾는다). 로그 글에는 달러 기호 파라미터를 넣지 않는다(F-39).
+namespace = sllm_news
+
+# 거대 구조물 완공
+country_event = {
+	id = sllm_news.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { sllm_is_empire = yes }
+	immediate = {
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		log = "SLLM:NEWS/;/kind=mega/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/what=\\[From.GetName]/;/where=\\[FromFrom.GetName]"
+	}
+}
+
+# 정부 개편(새 정부 이름)
+country_event = {
+	id = sllm_news.2
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { sllm_is_empire = yes }
+	immediate = {
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		log = "SLLM:NEWS/;/kind=gov/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/gov=\\[Root.GetGovernmentName]"
+	}
+}
+
+# 지도자 포획
+leader_event = {
+	id = sllm_news.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { From = { sllm_is_empire = yes } }
+	immediate = {
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		FromFrom = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		log = "SLLM:NEWS/;/kind=captured/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[FromFrom.sllm_nix]/;/bname=\\[FromFrom.GetName]/;/leader=\\[This.GetName]/;/where=\\[FromFromFrom.GetName]"
+	}
+}
+
+# 폭격으로 식민지 소멸
+planet_event = {
+	id = sllm_news.4
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { From = { sllm_is_empire = yes } }
+	immediate = {
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		log = "SLLM:NEWS/;/kind=bombed/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/where=\\[This.GetName]"
+	}
+}
+
+# 연방 의장국 교체
+country_event = {
+	id = sllm_news.5
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { sllm_is_empire = yes }
+	immediate = {
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		log = "SLLM:NEWS/;/kind=fed_lead/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]"
+	}
+}
+
+# 은하 공동체 창설
+country_event = {
+	id = sllm_news.6
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		log = "SLLM:NEWS/;/kind=galcom/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]"
+	}
+}
+
+# 2026-11-10 사용자: 「제독의 전투 승리 같은 걸 신문에」 — 우주 전투 승리.
+# 날마다·교전마다 불리므로: 두 나라 모두 제국 + 서로 전쟁 중 + 이긴 함대에 제독이 있을 때만, 이긴 나라마다 180일에 한 번.
+country_event = {
+	id = sllm_news.7
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_country_flag = sllm_news_battle }
+		sllm_is_empire = yes
+		From = { sllm_is_empire = yes }
+		is_at_war_with = From
+		FromFrom = { exists = leader }
+	}
+	immediate = {
+		set_timed_country_flag = { flag = sllm_news_battle days = 180 }
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		FromFrom = { leader = { log = "SLLM:NEWS/;/kind=battle/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_nix]/;/bname=\\[From.GetName]/;/leader=\\[This.GetName]/;/what=\\[FromFrom.GetName]" } }
+	}
+}
+
+# 고고학 유적 발굴 완료(드묾 — 따로 줄이지 않음).
+fleet_event = {
+	id = sllm_news.8
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { owner = { sllm_is_empire = yes } }
+	immediate = {
+		owner = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		owner = { save_event_target_as = sllm_arch_owner }
+		if = {
+			limit = { exists = leader }
+			leader = { log = "SLLM:NEWS/;/kind=arch/;/date=\\[GetDate]/;/a=\\[sllm_arch_owner.sllm_nix]/;/aname=\\[sllm_arch_owner.GetName]/;/where=\\[From.GetName]/;/leader=\\[This.GetName]" }
+		}
+		else = {
+			owner = { log = "SLLM:NEWS/;/kind=arch/;/date=\\[GetDate]/;/a=\\[This.sllm_nix]/;/aname=\\[This.GetName]/;/where=\\[From.GetName]" }
+		}
+	}
+}
+
+# 궤도 폭격 개시(on_planet_bombarded 는 날마다 불림 → 첫 조건이 행성 표식이라 대부분 여기서 바로 끝남).
+# 한 행성은 1년에 한 번. 플레이어가 끼지 않은 AI 끼리의 폭격은 폭격한 나라마다 1년에 한 번만(기사가 넘치지 않게).
+planet_event = {
+	id = sllm_news.9
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_planet_flag = sllm_news_bomb }
+		exists = owner
+		From = { sllm_is_empire = yes }
+		owner = { sllm_is_empire = yes }
+		OR = {
+			From = { is_ai = no }
+			owner = { is_ai = no }
+			From = { NOT = { has_country_flag = sllm_news_bomb_ai } }
+		}
+	}
+	immediate = {
+		set_timed_planet_flag = { flag = sllm_news_bomb days = 360 }
+		if = { limit = { From = { is_ai = yes } owner = { is_ai = yes } } From = { set_timed_country_flag = { flag = sllm_news_bomb_ai days = 360 } } }
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		owner = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		owner = { save_event_target_as = sllm_bomb_owner }
+		log = "SLLM:NEWS/;/kind=bomb_start/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[sllm_bomb_owner.sllm_nix]/;/bname=\\[sllm_bomb_owner.GetName]/;/where=\\[This.GetName]"
+	}
+}
+
+# 폭격 사상자(인구가 처음 죽은 날 한 번, 행성마다 1년에 한 번). 플레이어가 끼었을 때만.
+planet_event = {
+	id = sllm_news.10
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = { has_planet_flag = sllm_news_bombdead }
+		exists = owner
+		From = { sllm_is_empire = yes }
+		owner = { sllm_is_empire = yes }
+		OR = { From = { is_ai = no } owner = { is_ai = no } }
+	}
+	immediate = {
+		set_timed_planet_flag = { flag = sllm_news_bombdead days = 360 }
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		owner = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }
+		owner = { save_event_target_as = sllm_bomb_owner }
+		log = "SLLM:NEWS/;/kind=bomb_dead/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[sllm_bomb_owner.sllm_nix]/;/bname=\\[sllm_bomb_owner.GetName]/;/where=\\[This.GetName]"
+	}
+}

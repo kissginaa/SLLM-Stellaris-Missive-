@@ -1,0 +1,219 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 10.5 — 은하의 다른 목소리들 (0.1.0-alpha.10.5)[/h1]
+
+이번 업데이트는 일반 제국뿐 아니라 엔클레이브·은하 위기·몰락한 제국, 그리고 기계 지성·군체 제국의 목소리를 더했습니다. 새 기능의 글은 대부분 미리 써 둔 문장과 게임 자료로 만들어, 직접 대화하는 때가 아니면 AI를 쓰지 않습니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]🎭 엔클레이브·캐러밴[/h2]
+[list]
+[*]외교 단말기에서 엔클레이브와 캐러밴이 「엔클레이브·캐러밴」 분류로 묶이고, 세부 이름(예술가 극단·큐레이터 기사단·XuraCorp·Riggan 상업 거래소·Muutagan 상인 길드·고철상·장막 순례자·용병 엔클레이브)이 표시됩니다. 통신할 수 없는 세력은 연결되지 않습니다.
+[*]세력마다 게임 속 대사를 바탕으로 한 고유한 말투로 대화합니다.
+[*]세계의 축제가 열리거나 캐러밴이 국경에 들어오면 알림과 신문 소식이 올라옵니다.
+[*][b]예술가 순회 공연[/b]: 극단에게 부탁하면 열립니다(에너지 250). 900일 동안 행복도 +4%, 인구 증가 +2.5%. 세계의 축제나 다른 순회 공연이 진행 중이면 열 수 없고, 극단과 사이가 나쁘면 거절당합니다.
+[*][b]큐레이터 대여[/b]: 수집품·표본을 1년 빌려주면 돌아올 때 360일 동안 모든 연구 속도가 오릅니다(일반 +3% · 희귀 +5% · 전설 +8%). 대여 중인 물건은 전시·선물·배송이 잠깁니다(동시에 1건).
+[*][b]상인 엔클레이브의 골동 수집품[/b]: 세 상인이 엄선한 진품 30점(일반·희귀·전설)을 에너지로 팔고, 산 물건은 한 점뿐이라 매진되면 다시 나오지 않습니다. 전시실의 「골동품 진열장」에 진열할 수 있습니다.
+[*][b]국가 문서함[/b]: 감정서·보증서·계약서 같은 문서를 진짜 서류처럼(문서 번호·인장·서명·플레이어 국기 문양 워터마크) 모아 봅니다.
+[/list]
+
+[h2]🌌 은하 위기[/h2]
+[list]
+[*]위기 세력과도 외교 단말기에서 대화할 수 있습니다. 세력마다 게임 속 통신 대사를 바탕으로 말합니다.
+[*][b]세타나[/b]는 위기이지만 진심으로 제국들을 도우려는 존재입니다. 그녀의 과업에 동참하는 제국도, 맞서는 제국도 있어서, 세타나와 전쟁 중이 아닌 제국은 그녀를 중립적으로 말합니다.
+[*]위기가 시작되고 이어지고 끝날 때 가로챈 신호가 들어오고 연대기에 남습니다. 위기가 끝나면 「극복 기록」 문서가 남습니다.
+[*]위기와 국경을 맞댄 제국은 우리에게 고마움을 느끼고, 위기 중 우리와 전쟁하는 제국은 원한을 키웁니다.
+[*][b]공동 대응 협약[/b]: 적대적인 위기 중에 AI 제국과 대화로 맺을 수 있습니다. 서로의 호감 +30, 양쪽 함선 화력 +5%이고, 동시에 3개까지입니다. 협약 중 전쟁을 벌이면 큰 원한을 삽니다. 위기가 모두 끝나면 협약도 끝나고, 함께 싸운 제국은 극복 기록에 이름이 남습니다.
+[*][b]하늘의 전쟁[/b]이 시작되면 별도의 위기 소식으로 다룹니다.
+[/list]
+
+[h2]🤖 기계 지성 · 🐝 군체[/h2]
+[list]
+[*]기계·군체 제국은 시빅(확고한 말살자·동화 기계·반란 하인·포식 군체 등)에 맞는 목소리로 다른 제국과 대화합니다.
+[*]집무실과 총독회의·연설 창의 용어가 기계(「연산」·「노드」)와 군체(「공명」·「드론」)의 말투로 바뀝니다. 언어 팩 언어에서는 일반 용어를 씁니다.
+[*]집무실은 기계 지성이면 「연산 코어」, 군체면 「공명 의식」으로 꾸며집니다. 설정의 색 테마에 「자동 · 우리 제국에 맞춤」이 생겼습니다.
+[*]기계는 「동기화 로그」, 군체는 「공명 보고」를 받습니다. 이탈도(행성 범죄)가 30 이상인 행성은 「이탈 노드 보고」로 따로 알려 주고, 그 행성의 질서 안건에 반영됩니다.
+[/list]
+
+[h2]👑 몰락한 제국[/h2]
+[list]
+[*]기계 몰락한 제국(고대 관리인)이 추가되었습니다.
+[*]몰락한 제국이 우리가 준 과업·선물을 기억해 대화에 반영합니다.
+[*]잠든 몰락한 제국이 깨어나면 가로챈 신호와 알림, 특별판으로 알립니다.
+[*]하늘의 전쟁 중에는 각성한 제국이 편들기를 압박합니다.
+[/list]
+
+[h2]💭 AI 제국의 감정 기억[/h2]
+[list]
+[*]AI 제국이 원한·고마움·두려움·야망을 쌓아 갑니다. 분기마다 전쟁·점령·선물·함대 전력 비교로 계산하고, 시간이 지나면 옅어집니다.
+[*]대화 말투와 먼저 오는 편지뿐 아니라 실제 행동에도 반영됩니다: 위협 인식, 강대국 경계, 감사의 원조 협정, 도움 요청, 복수 선전포고(기본 꺼짐). 외교 단말기에서 상대의 감정을 볼 수 있습니다.
+[/list]
+
+[h2]🗺️ 지도 표시·총독 약속[/h2]
+[list]
+[*]은하 지도에 「감정 지도」 모드와 성계 번호표가 생겼습니다. 원조 협정국·선전포고국의 수도 성계에 이름표가 붙고, 대화에서 언급된 성계는 1년 동안 표시됩니다.
+[*]총독에게 한 약속을 「약속 문서」로 남길 수 있습니다. 기한 안에 지키면 호감 +3·충성 +5, 어기면 호감 −10·충성 −15입니다. 이행 여부는 게임 자료로 자동 판정합니다.
+[/list]
+
+앱 업데이트 안내가 나타나면 적용해 주세요. 아직 알파 버전인 만큼 예상하지 못한 문제가 있을 수 있습니다. 발견한 문제와 의견을 남겨 주세요!
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 10.5 — Other Voices of the Galaxy (0.1.0-alpha.10.5)[/h1]
+
+This update adds voices beyond ordinary empires: enclaves, galactic crises, Fallen Empires, and machine-intelligence and hive-mind empires. Most new text is built from pre-written lines and game data, so no AI is used except when you talk to someone directly.
+
+⚠️ [b]The mod files have changed.[/b] Please update both this mod (Workshop) and the app, and fully restart the game.
+
+[h2]🎭 Enclaves and Caravaneers[/h2]
+[list]
+[*]In the diplomacy terminal, enclaves and caravaneers are grouped under "Enclaves & Caravans" with their specific names (Artisan Troupe, Curator Order, XuraCorp, Riggan Exchange, Muutagan Guild, Salvager, Shroudwalker, Mercenary Enclave). Powers you cannot contact are not connected.
+[*]Each faction speaks in its own voice, based on its in-game dialogue.
+[*]When the Festival of the Worlds begins or a caravan reaches your border, you get a notification and a newspaper item.
+[*][b]Artist tour[/b]: ask the troupe to perform (250 energy). For 900 days: +4% happiness and +2.5% pop growth. It cannot be held during a festival or another tour, and the troupe refuses if relations are bad.
+[*][b]Curator loans[/b]: lend a collectible or specimen for one year, and when it returns you get a 360-day research speed bonus (common +3% · rare +5% · legendary +8%). A loaned item is locked from display, gifting and shipping (one loan at a time).
+[*][b]Antique collectibles from merchant enclaves[/b]: the three merchants sell 30 hand-picked genuine pieces (common, rare, legendary) for energy. Each piece exists only once and does not return once sold. Display them in the exhibit hall's "Antiques Cabinet".
+[*][b]State documents[/b]: appraisals, certificates and contracts are kept as genuine-looking documents (document number, seal, signature, and your flag emblem as a watermark).
+[/list]
+
+[h2]🌌 Galactic Crises[/h2]
+[list]
+[*]You can also talk to crisis powers in the diplomacy terminal. Each speaks based on its in-game communication lines.
+[*][b]Cetana[/b] is a crisis, but she sincerely wants to help the empires. Some empires join her work and others oppose it, so empires not at war with her speak of her neutrally.
+[*]Intercepted signals arrive when a crisis begins, continues and ends, and are recorded in the chronicle. When a crisis ends, a "Crisis Overcome" document is kept.
+[*]Empires bordering a crisis feel gratitude toward you, and empires at war with you during a crisis build up grudges.
+[*][b]Joint crisis response pact[/b]: during a hostile crisis, you can sign one by talking to an AI empire. Mutual opinion +30, +5% ship fire rate for both, up to 3 at once. Going to war during a pact earns a heavy grudge. When all crises end, the pacts end too, and the empires that fought beside you are named in the crisis record.
+[*]The [b]War in Heaven[/b] is handled as its own crisis news.
+[/list]
+
+[h2]🤖 Machine Intelligence · 🐝 Hive Mind[/h2]
+[list]
+[*]Machine and hive empires speak to others in voices fitting their civics (Fanatic Purifiers, Driven Assimilators, Rogue Servitors, Devouring Swarm, and more).
+[*]Office, governor council and speech windows use machine ("computation", "node") or hive ("resonance", "drone") terminology. Language-pack languages use the general terms.
+[*]The Office becomes a "Computation Core" for machines and a "Resonant Consciousness" for hives. A new color theme, "Auto · matches your empire", is available in settings.
+[*]Machines receive a "Synchronization Log" and hives a "Resonance Report". Planets with deviancy (planet crime) of 30 or more are flagged in a "Deviant Node Report" and factor into their order agenda.
+[/list]
+
+[h2]👑 Fallen Empires[/h2]
+[list]
+[*]Machine Fallen Empires (Ancient Caretakers) have been added.
+[*]Fallen Empires remember the tasks and gifts you gave them and mention them in conversation.
+[*]When a dormant Fallen Empire awakens, you are told through an intercepted signal, a notification and a special edition.
+[*]During the War in Heaven, awakened empires pressure you to pick a side.
+[/list]
+
+[h2]💭 Emotional Memory of AI Empires[/h2]
+[list]
+[*]AI empires build up grudge, gratitude, fear and ambition each quarter from wars, occupations, gifts and fleet-power comparisons, and these fade over time.
+[*]They affect not only tone and unprompted letters but also real actions: threat perception, wariness of great powers, grateful aid agreements, requests for help, and revenge declarations of war (off by default). You can see an empire's feelings in the diplomacy terminal.
+[/list]
+
+[h2]🗺️ Map Marks and Governor Promises[/h2]
+[list]
+[*]The galaxy map gains an "Emotion map" mode and system number tags. Capital systems of aid-agreement and war-declaration empires get name labels, and systems mentioned in conversation are marked for one year.
+[*]Promises made to governors can be kept as "promise documents". Keep it in time for opinion +3 and loyalty +5; break it for opinion −10 and loyalty −15. Fulfillment is judged automatically from game data.
+[/list]
+
+When the app update notice appears, please apply it. This is still an alpha, so unexpected problems may occur. Please report any issues and feedback!
+
+===== Discord (한국어) =====
+(메시지마다 2000자 미만으로 끊었습니다. 순서대로 따로 보내세요.)
+
+----- 메시지 1/5 (221자) -----
+# 🌌 SLLM 알파 10.5 — 은하의 다른 목소리들
+일반 제국뿐 아니라 엔클레이브·은하 위기·몰락한 제국, 그리고 기계 지성·군체 제국의 목소리를 더했습니다. 새 기능의 글은 대부분 미리 써 둔 문장과 게임 자료로 만들어, 직접 대화할 때가 아니면 AI를 쓰지 않습니다.
+
+⚠️ **모드 파일이 바뀌었습니다.** 창작마당 모드와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+----- 메시지 2/5 (686자) -----
+## 🎭 엔클레이브·캐러밴
+• 외교 단말기에서 엔클레이브와 캐러밴이 「엔클레이브·캐러밴」 분류로 묶이고, 세부 이름(예술가 극단·큐레이터 기사단·XuraCorp·Riggan 상업 거래소·Muutagan 상인 길드·고철상·장막 순례자·용병 엔클레이브)이 표시됩니다. 통신할 수 없는 세력은 연결되지 않습니다.
+• 세력마다 게임 속 대사를 바탕으로 한 고유한 말투로 대화합니다.
+• 세계의 축제가 열리거나 캐러밴이 국경에 들어오면 알림과 신문 소식이 올라옵니다.
+• **예술가 순회 공연**: 극단에게 부탁하면 열립니다(에너지 250). 900일 동안 행복도 +4%, 인구 증가 +2.5%. 세계의 축제나 다른 순회 공연이 진행 중이면 열 수 없고, 극단과 사이가 나쁘면 거절당합니다.
+• **큐레이터 대여**: 수집품·표본을 1년 빌려주면 돌아올 때 360일 동안 모든 연구 속도가 오릅니다(일반 +3% · 희귀 +5% · 전설 +8%). 대여 중인 물건은 전시·선물·배송이 잠깁니다(동시에 1건).
+• **골동 수집품**: 세 상인 엔클레이브가 엄선한 진품 30점(일반·희귀·전설)을 에너지로 팝니다. 한 점뿐인 진품이라 팔리면 다시 나오지 않고, 전시실의 「골동품 진열장」에 진열할 수 있습니다.
+• **국가 문서함**: 감정서·보증서·계약서를 진짜 서류처럼(문서 번호·인장·서명·플레이어 국기 문양 워터마크) 모아 봅니다.
+
+----- 메시지 3/5 (497자) -----
+## 🌌 은하 위기
+• 위기 세력과도 외교 단말기에서 대화할 수 있습니다. 세력마다 게임 속 통신 대사를 바탕으로 말합니다.
+• **세타나**는 위기이지만 진심으로 제국들을 도우려는 존재입니다. 그녀의 과업에 동참하는 제국도, 맞서는 제국도 있어서, 세타나와 전쟁 중이 아닌 제국은 그녀를 중립적으로 말합니다.
+• 위기가 시작되고 이어지고 끝날 때 가로챈 신호가 들어오고 연대기에 남습니다. 위기가 끝나면 「극복 기록」 문서가 남습니다.
+• 위기와 국경을 맞댄 제국은 우리에게 고마움을 느끼고, 위기 중 우리와 전쟁하는 제국은 원한을 키웁니다.
+• **공동 대응 협약**: 적대적인 위기 중에 AI 제국과 대화로 맺을 수 있습니다. 서로의 호감 +30, 양쪽 함선 화력 +5%, 동시에 3개까지. 협약 중 전쟁을 벌이면 큰 원한을 삽니다. 위기가 모두 끝나면 협약도 끝나고, 함께 싸운 제국은 극복 기록에 이름이 남습니다.
+• **하늘의 전쟁**이 시작되면 별도의 위기 소식으로 다룹니다.
+
+----- 메시지 4/5 (505자) -----
+## 🤖 기계 지성 · 🐝 군체
+• 기계·군체 제국은 시빅(확고한 말살자·동화 기계·반란 하인·포식 군체 등)에 맞는 목소리로 다른 제국과 대화합니다.
+• 집무실과 총독회의·연설 창의 용어가 기계(「연산」·「노드」)와 군체(「공명」·「드론」)의 말투로 바뀝니다. 언어 팩 언어에서는 일반 용어를 씁니다.
+• 집무실은 기계 지성이면 「연산 코어」, 군체면 「공명 의식」으로 꾸며집니다. 설정의 색 테마에 「자동 · 우리 제국에 맞춤」이 생겼습니다.
+• 기계는 「동기화 로그」, 군체는 「공명 보고」를 받습니다. 이탈도(행성 범죄)가 30 이상인 행성은 「이탈 노드 보고」로 따로 알려 주고, 그 행성의 질서 안건에 반영됩니다.
+
+## 👑 몰락한 제국
+• 기계 몰락한 제국(고대 관리인)이 추가되었습니다.
+• 몰락한 제국이 우리가 준 과업·선물을 기억해 대화에 반영합니다.
+• 잠든 몰락한 제국이 깨어나면 가로챈 신호와 알림, 특별판으로 알립니다.
+• 하늘의 전쟁 중에는 각성한 제국이 편들기를 압박합니다.
+
+----- 메시지 5/5 (502자) -----
+## 💭 AI 제국의 감정 기억
+• AI 제국이 원한·고마움·두려움·야망을 쌓아 갑니다. 분기마다 전쟁·점령·선물·함대 전력 비교로 계산하고, 시간이 지나면 옅어집니다.
+• 대화 말투와 먼저 오는 편지뿐 아니라 실제 행동에도 반영됩니다: 위협 인식, 강대국 경계, 감사의 원조 협정, 도움 요청, 복수 선전포고(기본 꺼짐). 외교 단말기에서 상대의 감정을 볼 수 있습니다.
+
+## 🗺️ 지도 표시 · 총독 약속
+• 은하 지도에 「감정 지도」 모드와 성계 번호표가 생겼습니다. 원조 협정국·선전포고국의 수도 성계에 이름표가 붙고, 대화에서 언급된 성계는 1년 동안 표시됩니다.
+• 총독에게 한 약속을 「약속 문서」로 남길 수 있습니다. 기한 안에 지키면 호감 +3·충성 +5, 어기면 호감 −10·충성 −15. 이행 여부는 게임 자료로 자동 판정합니다.
+
+앱 업데이트 안내가 나타나면 적용해 주세요. 아직 알파 버전인 만큼 예상하지 못한 문제가 있을 수 있습니다. 발견한 문제와 의견을 남겨 주세요!
+
+===== Discord (English) =====
+(Each message is under 2000 characters. Post them in order, one by one.)
+
+----- Message 1/5 (421자) -----
+# 🌌 SLLM Alpha 10.5 — Other Voices of the Galaxy
+This update adds voices beyond ordinary empires: enclaves, galactic crises, Fallen Empires, and machine-intelligence and hive-mind empires. Most new text is built from pre-written lines and game data, so no AI is used except when you talk to someone directly.
+
+⚠️ **The mod files have changed.** Please update both the Workshop mod and the app, and fully restart the game.
+
+----- Message 2/5 (1372자) -----
+## 🎭 Enclaves & Caravaneers
+• In the diplomacy terminal, enclaves and caravaneers are grouped under "Enclaves & Caravans" with their specific names (Artisan Troupe, Curator Order, XuraCorp, Riggan Exchange, Muutagan Guild, Salvager, Shroudwalker, Mercenary Enclave). Powers you cannot contact are not connected.
+• Each faction speaks in its own voice, based on its in-game dialogue.
+• When the Festival of the Worlds begins or a caravan reaches your border, you get a notification and a newspaper item.
+• **Artist tour**: ask the troupe to perform (250 energy). For 900 days: +4% happiness and +2.5% pop growth. It cannot be held during a festival or another tour, and the troupe refuses if relations are bad.
+• **Curator loans**: lend a collectible or specimen for one year, and when it returns you get a 360-day research speed bonus (common +3% · rare +5% · legendary +8%). A loaned item is locked from display, gifting and shipping (one loan at a time).
+• **Antique collectibles**: the three merchant enclaves sell 30 hand-picked genuine pieces (common, rare, legendary) for energy. Each piece exists only once and does not return once sold. Display them in the exhibit hall's "Antiques Cabinet".
+• **State documents**: appraisals, certificates and contracts are kept as genuine-looking documents (document number, seal, signature, and your flag emblem as a watermark).
+
+----- Message 3/5 (984자) -----
+## 🌌 Galactic Crises
+• You can also talk to crisis powers in the diplomacy terminal. Each speaks based on its in-game communication lines.
+• **Cetana** is a crisis, but she sincerely wants to help the empires. Some empires join her work and others oppose it, so empires not at war with her speak of her neutrally.
+• Intercepted signals arrive when a crisis begins, continues and ends, and are recorded in the chronicle. When a crisis ends, a "Crisis Overcome" document is kept.
+• Empires bordering a crisis feel gratitude toward you, and empires at war with you during a crisis build up grudges.
+• **Joint crisis response pact**: during a hostile crisis, you can sign one by talking to an AI empire. Mutual opinion +30, +5% ship fire rate for both, up to 3 at once. Going to war during a pact earns a heavy grudge. When all crises end, the pacts end too, and the empires that fought beside you are named in the crisis record.
+• The **War in Heaven** is handled as its own crisis news.
+
+----- Message 4/5 (1119자) -----
+## 🤖 Machine Intelligence · 🐝 Hive Mind
+• Machine and hive empires speak to others in voices fitting their civics (Fanatic Purifiers, Driven Assimilators, Rogue Servitors, Devouring Swarm, and more).
+• Office, governor council and speech windows use machine ("computation", "node") or hive ("resonance", "drone") terminology. Language-pack languages use the general terms.
+• The Office becomes a "Computation Core" for machines and a "Resonant Consciousness" for hives. A new color theme, "Auto · matches your empire", is available in settings.
+• Machines receive a "Synchronization Log" and hives a "Resonance Report". Planets with deviancy (planet crime) of 30 or more are flagged in a "Deviant Node Report" and factor into their order agenda.
+
+## 👑 Fallen Empires
+• Machine Fallen Empires (Ancient Caretakers) have been added.
+• Fallen Empires remember the tasks and gifts you gave them and mention them in conversation.
+• When a dormant Fallen Empire awakens, you are told through an intercepted signal, a notification and a special edition.
+• During the War in Heaven, awakened empires pressure you to pick a side.
+
+----- Message 5/5 (1069자) -----
+## 💭 Emotional Memory of AI Empires
+• AI empires build up grudge, gratitude, fear and ambition each quarter from wars, occupations, gifts and fleet-power comparisons, and these fade over time.
+• They affect not only tone and unprompted letters but also real actions: threat perception, wariness of great powers, grateful aid agreements, requests for help, and revenge declarations of war (off by default). You can see an empire's feelings in the diplomacy terminal.
+
+## 🗺️ Map Marks & Governor Promises
+• The galaxy map gains an "Emotion map" mode and system number tags. Capital systems of aid-agreement and war-declaration empires get name labels, and systems mentioned in conversation are marked for one year.
+• Promises made to governors can be kept as "promise documents". Keep it in time for opinion +3 and loyalty +5; break it for opinion −10 and loyalty −15. Fulfillment is judged automatically from game data.
+
+When the app update notice appears, please apply it. This is still an alpha, so unexpected problems may occur. Please report any issues and feedback!

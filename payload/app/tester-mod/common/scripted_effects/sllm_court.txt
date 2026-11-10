@@ -1,0 +1,147 @@
+# SLLM 정치(음모·궁정 정치·반대파 처리·망명·정략결혼, 2026-10-28 사용자 확정). 앱: src/court.ts · src/features/court-app.ts. 플레이어 국가 범위에서 부른다(wrapForPlayer).
+# 지도자는 sllm_lid 로 찾는다(아기방 성인식·지도자 명단과 같은 번호). 상대 제국 찾기는 외교 거래의 sllm_deal_find(event_target:sllm_dl_x)를 그대로 쓴다.
+# 회신: SLLM:COURT op=… req=… sid=… status=applied|short|duplicate|no_target|target. 로그 문자열 안에 $..$ 매개변수를 넣지 않는다(F-39).
+# 게임 안 검수 전(바닐라 파일 기준): 지도자 범위 unassign_leader = this(paragon_events_3) · exile_leader_as(country_events_2) · 다른 나라 지도자 set_owner(paragon_events_3 Sharpbeak).
+
+# 비용(매수·추문 폭로·회유): 창고가 모자라면 short. 같은 요청 번호는 한 번만(duplicate).  … sllm_court_pay = { REQ = 9 EN = 300 INF = 0 }
+sllm_court_pay = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_ct_last } } set_variable = { which = sllm_ct_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_ct_last value >= $REQ$ } }
+		log = "SLLM:COURT/;/op=pay/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=duplicate"
+	}
+	else_if = {
+		limit = { OR = { NOT = { resource_stockpile_compare = { resource = energy value >= $EN$ } } NOT = { resource_stockpile_compare = { resource = influence value >= $INF$ } } } }
+		log = "SLLM:COURT/;/op=pay/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+	}
+	else = {
+		set_variable = { which = sllm_ct_last value = $REQ$ }
+		add_resource = { energy = -$EN$ influence = -$INF$ }
+		log = "SLLM:COURT/;/op=pay/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+	}
+}
+# 영향력 잃기(권력 노림·후계 다툼이 이루어짐). 모자라면 있는 만큼 빠져 음수가 될 수 있다(바닐라와 같음).  … sllm_court_lose = { REQ = 9 INF = 100 }
+sllm_court_lose = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	add_resource = { influence = -$INF$ }
+	log = "SLLM:COURT/;/op=lose/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+}
+
+# 지도자 찾기 공통: sllm_ct_ok = 1 이면 찾음.
+# 좌천: 직책에서 물러나게 한다.  … sllm_court_unassign = { REQ = 9 LID = 12 }
+sllm_court_unassign = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	set_variable = { which = sllm_ct_ok value = 0 }
+	every_owned_leader = {
+		limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = $LID$ } }
+		unassign_leader = this
+		prev = { set_variable = { which = sllm_ct_ok value = 1 } }
+	}
+	if = { limit = { check_variable = { which = sllm_ct_ok value = 1 } } log = "SLLM:COURT/;/op=unassign/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied" }
+	else = { log = "SLLM:COURT/;/op=unassign/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=no_target" }
+	clear_variable = sllm_ct_ok
+}
+# 체포: 직책에서 물러나게 하고 「수감됨」 특성(일을 거의 못 함).  … sllm_court_jail = { REQ = 9 LID = 12 }
+sllm_court_jail = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	set_variable = { which = sllm_ct_ok value = 0 }
+	every_owned_leader = {
+		limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = $LID$ } }
+		unassign_leader = this
+		if = { limit = { NOT = { has_trait = sllm_trait_imprisoned } } add_trait = sllm_trait_imprisoned }
+		prev = { set_variable = { which = sllm_ct_ok value = 1 } }
+	}
+	if = { limit = { check_variable = { which = sllm_ct_ok value = 1 } } log = "SLLM:COURT/;/op=jail/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied" }
+	else = { log = "SLLM:COURT/;/op=jail/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=no_target" }
+	clear_variable = sllm_ct_ok
+}
+# 석방: 「수감됨」을 뗀다.  … sllm_court_free = { REQ = 9 LID = 12 }
+sllm_court_free = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	set_variable = { which = sllm_ct_ok value = 0 }
+	every_owned_leader = {
+		limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = $LID$ } }
+		if = { limit = { has_trait = sllm_trait_imprisoned } remove_trait = sllm_trait_imprisoned }
+		prev = { set_variable = { which = sllm_ct_ok value = 1 } }
+	}
+	if = { limit = { check_variable = { which = sllm_ct_ok value = 1 } } log = "SLLM:COURT/;/op=free/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied" }
+	else = { log = "SLLM:COURT/;/op=free/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=no_target" }
+	clear_variable = sllm_ct_ok
+}
+# 추방: 지도자 명단에서 내보낸다(바닐라 exile_leader_as).  … sllm_court_exile = { REQ = 9 LID = 12 }
+sllm_court_exile = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	set_variable = { which = sllm_ct_ok value = 0 }
+	every_owned_leader = {
+		limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = $LID$ } }
+		unassign_leader = this
+		exile_leader_as = sllm_court_exiled
+		prev = { set_variable = { which = sllm_ct_ok value = 1 } }
+	}
+	if = { limit = { check_variable = { which = sllm_ct_ok value = 1 } } log = "SLLM:COURT/;/op=exile/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied" }
+	else = { log = "SLLM:COURT/;/op=exile/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=no_target" }
+	clear_variable = sllm_ct_ok
+}
+# 망명·혼인으로 보내기: 우리 지도자를 그 제국(sllm_idx = TID)의 지도자로.  … sllm_court_send = { REQ = 9 LID = 12 TID = 4 }
+sllm_court_send = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	set_variable = { which = sllm_ct_ok value = 0 }
+	sllm_deal_find = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_dl_ok value = 1 } }
+		every_owned_leader = {
+			limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = $LID$ } }
+			unassign_leader = this
+			if = { limit = { has_trait = sllm_trait_imprisoned } remove_trait = sllm_trait_imprisoned }
+			set_owner = event_target:sllm_dl_x
+			event_target:sllm_dl_p = { set_variable = { which = sllm_ct_ok value = 1 } }
+		}
+		if = { limit = { check_variable = { which = sllm_ct_ok value = 1 } } log = "SLLM:COURT/;/op=send/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied" }
+		else = { log = "SLLM:COURT/;/op=send/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=no_target" }
+	}
+	else = { log = "SLLM:COURT/;/op=send/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=target" }
+	clear_variable = sllm_ct_ok
+}
+# 우리 나라 수정자(파벌 매력도 -10%·+15%, 에너지 -10%).  … sllm_court_mod = { REQ = 9 MOD = sllm_plot_graft DAYS = 360 }
+sllm_court_mod = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	remove_modifier = $MOD$
+	add_modifier = { modifier = $MOD$ days = $DAYS$ }
+	log = "SLLM:COURT/;/op=mod/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+}
+# 행성 수정자(every_owned_colony 순서 K, 시위 해산과 같은 순서).  … sllm_court_planet = { REQ = 9 K = 3 MOD = sllm_plot_secede DAYS = 720 }
+sllm_court_planet = {
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	set_variable = { which = sllm_ct_n value = 0 }
+	set_variable = { which = sllm_ct_ok value = 0 }
+	every_owned_colony = {
+		prev = { change_variable = { which = sllm_ct_n value = 1 } }
+		if = {
+			limit = { prev = { check_variable = { which = sllm_ct_n value = $K$ } } }
+			remove_modifier = $MOD$
+			add_modifier = { modifier = $MOD$ days = $DAYS$ }
+			prev = { set_variable = { which = sllm_ct_ok value = 1 } }
+		}
+	}
+	if = { limit = { check_variable = { which = sllm_ct_ok value = 1 } } log = "SLLM:COURT/;/op=planet/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied" }
+	else = { log = "SLLM:COURT/;/op=planet/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=no_target" }
+	clear_variable = sllm_ct_n
+	clear_variable = sllm_ct_ok
+}
+# 혼인 동맹 호감 +40(상대가 우리를 보는 호감). ADD = no 면 뗀다(전쟁).  … sllm_court_bond = { REQ = 9 TID = 4 ADD = yes }
+sllm_court_bond = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_ct_req value = $REQ$ }
+	sllm_deal_find = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_dl_ok value = 1 } }
+		event_target:sllm_dl_x = {
+			remove_opinion_modifier = { who = event_target:sllm_dl_p modifier = sllm_marry_bond }
+			if = { limit = { always = $ADD$ } add_opinion_modifier = { who = event_target:sllm_dl_p modifier = sllm_marry_bond } }
+		}
+		log = "SLLM:COURT/;/op=bond/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+	}
+	else = { log = "SLLM:COURT/;/op=bond/;/req=\\[This.sllm_ct_req]/;/sid=\\[This.sllm_save_id]/;/status=target" }
+}

@@ -1,0 +1,13 @@
+# SLLM 악명 단계(2026-11-04) — 외교 영향력과 신뢰가 덜 쌓인다.
+sllm_inf_t1 = {
+	diplo_weight_mult = -0.10
+	country_trust_growth = -0.15
+}
+sllm_inf_t2 = {
+	diplo_weight_mult = -0.20
+	country_trust_growth = -0.30
+}
+sllm_inf_t3 = {
+	diplo_weight_mult = -0.35
+	country_trust_growth = -0.50
+}

@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { applyUpdate, findInstallBundle, FULL_APP_MARKER, PUBLIC_KEY_FILE, type InstallCheck } from './app-update-core';
-import { connectionWorkshopCandidates, userCandidates, CONNECTION_WORKSHOP_ID } from './environment-paths';
+import { connectionWorkshopCandidates, userCandidates, CONNECTION_WORKSHOP_ID, initializeEnvironment } from './environment-paths';
 
 const appDir = path.resolve(__dirname, '..');
 // 앱 설정의 언어는 전체 앱이 생긴 뒤에야 읽을 수 있으므로, 처음 한 번은 Windows 언어를 따른다.
@@ -20,11 +20,8 @@ const TITLE = () => T('SLLM 첫 설치', 'SLLM first-time setup');
 function modDirs(): string[] {
   return [...connectionWorkshopCandidates(), ...userCandidates().filter(Boolean).map((u) => path.join(u, 'mod', 'sllm_missive'))];
 }
-function seedVersion(): string {
-  try { return String(JSON.parse(fs.readFileSync(path.join(appDir, 'package.json'), 'utf8')).version || ''); } catch { return ''; }
-}
 function check(): InstallCheck {
-  return findInstallBundle(appDir, seedVersion(), modDirs(), fs.readFileSync(path.join(appDir, PUBLIC_KEY_FILE), 'utf8'));
+  return findInstallBundle(appDir, modDirs(), fs.readFileSync(path.join(appDir, PUBLIC_KEY_FILE), 'utf8'));
 }
 /** 진행 창(조작 없음). 파일을 채우는 동안만 띄운다. */
 function progressWindow(text: string): BrowserWindow {
@@ -43,8 +40,6 @@ function message(r: Exclude<InstallCheck, { kind: 'ready' }>): { text: string; d
       detail: T('Steam 창작마당에서 「SLLM Missive」를 구독하고 다운로드가 끝난 뒤 「다시 확인」을 눌러 주세요. 앱 파일은 그 모드 안에 들어 있습니다.', 'Subscribe to "SLLM Missive" on the Steam Workshop, wait for the download to finish, then press "Check again". The app files ship inside that mod.') };
     case 'downloading': return { text: T('창작마당 모드를 아직 받는 중인 것 같습니다.', 'The Workshop mod still seems to be downloading.'),
       detail: T('Steam 다운로드가 끝난 뒤 「다시 확인」을 눌러 주세요.', 'Press "Check again" after Steam finishes downloading.') + '\n(' + r.detail + ')' };
-    case 'too_old': return { text: T(`창작마당 모드의 앱(${r.version})이 이 설치 프로그램보다 오래되었습니다.`, `The app in the Workshop mod (${r.version}) is older than this installer.`),
-      detail: T('Steam에서 모드 업데이트가 끝난 뒤 「다시 확인」을 눌러 주세요.', 'Let Steam update the mod, then press "Check again".') };
     case 'bad_signature': return { text: T('창작마당 모드의 앱 파일 서명을 확인하지 못했습니다.', 'The app files in the Workshop mod failed the signature check.'),
       detail: T('안전을 위해 설치하지 않았습니다. Steam에서 모드 파일 무결성 확인(구독 해제 후 다시 구독)을 한 뒤 다시 시도하거나, SLLM 디스코드에 알려 주세요.', 'Nothing was installed, for safety. Re-subscribe to the mod in Steam and try again, or let us know on the SLLM Discord.') };
     case 'needs_installer': return { text: T(`창작마당의 앱(${r.version})은 게임 연결 DLL이 바뀐 버전입니다.`, `The Workshop app (${r.version}) uses a different game connection DLL.`),
@@ -52,6 +47,8 @@ function message(r: Exclude<InstallCheck, { kind: 'ready' }>): { text: string; d
   }
 }
 async function run(): Promise<void> {
+  // 2026-10-22 실기(알파 10 설치기): 이 초기화가 없으면 Steam 라이브러리 목록이 비어 창작마당 폴더를 전혀 찾지 못했다(전체 앱은 main.ts 에서 부른다).
+  initializeEnvironment(app.getPath('documents'));
   if (fs.existsSync(path.join(appDir, ...FULL_APP_MARKER.split('/')))) { launchFullApp(); return; } // 이미 채워짐(바로가기를 두 번 누른 경우 등)
   if (!fs.existsSync(path.join(appDir, PUBLIC_KEY_FILE))) {
     await dialog.showMessageBox({ type: 'error', title: TITLE(), message: T('설치가 온전하지 않습니다(공개 키 없음).', 'The installation is incomplete (public key missing).'), detail: T('설치 프로그램을 다시 실행해 주세요.', 'Please run the installer again.'), buttons: [T('닫기', 'Close')] });

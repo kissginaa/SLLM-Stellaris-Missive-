@@ -1,0 +1,4 @@
+# 비상대권(2026-11-05): 매달 전쟁·평화 확인(대권을 쥔 플레이어 나라만)
+on_monthly_pulse_country = {
+	events = { sllm_emp.1 }
+}

@@ -1,0 +1,1251 @@
+# SLLM 정기 송금(2026-11-09 사용자: 「매달 확인이 필요 없는 것은 바뀔 때만」 · 회랑 방식). 생성기 SLLM_Dev_20261016/tools/gen-mtransfer.py 로 만든 파일 — 손으로 고치지 말고 생성기를 고칠 것.
+# 외교 거래 매달 지급·반란군 후원처럼 「매달 얼마씩 보낸다」를 앱이 매달 콘솔로 보내지 않고, 모드가 매달 직접 한다.
+# 칸은 상대 나라 범위에 6개(sllm_mt<K>_*): r 자원(1 에너지 2 광물 3 식량 4 합금 5 소비재 6 에너지+광물 같이) · d 방향(1 우리가 냄, 2 상대가 냄) ·
+#   a 한 달 양 · l 남은 달 · m 연속으로 못 낸 달 · g 묶음 번호(앱이 매김: 거래 하나·후원 하나) · o 기능(1 외교 거래, 2 반란군 후원).
+# 앱에 보내는 줄(로그 자리 MTRANSFER): MTSET(등록·해제 응답) · MT(ev = short 못 냄 · stop 두 달 못 내서 끊김 · end 다 냄). 잘 낸 달은 아무 줄도 없다.
+# 국고가 모자라면 아무것도 빠지지 않는다(2026-11-08 사용자 공통 규칙). 로그 문구에는 $매개변수$ 를 쓰지 않는다(F-39) — 변수로만 찍는다.
+sllm_mt_find = {
+	set_variable = { which = sllm_mt_fok value = 0 }
+	random_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } sllm_is_empire = yes }
+		save_event_target_as = sllm_mt_x
+		event_target:sllm_mt_p = { set_variable = { which = sllm_mt_fok value = 1 } }
+	}
+}
+sllm_mt_clear_1 = {
+	clear_variable = sllm_mt1_r
+	clear_variable = sllm_mt1_d
+	clear_variable = sllm_mt1_a
+	clear_variable = sllm_mt1_l
+	clear_variable = sllm_mt1_m
+	clear_variable = sllm_mt1_g
+	clear_variable = sllm_mt1_o
+}
+sllm_mt_clear_2 = {
+	clear_variable = sllm_mt2_r
+	clear_variable = sllm_mt2_d
+	clear_variable = sllm_mt2_a
+	clear_variable = sllm_mt2_l
+	clear_variable = sllm_mt2_m
+	clear_variable = sllm_mt2_g
+	clear_variable = sllm_mt2_o
+}
+sllm_mt_clear_3 = {
+	clear_variable = sllm_mt3_r
+	clear_variable = sllm_mt3_d
+	clear_variable = sllm_mt3_a
+	clear_variable = sllm_mt3_l
+	clear_variable = sllm_mt3_m
+	clear_variable = sllm_mt3_g
+	clear_variable = sllm_mt3_o
+}
+sllm_mt_clear_4 = {
+	clear_variable = sllm_mt4_r
+	clear_variable = sllm_mt4_d
+	clear_variable = sllm_mt4_a
+	clear_variable = sllm_mt4_l
+	clear_variable = sllm_mt4_m
+	clear_variable = sllm_mt4_g
+	clear_variable = sllm_mt4_o
+}
+sllm_mt_clear_5 = {
+	clear_variable = sllm_mt5_r
+	clear_variable = sllm_mt5_d
+	clear_variable = sllm_mt5_a
+	clear_variable = sllm_mt5_l
+	clear_variable = sllm_mt5_m
+	clear_variable = sllm_mt5_g
+	clear_variable = sllm_mt5_o
+}
+sllm_mt_clear_6 = {
+	clear_variable = sllm_mt6_r
+	clear_variable = sllm_mt6_d
+	clear_variable = sllm_mt6_a
+	clear_variable = sllm_mt6_l
+	clear_variable = sllm_mt6_m
+	clear_variable = sllm_mt6_g
+	clear_variable = sllm_mt6_o
+}
+# 등록: REQ TID R D A L G O KEEP CHECK. 응답 MTSET st = 1 넣음 · 2 칸이 모자람 · 3 이미 있음(KEEP) · 4 없음(CHECK — 만들지 않음) · 0 상대 없음.
+# CHECK = yes(2026-11-09): 세이브를 불러온 뒤 앱이 칸을 다시 확인할 때. 칸이 없으면 새로 만들지 않는다 — 앱이 꺼져 있던 동안 모드가 끝내거나 끊은 송금이 다시 나가지 않게(앱은 끝난 것으로 본다).
+sllm_mt_set = {
+	set_variable = { which = sllm_mt_req value = $REQ$ }
+	set_variable = { which = sllm_mt_st value = 0 }
+	set_variable = { which = sllm_mt_k value = 0 }
+	save_event_target_as = sllm_mt_p
+	sllm_mt_find = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_mt_fok value = 1 } }
+		event_target:sllm_mt_x = {
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } is_variable_set = sllm_mt1_l check_variable = { which = sllm_mt1_g value = $G$ } check_variable = { which = sllm_mt1_o value = $O$ } check_variable = { which = sllm_mt1_r value = $R$ } check_variable = { which = sllm_mt1_d value = $D$ } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 1 } set_variable = { which = sllm_mt_st value = 3 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } is_variable_set = sllm_mt2_l check_variable = { which = sllm_mt2_g value = $G$ } check_variable = { which = sllm_mt2_o value = $O$ } check_variable = { which = sllm_mt2_r value = $R$ } check_variable = { which = sllm_mt2_d value = $D$ } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 2 } set_variable = { which = sllm_mt_st value = 3 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } is_variable_set = sllm_mt3_l check_variable = { which = sllm_mt3_g value = $G$ } check_variable = { which = sllm_mt3_o value = $O$ } check_variable = { which = sllm_mt3_r value = $R$ } check_variable = { which = sllm_mt3_d value = $D$ } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 3 } set_variable = { which = sllm_mt_st value = 3 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } is_variable_set = sllm_mt4_l check_variable = { which = sllm_mt4_g value = $G$ } check_variable = { which = sllm_mt4_o value = $O$ } check_variable = { which = sllm_mt4_r value = $R$ } check_variable = { which = sllm_mt4_d value = $D$ } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 4 } set_variable = { which = sllm_mt_st value = 3 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } is_variable_set = sllm_mt5_l check_variable = { which = sllm_mt5_g value = $G$ } check_variable = { which = sllm_mt5_o value = $O$ } check_variable = { which = sllm_mt5_r value = $R$ } check_variable = { which = sllm_mt5_d value = $D$ } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 5 } set_variable = { which = sllm_mt_st value = 3 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } is_variable_set = sllm_mt6_l check_variable = { which = sllm_mt6_g value = $G$ } check_variable = { which = sllm_mt6_o value = $O$ } check_variable = { which = sllm_mt6_r value = $R$ } check_variable = { which = sllm_mt6_d value = $D$ } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 6 } set_variable = { which = sllm_mt_st value = 3 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } NOT = { is_variable_set = sllm_mt1_l } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 1 } set_variable = { which = sllm_mt_st value = 1 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } NOT = { is_variable_set = sllm_mt2_l } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 2 } set_variable = { which = sllm_mt_st value = 1 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } NOT = { is_variable_set = sllm_mt3_l } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 3 } set_variable = { which = sllm_mt_st value = 1 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } NOT = { is_variable_set = sllm_mt4_l } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 4 } set_variable = { which = sllm_mt_st value = 1 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } NOT = { is_variable_set = sllm_mt5_l } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 5 } set_variable = { which = sllm_mt_st value = 1 } }
+			}
+			if = {
+				limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_k value = 0 } } NOT = { is_variable_set = sllm_mt6_l } }
+				event_target:sllm_mt_p = { set_variable = { which = sllm_mt_k value = 6 } set_variable = { which = sllm_mt_st value = 1 } }
+			}
+		}
+		if = { limit = { check_variable = { which = sllm_mt_k value = 0 } } set_variable = { which = sllm_mt_st value = 2 } }
+		if = { limit = { check_variable = { which = sllm_mt_st value = 3 } always = $KEEP$ } set_variable = { which = sllm_mt_k value = 0 } }   # 이미 있고 그대로 둠
+		else_if = { limit = { check_variable = { which = sllm_mt_st value = 3 } } set_variable = { which = sllm_mt_st value = 1 } }   # 이미 있음 → 새 값으로 덮기
+		if = { limit = { always = $CHECK$ OR = { check_variable = { which = sllm_mt_st value = 1 } check_variable = { which = sllm_mt_st value = 2 } } } set_variable = { which = sllm_mt_st value = 4 } set_variable = { which = sllm_mt_k value = 0 } }   # 확인만: 없으면 만들지 않음
+		if = {
+			limit = { check_variable = { which = sllm_mt_k value = 1 } }
+			event_target:sllm_mt_x = {
+				set_variable = { which = sllm_mt1_r value = $R$ }
+				set_variable = { which = sllm_mt1_d value = $D$ }
+				set_variable = { which = sllm_mt1_a value = $A$ }
+				set_variable = { which = sllm_mt1_l value = $L$ }
+				set_variable = { which = sllm_mt1_m value = 0 }
+				set_variable = { which = sllm_mt1_g value = $G$ }
+				set_variable = { which = sllm_mt1_o value = $O$ }
+				set_country_flag = sllm_mt_has
+			}
+			set_country_flag = sllm_mt_on
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mt_k value = 2 } }
+			event_target:sllm_mt_x = {
+				set_variable = { which = sllm_mt2_r value = $R$ }
+				set_variable = { which = sllm_mt2_d value = $D$ }
+				set_variable = { which = sllm_mt2_a value = $A$ }
+				set_variable = { which = sllm_mt2_l value = $L$ }
+				set_variable = { which = sllm_mt2_m value = 0 }
+				set_variable = { which = sllm_mt2_g value = $G$ }
+				set_variable = { which = sllm_mt2_o value = $O$ }
+				set_country_flag = sllm_mt_has
+			}
+			set_country_flag = sllm_mt_on
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mt_k value = 3 } }
+			event_target:sllm_mt_x = {
+				set_variable = { which = sllm_mt3_r value = $R$ }
+				set_variable = { which = sllm_mt3_d value = $D$ }
+				set_variable = { which = sllm_mt3_a value = $A$ }
+				set_variable = { which = sllm_mt3_l value = $L$ }
+				set_variable = { which = sllm_mt3_m value = 0 }
+				set_variable = { which = sllm_mt3_g value = $G$ }
+				set_variable = { which = sllm_mt3_o value = $O$ }
+				set_country_flag = sllm_mt_has
+			}
+			set_country_flag = sllm_mt_on
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mt_k value = 4 } }
+			event_target:sllm_mt_x = {
+				set_variable = { which = sllm_mt4_r value = $R$ }
+				set_variable = { which = sllm_mt4_d value = $D$ }
+				set_variable = { which = sllm_mt4_a value = $A$ }
+				set_variable = { which = sllm_mt4_l value = $L$ }
+				set_variable = { which = sllm_mt4_m value = 0 }
+				set_variable = { which = sllm_mt4_g value = $G$ }
+				set_variable = { which = sllm_mt4_o value = $O$ }
+				set_country_flag = sllm_mt_has
+			}
+			set_country_flag = sllm_mt_on
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mt_k value = 5 } }
+			event_target:sllm_mt_x = {
+				set_variable = { which = sllm_mt5_r value = $R$ }
+				set_variable = { which = sllm_mt5_d value = $D$ }
+				set_variable = { which = sllm_mt5_a value = $A$ }
+				set_variable = { which = sllm_mt5_l value = $L$ }
+				set_variable = { which = sllm_mt5_m value = 0 }
+				set_variable = { which = sllm_mt5_g value = $G$ }
+				set_variable = { which = sllm_mt5_o value = $O$ }
+				set_country_flag = sllm_mt_has
+			}
+			set_country_flag = sllm_mt_on
+		}
+		if = {
+			limit = { check_variable = { which = sllm_mt_k value = 6 } }
+			event_target:sllm_mt_x = {
+				set_variable = { which = sllm_mt6_r value = $R$ }
+				set_variable = { which = sllm_mt6_d value = $D$ }
+				set_variable = { which = sllm_mt6_a value = $A$ }
+				set_variable = { which = sllm_mt6_l value = $L$ }
+				set_variable = { which = sllm_mt6_m value = 0 }
+				set_variable = { which = sllm_mt6_g value = $G$ }
+				set_variable = { which = sllm_mt6_o value = $O$ }
+				set_country_flag = sllm_mt_has
+			}
+			set_country_flag = sllm_mt_on
+		}
+	}
+	log = "SLLM:MTSET/;/req=\\[This.sllm_mt_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_mt_st]/;/k=\\[This.sllm_mt_k]"
+}
+# 해제: REQ TID G O — 그 묶음의 칸을 모두 비운다(앱이 약속을 끝낼 때·파기할 때). 응답 MTSET st = 1(상대가 없어도 1: 지울 것이 없을 뿐).
+sllm_mt_unset = {
+	set_variable = { which = sllm_mt_req value = $REQ$ }
+	set_variable = { which = sllm_mt_k value = 0 }
+	save_event_target_as = sllm_mt_p
+	sllm_mt_find = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_mt_fok value = 1 } }
+		event_target:sllm_mt_x = {
+			if = { limit = { is_variable_set = sllm_mt1_g check_variable = { which = sllm_mt1_g value = $G$ } check_variable = { which = sllm_mt1_o value = $O$ } } sllm_mt_clear_1 = yes }
+			if = { limit = { is_variable_set = sllm_mt2_g check_variable = { which = sllm_mt2_g value = $G$ } check_variable = { which = sllm_mt2_o value = $O$ } } sllm_mt_clear_2 = yes }
+			if = { limit = { is_variable_set = sllm_mt3_g check_variable = { which = sllm_mt3_g value = $G$ } check_variable = { which = sllm_mt3_o value = $O$ } } sllm_mt_clear_3 = yes }
+			if = { limit = { is_variable_set = sllm_mt4_g check_variable = { which = sllm_mt4_g value = $G$ } check_variable = { which = sllm_mt4_o value = $O$ } } sllm_mt_clear_4 = yes }
+			if = { limit = { is_variable_set = sllm_mt5_g check_variable = { which = sllm_mt5_g value = $G$ } check_variable = { which = sllm_mt5_o value = $O$ } } sllm_mt_clear_5 = yes }
+			if = { limit = { is_variable_set = sllm_mt6_g check_variable = { which = sllm_mt6_g value = $G$ } check_variable = { which = sllm_mt6_o value = $O$ } } sllm_mt_clear_6 = yes }
+		}
+	}
+	set_variable = { which = sllm_mt_st value = 1 }
+	log = "SLLM:MTSET/;/req=\\[This.sllm_mt_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_mt_st]/;/k=\\[This.sllm_mt_k]"
+}
+sllm_mt_pay_1_1 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt1_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 mult = sllm_mt1_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt1_a } }
+			add_resource = { energy = -1 mult = sllm_mt1_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } add_resource = { energy = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_1_2 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt1_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { minerals = 1 mult = sllm_mt1_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt1_a } }
+			add_resource = { minerals = -1 mult = sllm_mt1_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } add_resource = { minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_1_3 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt1_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { food = -1 mult = sllm_mt_amt } }
+			add_resource = { food = 1 mult = sllm_mt1_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt1_a } }
+			add_resource = { food = -1 mult = sllm_mt1_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } add_resource = { food = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_1_4 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt1_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { alloys = -1 mult = sllm_mt_amt } }
+			add_resource = { alloys = 1 mult = sllm_mt1_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt1_a } }
+			add_resource = { alloys = -1 mult = sllm_mt1_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } add_resource = { alloys = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_1_5 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt1_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { consumer_goods = -1 mult = sllm_mt_amt } }
+			add_resource = { consumer_goods = 1 mult = sllm_mt1_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt1_a } }
+			add_resource = { consumer_goods = -1 mult = sllm_mt1_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } add_resource = { consumer_goods = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_1_6 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt1_d value = 1 } }
+		event_target:sllm_mt_p = {
+			export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+			export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+			set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a }
+		}
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } check_variable = { which = sllm_mt_stock2 value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 minerals = 1 mult = sllm_mt1_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt1_a } check_variable = { which = sllm_mt_stock2 value >= sllm_mt1_a } }
+			add_resource = { energy = -1 minerals = -1 mult = sllm_mt1_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt1_a } add_resource = { energy = 1 minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_2_1 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt2_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 mult = sllm_mt2_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt2_a } }
+			add_resource = { energy = -1 mult = sllm_mt2_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } add_resource = { energy = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_2_2 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt2_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { minerals = 1 mult = sllm_mt2_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt2_a } }
+			add_resource = { minerals = -1 mult = sllm_mt2_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } add_resource = { minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_2_3 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt2_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { food = -1 mult = sllm_mt_amt } }
+			add_resource = { food = 1 mult = sllm_mt2_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt2_a } }
+			add_resource = { food = -1 mult = sllm_mt2_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } add_resource = { food = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_2_4 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt2_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { alloys = -1 mult = sllm_mt_amt } }
+			add_resource = { alloys = 1 mult = sllm_mt2_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt2_a } }
+			add_resource = { alloys = -1 mult = sllm_mt2_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } add_resource = { alloys = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_2_5 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt2_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { consumer_goods = -1 mult = sllm_mt_amt } }
+			add_resource = { consumer_goods = 1 mult = sllm_mt2_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt2_a } }
+			add_resource = { consumer_goods = -1 mult = sllm_mt2_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } add_resource = { consumer_goods = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_2_6 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt2_d value = 1 } }
+		event_target:sllm_mt_p = {
+			export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+			export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+			set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a }
+		}
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } check_variable = { which = sllm_mt_stock2 value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 minerals = 1 mult = sllm_mt2_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt2_a } check_variable = { which = sllm_mt_stock2 value >= sllm_mt2_a } }
+			add_resource = { energy = -1 minerals = -1 mult = sllm_mt2_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt2_a } add_resource = { energy = 1 minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_3_1 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt3_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 mult = sllm_mt3_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt3_a } }
+			add_resource = { energy = -1 mult = sllm_mt3_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } add_resource = { energy = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_3_2 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt3_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { minerals = 1 mult = sllm_mt3_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt3_a } }
+			add_resource = { minerals = -1 mult = sllm_mt3_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } add_resource = { minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_3_3 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt3_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { food = -1 mult = sllm_mt_amt } }
+			add_resource = { food = 1 mult = sllm_mt3_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt3_a } }
+			add_resource = { food = -1 mult = sllm_mt3_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } add_resource = { food = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_3_4 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt3_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { alloys = -1 mult = sllm_mt_amt } }
+			add_resource = { alloys = 1 mult = sllm_mt3_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt3_a } }
+			add_resource = { alloys = -1 mult = sllm_mt3_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } add_resource = { alloys = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_3_5 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt3_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { consumer_goods = -1 mult = sllm_mt_amt } }
+			add_resource = { consumer_goods = 1 mult = sllm_mt3_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt3_a } }
+			add_resource = { consumer_goods = -1 mult = sllm_mt3_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } add_resource = { consumer_goods = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_3_6 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt3_d value = 1 } }
+		event_target:sllm_mt_p = {
+			export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+			export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+			set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a }
+		}
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } check_variable = { which = sllm_mt_stock2 value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 minerals = 1 mult = sllm_mt3_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt3_a } check_variable = { which = sllm_mt_stock2 value >= sllm_mt3_a } }
+			add_resource = { energy = -1 minerals = -1 mult = sllm_mt3_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt3_a } add_resource = { energy = 1 minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_4_1 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt4_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 mult = sllm_mt4_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt4_a } }
+			add_resource = { energy = -1 mult = sllm_mt4_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } add_resource = { energy = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_4_2 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt4_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { minerals = 1 mult = sllm_mt4_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt4_a } }
+			add_resource = { minerals = -1 mult = sllm_mt4_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } add_resource = { minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_4_3 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt4_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { food = -1 mult = sllm_mt_amt } }
+			add_resource = { food = 1 mult = sllm_mt4_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt4_a } }
+			add_resource = { food = -1 mult = sllm_mt4_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } add_resource = { food = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_4_4 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt4_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { alloys = -1 mult = sllm_mt_amt } }
+			add_resource = { alloys = 1 mult = sllm_mt4_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt4_a } }
+			add_resource = { alloys = -1 mult = sllm_mt4_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } add_resource = { alloys = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_4_5 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt4_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { consumer_goods = -1 mult = sllm_mt_amt } }
+			add_resource = { consumer_goods = 1 mult = sllm_mt4_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt4_a } }
+			add_resource = { consumer_goods = -1 mult = sllm_mt4_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } add_resource = { consumer_goods = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_4_6 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt4_d value = 1 } }
+		event_target:sllm_mt_p = {
+			export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+			export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+			set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a }
+		}
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } check_variable = { which = sllm_mt_stock2 value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 minerals = 1 mult = sllm_mt4_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt4_a } check_variable = { which = sllm_mt_stock2 value >= sllm_mt4_a } }
+			add_resource = { energy = -1 minerals = -1 mult = sllm_mt4_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt4_a } add_resource = { energy = 1 minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_5_1 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt5_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 mult = sllm_mt5_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt5_a } }
+			add_resource = { energy = -1 mult = sllm_mt5_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } add_resource = { energy = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_5_2 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt5_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { minerals = 1 mult = sllm_mt5_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt5_a } }
+			add_resource = { minerals = -1 mult = sllm_mt5_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } add_resource = { minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_5_3 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt5_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { food = -1 mult = sllm_mt_amt } }
+			add_resource = { food = 1 mult = sllm_mt5_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt5_a } }
+			add_resource = { food = -1 mult = sllm_mt5_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } add_resource = { food = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_5_4 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt5_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { alloys = -1 mult = sllm_mt_amt } }
+			add_resource = { alloys = 1 mult = sllm_mt5_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt5_a } }
+			add_resource = { alloys = -1 mult = sllm_mt5_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } add_resource = { alloys = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_5_5 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt5_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { consumer_goods = -1 mult = sllm_mt_amt } }
+			add_resource = { consumer_goods = 1 mult = sllm_mt5_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt5_a } }
+			add_resource = { consumer_goods = -1 mult = sllm_mt5_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } add_resource = { consumer_goods = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_5_6 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt5_d value = 1 } }
+		event_target:sllm_mt_p = {
+			export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+			export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+			set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a }
+		}
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } check_variable = { which = sllm_mt_stock2 value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 minerals = 1 mult = sllm_mt5_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt5_a } check_variable = { which = sllm_mt_stock2 value >= sllm_mt5_a } }
+			add_resource = { energy = -1 minerals = -1 mult = sllm_mt5_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt5_a } add_resource = { energy = 1 minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_6_1 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt6_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 mult = sllm_mt6_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt6_a } }
+			add_resource = { energy = -1 mult = sllm_mt6_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } add_resource = { energy = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_6_2 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt6_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { minerals = 1 mult = sllm_mt6_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt6_a } }
+			add_resource = { minerals = -1 mult = sllm_mt6_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } add_resource = { minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_6_3 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt6_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { food = -1 mult = sllm_mt_amt } }
+			add_resource = { food = 1 mult = sllm_mt6_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = food variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt6_a } }
+			add_resource = { food = -1 mult = sllm_mt6_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } add_resource = { food = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_6_4 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt6_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { alloys = -1 mult = sllm_mt_amt } }
+			add_resource = { alloys = 1 mult = sllm_mt6_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = alloys variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt6_a } }
+			add_resource = { alloys = -1 mult = sllm_mt6_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } add_resource = { alloys = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_6_5 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt6_d value = 1 } }
+		event_target:sllm_mt_p = { export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock } set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } }
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { consumer_goods = -1 mult = sllm_mt_amt } }
+			add_resource = { consumer_goods = 1 mult = sllm_mt6_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_mt_stock }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt6_a } }
+			add_resource = { consumer_goods = -1 mult = sllm_mt6_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } add_resource = { consumer_goods = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+sllm_mt_pay_6_6 = {
+	if = {
+		limit = { check_variable = { which = sllm_mt6_d value = 1 } }
+		event_target:sllm_mt_p = {
+			export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+			export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+			set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a }
+		}
+		if = {
+			limit = { event_target:sllm_mt_p = { check_variable = { which = sllm_mt_stock value >= sllm_mt_amt } check_variable = { which = sllm_mt_stock2 value >= sllm_mt_amt } } }
+			event_target:sllm_mt_p = { add_resource = { energy = -1 minerals = -1 mult = sllm_mt_amt } }
+			add_resource = { energy = 1 minerals = 1 mult = sllm_mt6_a }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+	else = {
+		export_resource_stockpile_to_variable = { resource = energy variable = sllm_mt_stock }
+		export_resource_stockpile_to_variable = { resource = minerals variable = sllm_mt_stock2 }
+		if = {
+			limit = { check_variable = { which = sllm_mt_stock value >= sllm_mt6_a } check_variable = { which = sllm_mt_stock2 value >= sllm_mt6_a } }
+			add_resource = { energy = -1 minerals = -1 mult = sllm_mt6_a }
+			event_target:sllm_mt_p = { set_variable = { which = sllm_mt_amt value = prev.sllm_mt6_a } add_resource = { energy = 1 minerals = 1 mult = sllm_mt_amt } }
+			set_variable = { which = sllm_mt_ok value = 1 }
+		}
+	}
+}
+# 줄에 찍을 값(상대 범위의 sllm_mt_l*): 칸 번호 · 묶음 · 기능 · 자원 · 방향 · 못 낸 달
+sllm_mt_note_1 = {
+	set_variable = { which = sllm_mt_lk value = 1 }
+	set_variable = { which = sllm_mt_lg value = sllm_mt1_g }
+	set_variable = { which = sllm_mt_lo value = sllm_mt1_o }
+	set_variable = { which = sllm_mt_lr value = sllm_mt1_r }
+	set_variable = { which = sllm_mt_ld value = sllm_mt1_d }
+	set_variable = { which = sllm_mt_lm value = sllm_mt1_m }
+}
+sllm_mt_note_2 = {
+	set_variable = { which = sllm_mt_lk value = 2 }
+	set_variable = { which = sllm_mt_lg value = sllm_mt2_g }
+	set_variable = { which = sllm_mt_lo value = sllm_mt2_o }
+	set_variable = { which = sllm_mt_lr value = sllm_mt2_r }
+	set_variable = { which = sllm_mt_ld value = sllm_mt2_d }
+	set_variable = { which = sllm_mt_lm value = sllm_mt2_m }
+}
+sllm_mt_note_3 = {
+	set_variable = { which = sllm_mt_lk value = 3 }
+	set_variable = { which = sllm_mt_lg value = sllm_mt3_g }
+	set_variable = { which = sllm_mt_lo value = sllm_mt3_o }
+	set_variable = { which = sllm_mt_lr value = sllm_mt3_r }
+	set_variable = { which = sllm_mt_ld value = sllm_mt3_d }
+	set_variable = { which = sllm_mt_lm value = sllm_mt3_m }
+}
+sllm_mt_note_4 = {
+	set_variable = { which = sllm_mt_lk value = 4 }
+	set_variable = { which = sllm_mt_lg value = sllm_mt4_g }
+	set_variable = { which = sllm_mt_lo value = sllm_mt4_o }
+	set_variable = { which = sllm_mt_lr value = sllm_mt4_r }
+	set_variable = { which = sllm_mt_ld value = sllm_mt4_d }
+	set_variable = { which = sllm_mt_lm value = sllm_mt4_m }
+}
+sllm_mt_note_5 = {
+	set_variable = { which = sllm_mt_lk value = 5 }
+	set_variable = { which = sllm_mt_lg value = sllm_mt5_g }
+	set_variable = { which = sllm_mt_lo value = sllm_mt5_o }
+	set_variable = { which = sllm_mt_lr value = sllm_mt5_r }
+	set_variable = { which = sllm_mt_ld value = sllm_mt5_d }
+	set_variable = { which = sllm_mt_lm value = sllm_mt5_m }
+}
+sllm_mt_note_6 = {
+	set_variable = { which = sllm_mt_lk value = 6 }
+	set_variable = { which = sllm_mt_lg value = sllm_mt6_g }
+	set_variable = { which = sllm_mt_lo value = sllm_mt6_o }
+	set_variable = { which = sllm_mt_lr value = sllm_mt6_r }
+	set_variable = { which = sllm_mt_ld value = sllm_mt6_d }
+	set_variable = { which = sllm_mt_lm value = sllm_mt6_m }
+}
+sllm_mt_slot_1 = {
+	if = {
+		limit = { is_variable_set = sllm_mt1_l check_variable = { which = sllm_mt1_l value > 0 } }
+		set_variable = { which = sllm_mt_ok value = 0 }
+		if = { limit = { check_variable = { which = sllm_mt1_r value = 1 } } sllm_mt_pay_1_1 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt1_r value = 2 } } sllm_mt_pay_1_2 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt1_r value = 3 } } sllm_mt_pay_1_3 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt1_r value = 4 } } sllm_mt_pay_1_4 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt1_r value = 5 } } sllm_mt_pay_1_5 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt1_r value = 6 } } sllm_mt_pay_1_6 = yes }
+		if = {
+			limit = { check_variable = { which = sllm_mt_ok value = 1 } }
+			change_variable = { which = sllm_mt1_l value = -1 }
+			set_variable = { which = sllm_mt1_m value = 0 }
+			if = { limit = { check_variable = { which = sllm_mt1_l value <= 0 } } sllm_mt_note_1 = yes log = "SLLM:MT/;/ev=end/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_clear_1 = yes }
+		}
+		else = {
+			change_variable = { which = sllm_mt1_m value = 1 }
+			sllm_mt_note_1 = yes
+			if = { limit = { check_variable = { which = sllm_mt1_m value >= 2 } } log = "SLLM:MT/;/ev=stop/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_drop_g = yes }
+			else = { log = "SLLM:MT/;/ev=short/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" }
+		}
+		event_target:sllm_mt_p = { change_variable = { which = sllm_mt_live value = 1 } }
+	}
+}
+sllm_mt_slot_2 = {
+	if = {
+		limit = { is_variable_set = sllm_mt2_l check_variable = { which = sllm_mt2_l value > 0 } }
+		set_variable = { which = sllm_mt_ok value = 0 }
+		if = { limit = { check_variable = { which = sllm_mt2_r value = 1 } } sllm_mt_pay_2_1 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt2_r value = 2 } } sllm_mt_pay_2_2 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt2_r value = 3 } } sllm_mt_pay_2_3 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt2_r value = 4 } } sllm_mt_pay_2_4 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt2_r value = 5 } } sllm_mt_pay_2_5 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt2_r value = 6 } } sllm_mt_pay_2_6 = yes }
+		if = {
+			limit = { check_variable = { which = sllm_mt_ok value = 1 } }
+			change_variable = { which = sllm_mt2_l value = -1 }
+			set_variable = { which = sllm_mt2_m value = 0 }
+			if = { limit = { check_variable = { which = sllm_mt2_l value <= 0 } } sllm_mt_note_2 = yes log = "SLLM:MT/;/ev=end/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_clear_2 = yes }
+		}
+		else = {
+			change_variable = { which = sllm_mt2_m value = 1 }
+			sllm_mt_note_2 = yes
+			if = { limit = { check_variable = { which = sllm_mt2_m value >= 2 } } log = "SLLM:MT/;/ev=stop/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_drop_g = yes }
+			else = { log = "SLLM:MT/;/ev=short/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" }
+		}
+		event_target:sllm_mt_p = { change_variable = { which = sllm_mt_live value = 1 } }
+	}
+}
+sllm_mt_slot_3 = {
+	if = {
+		limit = { is_variable_set = sllm_mt3_l check_variable = { which = sllm_mt3_l value > 0 } }
+		set_variable = { which = sllm_mt_ok value = 0 }
+		if = { limit = { check_variable = { which = sllm_mt3_r value = 1 } } sllm_mt_pay_3_1 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt3_r value = 2 } } sllm_mt_pay_3_2 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt3_r value = 3 } } sllm_mt_pay_3_3 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt3_r value = 4 } } sllm_mt_pay_3_4 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt3_r value = 5 } } sllm_mt_pay_3_5 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt3_r value = 6 } } sllm_mt_pay_3_6 = yes }
+		if = {
+			limit = { check_variable = { which = sllm_mt_ok value = 1 } }
+			change_variable = { which = sllm_mt3_l value = -1 }
+			set_variable = { which = sllm_mt3_m value = 0 }
+			if = { limit = { check_variable = { which = sllm_mt3_l value <= 0 } } sllm_mt_note_3 = yes log = "SLLM:MT/;/ev=end/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_clear_3 = yes }
+		}
+		else = {
+			change_variable = { which = sllm_mt3_m value = 1 }
+			sllm_mt_note_3 = yes
+			if = { limit = { check_variable = { which = sllm_mt3_m value >= 2 } } log = "SLLM:MT/;/ev=stop/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_drop_g = yes }
+			else = { log = "SLLM:MT/;/ev=short/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" }
+		}
+		event_target:sllm_mt_p = { change_variable = { which = sllm_mt_live value = 1 } }
+	}
+}
+sllm_mt_slot_4 = {
+	if = {
+		limit = { is_variable_set = sllm_mt4_l check_variable = { which = sllm_mt4_l value > 0 } }
+		set_variable = { which = sllm_mt_ok value = 0 }
+		if = { limit = { check_variable = { which = sllm_mt4_r value = 1 } } sllm_mt_pay_4_1 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt4_r value = 2 } } sllm_mt_pay_4_2 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt4_r value = 3 } } sllm_mt_pay_4_3 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt4_r value = 4 } } sllm_mt_pay_4_4 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt4_r value = 5 } } sllm_mt_pay_4_5 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt4_r value = 6 } } sllm_mt_pay_4_6 = yes }
+		if = {
+			limit = { check_variable = { which = sllm_mt_ok value = 1 } }
+			change_variable = { which = sllm_mt4_l value = -1 }
+			set_variable = { which = sllm_mt4_m value = 0 }
+			if = { limit = { check_variable = { which = sllm_mt4_l value <= 0 } } sllm_mt_note_4 = yes log = "SLLM:MT/;/ev=end/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_clear_4 = yes }
+		}
+		else = {
+			change_variable = { which = sllm_mt4_m value = 1 }
+			sllm_mt_note_4 = yes
+			if = { limit = { check_variable = { which = sllm_mt4_m value >= 2 } } log = "SLLM:MT/;/ev=stop/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_drop_g = yes }
+			else = { log = "SLLM:MT/;/ev=short/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" }
+		}
+		event_target:sllm_mt_p = { change_variable = { which = sllm_mt_live value = 1 } }
+	}
+}
+sllm_mt_slot_5 = {
+	if = {
+		limit = { is_variable_set = sllm_mt5_l check_variable = { which = sllm_mt5_l value > 0 } }
+		set_variable = { which = sllm_mt_ok value = 0 }
+		if = { limit = { check_variable = { which = sllm_mt5_r value = 1 } } sllm_mt_pay_5_1 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt5_r value = 2 } } sllm_mt_pay_5_2 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt5_r value = 3 } } sllm_mt_pay_5_3 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt5_r value = 4 } } sllm_mt_pay_5_4 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt5_r value = 5 } } sllm_mt_pay_5_5 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt5_r value = 6 } } sllm_mt_pay_5_6 = yes }
+		if = {
+			limit = { check_variable = { which = sllm_mt_ok value = 1 } }
+			change_variable = { which = sllm_mt5_l value = -1 }
+			set_variable = { which = sllm_mt5_m value = 0 }
+			if = { limit = { check_variable = { which = sllm_mt5_l value <= 0 } } sllm_mt_note_5 = yes log = "SLLM:MT/;/ev=end/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_clear_5 = yes }
+		}
+		else = {
+			change_variable = { which = sllm_mt5_m value = 1 }
+			sllm_mt_note_5 = yes
+			if = { limit = { check_variable = { which = sllm_mt5_m value >= 2 } } log = "SLLM:MT/;/ev=stop/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_drop_g = yes }
+			else = { log = "SLLM:MT/;/ev=short/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" }
+		}
+		event_target:sllm_mt_p = { change_variable = { which = sllm_mt_live value = 1 } }
+	}
+}
+sllm_mt_slot_6 = {
+	if = {
+		limit = { is_variable_set = sllm_mt6_l check_variable = { which = sllm_mt6_l value > 0 } }
+		set_variable = { which = sllm_mt_ok value = 0 }
+		if = { limit = { check_variable = { which = sllm_mt6_r value = 1 } } sllm_mt_pay_6_1 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt6_r value = 2 } } sllm_mt_pay_6_2 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt6_r value = 3 } } sllm_mt_pay_6_3 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt6_r value = 4 } } sllm_mt_pay_6_4 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt6_r value = 5 } } sllm_mt_pay_6_5 = yes }
+		else_if = { limit = { check_variable = { which = sllm_mt6_r value = 6 } } sllm_mt_pay_6_6 = yes }
+		if = {
+			limit = { check_variable = { which = sllm_mt_ok value = 1 } }
+			change_variable = { which = sllm_mt6_l value = -1 }
+			set_variable = { which = sllm_mt6_m value = 0 }
+			if = { limit = { check_variable = { which = sllm_mt6_l value <= 0 } } sllm_mt_note_6 = yes log = "SLLM:MT/;/ev=end/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_clear_6 = yes }
+		}
+		else = {
+			change_variable = { which = sllm_mt6_m value = 1 }
+			sllm_mt_note_6 = yes
+			if = { limit = { check_variable = { which = sllm_mt6_m value >= 2 } } log = "SLLM:MT/;/ev=stop/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" sllm_mt_drop_g = yes }
+			else = { log = "SLLM:MT/;/ev=short/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/k=\\[This.sllm_mt_lk]/;/g=\\[This.sllm_mt_lg]/;/o=\\[This.sllm_mt_lo]/;/r=\\[This.sllm_mt_lr]/;/d=\\[This.sllm_mt_ld]/;/miss=\\[This.sllm_mt_lm]/;/date=\\[GetDate]" }
+		}
+		event_target:sllm_mt_p = { change_variable = { which = sllm_mt_live value = 1 } }
+	}
+}
+sllm_mt_drop_g = {
+	if = { limit = { is_variable_set = sllm_mt1_g check_variable = { which = sllm_mt1_g value = sllm_mt_lg } check_variable = { which = sllm_mt1_o value = sllm_mt_lo } } sllm_mt_clear_1 = yes }
+	if = { limit = { is_variable_set = sllm_mt2_g check_variable = { which = sllm_mt2_g value = sllm_mt_lg } check_variable = { which = sllm_mt2_o value = sllm_mt_lo } } sllm_mt_clear_2 = yes }
+	if = { limit = { is_variable_set = sllm_mt3_g check_variable = { which = sllm_mt3_g value = sllm_mt_lg } check_variable = { which = sllm_mt3_o value = sllm_mt_lo } } sllm_mt_clear_3 = yes }
+	if = { limit = { is_variable_set = sllm_mt4_g check_variable = { which = sllm_mt4_g value = sllm_mt_lg } check_variable = { which = sllm_mt4_o value = sllm_mt_lo } } sllm_mt_clear_4 = yes }
+	if = { limit = { is_variable_set = sllm_mt5_g check_variable = { which = sllm_mt5_g value = sllm_mt_lg } check_variable = { which = sllm_mt5_o value = sllm_mt_lo } } sllm_mt_clear_5 = yes }
+	if = { limit = { is_variable_set = sllm_mt6_g check_variable = { which = sllm_mt6_g value = sllm_mt_lg } check_variable = { which = sllm_mt6_o value = sllm_mt_lo } } sllm_mt_clear_6 = yes }
+}
+# 매달(sllm_mt.1, 플레이어 범위): 칸이 있는 나라만 돈다. 칸이 다 비면 깃발을 떼어 다음 달부터 이 이벤트가 아예 돌지 않는다.
+sllm_mt_monthly = {
+	save_event_target_as = sllm_mt_p
+	set_variable = { which = sllm_mt_live value = 0 }
+	every_country = {
+		limit = { has_country_flag = sllm_mt_has }
+		sllm_mt_slot_1 = yes
+		sllm_mt_slot_2 = yes
+		sllm_mt_slot_3 = yes
+		sllm_mt_slot_4 = yes
+		sllm_mt_slot_5 = yes
+		sllm_mt_slot_6 = yes
+		if = {
+			limit = { NOR = { is_variable_set = sllm_mt1_l is_variable_set = sllm_mt2_l is_variable_set = sllm_mt3_l is_variable_set = sllm_mt4_l is_variable_set = sllm_mt5_l is_variable_set = sllm_mt6_l } }
+			remove_country_flag = sllm_mt_has
+		}
+	}
+	if = { limit = { check_variable = { which = sllm_mt_live value = 0 } NOT = { any_country = { has_country_flag = sllm_mt_has } } } remove_country_flag = sllm_mt_on }
+}

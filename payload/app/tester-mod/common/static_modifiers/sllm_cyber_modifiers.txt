@@ -1,0 +1,6 @@
+# SLLM 사이버전·여론 공작(2026-11-04): 여론 공작에 끝내 장악당하면 1년간 안정도 -5.
+sllm_cyber_dominated = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_unrest.dds"
+	icon_frame = 3
+	planet_stability_add = -5
+}

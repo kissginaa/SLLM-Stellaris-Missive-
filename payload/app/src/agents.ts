@@ -14,7 +14,7 @@ export const MANNERS: readonly Pair[] = [['짧고 건조한', 'terse and dry'], 
 export const VETERAN_YEARS = 10;
 export const MISS_TO_LOSE = 2;
 
-export interface Agent { key: string; target: string; idx: number; name: string; gender: 'm' | 'f'; code: number; cover: number; manner: number; since: string; status: 'active' | 'lost'; miss: number; gone?: string; /** 외교관 위장(대사관 무관, 2026-10-20): 첩보 신뢰도↑, 발각되면 대사 추방 */ dip?: boolean;
+export interface Agent { key: string; target: string; idx: number; name: string; gender: 'm' | 'f'; code: number; cover: number; manner: number; since: string; status: 'active' | 'lost' | 'recalled'; miss: number; gone?: string; /** 외교관 위장(대사관 무관, 2026-10-20): 첩보 신뢰도↑, 발각되면 대사 추방 */ dip?: boolean;
   /** 현지 협력자 = 게임 첩보 자산(2026-10-20) */ contacts?: Contact[]; /** 다음 서신 때 쓸 일(협력자 포섭·이탈·베테랑) */ pend?: Array<{ kind: AgentLetterKind; detail: string }> }
 const pick = (p: Pair, ko: boolean) => (ko ? p[0] : p[1]);
 export const codename = (a: Pick<Agent, 'code'>, ko: boolean): string => `${pick(CODE_ADJ[Math.floor(a.code / 10) % 10], ko)} ${pick(CODE_NOUN[a.code % 10], ko)}`;
@@ -31,15 +31,21 @@ export function newAgent(target: string, idx: number, date: string, name: string
 }
 /** 월간 첩보망 목록으로 공작원 명부를 맞춘다. born: 새로 부임할 첩보망 대상, lost: 이번에 연락이 끊긴 공작원.
  * 자료가 빈 달(첩보망 0개)에 활동 중 공작원이 2명 이상이면 옛 모드·자료 누락일 수 있어 세지 않는다. */
-export function syncAgents(list: Agent[], nets: Array<{ target: string }>, date: string): { born: string[]; lost: Agent[] } {
-  const targets = new Set(nets.map((n) => n.target).filter(Boolean)), active = list.filter((a) => a.status === 'active');
-  const born = [...targets].filter((t) => !active.some((a) => a.target === t)), lost: Agent[] = [];
-  if (!targets.size && active.length >= 2) return { born, lost };
+// 2026-10-27 테스터 로그: 게임은 접촉한 모든 나라에 침투 0 의 첩보망을 둔다(한 세이브에 116개 중 110개가 pow=0).
+// 그래서 공작원은 침투 수준이 1 이상인 첩보망에만 부임하고, 첩보망은 남았는데 침투가 0 으로 떨어지면 조용히 소환한다(추모관·청문회 없음).
+// power 가 없는 옛 줄(모드가 pow 를 안 보낸 경우)은 살아 있는 첩보망으로 본다.
+export function syncAgents(list: Agent[], nets: Array<{ target: string; power?: number }>, date: string): { born: string[]; lost: Agent[]; recalled: Agent[] } {
+  const seen = new Set(nets.map((n) => n.target).filter(Boolean));
+  const live = new Set(nets.filter((n) => n.target && (n.power === undefined || n.power > 0)).map((n) => n.target));
+  const active = list.filter((a) => a.status === 'active');
+  const born = [...live].filter((t) => !active.some((a) => a.target === t)), lost: Agent[] = [], recalled: Agent[] = [];
+  if (!seen.size && active.length >= 2) return { born, lost, recalled };
   for (const a of active) {
-    if (targets.has(a.target)) { a.miss = 0; continue; }
+    if (live.has(a.target)) { a.miss = 0; continue; }
+    if (seen.has(a.target)) { a.status = 'recalled'; a.gone = date; a.miss = 0; delete a.dip; recalled.push(a); continue; }
     a.miss += 1; if (a.miss >= MISS_TO_LOSE) { a.status = 'lost'; a.gone = date; lost.push(a); }
   }
-  return { born, lost };
+  return { born, lost, recalled };
 }
 /** 첩보 보고서 AI 요청에 넣을 공작원 신분(영어). 이름은 우리가 정한 것을 그대로 쓰게 한다. */
 export function agentPromptLine(a: Agent, now: string): string {
@@ -165,7 +171,7 @@ export function sanitizeAgents(v: unknown): AgentStore {
     for (const d of (Array.isArray(s.agents) ? s.agents : []).slice(-200)) {
       const x = (d && typeof d === 'object' ? d : {}) as Record<string, unknown>;
       if (typeof x.key !== 'string' || typeof x.target !== 'string' || typeof x.name !== 'string' || !x.name) continue;
-      agents.push({ key: x.key.slice(0, 40), target: x.target.slice(0, 80), idx: n(x.idx, 1e6), name: x.name.slice(0, 40), gender: x.gender === 'f' ? 'f' : 'm', code: n(x.code, 100), cover: n(x.cover, COVERS.length), manner: n(x.manner, MANNERS.length), since: typeof x.since === 'string' ? x.since.slice(0, 20) : '', status: x.status === 'lost' ? 'lost' : 'active', miss: n(x.miss, 100), ...(typeof x.gone === 'string' ? { gone: x.gone.slice(0, 20) } : {}), ...(x.dip === true ? { dip: true } : {}),
+      agents.push({ key: x.key.slice(0, 40), target: x.target.slice(0, 80), idx: n(x.idx, 1e6), name: x.name.slice(0, 40), gender: x.gender === 'f' ? 'f' : 'm', code: n(x.code, 100), cover: n(x.cover, COVERS.length), manner: n(x.manner, MANNERS.length), since: typeof x.since === 'string' ? x.since.slice(0, 20) : '', status: x.status === 'lost' ? 'lost' : x.status === 'recalled' ? 'recalled' : 'active', miss: n(x.miss, 100), ...(typeof x.gone === 'string' ? { gone: x.gone.slice(0, 20) } : {}), ...(x.dip === true ? { dip: true } : {}),
         ...(Array.isArray(x.contacts) ? { contacts: (x.contacts as unknown[]).slice(-24).flatMap((c) => { const y = (c && typeof c === 'object' ? c : {}) as Record<string, unknown>; return typeof y.a === 'string' && ASSETS[y.a] && typeof y.name === 'string' && y.name ? [{ a: y.a, name: y.name.slice(0, 40), since: typeof y.since === 'string' ? y.since.slice(0, 20) : '', ...(typeof y.gone === 'string' ? { gone: y.gone.slice(0, 20) } : {}) }] : []; }) } : {}),
         ...(Array.isArray(x.pend) ? { pend: (x.pend as unknown[]).slice(-4).flatMap((p) => { const y = (p && typeof p === 'object' ? p : {}) as Record<string, unknown>; return typeof y.kind === 'string' && y.kind in LETTER_KIND_NAME ? [{ kind: y.kind as AgentLetterKind, detail: typeof y.detail === 'string' ? y.detail.slice(0, 80) : '' }] : []; }) } : {}) });
     }

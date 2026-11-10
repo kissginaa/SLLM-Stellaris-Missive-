@@ -1,0 +1,5 @@
+# SLLM - 행성총독회의 평시 불참(2026-10-23 집 PC 초안). 앱(src/governor-council.ts councilPenaltyCommand)이 국가 scope 에 360일 붙인다 → 모든 행성 안정도.
+# 사용자 확정: 평시 불참 = 안정도 디버프. 수치·기간은 미정이라 자리값(−5, 360일). 정책 불이익과 같은 planet_stability_add 키.
+sllm_council_absent = {
+	planet_stability_add = -5
+}

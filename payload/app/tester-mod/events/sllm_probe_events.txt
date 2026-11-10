@@ -80,6 +80,8 @@ country_event = {
 }
 
 # Monthly heartbeat (on_monthly_pulse_country, this = country): date + counters of the human player.
+# 렉 줄이기(2026-10-24): 무거운 조회를 매달 1일 한 프레임에 몰지 않고 며칠에 나눈다 — 연락처는 3일 뒤(sllm_probe.102), 월간 상황은 9일 뒤(sllm_probe.103).
+# 지도자 명단은 sllm_people.9 가 6일 뒤로 미룬다. 앱은 각 묶음(CONTACT_BEGIN..END, STATE_BEGIN..END, LEADER..LEADER_END)을 날짜와 상관없이 받는다.
 country_event = {
 	id = sllm_probe.100
 	hide_window = yes
@@ -87,9 +89,43 @@ country_event = {
 	trigger = { is_ai = no }
 	immediate = {
 		sllm_probe_init_vars = yes
-		sllm_probe_contacts = { REQ = 0 }
-		log = "SLLM:MONTH/;/date=\\[GetDate]/;/seq=\\[This.sllm_exec_seq]/;/last=\\[This.sllm_last_req]"
+		sllm_tl_roll = yes # 시간선 표식(2026-11-05, sllm_probe_timeline.txt)
+		log = "SLLM:MONTH/;/date=\\[GetDate]/;/seq=\\[This.sllm_exec_seq]/;/last=\\[This.sllm_last_req]/;/tl=\\[This.sllm_tl_a]-\\[This.sllm_tl_b]/;/tlp=\\[This.sllm_tlp_a]-\\[This.sllm_tlp_b]"
 		sllm_probe_gc_resume = yes
+		country_event = { id = sllm_probe.102 days = 3 }
+		country_event = { id = sllm_probe.103 days = 9 }
+	}
+}
+
+# 월간 연락처(sllm_probe.100 에서 3일 뒤). 렉 줄이기(2026-10-24): 연락처 목록·호감도는 3달에 한 번만, 나머지 달은 연결 신호(HELLO)만.
+# 플레이어가 새 나라를 만나면(sllm_radio.12) 그때 바로 다시 읽고, 세이브를 불러올 때(sllm_probe.101)도 바로 읽는다.
+country_event = {
+	id = sllm_probe.102
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no }
+	immediate = {
+		if = { limit = { NOT = { is_variable_set = sllm_ct_m } } set_variable = { which = sllm_ct_m value = 3 } }
+		if = {
+			limit = { check_variable = { which = sllm_ct_m value >= 3 } }
+			set_variable = { which = sllm_ct_m value = 1 }
+			sllm_probe_contacts = { REQ = 0 }
+		}
+		else = {
+			change_variable = { which = sllm_ct_m value = 1 }
+			sllm_probe_hello = { REQ = 0 }
+		}
+	}
+}
+
+# 월간 상황(sllm_probe.100 에서 9일 뒤): 전쟁·파벌·첩보망·종속국·민심·시위 자료(STATE_BEGIN..STATE_END).
+country_event = {
+	id = sllm_probe.103
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no }
+	immediate = {
+		sllm_probe_init_vars = yes
 		sllm_probe_state_scan = yes
 	}
 }
@@ -103,9 +139,13 @@ event = {
 		every_playable_country = {
 			limit = { is_ai = no }
 			sllm_probe_init_vars = yes
-			log = "SLLM:LOADED/;/date=\\[GetDate]/;/seq=\\[This.sllm_exec_seq]/;/last=\\[This.sllm_last_req]/;/sid=\\[This.sllm_save_id]"
+			sllm_tl_on_load = yes # 시간선 표식·불러오기 번호(2026-11-05)
+			log = "SLLM:LOADED/;/date=\\[GetDate]/;/seq=\\[This.sllm_exec_seq]/;/last=\\[This.sllm_last_req]/;/sid=\\[This.sllm_save_id]/;/tl=\\[This.sllm_tl_a]-\\[This.sllm_tl_b]/;/run=\\[This.sllm_run_a]-\\[This.sllm_run_b]"
 			sllm_probe_contacts = { REQ = 0 }
+			set_variable = { which = sllm_ct_m value = 1 } # 방금 읽었으니 3달 뒤에 다시(2026-10-24)
 			sllm_probe_gc_resume = yes
+			set_variable = { which = sllm_pq_m value = 3 } # 불러올 때는 시위 자료(성향별 인구)도 전부 읽는다(2026-10-24)
+			set_variable = { which = sllm_st_full value = 1 } # 불러오면 월간 상황을 바뀐 것만이 아니라 전부 보낸다(2026-11-09, 앱이 지난 값을 모를 수 있음)
 			sllm_probe_state_scan = yes
 		}
 	}

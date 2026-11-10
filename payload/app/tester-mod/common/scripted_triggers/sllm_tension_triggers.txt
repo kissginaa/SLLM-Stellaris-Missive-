@@ -1,0 +1,11 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 효과: scripted_effects/sllm_tension.txt
+# 함대(This)가 WHO 의 국경 안이나 그 바로 옆 성계에 있는 군함 함대인가(민간선은 전투력 0이라 빠진다)
+sllm_tn_fleet_near = {
+	fleet_power > 1000
+	solar_system = {
+		OR = {
+			AND = { exists = owner owner = { is_same_value = $WHO$ } }
+			any_neighbor_system = { exists = owner owner = { is_same_value = $WHO$ } }
+		}
+	}
+}

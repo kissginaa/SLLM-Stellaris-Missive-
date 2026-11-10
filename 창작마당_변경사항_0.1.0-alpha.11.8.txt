@@ -1,0 +1,183 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 11.8 — 인물이 나를 기억합니다, 은하 의회 찬반 발언·직접 말하기, 버그 수정 (0.1.0-alpha.11.8)[/h1]
+
+알파 11.7 이후의 업데이트입니다. 1:1 통신 인물이 [b]내가 한 말과 약속을 기억[/b]하고, 위협과 모욕은 소문으로 퍼집니다. 은하 의회는 [b]찬성·반대 같은 수[/b]로 답하고, 의원석을 눌러 한 제국에게 직접 말할 수 있습니다. 테스터 제보 버그도 고쳤습니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]🧠 1:1 통신 — 「나에 대해 아는 것」[/h2]
+[list]
+[*]대화 중에 털어놓은 약속·비밀·관계·취향·사실을 인물이 기억하고, 다음 대화에 꺼냅니다(인물당 최대 40개). AI 호출 수는 그대로입니다.
+[*]지도자가 털어놓은 비밀은 [b]신뢰 50 이상[/b]일 때만 꺼냅니다. 인물 카드의 「비밀」 칸도 같은 기준입니다.
+[*][b]약속 장부[/b]: 지킨 약속은 닫히고, 1년이 지나면 인물이 따질 수 있으며, 2년이 지나면 신뢰 −3과 기억 한 줄이 남습니다(약속마다 한 번).
+[*]인물 화면 오른쪽에 「나에 대해 아는 것」 목록이 생깁니다(✓ 지켜짐, ✗ 안 지킴, 🔒 신뢰가 낮아 꺼내지 않음).
+[*]대화 끝 요약을 받지 못해도 "지도자와 N번 이야기를 나눴다"가 기억으로 남습니다.
+[/list]
+
+[h2]😠 말이 어떻게 들렸는지 · 두려움과 원한[/h2]
+[list]
+[*]인물이 내 말을 존중·보통·홀대·모욕·위협 중 어떻게 받아들였는지 판단합니다. 위협은 관계 −8, 모욕은 −5이고, 대화창에 "위협으로 받아들였습니다" 같은 안내가 뜹니다.
+[*]거친 말 없이 싫은 명령만 내린 것은 공격으로 치지 않습니다(홀대로 낮춤).
+[*][b]두려움·원한(0~10)[/b]: 성격에 따라 쌓입니다(대담하면 원한, 소심하면 두려움). 1년마다 1씩 옅어지고, 3 이상이면 말투에 드러납니다. 인물 화면의 말투 칸에 보입니다.
+[*]"농담이었어", "내가 한 말 아니야"처럼 한 말을 없던 일로 하려 하면 그것도 기억에 남고, 그 말로는 관계가 오르지 않습니다.
+[/list]
+
+[h2]🗣️ 뒷말이 돕니다[/h2]
+[list]
+[*]위협과 모욕은 언제나, 그 밖의 일은 인물이 남에게 말하고 싶어 할 때만 퍼집니다.
+[*][b]한 달 뒤[/b] 동료 최대 3명이 소문으로 듣습니다(평의원이면 다른 평의원, 아니면 같은 직책 → 평의원 순, 통치자 제외).
+[*]들은 쪽의 신뢰: 위협 −3, 모욕 −2, 치하 +1, 홀대 −1. 이미 크게 믿거나 미워하는 사이면 절반만 움직입니다. 들은 사람의 기억에 "지도자가 ○○을 위협했다고 한다"가 남습니다.
+[/list]
+
+[h2]📡 외교 단말기 — 게임이 거부하면 솔직하게[/h2]
+[list]
+[*]수락한 행동(에너지·국경·평화·선전포고 등)을 게임이 거부하거나 응답이 없으면, 상대가 바로 한두 문장으로 "처리되지 않았다"고 말합니다. 실패할 때만 AI를 한 번 부르고, 새 제안은 내지 않습니다.
+[/list]
+
+[h2]🏛️ 은하 의회[/h2]
+[list]
+[*][b]찬성·반대 같은 수[/b]: 의회 전체에 발언하면 모든 참석국 대신 [b]찬성 2개국 + 반대 2개국[/b]만 답합니다(찬-반-찬-반, AI 1번). 팀 안에서는 외교 가중치 비율로 뽑고, 한 팀이 모자라면 기권 제국이 채웁니다. 설득으로 편이 바뀐 제국은 다음 발언부터 새 편에서 뽑힙니다.
+[*]설정 → 의회 「발언권 방식」에 「찬성 · 반대 같은 수」가 생기고 기본값이 됩니다(기존 사용자도 한 번 옮겨지며, 그 뒤 옛 방식을 고르면 유지). 「찬반 팀당 발언 수」(1~4, 기본 2)로 수를 정할 수 있습니다.
+[*][b]의원석을 누르면 그 제국에게 직접 말합니다.[/b] 그 제국이 먼저 답하고, 다른 제국이 끼어들 수 있습니다(45% 확률로 한 나라, 그중 25%는 한 나라 더, 끼어드는 쪽은 주로 상대 편). 다시 누르면 의회 전체로 돌아갑니다.
+[*][b]강제 통과·부결을 더 이상 잠그지 않습니다.[/b] 표 80%나 정보 완전성과 상관없이 언제든 누를 수 있고, 정보를 다 못 읽은 안건에는 "결과가 다를 수 있음" 안내만 붙습니다. 이미 끝난 안건에는 명령이 가지 않습니다.
+[*][b]발언 횟수 한도(20회)를 없앴습니다.[/b] 회의는 강제 결정이나 「회의 종료」로 끝냅니다.
+[/list]
+
+[h2]🪐 행성 총독 회의[/h2]
+[list]
+[*][b]정기 총독 회의(2년마다 11월)를 없앴습니다.[/b] 더 이상 정기회의 알림·기한·불참 페널티가 없고, 총독 회의는 필요할 때 직접 소집하면 됩니다.
+[/list]
+
+[h2]🔧 버그 수정[/h2]
+[list]
+[*][b]음모 알림을 누르면 집무실이 빈 화면만 나오던 문제[/b]: 알림에서 바로 열 때 궁정 화면이 만들어지기 전에 화면을 바꾸려다 모든 화면이 꺼지던 것을 고쳤습니다. 이제 궁정의 음모 탭이 열립니다. 같은 원인으로 다른 집무실 기능이 빈 화면이 되는 일도 막았습니다.
+[*][b]시위 해산 때 "게임에서 그 행성을 찾지 못했습니다"[/b]: 시위가 시작된 뒤 새 식민지가 생기거나 행성을 잃으면 행성 순서가 바뀌어 엉뚱한 행성을 찾던 문제를 고쳤습니다. 이제 해산 직전에 행성 이름으로 다시 찾습니다. 시위 진행 판정과 독립 모의의 행성도 이름으로 찾습니다.
+[*][b]인플루언서 행성 홍보 효과가 실제로 없던 문제[/b]: 지금 게임 버전에 없는 수정자를 쓰고 있어서 효과가 0이었습니다. 실업자 재정착 목적지 끌림(planet_resettlement_unemployed_destination_mult)으로 바꿨습니다. [i](모드 파일 변경)[/i]
+[*]게임에 넣는 글자 정리: 둥근 따옴표·줄표·특수 공백 등을 평범한 글자로 바꾸고 글자 단위로 자릅니다(자녀 성인식 지도자 이름, 대화 창 문구).
+[/list]
+
+[h2]🛠️ 개발자 도구[/h2]
+[list]
+[*]「AI 제국 실제 상태」: 연락처마다 앱이 실제로 쥔 상태(감정·외교 거래·약점·물자 지원·자치도·협약·약탈자 거래·정략결혼·규탄 입장·기억의 장)와, 이 세이브에서 아직 한 번도 기록이 없는 기능을 보여 줍니다. 읽기만 합니다.
+[/list]
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 11.8 — Characters Remember You, Galactic Council For/Against Turns & Direct Address, Bug Fixes (0.1.0-alpha.11.8)[/h1]
+
+This update follows Alpha 11.7. Characters in 1:1 calls now [b]remember what you told them and what you promised[/b], and threats and insults spread as gossip. The Galactic Council answers with [b]equal turns for and against[/b], and you can click a seat to speak to one empire directly. Bugs reported by testers are fixed as well.
+
+⚠️ [b]Mod files changed.[/b] Update this mod (Workshop) and the app together, then fully restart the game.
+
+[h2]🧠 1:1 Calls — "What they know about me"[/h2]
+[list]
+[*]Characters remember promises, secrets, relationships, preferences and facts you shared, and bring them up in later talks (up to 40 per character). The number of AI calls is unchanged.
+[*]Secrets you shared are only brought up at [b]trust 50 or higher[/b]. The "Secret" field on character cards uses the same threshold.
+[*][b]Promise ledger[/b]: kept promises are closed; after a year the character may call you on it, and after two years trust drops by 3 and a memory line is added (once per promise).
+[*]A "What they know about me" list appears on the right of the character screen (✓ kept, ✗ broken, 🔒 withheld because trust is low).
+[*]Even if the end-of-talk summary fails, "Talked with the leader N times" is saved as a memory.
+[/list]
+
+[h2]😠 How Your Words Landed · Fear and Resentment[/h2]
+[list]
+[*]Characters judge whether they felt respected, neutral, slighted, insulted or threatened. A threat is −8 to the relationship and an insult −5, and the call window shows a notice such as "They took that as a threat."
+[*]An unwelcome order without harsh words is not treated as an attack (downgraded to slighted).
+[*][b]Fear and resentment (0–10)[/b] build up depending on personality (bold → resentment, timid → fear). They fade by 1 per year and show in their tone at 3 or more. You can see them in the tone field of the character screen.
+[*]Trying to take something back ("I was joking", "I never said that") is remembered too, and does not raise the relationship.
+[/list]
+
+[h2]🗣️ Gossip Spreads[/h2]
+[list]
+[*]Threats and insults always spread; other things only when the character wants to tell others.
+[*][b]A month later[/b], up to 3 colleagues hear about it (councilors → other councilors; otherwise same post first, then councilors; never the ruler).
+[*]Trust change for listeners: threat −3, insult −2, praise +1, slight −1, halved if they already trust or hate you strongly. They remember "I hear the leader threatened ○○."
+[/list]
+
+[h2]📡 Diplomacy Terminal — Honest When the Game Refuses[/h2]
+[list]
+[*]If an action you accepted (energy, borders, peace, war declarations, etc.) is refused by the game or gets no reply, the other side immediately says in a sentence or two that it did not go through. The AI is called once, only on failure, and makes no new offer.
+[/list]
+
+[h2]🏛️ Galactic Council[/h2]
+[list]
+[*][b]Equal turns for and against[/b]: when you address the whole council, only [b]2 empires for + 2 against[/b] answer instead of every attendee (for-against-for-against, one AI call). Within each side they are picked by diplomatic weight; if one side is short, abstaining empires fill in. Empires you persuaded to switch sides are picked from their new side next time.
+[*]Settings → Council "Speaker selection" gains "Equal turns for and against", now the default (existing users are moved once; picking an old mode afterwards sticks). "Speakers per side" (1–4, default 2) sets the count.
+[*][b]Click a seat to speak to that empire directly.[/b] It answers first, and others may cut in (45% for one, 25% of those for a second; usually from the other side). Click again to address the whole council.
+[*][b]Force pass/reject is no longer locked.[/b] You can press it at any time regardless of the 80% vote or missing information; motions with incomplete information just get a "result may differ" note. Commands are never sent for motions that have already ended.
+[*][b]The speaking limit (20 turns) is gone.[/b] End the session with a forced decision or "End session".
+[/list]
+
+[h2]🪐 Governors' Council[/h2]
+[list]
+[*][b]The regular governors' council (every two years in November) has been removed.[/b] No more regular-council notices, deadlines or absence penalties; convene a governors' council yourself whenever you need one.
+[/list]
+
+[h2]🔧 Bug Fixes[/h2]
+[list]
+[*][b]Clicking a plot notice opened an empty Office[/b]: when opened straight from the notice, the Office tried to switch to the Court before it was built, which turned every view off. Fixed — the Court opens on the Intrigue tab. Other Office features are also protected from the same blank screen.
+[*][b]"The planet was not found in the game" when dispersing a protest[/b]: if you gained or lost colonies after a protest began, the planet order shifted and the wrong planet was looked up. The planet is now looked up again by name right before dispersal; monthly protest checks and secession plots also match planets by name.
+[*][b]Influencer planet promotions had no effect[/b]: they used a modifier that does not exist in the current game version. Replaced with the unemployed-resettlement destination pull (planet_resettlement_unemployed_destination_mult). [i](mod file change)[/i]
+[*]Text sent into the game is cleaned up: curly quotes, dashes and special spaces become plain characters, and text is cut by whole characters (adulthood leader names, call window text).
+[/list]
+
+[h2]🛠️ Developer Tools[/h2]
+[list]
+[*]"AI empire true state": for each contact, shows the state the app actually holds (emotions, deals, hooks, lend-lease, autonomy, pacts, marauder deals, marriages, war stances, memory chapters), plus features with no record yet in this save. Read-only.
+[/list]
+
+Apply the app update when the notice appears, update the mod as well, then restart the game.
+
+===== Discord (한국어) — 2000자 이하 1개 =====
+----- 메시지 1 -----
+# SLLM 알파 11.8 — 인물이 나를 기억합니다, 의회 찬반 발언·직접 말하기, 버그 수정 (0.1.0-alpha.11.8)
+
+⚠️ **모드 파일이 바뀌었습니다.** 모드와 앱을 함께 최신으로 맞추고 게임을 완전히 다시 시작해 주세요.
+
+## 🧠 1:1 통신
+- 털어놓은 약속·비밀·사실을 인물이 기억합니다(「나에 대해 아는 것」). 비밀은 신뢰 50 이상일 때만 꺼내고, 2년 넘게 안 지킨 약속은 신뢰 −3.
+- 말이 어떻게 들렸는지 판단: 위협 −8, 모욕 −5. 두려움·원한(0~10)이 쌓이고 1년마다 옅어집니다. "농담이었어"로 뒤집으려 해도 기억합니다.
+- 위협·모욕은 한 달 뒤 동료 최대 3명에게 소문으로 퍼집니다.
+
+## 📡 외교 단말기
+- 수락한 행동을 게임이 거부하면 상대가 바로 "처리되지 않았다"고 말합니다.
+
+## 🏛️ 은하 의회
+- 전체 발언에 **찬성 2 + 반대 2개국**만 답합니다(설정에서 1~4로 조절).
+- 의원석을 누르면 그 제국에게 직접 말하고, 다른 제국이 끼어들 수 있습니다.
+- 강제 통과·부결 잠금과 발언 20회 한도를 없앴습니다.
+
+## 🪐 총독 회의
+- 정기 총독 회의(2년마다 11월)를 없앴습니다. 필요할 때 직접 소집하세요.
+
+## 🔧 버그 수정
+- 음모 알림을 누르면 집무실이 빈 화면만 나오던 문제
+- 시위 해산 때 "그 행성을 찾지 못했습니다"(행성 순서가 바뀌면 생기던 문제)
+- 인플루언서 행성 홍보 효과가 실제로 없던 문제(모드)
+
+===== Discord (English) — 1 message under 2000 chars =====
+----- Message 1 -----
+# SLLM Alpha 11.8 — Characters Remember You, Council For/Against Turns & Direct Address, Bug Fixes (0.1.0-alpha.11.8)
+
+⚠️ **Mod files changed.** Update the mod and the app together, then fully restart the game.
+
+## 🧠 1:1 Calls
+- Characters remember promises, secrets and facts you share ("What they know about me"). Secrets only come up at trust 50+, and promises left unkept for 2 years cost 3 trust.
+- They judge how your words landed: threat −8, insult −5. Fear and resentment (0–10) build up and fade yearly. "I was joking" won't erase it.
+- Threats and insults spread to up to 3 colleagues as gossip a month later.
+
+## 📡 Diplomacy Terminal
+- If the game refuses an action you accepted, the other side says right away that it did not go through.
+
+## 🏛️ Galactic Council
+- Addressing the council gets answers from **2 empires for + 2 against** only (adjustable 1–4 in settings).
+- Click a seat to speak to that empire directly; others may cut in.
+- Force pass/reject is no longer locked, and the 20-turn limit is gone.
+
+## 🪐 Governors' Council
+- The regular governors' council (every two years in November) is removed. Convene one yourself when needed.
+
+## 🔧 Bug Fixes
+- Clicking a plot notice opened an empty Office
+- "The planet was not found" when dispersing a protest (after the planet order changed)
+- Influencer planet promotions had no effect (mod)

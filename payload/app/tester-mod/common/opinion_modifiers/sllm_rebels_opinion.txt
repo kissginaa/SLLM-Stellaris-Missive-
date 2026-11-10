@@ -1,0 +1,32 @@
+# SLLM 반란과 공작(2026-11-05) — 효과: scripted_effects/sllm_rebels.txt
+# ② 반란군 후원이 들킴: 원래 나라가 우리를(단계별). 매달 조금씩 회복.
+sllm_rb_funder_1 = {
+	opinion = { base = -40 }
+	decay = { base = 1 }
+}
+sllm_rb_funder_2 = {
+	opinion = { base = -70 }
+	decay = { base = 1 }
+}
+sllm_rb_funder_3 = {
+	opinion = { base = -100 }
+	decay = { base = 1 }
+}
+# ② 후원받은 반란국이 후원자를(단계별). AI 가 우리 반란군을 도울 때는 2단계를 그 AI 에게.
+sllm_rb_benefactor_1 = {
+	opinion = { base = 30 }
+	decay = { base = 0.5 }
+}
+sllm_rb_benefactor_2 = {
+	opinion = { base = 60 }
+	decay = { base = 0.5 }
+}
+sllm_rb_benefactor_3 = {
+	opinion = { base = 100 }
+	decay = { base = 0.5 }
+}
+# ④ 선동 공작이 들킴
+sllm_rb_caught_sowing = {
+	opinion = { base = -80 }
+	decay = { base = 2 }
+}

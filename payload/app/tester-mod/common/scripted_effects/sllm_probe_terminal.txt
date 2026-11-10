@@ -17,9 +17,9 @@ sllm_probe_contacts = {
   if = { limit = { has_authority = auth_machine_intelligence } set_variable = { which = sllm_terminal_gest value = 1 } }
   else_if = { limit = { has_authority = auth_hive_mind } set_variable = { which = sllm_terminal_gest value = 2 } }
   # 나라 종류 번호(2026-10-19 집 PC 검수: GetCountryType 은 한국어 이름이 있으면 「몰락한 제국」처럼 번역된 이름을 준다 → 앱이 종류를 못 알아봄).
-  # 1 일반 2 몰락한 제국 3 각성한 제국 4 원시 5 엔클레이브 6 정신 감시자 엔클레이브 7 캐러밴 8~10 약탈자(잠든·각성·몰락) 0 그 밖
+  # 1 일반 2 몰락한 제국 3 각성한 제국 4 원시 5 엔클레이브 6 정신 감시자 엔클레이브 7 캐러밴 8~10 약탈자(잠든·각성·몰락) 11 용병 엔클레이브 0 그 밖
   set_variable = { which = sllm_ct value = 0 }
-  if = { limit = { is_country_type = default } set_variable = { which = sllm_ct value = 1 } }
+  if = { limit = { sllm_is_empire = yes } set_variable = { which = sllm_ct value = 1 } }
   else_if = { limit = { is_country_type = fallen_empire } set_variable = { which = sllm_ct value = 2 } }
   else_if = { limit = { is_country_type = awakened_fallen_empire } set_variable = { which = sllm_ct value = 3 } }
   else_if = { limit = { is_country_type = primitive } set_variable = { which = sllm_ct value = 4 } }
@@ -29,7 +29,48 @@ sllm_probe_contacts = {
   else_if = { limit = { is_country_type = dormant_marauders } set_variable = { which = sllm_ct value = 8 } }
   else_if = { limit = { is_country_type = awakened_marauders } set_variable = { which = sllm_ct value = 9 } }
   else_if = { limit = { is_country_type = ruined_marauders } set_variable = { which = sllm_ct value = 10 } }
-  log = "SLLM:CONTACT/;/sid=\\[Prev.sllm_save_id]/;/n=\\[Prev.sllm_contacts_n]/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/type=\\[This.GetCountryType]/;/rel=comm/;/score=\\[This.sllm_terminal_score]/;/gest=\\[This.sllm_terminal_gest]/;/ct=\\[This.sllm_ct]"
+  else_if = { limit = { is_country_type = enclave_mercenary } set_variable = { which = sllm_ct value = 11 } } # 용병 엔클레이브(2026-10-25 알파 11)
+  # 은하 위기(2026-10-25 알파 11, 게임 안에서도 통신 화면이 열린다 — on_custom_diplomacy crisis.30·1050~1052·2300): 12 프레토린 13~15 불청객·이상체·격노체 16 컨틴전시 17 세타나
+  else_if = { limit = { is_country_type = swarm } set_variable = { which = sllm_ct value = 12 } }
+  else_if = { limit = { is_country_type = extradimensional } set_variable = { which = sllm_ct value = 13 } }
+  else_if = { limit = { is_country_type = extradimensional_2 } set_variable = { which = sllm_ct value = 14 } }
+  else_if = { limit = { is_country_type = extradimensional_3 } set_variable = { which = sllm_ct value = 15 } }
+  else_if = { limit = { is_country_type = ai_empire } set_variable = { which = sllm_ct value = 16 } }
+  else_if = { limit = { OR = { is_country_type = synth_queen is_country_type = awakened_synth_queen } } set_variable = { which = sllm_ct value = 17 } }
+  # 엔클레이브 세부 종류(2026-10-25 알파 11, 게임 나라 깃발): 1 예술가 2 큐레이터 3 XuraCorp 4 Riggan 5 Muutagan 6 고철상 7 장막 순례자 0 모름/엔클레이브 아님
+  set_variable = { which = sllm_sub value = 0 }
+  if = {
+   limit = { is_country_type = enclave }
+   if = { limit = { has_country_flag = artist_enclave_country } set_variable = { which = sllm_sub value = 1 } }
+   else_if = { limit = { has_country_flag = curator_enclave_country } set_variable = { which = sllm_sub value = 2 } }
+   else_if = { limit = { has_country_flag = trader_enclave_country_1 } set_variable = { which = sllm_sub value = 3 } }
+   else_if = { limit = { has_country_flag = trader_enclave_country_2 } set_variable = { which = sllm_sub value = 4 } }
+   else_if = { limit = { has_country_flag = trader_enclave_country_3 } set_variable = { which = sllm_sub value = 5 } }
+   else_if = { limit = { has_country_flag = salvager_enclave_country } set_variable = { which = sllm_sub value = 6 } }
+   else_if = { limit = { has_country_flag = shroudwalker_enclave_country } set_variable = { which = sllm_sub value = 7 } }
+  }
+  # 감정 기억 재료(2026-10-25 알파 11): 우리와 전쟁 중 · 경쟁자 · 함대 전력(1 상대가 열세 2 상대가 우세 0 비슷/모름). 반복문 없이 이 줄에서만.
+  set_variable = { which = sllm_em_w value = 0 } set_variable = { which = sllm_em_r value = 0 } set_variable = { which = sllm_em_p value = 0 } set_variable = { which = sllm_em_c value = 0 }
+  if = { limit = { is_at_war_with = prev } set_variable = { which = sllm_em_w value = 1 } }
+  if = { limit = { is_rival = prev } set_variable = { which = sllm_em_r value = 1 } }
+  if = { limit = { OR = { relative_power = { who = prev category = fleet value = inferior } relative_power = { who = prev category = fleet value = pathetic } } } set_variable = { which = sllm_em_p value = 1 } } # 감정 기억(알파 11): 이 나라 함대가 플레이어보다 열세 → 두려움 (embassy 와 같은 읽는 법)
+  else_if = { limit = { OR = { relative_power = { who = prev category = fleet value = superior } relative_power = { who = prev category = fleet value = overwhelming } } } set_variable = { which = sllm_em_p value = 2 } } # 우세 → 야망
+  if = { limit = { any_neighbor_country = { OR = { is_country_type = swarm is_country_type = extradimensional is_country_type = extradimensional_2 is_country_type = extradimensional_3 is_country_type = ai_empire is_country_type = awakened_synth_queen AND = { is_country_type = synth_queen_outposts has_global_flag = synth_queen_war_started } } } } set_variable = { which = sllm_em_c value = 1 } } # 위기 전선(알파 11): 위기 세력과 국경을 맞댄 나라 → 감사(사용자 확정 +2/분기). 세타나는 전쟁 개시 전에는 모두에게 중립이라 전쟁 뒤에만(사용자 2026-10-25)
+  set_variable = { which = sllm_fe_m value = 0 } # 몰락제국과의 지난 일(알파 11): 과업·선물 의견 수정자·진행 중 과업 비트(앱 fallen.ts FE_MEM). 대화에만 쓴다
+  if = {
+    limit = { OR = { is_country_type = fallen_empire is_country_type = awakened_fallen_empire } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_completed_fallen_empire_task } prev = { has_opinion_modifier = { who = prev modifier = opinion_completed_fallen_empire_task } } } } change_variable = { which = sllm_fe_m value = 1 } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_accepted_fallen_empire_request } prev = { has_opinion_modifier = { who = prev modifier = opinion_accepted_fallen_empire_request } } } } change_variable = { which = sllm_fe_m value = 2 } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_refused_fallen_empire_request } prev = { has_opinion_modifier = { who = prev modifier = opinion_refused_fallen_empire_request } } } } change_variable = { which = sllm_fe_m value = 4 } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_refused_fallen_empire_task } prev = { has_opinion_modifier = { who = prev modifier = opinion_refused_fallen_empire_task } } } } change_variable = { which = sllm_fe_m value = 8 } }
+    if = { limit = { OR = { OR = { has_opinion_modifier = { who = prev modifier = opinion_failed_fallen_empire_task } prev = { has_opinion_modifier = { who = prev modifier = opinion_failed_fallen_empire_task } } } OR = { has_opinion_modifier = { who = prev modifier = opinion_majorly_failed_fallen_empire_task } prev = { has_opinion_modifier = { who = prev modifier = opinion_majorly_failed_fallen_empire_task } } } } } change_variable = { which = sllm_fe_m value = 16 } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_spurned_fallen_empire_gift } prev = { has_opinion_modifier = { who = prev modifier = opinion_spurned_fallen_empire_gift } } } } change_variable = { which = sllm_fe_m value = 32 } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_fallen_empire_gift } prev = { has_opinion_modifier = { who = prev modifier = opinion_fallen_empire_gift } } } } change_variable = { which = sllm_fe_m value = 64 } }
+    if = { limit = { OR = { AND = { has_country_flag = fe_task_stop_atrocity_origin prev = { has_country_flag = fe_task_stop_atrocity } } AND = { has_country_flag = fe_task_stop_robots_origin prev = { has_country_flag = fe_task_stop_robots } } AND = { has_country_flag = fe_task_no_wars_origin prev = { has_country_flag = fe_task_no_wars } } AND = { has_country_flag = fe_task_no_colonies_origin prev = { has_country_flag = fe_task_no_colonies } } AND = { has_country_flag = fe_task_colonize_planet_origin prev = { has_country_flag = fe_task_colonize_planet } } AND = { has_country_flag = fe_task_attack_empire_origin prev = { has_country_flag = fe_task_attack_empire } } } } change_variable = { which = sllm_fe_m value = 128 } }
+    if = { limit = { OR = { has_opinion_modifier = { who = prev modifier = opinion_angered_fallen_machine_empire } prev = { has_opinion_modifier = { who = prev modifier = opinion_angered_fallen_machine_empire } } } } change_variable = { which = sllm_fe_m value = 256 } }
+  }
+  log = "SLLM:CONTACT/;/sid=\\[Prev.sllm_save_id]/;/n=\\[Prev.sllm_contacts_n]/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/type=\\[This.GetCountryType]/;/rel=comm/;/score=\\[This.sllm_terminal_score]/;/gest=\\[This.sllm_terminal_gest]/;/ct=\\[This.sllm_ct]/;/sub=\\[This.sllm_sub]/;/war=\\[This.sllm_em_w]/;/rv=\\[This.sllm_em_r]/;/pw=\\[This.sllm_em_p]/;/cr=\\[This.sllm_em_c]/;/fe=\\[This.sllm_fe_m]"
+  clear_variable = sllm_terminal_score clear_variable = sllm_terminal_gest clear_variable = sllm_ct clear_variable = sllm_sub clear_variable = sllm_em_w clear_variable = sllm_em_r clear_variable = sllm_em_p clear_variable = sllm_em_c clear_variable = sllm_fe_m # 변수 줄이기(2026-10-24): AI 나라마다 남지 않게
  }
  log = "SLLM:CONTACT_END/;/sid=\\[This.sllm_save_id]/;/n=\\[This.sllm_contacts_n]/;/req=\\[This.sllm_out_req]"
 }

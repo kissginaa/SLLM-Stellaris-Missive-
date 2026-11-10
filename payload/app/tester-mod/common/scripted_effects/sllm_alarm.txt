@@ -1,0 +1,459 @@
+# 생성됨(src/alarm.ts scanEffectText) — 목록을 고치면 앱 자가 점검이 다시 맞춘 내용을 요구한다. 손으로 고치지 말 것.
+# 일정표·쿨다운 알림(2026-11-04). 앱 src/features/alarm-app.ts 가 매달 한 번 every_playable_country(플레이어) 안에서 부른다.
+sllm_alarm_scan = {
+	set_variable = { which = sllm_al_req value = $REQ$ }
+	if = {
+		limit = { has_country_flag = generic_vision_1_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_1_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_1_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_2_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_2_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_2_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_3_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_3_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_3_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_4_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_4_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_4_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_5_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_5_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_5_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_6_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_6_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_6_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_7_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_7_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_7_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_8_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_8_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_8_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = generic_vision_9_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = generic_vision_9_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=generic_vision_9_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = aura_amplification_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = aura_amplification_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=aura_amplification_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = animator_of_clay_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = animator_of_clay_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=animator_of_clay_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = shroud_seals_disabled_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = shroud_seals_disabled_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=shroud_seals_disabled_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = proxy_war_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = proxy_war_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=proxy_war_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_raid_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_raid_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_raid_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_zro_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_zro_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_zro_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_decision_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_decision_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_decision_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_army_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_army_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_army_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_commander_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_commander_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_commander_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_logistics_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_logistics_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_logistics_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mindwarden_enclave_capacity_bought_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mindwarden_enclave_capacity_bought_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mindwarden_enclave_capacity_bought_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = recently_stole_technology }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = recently_stole_technology } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=recently_stole_technology/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = operation_diplomatic_incident_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = operation_diplomatic_incident_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=operation_diplomatic_incident_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = sleeper_cell_success }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = sleeper_cell_success } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=sleeper_cell_success/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = target_of_operation_arm_privateers }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = target_of_operation_arm_privateers } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=target_of_operation_arm_privateers/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = crisis_beacon_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = crisis_beacon_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=crisis_beacon_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = recently_received_espionage_asset }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = recently_received_espionage_asset } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=recently_received_espionage_asset/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = recently_dropped_finderskeepers }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = recently_dropped_finderskeepers } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=recently_dropped_finderskeepers/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = recently_received_finderskeepers }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = recently_received_finderskeepers } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=recently_received_finderskeepers/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = shroudwalker_insight_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = shroudwalker_insight_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=shroudwalker_insight_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = shroudwalker_teacher_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = shroudwalker_teacher_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=shroudwalker_teacher_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = shroudwalker_divination_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = shroudwalker_divination_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=shroudwalker_divination_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = salvager_enclave_recently_reclaimed_destroyer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = salvager_enclave_recently_reclaimed_destroyer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=salvager_enclave_recently_reclaimed_destroyer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = salvager_enclave_recently_reclaimed_cruiser }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = salvager_enclave_recently_reclaimed_cruiser } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=salvager_enclave_recently_reclaimed_cruiser/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = salvager_enclave_recently_reclaimed_battleship }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = salvager_enclave_recently_reclaimed_battleship } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=salvager_enclave_recently_reclaimed_battleship/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = salvager_enclave_recently_reclaimed_all }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = salvager_enclave_recently_reclaimed_all } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=salvager_enclave_recently_reclaimed_all/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = salvager_enclave_recently_scrapped }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = salvager_enclave_recently_scrapped } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=salvager_enclave_recently_scrapped/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = salvager_overdrive_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = salvager_overdrive_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=salvager_overdrive_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = curator_guidance_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = curator_guidance_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=curator_guidance_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = hosting_cfl_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = hosting_cfl_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=hosting_cfl_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = dreamers_wake_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = dreamers_wake_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=dreamers_wake_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = mind_wipe_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = mind_wipe_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=mind_wipe_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = updating_databanks_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = updating_databanks_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=updating_databanks_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = strange_manifestations_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = strange_manifestations_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=strange_manifestations_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = lateral_artifacting_available }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = lateral_artifacting_available } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=lateral_artifacting_available/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = relic_cs_trigger }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = relic_cs_trigger } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=relic_cs_trigger/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = relic_last_baol_activated }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = relic_last_baol_activated } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=relic_last_baol_activated/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = leader_recruited_recently }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = leader_recruited_recently } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=leader_recruited_recently/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = recently_had_leader_funeral }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = recently_had_leader_funeral } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=recently_had_leader_funeral/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = beholder_psi_pops_cooldown_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = beholder_psi_pops_cooldown_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=beholder_psi_pops_cooldown_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = idyllic_bloom_holding_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = idyllic_bloom_holding_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=idyllic_bloom_holding_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = gaia_seeder_bloom_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = gaia_seeder_bloom_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=gaia_seeder_bloom_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = necrophage_elevation_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = necrophage_elevation_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=necrophage_elevation_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = reemployment_center_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = reemployment_center_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=reemployment_center_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = situation_paperclips_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = situation_paperclips_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=situation_paperclips_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = festival_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = festival_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=festival_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = nomadic_paragon_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = nomadic_paragon_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=nomadic_paragon_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = lootboxed_recently }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = lootboxed_recently } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=lootboxed_recently/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = payback_debt_collectors_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = payback_debt_collectors_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=payback_debt_collectors_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = planet_roots_success }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = planet_roots_success } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=planet_roots_success/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = intensification_cooldown_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = intensification_cooldown_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=intensification_cooldown_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = indoctrination_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = indoctrination_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=indoctrination_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = criminal_branch_closed_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = criminal_branch_closed_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=criminal_branch_closed_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = dragon_materials_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = dragon_materials_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=dragon_materials_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = raid_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = raid_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=raid_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = recently_raided_or_threatened }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = recently_raided_or_threatened } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=recently_raided_or_threatened/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = upgraded_station_timer }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = upgraded_station_timer } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=upgraded_station_timer/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = approach_shroud_forged_cooldown_appease_flag }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = approach_shroud_forged_cooldown_appease_flag } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=approach_shroud_forged_cooldown_appease_flag/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = approach_shroud_forged_cooldown_support_flag }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = approach_shroud_forged_cooldown_support_flag } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=approach_shroud_forged_cooldown_support_flag/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = approach_shroud_forged_cooldown_suppress_flag }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = approach_shroud_forged_cooldown_suppress_flag } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=approach_shroud_forged_cooldown_suppress_flag/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = approach_breach_shroud_endbringers_cooldown_blind_flag }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = approach_breach_shroud_endbringers_cooldown_blind_flag } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=approach_breach_shroud_endbringers_cooldown_blind_flag/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = approach_breach_shroud_endbringers_cooldown_forsake_flag }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = approach_breach_shroud_endbringers_cooldown_forsake_flag } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=approach_breach_shroud_endbringers_cooldown_forsake_flag/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = approach_breach_shroud_endbringers_cooldown_wait_flag }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = approach_breach_shroud_endbringers_cooldown_wait_flag } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=approach_breach_shroud_endbringers_cooldown_wait_flag/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = celebrate_diversity }
+		export_modifier_duration_to_variable = { modifier = celebrate_diversity variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=celebrate_diversity/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = proclaim_religious_finding }
+		export_modifier_duration_to_variable = { modifier = proclaim_religious_finding variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=proclaim_religious_finding/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = proclaim_superiority }
+		export_modifier_duration_to_variable = { modifier = proclaim_superiority variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=proclaim_superiority/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = arcane_deciphering_cooldown }
+		export_modifier_duration_to_variable = { modifier = arcane_deciphering_cooldown variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=arcane_deciphering_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = artifact_find_applications_cooldown }
+		export_modifier_duration_to_variable = { modifier = artifact_find_applications_cooldown variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=artifact_find_applications_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = artifact_lgate_insight_cooldown }
+		export_modifier_duration_to_variable = { modifier = artifact_lgate_insight_cooldown variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=artifact_lgate_insight_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = artifact_precursor_insight_cooldown }
+		export_modifier_duration_to_variable = { modifier = artifact_precursor_insight_cooldown variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=artifact_precursor_insight_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = artifact_sell_cooldown }
+		export_modifier_duration_to_variable = { modifier = artifact_sell_cooldown variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=artifact_sell_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_modifier = relic_activation_cooldown }
+		export_modifier_duration_to_variable = { modifier = relic_activation_cooldown variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=relic_activation_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	if = {
+		limit = { has_country_flag = sllm_cy_cooldown }
+		export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = sllm_cy_cooldown } variable = sllm_al_d }
+		log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=sllm_cy_cooldown/;/d=\\[This.sllm_al_d]"
+	}
+	every_subject = {
+		limit = { is_variable_set = sllm_idx }
+		if = {
+			limit = { has_country_flag = sllm_va_tech_cd }
+			export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = sllm_va_tech_cd } variable = sllm_al_d }
+			log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=sllm_va_tech_cd/;/d=\\[This.sllm_al_d]/;/v=\\[This.sllm_idx]"
+		}
+		if = {
+			limit = { has_country_flag = sllm_va_assim_cd }
+			export_trigger_value_to_variable = { trigger = timed_flag_days_left parameters = { flag = sllm_va_assim_cd } variable = sllm_al_d }
+			log = "SLLM:ALARM/;/req=\\[Root.sllm_al_req]/;/k=sllm_va_assim_cd/;/d=\\[This.sllm_al_d]/;/v=\\[This.sllm_idx]"
+		}
+	}
+	log = "SLLM:ALARMEND/;/req=\\[This.sllm_al_req]/;/sid=\\[This.sllm_save_id]"
+}
+
+# 우리 기능의 남은 날 막대(②): TYPE = assim(동화 정책 다음 단계) | vatech(기술 원조 재사용), 대상 = event_target:sllm_al_t(종속국), IDX = 그 번호.
+# 같은 종속국·같은 종류 막대는 하나만(먼저 치우고 새로). 막대가 다 차면 상황이 스스로 사라진다(sllm_alarm_situations.txt).
+sllm_alarm_bar_off = {
+	set_variable = { which = sllm_al_req value = $REQ$ }
+	every_situation = {
+		limit = { is_situation_type = sllm_alarm_$TYPE$ has_situation_flag = sllm_al_$IDX$ }
+		destroy_situation = this
+	}
+	log = "SLLM:ALARMSET/;/req=\\[This.sllm_al_req]/;/sid=\\[This.sllm_save_id]/;/st=9"
+}
+sllm_alarm_bar_on = {
+	set_variable = { which = sllm_al_req value = $REQ$ }
+	every_situation = {
+		limit = { is_situation_type = sllm_alarm_$TYPE$ has_situation_flag = sllm_al_$IDX$ }
+		destroy_situation = this
+	}
+	if = {
+		limit = { exists = event_target:sllm_al_t }
+		start_situation = {
+			type = sllm_alarm_$TYPE$
+			target = event_target:sllm_al_t
+			effect = {
+				set_situation_flag = sllm_al_$IDX$
+				set_variable = { which = sllm_al_total value = $DAYS$ }
+			}
+		}
+	}
+	log = "SLLM:ALARMSET/;/req=\\[This.sllm_al_req]/;/sid=\\[This.sllm_save_id]/;/st=9"
+}

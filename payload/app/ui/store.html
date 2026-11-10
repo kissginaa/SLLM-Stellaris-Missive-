@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Department Store</title>
+<!-- 백화점(2026-10-30, 계획서 9번). 앱: src/features/store-app.ts · 자료: src/store.ts. 입구: 외출 지도 → 백화점.
+     43층 건물, 통치자는 40~43층 귀빈층만. 첫 화면 = 전용 엘리베이터(40~43만 켜짐). 그림 자리(09_백화점_그림_의뢰서.md): store/bg/elevator.webp·f40~f43.webp, store/concierge.png, store/items/(id).png.
+     그림이 없으면 앱이 그린 모양. 숫자·글자는 늘 앱이 씀. 문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--bg:#0d0a08;--panel:#17120ded;--text:#f1eadf;--dim:#a8998a;--gold:#e8c27a;--hi:#ffd98f;--line:#3a2d20;--red:#e2606a;--good:#8fe0a8}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,input{font:inherit;color:var(--text);border:1px solid var(--line);background:#231a12;border-radius:5px}
+ button{cursor:pointer;padding:6px 13px} button:hover:not(:disabled){border-color:var(--gold);color:var(--gold)} button:disabled{opacity:.4;cursor:default} button.main{background:linear-gradient(#5a4018,#3a2a10);border-color:var(--gold);color:var(--hi);font-weight:700}
+ #top{position:absolute;z-index:5;left:0;right:0;top:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;-webkit-app-region:drag;background:linear-gradient(#0d0a08f2,#0d0a0800)}
+ #top>*{-webkit-app-region:no-drag} #top .t{font-weight:800;letter-spacing:.14em;color:var(--gold);-webkit-app-region:drag} #top .sp{flex:1;-webkit-app-region:drag}
+ .chip{padding:3px 10px;border:1px solid var(--line);border-radius:12px;background:#17120dcc;white-space:nowrap} .chip b{color:var(--gold)} #x{background:#2a1d10e6;border:1px solid var(--gold);color:var(--gold);font-weight:700;padding:5px 14px;border-radius:14px;cursor:pointer} #x:hover{background:var(--gold);color:#1a120a} /* 나가기: 눈에 잘 띄게(2026-10-31) */
+ #bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,#3a2a18,#0d0a08 72%);background-size:cover;background-position:center;transition:opacity .4s}
+ #bg.art::after{content:'';position:absolute;inset:0;background:linear-gradient(#0d0a08aa,#0d0a0811 20%,#0d0a0822 65%,#0d0a08cc)}
+ /* 그림 속 엘리베이터 버튼판(elevator.webp 1920×1080) 위에 누르는 자리 — 2026-10-30 그림 받음 */
+ #ebtns{position:absolute;inset:0;z-index:3;pointer-events:none} #ebtns .eb{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:0;padding:0;background:transparent;color:#e8d2a8;font-weight:800;pointer-events:auto;cursor:pointer;text-shadow:0 0 4px #000,0 0 2px #000;display:flex;align-items:center;justify-content:center}
+ #ebtns .eb:hover{box-shadow:0 0 12px 3px #ffd98faa;background:#ffd98f22} #ebtns .eb.vip{color:#fff4d0;box-shadow:0 0 14px 4px #ffd98f88;background:#ffd98f2a;animation:vipg 2.4s ease-in-out infinite} @keyframes vipg{50%{box-shadow:0 0 22px 7px #ffd98fbb}}
+ #ebtns .eb.lit{background:#ffb44a66;color:#fff}
+ #main{position:absolute;inset:46px 0 0 0;overflow:auto;padding:14px 20px}
+ #doors{position:absolute;inset:0;z-index:7;pointer-events:none;display:flex} #doors i{flex:1;background:linear-gradient(90deg,#4a3a28,#2a2018);transform:scaleX(0);transition:transform .45s ease} #doors i:first-child{transform-origin:left} #doors i:last-child{transform-origin:right} #doors.shut i{transform:scaleX(1)}
+ .el{display:flex;gap:28px;justify-content:center;align-items:flex-start;margin-top:10px;flex-wrap:wrap} .el.art{justify-content:flex-start;margin-left:1%} /* 그림 엘리베이터: 안내판은 왼쪽, 오른쪽 버튼판을 가리지 않게 */
+ .greet{width:300px;padding:14px;border-radius:10px;background:var(--panel);border:1px solid var(--line)} .greet .pf{width:100%;aspect-ratio:3/4;border-radius:8px;background:linear-gradient(#3a2c1c,#1a130c);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:60px;color:#e8c27a55;margin-bottom:10px}
+ .panelbox{padding:16px;border-radius:14px;background:linear-gradient(#2a2016,#120d08);border:2px solid #8a6a3a88;box-shadow:0 10px 30px #000a}
+ .disp{margin:0 auto 12px;width:120px;padding:6px;text-align:center;border-radius:6px;background:#050302;color:#ffb44a;font:700 24px/1 Consolas,monospace;letter-spacing:.1em;text-shadow:0 0 8px #ff9a2a}
+ .btns{display:grid;grid-template-columns:repeat(4,46px);gap:8px}
+ .fb{width:46px;height:46px;border-radius:50%;padding:0;font-weight:700;background:radial-gradient(#3a2e22,#1c150e);color:#8a7a68;border:2px solid #4a3a28}
+ .fb.vip{color:#2a1a08;background:radial-gradient(#fff4d0,#e8c27a);border-color:#ffd98f;box-shadow:0 0 12px #ffd98f99}
+ .msg{min-height:20px;margin-top:10px;color:var(--hi);text-align:center;max-width:260px}
+ .floorhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;max-width:1260px;margin:0 auto 10px} .floorhead h2{margin:0;color:var(--gold)} .note{color:var(--dim);font-size:12px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;max-width:1260px;margin:0 auto}
+ .item{position:relative;padding:10px;border-radius:10px;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+ .item:hover{border-color:#8a6a3a} .item.lock{opacity:.6}
+ .item .ic{height:120px;border-radius:8px;background:radial-gradient(#3a2e22,#140f0a);display:flex;align-items:center;justify-content:center;overflow:hidden} .item .ic img{max-width:110px;max-height:110px}
+ .item .ic .gl{width:76px;height:76px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#1a1208;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 6px 14px #000a}
+ .item .nm{font-weight:700} .item .pr{color:var(--gold)} .item .pr s{color:var(--dim);margin-left:6px;font-size:11px} .item .rx{font-size:12px;color:#f6d9b0;font-style:italic}
+ .item .badge{position:absolute;top:8px;right:8px;font-size:10px;padding:1px 7px;border-radius:9px;background:#5a3a8a;color:#f0e0ff} .item .own{position:absolute;top:8px;left:8px;font-size:10px;padding:1px 7px;border-radius:9px;background:#2a5a3a}
+ .item .row{display:flex;gap:6px} .item .row button{flex:1;padding:5px 6px}
+ .side{max-width:1260px;margin:14px auto 0} .side .panel{padding:10px 14px;border-radius:10px;background:var(--panel);border:1px solid var(--line)}
+ .lounge.onart{margin:46vh 30px 0 auto;max-width:640px} .lounge.onart h2{text-shadow:0 2px 8px #000}
+ .lounge{max-width:760px;margin:20px auto;display:flex;flex-direction:column;gap:12px} .table{height:120px;border-radius:50%/40%;background:radial-gradient(ellipse,#3a2a1a,#1a120a 70%);border:2px solid #6a4a2a;display:flex;align-items:center;justify-content:center;gap:40px;font-size:13px;color:var(--dim)}
+ .candle{width:10px;height:34px;background:linear-gradient(#fff4d0,#e8c27a);border-radius:3px;position:relative} .candle::before{content:'';position:absolute;left:1px;top:-14px;width:8px;height:14px;border-radius:50% 50% 40% 40%;background:radial-gradient(#fff,#ffb44a);box-shadow:0 0 16px #ffb44a;animation:fl 1.6s ease-in-out infinite} @keyframes fl{50%{transform:scaleY(.85) translateY(1px)}}
+ .chat{max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:10px;background:var(--panel);border:1px solid var(--line)} .chat .me{color:#ffe3a8} .chat .them{color:#d9e8ff} .chat .sys{color:var(--dim)}
+ #msg{position:absolute;z-index:8;left:50%;top:54px;transform:translateX(-50%);padding:6px 14px;border-radius:6px;background:#1c140cee;border:1px solid var(--gold);display:none;max-width:80vw}
+ #msg.err{border-color:var(--red);background:#2a1418ee}
+ #pick{position:absolute;inset:0;z-index:9;background:#000a;display:none;align-items:center;justify-content:center} #pick.on{display:flex}
+ #pick .box{width:min(440px,92vw);padding:16px;border-radius:12px;background:#17120d;border:1px solid var(--gold);display:flex;flex-direction:column;gap:8px} #pick h3{margin:0;color:var(--gold)}
+ #pick .kid{display:flex;gap:10px;align-items:center;justify-content:space-between;text-align:left} #pick .kid small{color:var(--dim)}
+</style></head>
+<body>
+<div id="bg"></div><div id="ebtns"></div>
+<div id="top"><span class="t" id="tt"></span><button id="elBtn" type="button"></button><span class="sp"></span><span class="chip" id="tier"></span><span class="chip" id="vault"></span><button id="x" type="button">✕</button></div>
+<div id="main"></div><div id="pick"></div><div id="msg"></div><div id="doors"><i></i><i></i></div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ const btn = (t, f, cls) => { const b = h('button', cls || '', t); b.type = 'button'; b.onclick = f; return b; };
+ const fmt = (n) => Math.round(n).toLocaleString();
+ let S = null, floor = 0, elMsg = '', moving = false, showStore = false;
+ const say = (t, bad) => { const m = $('msg'); m.textContent = t || ''; m.className = bad ? 'err' : ''; m.style.display = t ? 'block' : 'none'; if (t) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4000); };
+ const call = async (p) => { const r = await p; if (r && r.state) S = r.state; if (r && !r.ok && r.error) say(r.error, true); return r || {}; };
+ const FCOL = { 40: ['#e8c27a', '#a8743a'], 41: ['#f2a8c8', '#a84a7a'], 42: ['#a8c8f2', '#4a6aa8'] };
+
+ function draw() {
+  $('tt').textContent = L('백화점 · 귀빈층', 'DEPARTMENT STORE · VIP'); $('x').textContent = '🚪 ' + L('나가기', 'Leave'); $('x').title = L('백화점에서 나가기(Esc)', 'Leave the store (Esc)'); $('elBtn').textContent = L('◀ 엘리베이터', '◀ Elevator'); $('elBtn').style.display = floor ? '' : 'none';
+  if (!S || !S.ready) return;
+  $('vault').innerHTML = ''; $('vault').append(document.createTextNode(L('개인 금고 ', 'Private vault ')), h('b', '', fmt(S.vault)));
+  $('tier').innerHTML = ''; $('tier').append(document.createTextNode(L('귀빈 등급 ', 'VIP ')), h('b', '', S.tierName), document.createTextNode(S.off ? L(` · ${Math.round(S.off * 100)}% 할인`, ` · ${Math.round(S.off * 100)}% off`) : ''));
+  const f = S.floors.find((x) => x.n === floor), bg = floor ? f && f.bg : (S.art.elevator || S.art.entrance); $('bg').style.backgroundImage = bg ? `url(${bg})` : ''; $('bg').classList.toggle('art', !!bg); $('bg').style.backgroundPosition = !floor && S.art.elevator ? 'right center' : 'center'; // 엘리베이터: 버튼판(그림 오른쪽)이 창이 좁아도 잘리지 않게 오른쪽 맞춤(2026-10-31)
+  const m = $('main'); m.textContent = ''; $('ebtns').textContent = '';
+  if (!floor) return drawElevator(m);
+  if (floor === 43) return drawLounge(m);
+  drawFloor(m, f);
+ }
+ function drawElevator(m) {
+  const w = h('div', 'el'), g = h('div', 'greet'), pf = h('div', 'pf'); if (S.art.concierge) { pf.style.backgroundImage = `url(${S.art.concierge})`; } else pf.textContent = '✦'; g.append(pf, h('b', '', L('귀빈층 안내', 'VIP concierge')));
+  g.append(h('div', '', S.comp.kind !== 'alone' ? L(`어서 오십시오, 통치자님. ${S.comp.name} 님과 함께 오셨군요. 귀빈층은 40층부터입니다.`, `Welcome, Your Excellency — and welcome, ${S.comp.name}. The VIP floors start at 40.`) : L('어서 오십시오, 통치자님. 귀빈층은 40층부터입니다.', 'Welcome, Your Excellency. The VIP floors start at 40.')));
+  for (const fl of S.floors) g.append(h('div', 'note', `${fl.n}${L('층', 'F')} ${fl.name} — ${fl.about}`));
+  if (S.next) g.append(h('div', 'note', L(`다음 등급 ${S.next.name}까지 ${fmt(S.next.need)} 크레딧`, `${fmt(S.next.need)} credits to ${S.next.name}`)));
+  w.append(g);
+  if (S.art.elevator) { w.classList.add('art'); const p = h('div', 'panelbox'); p.append(h('div', 'disp', moving ? '▲' : (floor ? String(floor) : 'L')), h('div', 'msg', elMsg || L('오른쪽 버튼판에서 층을 누르세요. 귀빈층(40~43)만 불이 들어와 있습니다.', 'Press a floor on the panel to the right. Only the VIP floors (40–43) are lit.'))); w.append(p); m.append(w); drawEbtns(); return; }
+  const p = h('div', 'panelbox'); p.append(h('div', 'disp', moving ? '▲' : 'L')); const bs = h('div', 'btns');
+  for (let n = 43; n >= 1; n--) { const vip = n >= 40, b = btn(String(n), () => press(n), 'fb' + (vip ? ' vip' : '')); bs.append(b); }
+  p.append(bs, h('div', 'msg', elMsg)); w.append(p); m.append(w);
+ }
+ // 그림 속 버튼 43개: 위 6줄×7칸(원근 때문에 칸마다 줄 간격이 조금씩 다름) + 아래 가운데 1개. 아래 1개 = 1층, 아래 줄부터 2~8 … 맨 윗줄 37~43(오른쪽 끝이 43).
+ const EB = (() => { const xs = [1535, 1573, 1613, 1655, 1698, 1744, 1791], out = []; for (let c = 0; c < 7; c++) { const y0 = 187 - c * 4, dy = 52 + c * 1.2; for (let r = 0; r < 6; r++) out.push({ n: (5 - r) * 7 + c + 2, x: xs[c], y: y0 + r * dy, rad: 16 + c * 0.5 }); } out.push({ n: 1, x: 1655, y: 508, rad: 17 }); return out; })();
+ function drawEbtns() {
+  const box = $('ebtns'); box.textContent = ''; if (!S || !S.art.elevator || floor) return; const W = innerWidth, H = innerHeight, s = Math.max(W / 1920, H / 1080), ox = W - 1920 * s, oy = (H - 1080 * s) / 2; // 배경을 오른쪽에 맞췄으니 버튼도 오른쪽 기준
+  const el = document.querySelector('.el.art'); if (el) el.style.maxWidth = Math.max(320, ox + 1490 * s - 30) + 'px'; // 안내판이 버튼판 왼쪽 안에서만
+  for (const b of EB) { const e = h('button', 'eb' + (b.n >= 40 ? ' vip' : '') + (moving && b.n === floor ? ' lit' : ''), String(b.n)); e.type = 'button'; const r = b.rad * s * 1.05; e.style.left = ox + b.x * s + 'px'; e.style.top = oy + b.y * s + 'px'; e.style.width = e.style.height = 2 * r + 'px'; e.style.fontSize = Math.max(9, r * 0.75) + 'px'; e.onclick = () => press(b.n); box.append(e); }
+ }
+ addEventListener('resize', () => { if (!floor) drawEbtns(); });
+ async function press(n) {
+  if (moving) return; if (n < 40) { elMsg = await window.sllm.storeBlocked(); draw(); return; }
+  moving = true; elMsg = ''; draw(); $('doors').classList.add('shut'); await new Promise((r) => setTimeout(r, 900)); floor = n; moving = false; draw(); $('doors').classList.remove('shut');
+ }
+ function itemCard(it) {
+  const c = h('div', 'item' + (it.locked ? ' lock' : '')), ic = h('div', 'ic');
+  if (it.icon) { const im = h('img'); im.src = it.icon; im.alt = ''; ic.append(im); } else { const gl = h('div', 'gl', it.name.trim().charAt(0)); const [c1, c2] = FCOL[it.floor]; gl.style.setProperty('--c1', c1); gl.style.setProperty('--c2', c2); ic.append(gl); }
+  c.append(ic, h('div', 'nm', it.name)); const pr = h('div', 'pr', `${fmt(it.price)} ${L('크레딧', 'cr')}`); if (it.price !== it.base) pr.append(h('s', '', fmt(it.base))); c.append(pr);
+  if (it.vip) c.append(h('span', 'badge', L(`${it.vipName} 한정`, `${it.vipName} only`))); if (it.owned) c.append(h('span', 'own', L(`보유 ${it.owned}`, `Owned ${it.owned}`)));
+  if (it.reaction) c.append(h('div', 'rx', it.reaction));
+  const row = h('div', 'row'); const b = btn(L('구입', 'Buy'), async () => { const r = await call(window.sllm.storeBuy(it.id)); if (r.ok) say([r.bought, r.tierUp].filter(Boolean).join(' · ')); draw(); }); b.disabled = it.locked; row.append(b);
+  if (it.floor === 41 && S.partner) { const g = btn(L('선물하기', 'Give'), async () => { const r = await call(window.sllm.storeGift(it.id)); if (r.ok) say(r.gifted); draw(); }, 'main'); g.disabled = it.locked; if (it.gifted) g.title = L('오늘 이미 같은 선물을 했습니다(효과 절반).', 'Already given today (half effect).'); row.append(g); }
+  if (S.kids && S.kids.length) { const kb = btn(L('자식에게', 'To a child'), () => pickKid(it), ''); kb.disabled = it.locked; kb.title = L('사서 궁의 아이에게 보냅니다 — 부모와의 정이 조금 깊어집니다.', 'Buy it and send it to your child at the palace — your bond grows a little.'); row.append(kb); }
+  c.append(row); return c;
+ }
+ /** 자식에게 선물(2026-10-30): 받을 아이 고르기. */
+ function pickKid(it) {
+  const p = $('pick'); p.textContent = ''; p.classList.add('on'); const b = h('div', 'box');
+  b.append(h('h3', '', L(`${it.name} — 어느 아이에게 보낼까요?`, `${it.name} — send it to which child?`)), h('div', 'note', L('궁으로 바로 보냅니다. 아이 취향이면 더 좋아합니다.', 'It goes straight to the palace. More welcome if it suits their taste.')));
+  for (const k of S.kids) { const kb = btn('', async () => { p.classList.remove('on'); const r = await call(window.sllm.storeGiftChild(it.id, k.id)); if (r.ok) say(r.gifted); draw(); }, 'kid'); const likes = (it.kidsLike || []).includes(k.id); kb.append(h('b', '', (likes ? '♥ ' : '') + k.name), h('small', '', (likes ? L('좋아할 것 같아요 · ', 'Likely to love it · ') : '') + L(`${k.age}세 · 정 ${k.bond} (${k.bondName})`, `Age ${k.age} · Bond ${k.bond} (${k.bondName})`))); b.append(kb); }
+  b.append(btn(L('취소', 'Cancel'), () => p.classList.remove('on'))); p.append(b);
+ }
+ $('pick').onclick = (e) => { if (e.target === $('pick')) $('pick').classList.remove('on'); };
+ function drawFloor(m, f) {
+  const hd = h('div', 'floorhead'); hd.append(h('h2', '', `${f.n}${L('층', 'F')} · ${f.name}`), h('span', 'note', f.about)); if (S.comp.kind === 'partner') hd.append(h('span', 'note', L(`${S.comp.name} 님과 함께`, `With ${S.comp.name}`))); m.append(hd);
+  const g = h('div', 'grid'); for (const it of S.items.filter((x) => x.floor === f.n)) g.append(itemCard(it)); m.append(g);
+  const side = h('div', 'side'), p = h('div', 'panel'); p.append(btn(showStore ? L('보관함 접기', 'Hide storage') : L(`침실 보관함 (${S.storage.length})`, `Bedroom storage (${S.storage.length})`), () => { showStore = !showStore; draw(); }));
+  if (showStore) { if (!S.storage.length) p.append(h('div', 'note', L('아직 산 물건이 없습니다.', 'Nothing bought yet.'))); else p.append(h('div', 'note', S.storage.map((x) => `${x.name} (${x.on})`).join(' · '))); p.append(h('div', 'note', L('침실이 생기면 거기서 배치합니다.', 'Arrange them in the bedroom once it opens.'))); }
+  side.append(p); m.append(side);
+ }
+ function drawLounge(m) {
+  const w = h('div', 'lounge'); w.append(h('h2', '', L('43층 · 스카이 라운지', '43F · Sky Lounge')));
+  const t = h('div', 'table'); t.append(h('span', '', L('통치자', 'You')), h('div', 'candle'), h('span', '', S.comp.kind === 'alone' ? L('(빈자리)', '(empty seat)') : S.comp.name)); w.append(t); const f43 = S.floors.find((x) => x.n === 43); if (f43 && f43.bg) { t.style.display = 'none'; w.classList.add('onart'); } // 그림 속 창가 2인석이 곧 식탁
+  if (S.comp.kind === 'alone' || S.comp.key === 'sec') { w.append(h('div', 'note', S.comp.key === 'sec' ? L('비서와의 대화는 집무실에서 이어 가세요.', 'Talk with your secretary in the office.') : L('혼자 창가에 앉아 수도의 야경을 바라봅니다. 함께 오면 식사하며 이야기할 수 있습니다(외출에서 동행 고르기).', 'You sit alone by the window and watch the night city. Bring a companion to dine and talk (choose one in the outing screen).'))); m.append(w); return; }
+  const ch = h('div', 'chat'); if (!S.chat.length) ch.append(h('div', 'sys', L('촛불이 켜진 창가 자리. 무슨 이야기를 할까요?', 'A candle-lit table by the window. What will you talk about?'))); for (const c of S.chat) ch.append(h('div', c.who, `${c.who === 'me' ? L('나', 'Me') : S.comp.name}: ${c.text}`)); w.append(ch);
+  const row = h('div', ''); row.style.display = 'flex'; row.style.gap = '8px'; const inp = h('input'); inp.style.flex = '1'; inp.style.padding = '7px'; inp.placeholder = L(`${S.comp.name}에게 말하기`, `Say something to ${S.comp.name}`);
+  const send = async () => { const tx = inp.value.trim(); if (!tx || S.asking) return; inp.value = ''; await call(window.sllm.storeLoungeSay(tx)); draw(); };
+  inp.onkeydown = (e) => { if (e.key === 'Enter') send(); }; const sb = btn(S.asking ? L('대답 기다리는 중…', 'Waiting…') : L('말하기', 'Say'), send, 'main'); sb.disabled = S.asking; row.append(inp, sb); w.append(row); m.append(w); ch.scrollTop = ch.scrollHeight;
+ }
+ $('elBtn').onclick = async () => { $('doors').classList.add('shut'); await new Promise((r) => setTimeout(r, 500)); floor = 0; draw(); $('doors').classList.remove('shut'); };
+ $('x').onclick = () => window.sllm.storeClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('pick').classList.contains('on')) { $('pick').classList.remove('on'); return; } if (floor) $('elBtn').onclick(); else window.sllm.storeClose(); } });
+ document.addEventListener('sllm-language', draw);
+ if (window.sllm.onStoreState) window.sllm.onStoreState((s) => { S = s; draw(); });
+ window.sllm.storeState().then((s) => { S = s; draw(); });
+</script>
+</body></html>

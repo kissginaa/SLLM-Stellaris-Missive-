@@ -1,0 +1,129 @@
+/* 은하재판소 1인칭 법정(2026-10-27 사용자: 「너무 게임 같다 → 1인칭·전체 화면」). 그림 칸: tribunal-pov.js POV_ART 참고.
+ * 배치 좌표는 아래 변수로만 맞춘다. 새 그림이 들어오면 #fp.has-pov 쪽 값만 고치면 된다. */
+#fp{--gold:#d8b46a;--gold-dim:#8a6c3a;--cyan:#6fe3ff;--ink:#e9e3d4;--muted:#a9b3bd;--panel:#07111acc;--panel-solid:#08131c;--red:#e0605a;--green:#7fd9a0;
+ --judge-x:50%;--judge-top:4%;--judge-w:34%;
+ --acc-x:14%;--acc-bottom:42%;--acc-w:21%;
+ --ex-x:53%;--ex-top:36%;
+ --desk-h:27%;
+ position:fixed;inset:0;z-index:50;overflow:hidden;background:#05090e;color:var(--ink);font-family:inherit;display:none;user-select:none}
+body.in-hearing #fp{display:block}
+body.in-hearing{overflow:hidden}
+#fp [hidden]{display:none!important}
+/* 배경 */
+#fp .fp-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.62) saturate(.9);transform:scale(1.04);transition:filter .6s}
+#fp:not(.has-pov) .fp-bg{object-position:50% 40%;filter:brightness(.5) saturate(.85)}
+#fp .fp-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 75% 70% at 50% 42%,transparent 40%,#000c 100%);pointer-events:none}
+#fp.dim .fp-bg{filter:brightness(.28)}
+/* 재판석: 새 배경에는 재판석이 그려져 있어 그림을 숨기고 빛만 둔다 */
+#fp .fp-judge{position:absolute;left:var(--judge-x);top:var(--judge-top);width:var(--judge-w);transform:translateX(-50%);text-align:center}
+#fp .fp-judge-bench{width:100%;display:block;margin-top:2.2vh;filter:drop-shadow(0 18px 30px #000)}
+#fp.has-pov .fp-judge-bench{visibility:hidden}
+#fp .fp-judge-name{font-size:clamp(14px,1.5vw,22px);letter-spacing:.5em;color:var(--gold);text-shadow:0 2px 10px #000;font-weight:700}
+#fp .fp-judge-sub{font-size:clamp(10px,.8vw,13px);letter-spacing:.3em;color:var(--muted)}
+#fp .fp-seats{position:absolute;left:0;right:0;top:5.5vh;display:flex;justify-content:center;gap:7%}
+#fp .fp-seats i{width:9%;aspect-ratio:1/2.6;border-radius:50% 50% 8px 8px;background:linear-gradient(#ffe7b322,#ffe7b300);box-shadow:0 0 0 1px #d8b46a33;transition:all .5s}
+#fp .fp-judge.lit .fp-seats i{background:linear-gradient(#ffe7b3aa,#ffd27a11);box-shadow:0 0 40px #ffd27a88,0 0 0 1px #d8b46a}
+/* 고발국 단상 */
+#fp .fp-accuser{position:absolute;left:var(--acc-x);bottom:var(--acc-bottom);width:var(--acc-w);transform:translateX(-50%);transition:filter .4s}
+#fp .fp-accuser .fp-portrait{-webkit-mask-image:radial-gradient(ellipse 50% 54% at 50% 46%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 50% 54% at 50% 46%,#000 60%,transparent 100%);display:block;width:62%;margin:0 auto -8%;filter:brightness(.55) saturate(.7);transition:filter .4s,transform .4s}
+#fp .fp-accuser .fp-stand{display:block;width:100%;position:relative;filter:drop-shadow(0 14px 22px #000)}
+#fp .fp-accuser .fp-plate{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);white-space:nowrap;text-align:center;text-shadow:0 2px 6px #000}
+#fp .fp-plate small{display:block;font-size:11px;letter-spacing:.2em;color:var(--muted)}
+#fp .fp-plate b{font-size:clamp(13px,1.1vw,18px);color:var(--ink)}
+#fp .fp-accuser.lit .fp-portrait{filter:none;transform:translateY(-1.5%)}
+#fp .fp-accuser.lit::after{content:"";position:absolute;left:5%;right:5%;top:-30%;height:80%;background:radial-gradient(ellipse at 50% 0,#9fdcff33,transparent 70%);pointer-events:none}
+#fp .fp-accuser.thinking .fp-portrait{animation:fpBreath 1.6s ease-in-out infinite}
+@keyframes fpBreath{50%{filter:brightness(.85)}}
+/* 증거 홀로그램 */
+#fp .fp-exhibit{position:absolute;left:var(--ex-x);top:var(--ex-top);transform:translateX(-50%);width:min(30vw,440px);padding:16px 20px 14px;border:1px solid #6fe3ff66;background:linear-gradient(180deg,#0c3a4a55,#06202b33);box-shadow:0 0 30px #6fe3ff33,inset 0 0 24px #6fe3ff22;backdrop-filter:blur(2px);clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));animation:fpHolo 5s ease-in-out infinite}
+#fp .fp-exhibit::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,#6fe3ff0d 0 2px,transparent 2px 5px);pointer-events:none}
+@keyframes fpHolo{50%{transform:translateX(-50%) translateY(-6px)}}
+#fp .fp-exhibit small{color:var(--cyan);letter-spacing:.25em;font-size:11px}
+#fp .fp-exhibit b{display:block;font-size:clamp(16px,1.4vw,22px);margin:4px 0 6px;color:#eafcff}
+#fp .fp-exhibit p{margin:0;font-size:clamp(12px,.95vw,15px);line-height:1.5;color:#cfeef7}
+#fp .fp-exhibit.enter{animation:fpEnter .7s ease-out,fpHolo 5s ease-in-out .7s infinite}
+@keyframes fpEnter{from{opacity:0;transform:translateX(-50%) translateY(30px) scaleY(.2)}}
+#fp .fp-chips{position:absolute;left:var(--ex-x);top:calc(var(--ex-top) - 4.6vh);transform:translateX(-50%);display:flex;gap:8px}
+#fp .fp-chips span{font-size:11px;padding:3px 9px;border:1px solid #ffffff22;background:#000a;color:var(--muted);border-radius:2px;letter-spacing:.05em}
+#fp .fp-chips span.cur{border-color:var(--cyan);color:var(--cyan)}
+#fp .fp-chips span.won{border-color:#7fd9a066;color:var(--green)}
+#fp .fp-chips span.lost{border-color:#e0605a66;color:var(--red)}
+/* 방청석 웅성거림 */
+#fp .fp-gallery{position:absolute;right:2%;top:24%;width:22%;height:40%;pointer-events:none}
+#fp .fp-murmur{position:absolute;right:0;max-width:100%;font-size:13px;line-height:1.45;color:#d7dde2;background:#000b;border-left:2px solid var(--gold-dim);padding:6px 10px;opacity:0;animation:fpMurmur 7s ease-in-out forwards}
+@keyframes fpMurmur{10%{opacity:1}80%{opacity:.9}100%{opacity:0;transform:translateY(-36px)}}
+/* 내 변론대(앞쪽) */
+#fp .fp-desk{position:absolute;left:0;right:0;bottom:0;height:var(--desk-h)}
+#fp img:not([src]){display:none}
+#fp .fp-desk-img{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+#fp:not(.has-desk) .fp-desk::before{content:"";position:absolute;inset:18% -2% 0;background:linear-gradient(180deg,#1b2128,#0b0f13 40%,#05080b);border-top:2px solid var(--gold-dim);box-shadow:0 -14px 40px #000,inset 0 2px 0 #ffd27a33;transform:perspective(900px) rotateX(28deg);transform-origin:50% 100%}
+#fp .fp-desk.lit::after{content:"";position:absolute;left:20%;right:20%;top:0;height:40%;background:radial-gradient(ellipse at 50% 100%,#ffd27a26,transparent 70%);pointer-events:none}
+#fp .fp-controls{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);width:min(64vw,920px);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:stretch}
+#fp .fp-controls textarea{min-height:64px;max-height:22vh;resize:vertical;background:#03080ccc;color:var(--ink);border:1px solid var(--gold-dim);border-radius:3px;padding:10px 12px;font:inherit;font-size:15px;user-select:text}
+#fp .fp-controls textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px #d8b46a33}
+#fp .fp-controls button{min-width:132px;background:linear-gradient(#3a2c14,#211709);color:#ffe7b3;border:1px solid var(--gold);font-weight:700;letter-spacing:.12em;border-radius:3px;cursor:pointer}
+#fp .fp-controls button:disabled{opacity:.45;cursor:default}
+#fp .fp-turns{grid-column:1/-1;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+#fp .fp-turns i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:5px;background:#ffd27a;box-shadow:0 0 8px #ffd27a}
+#fp .fp-turns i.off{background:#333;box-shadow:none}
+#fp #busy{color:var(--gold)}
+#fp #error{grid-column:1/-1;margin:0;color:var(--red);font-size:13px}
+/* 자막 대사창 */
+#fp .fp-dialogue{position:absolute;left:50%;bottom:calc(var(--desk-h) + 1.5%);transform:translateX(-50%);width:min(70vw,1000px);min-height:96px;background:linear-gradient(180deg,#05101aee,#03080ff2);border:1px solid #d8b46a55;border-top:2px solid var(--gold);padding:12px 20px 14px;cursor:pointer;box-shadow:0 10px 40px #000}
+#fp .fp-dialogue .who{font-size:13px;letter-spacing:.15em;color:var(--gold);margin-bottom:6px;font-weight:700}
+#fp .fp-dialogue .who.accuser{color:#9fdcff}
+#fp .fp-dialogue .who.self{color:#ffe7b3}
+#fp .fp-dialogue .line{font-size:clamp(14px,1.15vw,18px);line-height:1.65;white-space:pre-wrap;max-height:26vh;overflow:auto;user-select:text}
+#fp .fp-dialogue .more{position:absolute;right:14px;bottom:8px;font-size:12px;color:var(--gold);animation:fpBlink 1s steps(2) infinite}
+@keyframes fpBlink{50%{opacity:0}}
+#fp .caret::after{content:"▌";color:var(--gold);animation:fpBlink .8s steps(2) infinite;margin-left:2px}
+/* 위쪽 사건 표시·도구 */
+#fp .fp-case{position:absolute;left:2%;top:2.4%;max-width:30%;font-size:12px;line-height:1.5;color:var(--muted);text-shadow:0 1px 4px #000}
+#fp .fp-case b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+#fp .fp-tools{position:absolute;right:2%;top:2.4%;display:flex;gap:8px}
+#fp .fp-tools button{background:#000a;color:var(--ink);border:1px solid #ffffff33;padding:6px 12px;border-radius:3px;cursor:pointer;font:inherit;font-size:13px}
+#fp .fp-tools button.exit{border-color:#e0605a88;color:#ffb3ad}
+/* 서랍(속기록·걸린 것) */
+#fp .fp-drawer{position:absolute;right:0;top:0;bottom:0;width:min(440px,92vw);background:var(--panel-solid);border-left:1px solid var(--gold-dim);padding:56px 20px 20px;overflow:auto;box-shadow:-20px 0 50px #000;user-select:text;z-index:5}
+#fp .fp-drawer h3{margin:0 0 12px;color:var(--gold);font-size:15px;letter-spacing:.15em}
+#fp .fp-drawer .x{position:absolute;right:14px;top:14px;background:none;border:1px solid #ffffff33;color:var(--ink);border-radius:3px;cursor:pointer;padding:4px 10px}
+#fp .fp-drawer article{margin:0 0 12px;padding-left:10px;border-left:2px solid #ffffff22;font-size:13px;line-height:1.55;white-space:pre-wrap}
+#fp .fp-drawer article b{display:block;font-size:12px;color:var(--muted)}
+#fp .fp-drawer article.self{border-color:var(--gold)}
+#fp .fp-drawer article.accuser{border-color:#9fdcff}
+#fp .fp-drawer article.judge{border-color:#ffd27a}
+#fp .fp-drawer p{font-size:13px;line-height:1.6;color:var(--ink)}
+/* 변호사 선택(첫 발언 전) */
+#fp .fp-lawyer-wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,90vw);background:var(--panel-solid);border:1px solid var(--gold);padding:18px 20px;box-shadow:0 20px 60px #000;z-index:4}
+#fp #lawyers{display:block}
+#fp #lawyers>b{color:var(--gold);letter-spacing:.12em}
+#fp #lawyers>small{display:block;color:var(--muted);margin:6px 0 12px;line-height:1.5}
+#fp #lawyers .row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+#fp #lawyers .row button{text-align:left;background:#0c1a24;border:1px solid #ffffff22;color:var(--ink);padding:10px 12px;border-radius:3px;cursor:pointer}
+#fp #lawyers .row button:hover{border-color:var(--gold)}
+#fp #lawyers .row button small{display:block;color:var(--muted);margin-top:4px;line-height:1.4}
+#fp .fp-lawyer-skip{display:block;margin:12px auto 0;background:none;border:1px solid #ffffff33;color:var(--ink);padding:6px 14px;border-radius:3px;cursor:pointer}
+/* 판결 연출 */
+#fp .fp-verdict{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:#000c;cursor:pointer;animation:fpFade .5s}
+@keyframes fpFade{from{opacity:0}}
+#fp .fp-verdict .card{position:relative;width:min(760px,90vw);padding:30px 34px 26px;background:linear-gradient(#0b141c,#05090d);border:1px solid var(--gold);box-shadow:0 0 80px #ffd27a22;text-align:center}
+#fp .fp-verdict .gavel{font-size:13px;letter-spacing:.6em;color:var(--gold);margin-bottom:10px}
+#fp .fp-verdict .strike{position:absolute;left:50%;top:-34px;width:68px;height:68px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,#ffe7b3 0 18%,#d8b46a 19% 30%,transparent 31%);box-shadow:0 0 0 2px var(--gold),0 0 40px #ffd27a;animation:fpStrike .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes fpStrike{from{transform:translateX(-50%) scale(2.4);opacity:0}}
+#fp .fp-verdict h2{margin:4px 0 6px;font-size:clamp(20px,2vw,30px);color:var(--ink)}
+#fp .fp-verdict .ex{color:var(--muted);font-size:14px}
+#fp .fp-verdict .stamp{display:inline-block;margin:16px 0 14px;padding:6px 20px;border:3px solid currentColor;font-weight:900;font-size:clamp(20px,2.2vw,32px);letter-spacing:.25em;transform:rotate(-6deg);animation:fpStamp .45s .35s cubic-bezier(.2,1.8,.5,1) both}
+#fp .fp-verdict .stamp.won{color:var(--green)}
+#fp .fp-verdict .stamp.lost{color:var(--red)}
+@keyframes fpStamp{from{transform:rotate(-6deg) scale(3);opacity:0}}
+#fp .fp-verdict .reason{text-align:left;font-size:14px;line-height:1.65;color:#d9dee3;white-space:pre-wrap;max-height:34vh;overflow:auto;user-select:text}
+#fp .fp-verdict .hint{margin-top:14px;font-size:12px;color:var(--gold)}
+/* 심리 종료 */
+#fp .fp-end{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:#000b}
+#fp .fp-end .card{width:min(680px,90vw);padding:26px 30px;background:var(--panel-solid);border:1px solid var(--gold);text-align:center}
+#fp .fp-end h2{margin:0 0 12px;color:var(--gold);letter-spacing:.2em}
+#fp .fp-end #result{white-space:pre-wrap;text-align:left;line-height:1.6;font-size:14px;margin:0 0 16px;user-select:text}
+#fp .fp-end button{background:linear-gradient(#3a2c14,#211709);color:#ffe7b3;border:1px solid var(--gold);padding:8px 22px;border-radius:3px;cursor:pointer;margin:0 6px}
+#fp .fp-end button.ghost{background:none;border-color:#ffffff33;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){#fp *{animation:none!important;transition:none!important}}
+#fp #lawyers{background:none;border:0;padding:0;margin:0;box-shadow:none}

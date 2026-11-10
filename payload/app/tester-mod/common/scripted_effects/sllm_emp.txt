@@ -1,0 +1,94 @@
+# 비상대권(2026-11-05) — 나라 scope. 변수 sllm_emp_lv(0~3) · sllm_emp_peace(전쟁 없이 지난 달 수) · sllm_emp_held(쥐고 지난 달 수)
+# 표식 sllm_emp_cd(올린 뒤 180일은 다시 못 올림) · sllm_emp_hold(전쟁 뒤에도 쥐고 있음)
+sllm_emp_apply = {
+	remove_modifier = sllm_emp_1
+	remove_modifier = sllm_emp_2
+	remove_modifier = sllm_emp_3
+	if = { limit = { check_variable = { which = sllm_emp_lv value = 1 } } add_modifier = { modifier = sllm_emp_1 days = -1 } }
+	else_if = { limit = { check_variable = { which = sllm_emp_lv value = 2 } } add_modifier = { modifier = sllm_emp_2 days = -1 } }
+	else_if = { limit = { check_variable = { which = sllm_emp_lv value >= 3 } } add_modifier = { modifier = sllm_emp_3 days = -1 } }
+}
+# 다 내려놓음: 전쟁이 끝난 뒤(석 달 이상 평화) 스스로 내려놓았으면 2년 안도
+sllm_emp_end = {
+	if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } add_modifier = { modifier = sllm_emp_return days = 720 } }
+	remove_modifier = sllm_emp_1
+	remove_modifier = sllm_emp_2
+	remove_modifier = sllm_emp_3
+	remove_modifier = sllm_emp_grip
+	remove_country_flag = sllm_emp_hold
+	set_variable = { which = sllm_emp_lv value = 0 }
+	clear_variable = sllm_emp_peace
+	clear_variable = sllm_emp_held
+}
+sllm_emp_up = {
+	change_variable = { which = sllm_emp_lv value = 1 }
+	sllm_emp_apply = yes
+	set_timed_country_flag = { flag = sllm_emp_cd days = 180 }
+	set_variable = { which = sllm_emp_peace value = 0 }
+}
+sllm_emp_down = {
+	subtract_variable = { which = sllm_emp_lv value = 1 }
+	if = { limit = { check_variable = { which = sllm_emp_lv value <= 0 } } sllm_emp_end = yes }
+	else = { sllm_emp_apply = yes }
+}
+sllm_emp_hold_on = {
+	set_country_flag = sllm_emp_hold
+	add_modifier = { modifier = sllm_emp_grip days = -1 }
+	set_variable = { which = sllm_emp_held value = 0 }
+}
+
+# 앱에 상태 한 줄(응답): REQ 요청 번호 · OK 1 됨 / 0 안 됨 / 2 묻기만 · WHY 안 된 까닭 번호(앱 EMP_WHY_N)
+# 로그 문자열에는 매개변수를 넣지 않고 변수로 옮겨 찍는다(4.5.2 가 req=$REQ$ 를 깨뜨림, F-39)
+sllm_emp_report = {
+	set_variable = { which = sllm_emp_req value = $REQ$ }
+	set_variable = { which = sllm_emp_ok value = $OK$ }
+	set_variable = { which = sllm_emp_why value = $WHY$ }
+	if = { limit = { check_variable = { which = sllm_emp_lv value = 1 } }
+		if = { limit = { is_at_war = yes }
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=1/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=1/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=1/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=1/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=1/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=1/;/st=none/;/cd=0" } }
+		}
+		else = {
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=0/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=0/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=0/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=0/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=0/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=1/;/war=0/;/st=none/;/cd=0" } }
+		}
+	}
+	else_if = { limit = { check_variable = { which = sllm_emp_lv value = 2 } }
+		if = { limit = { is_at_war = yes }
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=1/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=1/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=1/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=1/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=1/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=1/;/st=none/;/cd=0" } }
+		}
+		else = {
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=0/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=0/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=0/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=0/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=0/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=2/;/war=0/;/st=none/;/cd=0" } }
+		}
+	}
+	else_if = { limit = { check_variable = { which = sllm_emp_lv value >= 3 } }
+		if = { limit = { is_at_war = yes }
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=1/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=1/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=1/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=1/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=1/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=1/;/st=none/;/cd=0" } }
+		}
+		else = {
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=0/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=0/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=0/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=0/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=0/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=3/;/war=0/;/st=none/;/cd=0" } }
+		}
+	}
+	else = {
+		if = { limit = { is_at_war = yes }
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=1/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=1/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=1/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=1/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=1/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=1/;/st=none/;/cd=0" } }
+		}
+		else = {
+			if = { limit = { has_country_flag = sllm_emp_hold } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=0/;/st=hold/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=0/;/st=hold/;/cd=0" } }
+			else_if = { limit = { check_variable = { which = sllm_emp_peace value >= 3 } } if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=0/;/st=ask/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=0/;/st=ask/;/cd=0" } }
+			else = { if = { limit = { has_country_flag = sllm_emp_cd } log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=0/;/st=none/;/cd=1" } else = { log = "SLLM:EMP/;/req=\\[This.sllm_emp_req]/;/ok=\\[This.sllm_emp_ok]/;/why=\\[This.sllm_emp_why]/;/lv=0/;/war=0/;/st=none/;/cd=0" } }
+		}
+	}
+}

@@ -1,0 +1,10 @@
+﻿l_korean:
+ opinion_sllm_cap_ransomed:0 "사로잡힌 우리 제독을 몸값 받고 돌려보냄"
+ opinion_sllm_cap_released:0 "사로잡힌 우리 제독을 조건 없이 풀어줌"
+ opinion_sllm_cap_turned:0 "사로잡힌 우리 제독을 회유해 데려감"
+ opinion_sllm_cap_executed:0 "사로잡힌 우리 제독을 처형함"
+ # 2026-11-05: 게임은 호감 수정자 이름 그대로를 문구 키로 쓴다(opinion_ 붙은 키는 안 읽힘) — 같은 문구를 이름 키로도
+ sllm_cap_ransomed:0 "사로잡힌 우리 제독을 몸값 받고 돌려보냄"
+ sllm_cap_released:0 "사로잡힌 우리 제독을 조건 없이 풀어줌"
+ sllm_cap_turned:0 "사로잡힌 우리 제독을 회유해 데려감"
+ sllm_cap_executed:0 "사로잡힌 우리 제독을 처형함"

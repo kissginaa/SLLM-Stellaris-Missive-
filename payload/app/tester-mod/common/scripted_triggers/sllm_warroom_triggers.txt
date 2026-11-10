@@ -1,0 +1,43 @@
+# SLLM 작전지휘실(2026-11-05) — 함대 범위, root = 플레이어 나라.
+# 합동 작전으로 빌려 온 동맹 함대(주인은 동맹, 지휘는 우리 — sllm_fleetorder_ally.txt 의 give_fleet + sllm_fo_ally 표식).
+sllm_wr_ally_fleet = {
+	exists = owner
+	NOT = { owner = { is_same_value = root } }
+	has_fleet_flag = sllm_fo_ally
+	sllm_fo_military_fleet = yes
+}
+# 우리 것이 아닌 함대: 빌려 온 동맹 함대 또는 연합 원정군 함대(sllm_warroom_xf.txt) — 우리 명령은 「요청」.
+sllm_wr_foreign_fleet = {
+	OR = {
+		sllm_wr_ally_fleet = yes
+		has_fleet_flag = sllm_wr_xff
+	}
+}
+# 매달 스스로 움직여도 되는 함대: 우리 지휘(120일) 중이 아니고, 60일 안에 이미 정하지 않았고, 쉬고 있고, 우리 자동 작전에 들어가 있지 않음.
+sllm_wr_auto_ok = {
+	NOT = { has_fleet_flag = sllm_fo_manual }
+	NOT = { has_fleet_flag = sllm_wr_busy }
+	is_in_combat = no
+	is_fleet_idle = yes
+	OR = { NOT = { is_variable_set = sllm_fo_op } check_variable = { which = sllm_fo_op value = 0 } }
+}
+# 앱 함대 번호가 FID 인 함대
+sllm_wr_fid_is = {
+	is_variable_set = sllm_fo_fid
+	check_variable = { which = sllm_fo_fid value = $FID$ }
+}
+
+# 전쟁 성향 특성(sllm_doc_*) 하나라도 있나(지도자 범위)
+sllm_has_doc = {
+	OR = {
+		has_trait = sllm_doc_no_retreat
+		has_trait = sllm_doc_focused_striker
+		has_trait = sllm_doc_raider
+		has_trait = sllm_doc_fortress
+		has_trait = sllm_doc_elastic
+		has_trait = sllm_doc_guardian
+		has_trait = sllm_doc_maneuver
+		has_trait = sllm_doc_calculator
+		has_trait = sllm_doc_opportunist
+	}
+}

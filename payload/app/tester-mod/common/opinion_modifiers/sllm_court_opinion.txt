@@ -1,0 +1,4 @@
+# SLLM 정략결혼(2026-10-28 사용자 확정). 앱: src/court.ts. 혼인이 이어지는 동안 +40(줄지 않음), 전쟁이 나면 앱이 뗀다.
+sllm_marry_bond = {
+	opinion = { base = 40 }
+}

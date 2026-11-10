@@ -1,0 +1,59 @@
+# SLLM 반란과 공작(2026-11-05) — 효과: scripted_effects/sllm_rebels.txt. event_target:sllm_rb_me = 플레이어.
+# 우리를 압도하는 적대 이웃(이 나라의 함대가 우리보다 압도적이고, 우리와 적대·경쟁·전쟁·관계 −50 미만).
+sllm_rb_threat = {
+	sllm_is_empire = yes
+	has_communications = event_target:sllm_rb_me
+	OR = {
+		is_rival = event_target:sllm_rb_me
+		is_hostile = event_target:sllm_rb_me
+		is_at_war_with = event_target:sllm_rb_me
+		opinion = { who = event_target:sllm_rb_me value < -50 }
+	}
+	relative_power = { who = event_target:sllm_rb_me category = fleet value = overwhelming }
+}
+# 「가까운 나라」(2026-11-05, We Require Borders 참고): 우리와 국경이 맞닿았거나, 우리 국경 성계에서 한 칸(웜홀·관문 포함) 안에 그 나라 성계가 있음.
+# 매번 따지면 무거우니 3달마다(sllm_rb_vuln) 나라마다 sllm_near_@<우리> 깃발(100일)을 붙여 두고, 아래 판정은 깃발만 본다.
+sllm_rb_near_check = {
+	sllm_is_empire = yes
+	NOT = { is_same_value = event_target:sllm_rb_me }
+	OR = {
+		is_neighbor_of = event_target:sllm_rb_me
+		any_system_within_border = {
+			closest_system = {
+				limit = { exists = space_owner space_owner = { is_same_value = event_target:sllm_rb_me } }
+				use_bypasses = yes
+				max_steps = 1
+			}
+		}
+	}
+}
+# 우리 반란군을 도울 AI: 우리와 가깝고, 반란국과 연락이 닿고, 우리를 싫어함(반란국 자신은 뺌). Prev = 플레이어.
+sllm_rb_fund_foe = {
+	is_ai = yes
+	has_country_flag = sllm_near_@prev
+	sllm_is_empire = yes
+	NOT = { is_same_value = event_target:sllm_rb_reb }
+	has_communications = event_target:sllm_rb_reb
+	has_communications = event_target:sllm_rb_me
+	OR = {
+		is_rival = event_target:sllm_rb_me
+		is_at_war_with = event_target:sllm_rb_me
+		opinion = { who = event_target:sllm_rb_me value < -50 }
+	}
+}
+# 우리에게 선동할 AI: 우리와 가깝고, 연락이 닿고, 우리를 싫어함. Prev = 플레이어.
+sllm_rb_hater = {
+	is_ai = yes
+	has_country_flag = sllm_near_@prev
+	sllm_is_empire = yes
+	has_communications = event_target:sllm_rb_me
+	OR = {
+		is_rival = event_target:sllm_rb_me
+		opinion = { who = event_target:sllm_rb_me value < -50 }
+	}
+}
+# 불안을 심을 수 있는 행성: 수도가 아니고, 이미 공작 중이 아님.
+sllm_rb_sowable = {
+	is_capital = no
+	NOT = { has_modifier = sllm_rb_sown }
+}

@@ -1,0 +1,220 @@
+# 원시문명 관측(2026-11-03). 플레이어 나라 scope 에서 돈다. 앱: src/features/preftl-app.ts, 규칙: src/preftl.ts.
+# 우리가 아는 원시문명(국경 안 + 조사선·관측소로 처음 접촉한 것, 표식 sllm_pf_known)마다 PFTL 한 줄, 끝에 PFTL_END. 게임 효과는 없다(읽기만, 번호·표식만 붙인다).
+# 자동으로 매달 돌지 않는다(2026-11-03 사용자: 「슈뢰딩거처럼」): 처음 접촉할 때(events/sllm_preftl_events.txt → PFTL_FOUND) 한 번, 그 뒤로는 플레이어가 화면을 열거나 「새로 관측」을 누를 때만.
+# 줄 칸: id 우리 번호 · age 시대 번호(1 석기 … 10 초기 우주) · aw 인지도 수치 · lv 인지도 단계(0 없음 1 낮음 2 중간 3 높음 4 완전)
+#   obs 1 우리 관측소 2 다른 나라 관측소 0 없음 · mis 우리 관측소 임무(1 수동 관찰 2 표본 수집 3 관측 안 함 0 모름) · hive 1 군체
+#   in 1 우리 국경 안 0 밖 · sit 진행 중인 원시문명 위기(1 역병 2 기술 특이점 3 신세계 질서 0 없음) · tp 다음 시대까지 기술 진척 %(-1 모름) · 이름 칸은 맨 뒤(이름 안의 구분자 대비).
+sllm_probe_preftl = {
+	set_variable = { which = sllm_out_req value = $REQ$ }
+	save_event_target_as = sllm_pf_me
+	if = { limit = { NOT = { is_variable_set = sllm_pf_next } } set_variable = { which = sllm_pf_next value = 1 } }
+	every_pre_ftl_within_border = { set_country_flag = sllm_pf_known }
+	every_country = {
+		limit = { is_primitive = yes has_country_flag = sllm_pf_known }
+		set_variable = { which = sllm_pf_sit value = 0 }
+		set_variable = { which = sllm_pf_in value = 0 }
+	}
+	every_pre_ftl_within_border = { set_variable = { which = sllm_pf_in value = 1 } }
+	every_situation = { limit = { is_situation_type = situation_pre_ftl_plague } target = { planet = { owner = { set_variable = { which = sllm_pf_sit value = 1 } } } } }
+	every_situation = { limit = { is_situation_type = situation_pre_ftl_singularity } target = { planet = { owner = { set_variable = { which = sllm_pf_sit value = 2 } } } } }
+	every_situation = { limit = { is_situation_type = situation_pre_ftl_nwo } target = { planet = { owner = { set_variable = { which = sllm_pf_sit value = 3 } } } } }
+	every_country = {
+		limit = { is_primitive = yes has_country_flag = sllm_pf_known }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_pfown_@this } }
+			set_variable = { which = sllm_pf_id value = prev.sllm_pf_next }
+			set_country_flag = sllm_pfown_@this
+			prev = { change_variable = { which = sllm_pf_next value = 1 } }
+		}
+		set_variable = { which = sllm_out_req value = prev.sllm_out_req }
+		set_variable = { which = sllm_pf_age value = 0 }
+		if = { limit = { has_pre_ftl_age = stone_age } set_variable = { which = sllm_pf_age value = 1 } }
+		else_if = { limit = { has_pre_ftl_age = bronze_age } set_variable = { which = sllm_pf_age value = 2 } }
+		else_if = { limit = { has_pre_ftl_age = iron_age } set_variable = { which = sllm_pf_age value = 3 } }
+		else_if = { limit = { has_pre_ftl_age = late_medieval_age } set_variable = { which = sllm_pf_age value = 4 } }
+		else_if = { limit = { has_pre_ftl_age = renaissance_age } set_variable = { which = sllm_pf_age value = 5 } }
+		else_if = { limit = { has_pre_ftl_age = steam_age } set_variable = { which = sllm_pf_age value = 6 } }
+		else_if = { limit = { has_pre_ftl_age = industrial_age } set_variable = { which = sllm_pf_age value = 7 } }
+		else_if = { limit = { has_pre_ftl_age = machine_age } set_variable = { which = sllm_pf_age value = 8 } }
+		else_if = { limit = { has_pre_ftl_age = atomic_age } set_variable = { which = sllm_pf_age value = 9 } }
+		else_if = { limit = { has_pre_ftl_age = early_space_age } set_variable = { which = sllm_pf_age value = 10 } }
+		export_trigger_value_to_variable = { trigger = has_awareness variable = sllm_pf_aw rounded = yes }
+		set_variable = { which = sllm_pf_lv value = 0 }
+		if = { limit = { current_awareness_level > none } set_variable = { which = sllm_pf_lv value = 1 } }
+		if = { limit = { current_awareness_level > low } set_variable = { which = sllm_pf_lv value = 2 } }
+		if = { limit = { current_awareness_level > medium } set_variable = { which = sllm_pf_lv value = 3 } }
+		if = { limit = { current_awareness_level > high } set_variable = { which = sllm_pf_lv value = 4 } }
+		set_variable = { which = sllm_pf_obs value = 0 }
+		set_variable = { which = sllm_pf_mis value = 0 }
+		capital_scope = {
+			planet = {
+				# 관측소 주인은 게임이 주는 observation_outpost_owner 로 본다(2026-11-04 사용자: 우리가 지은 관측소가 「다른 나라 관측소」로 뜸 —
+				# 궤도 함대를 훑어 찾던 방식은 관측소를 놓칠 때가 있었다). 임무는 observation_outpost(관측소 함대)에서 읽는다.
+				if = {
+					limit = { has_observation_outpost = yes }
+					if = {
+						limit = { observation_outpost_owner = { is_same_value = event_target:sllm_pf_me } }
+						owner = { set_variable = { which = sllm_pf_obs value = 1 } }
+						if = { limit = { observation_outpost = { has_mission = passive_observation } } owner = { set_variable = { which = sllm_pf_mis value = 1 } } }
+						else_if = { limit = { observation_outpost = { has_mission = specimen_collection } } owner = { set_variable = { which = sllm_pf_mis value = 2 } } }
+						else_if = { limit = { observation_outpost = { has_mission = no_observation } } owner = { set_variable = { which = sllm_pf_mis value = 3 } } }
+					}
+					else = { owner = { set_variable = { which = sllm_pf_obs value = 2 } } }
+				}
+			}
+		}
+		# 위기 상황이 원시문명 자신에게 걸려 있는 경우도 본다(관측국에 걸린 경우는 위에서)
+		if = { limit = { any_situation = { is_situation_type = situation_pre_ftl_plague } } set_variable = { which = sllm_pf_sit value = 1 } }
+		if = { limit = { any_situation = { is_situation_type = situation_pre_ftl_singularity } } set_variable = { which = sllm_pf_sit value = 2 } }
+		if = { limit = { any_situation = { is_situation_type = situation_pre_ftl_nwo } } set_variable = { which = sllm_pf_sit value = 3 } }
+		# 다음 시대까지 기술 진척 %(게임의 원시문명 기술 발전 상황, 2026-11-03 하늘의 목소리로 가르치기)
+		set_variable = { which = sllm_pf_tp value = -1 }
+		every_situation = {
+			limit = { is_situation_type = pre_ftl_tech_progress_situation }
+			export_trigger_value_to_variable = { trigger = situation_progress_percent variable = sllm_pf_tp rounded = yes }
+			owner = { set_variable = { which = sllm_pf_tp value = prev.sllm_pf_tp } }
+		}
+		set_variable = { which = sllm_pf_hive value = 0 }
+		if = { limit = { has_authority = auth_hive_mind } set_variable = { which = sllm_pf_hive value = 1 } }
+		# 성향(핵 대치, 2026-11-05): pe 군국 1·2 / 평화 -1·-2, px 외계인혐오 1·2 / 외계인애호 -1·-2
+		set_variable = { which = sllm_pf_pe value = 0 }
+		if = { limit = { has_ethic = ethic_fanatic_militarist } set_variable = { which = sllm_pf_pe value = 2 } }
+		else_if = { limit = { has_ethic = ethic_militarist } set_variable = { which = sllm_pf_pe value = 1 } }
+		else_if = { limit = { has_ethic = ethic_fanatic_pacifist } set_variable = { which = sllm_pf_pe value = -2 } }
+		else_if = { limit = { has_ethic = ethic_pacifist } set_variable = { which = sllm_pf_pe value = -1 } }
+		set_variable = { which = sllm_pf_px value = 0 }
+		if = { limit = { has_ethic = ethic_fanatic_xenophobe } set_variable = { which = sllm_pf_px value = 2 } }
+		else_if = { limit = { has_ethic = ethic_xenophobe } set_variable = { which = sllm_pf_px value = 1 } }
+		else_if = { limit = { has_ethic = ethic_fanatic_xenophile } set_variable = { which = sllm_pf_px value = -2 } }
+		else_if = { limit = { has_ethic = ethic_xenophile } set_variable = { which = sllm_pf_px value = -1 } }
+		log = "SLLM:PFTL/;/req=\\[This.sllm_out_req]/;/id=\\[This.sllm_pf_id]/;/age=\\[This.sllm_pf_age]/;/aw=\\[This.sllm_pf_aw]/;/lv=\\[This.sllm_pf_lv]/;/obs=\\[This.sllm_pf_obs]/;/mis=\\[This.sllm_pf_mis]/;/hive=\\[This.sllm_pf_hive]/;/in=\\[This.sllm_pf_in]/;/sit=\\[This.sllm_pf_sit]/;/tp=\\[This.sllm_pf_tp]/;/pe=\\[This.sllm_pf_pe]/;/px=\\[This.sllm_pf_px]/;/species=\\[This.GetSpeciesName]/;/planet=\\[This.Capital.GetName]/;/name=\\[This.GetName]"
+	}
+	# 기억 제국(⑤, 2026-11-03): 예전에 우리가 관측한 원시문명(sllm_pf_id)이 이제 원시문명이 아니면(정식 제국이 됨) up=1 줄. idx 는 앱의 연락처 번호(아직 없으면 0).
+	every_country = {
+		limit = { is_primitive = no is_variable_set = sllm_pf_id }
+		set_variable = { which = sllm_out_req value = prev.sllm_out_req }
+		set_variable = { which = sllm_pf_ix value = 0 }
+		if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_pf_ix value = sllm_idx } }
+		log = "SLLM:PFTL/;/req=\\[This.sllm_out_req]/;/id=\\[This.sllm_pf_id]/;/up=1/;/idx=\\[This.sllm_pf_ix]/;/name=\\[This.GetName]"
+	}
+	# 은하 공동체 원시문명 결의안(개입 경고용): 1 불간섭 2 동등한 지위 3 착취 허용 0 없음
+	set_variable = { which = sllm_pf_ni value = 0 }
+	if = { limit = { is_active_resolution = resolution_pre_ftl_stances_non_interference } set_variable = { which = sllm_pf_ni value = 1 } }
+	else_if = { limit = { is_active_resolution = resolution_pre_ftl_stances_equal_standing } set_variable = { which = sllm_pf_ni value = 2 } }
+	log = "SLLM:PFTL_END/;/req=\\[This.sllm_out_req]/;/sid=\\[This.sllm_save_id]/;/ni=\\[This.sllm_pf_ni]/;/date=\\[GetDate]"
+}
+
+# 개입(③, 2026-11-03): 플레이어 나라 scope. ID = 원시문명 번호(sllm_pf_id), W = 무엇:
+#   1 기술 선물(다음 시대 + 인지도 +20, 에너지 500) · 2 역병 의료 지원(역병 진행 -20 + 인지도 +10, 에너지 300)
+#   3 고의 노출(인지도 +15) · 4 은폐 작전(인지도 -10, 에너지 250)
+#   11 / 12 / 13 관측소 임무를 수동 관찰 / 표본 수집(적극·공격적 간섭 정책 필요) / 관측 중단으로
+#   21 긴장 완화 공작(에너지 200) · 22 긴장 고조 공작(150) · 23 핵무기 무력화 성공 · 24 실패(인지도 +15) (600) — 핵 대치 긴장도는 앱이 계산(src/preftl-standoff.ts)
+# 회신 SLLM:PFTLACT req·w·st: 1 함 · 2 문명 없음 · 3 에너지 모자람 · 4 지금은 할 수 없음(마지막 시대·역병 없음·인지도 끝) · 5 우리 관측소 없음 · 6 정책이 막음
+sllm_preftl_act = {
+	set_variable = { which = sllm_out_req value = $REQ$ }
+	set_variable = { which = sllm_pf_w value = $W$ }
+	set_variable = { which = sllm_pf_st value = 2 }
+	set_variable = { which = sllm_pf_cost value = 0 }
+	if = { limit = { check_variable = { which = sllm_pf_w value = 1 } } set_variable = { which = sllm_pf_cost value = 500 } }
+	else_if = { limit = { check_variable = { which = sllm_pf_w value = 2 } } set_variable = { which = sllm_pf_cost value = 300 } }
+	else_if = { limit = { check_variable = { which = sllm_pf_w value = 4 } } set_variable = { which = sllm_pf_cost value = 250 } }
+	else_if = { limit = { check_variable = { which = sllm_pf_w value = 21 } } set_variable = { which = sllm_pf_cost value = 200 } }
+	else_if = { limit = { check_variable = { which = sllm_pf_w value = 22 } } set_variable = { which = sllm_pf_cost value = 150 } }
+	else_if = { limit = { check_variable = { which = sllm_pf_w value >= 23 } check_variable = { which = sllm_pf_w value <= 24 } } set_variable = { which = sllm_pf_cost value = 600 } }
+	save_event_target_as = sllm_pf_me
+	every_country = {
+		limit = { is_primitive = yes check_variable = { which = sllm_pf_id value = $ID$ } }
+		save_event_target_as = sllm_pf_t
+		event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 5 } }
+		# 우리 관측소가 있어야 한다(관측소 주인 = 우리, 2026-11-04 observation_outpost_owner 로 바꿈)
+		if = {
+			limit = { capital_scope = { planet = { has_observation_outpost = yes observation_outpost_owner = { is_same_value = event_target:sllm_pf_me } } } }
+			event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 4 } }
+			if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_cost value > 0 } NOT = { resource_stockpile_compare = { resource = energy value >= 1 mult = sllm_pf_cost } } } }
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 3 } }
+			}
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 1 } } has_next_pre_ftl_age = yes }
+				go_to_next_pre_ftl_age = yes
+				add_awareness = 20
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+			else_if = {
+				limit = {
+					event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 2 } }
+					OR = {
+						any_situation = { is_situation_type = situation_pre_ftl_plague }
+						event_target:sllm_pf_me = { any_situation = { is_situation_type = situation_pre_ftl_plague target = { planet = { owner = { is_same_value = event_target:sllm_pf_t } } } } }
+					}
+				}
+				every_situation = { limit = { is_situation_type = situation_pre_ftl_plague } add_situation_progress = -20 }
+				event_target:sllm_pf_me = { every_situation = { limit = { is_situation_type = situation_pre_ftl_plague target = { planet = { owner = { is_same_value = event_target:sllm_pf_t } } } } add_situation_progress = -20 } }
+				add_awareness = 10
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 3 } } NOT = { current_awareness_level = full } }
+				add_awareness = 15
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 4 } } has_awareness > 0 NOT = { current_awareness_level = full } }
+				add_awareness = -10
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+			# 핵 대치(2026-11-05): 21 완화 · 22 고조 · 23 무력화 성공 — 긴장은 앱이 계산, 게임은 비용만 · 24 무력화 실패 — 들켜서 인지도 +15
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value >= 21 } check_variable = { which = sllm_pf_w value <= 23 } } }
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 24 } } }
+				if = { limit = { NOT = { current_awareness_level = full } } add_awareness = 15 }
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 12 } NOT = { OR = { has_policy_flag = interference_active has_policy_flag = interference_aggressive } } } }
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 6 } }
+			}
+			else_if = {
+				limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value >= 11 } check_variable = { which = sllm_pf_w value <= 13 } } NOT = { current_awareness_level = full } }
+				capital_scope = { planet = { observation_outpost = {
+					if = { limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 11 } } } set_mission = passive_observation }
+					else_if = { limit = { event_target:sllm_pf_me = { check_variable = { which = sllm_pf_w value = 12 } } } set_mission = specimen_collection }
+					else = { set_mission = no_observation }
+				} } }
+				event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+			}
+		}
+	}
+	# 했으면 비용을 낸다(에너지)
+	if = { limit = { check_variable = { which = sllm_pf_st value = 1 } check_variable = { which = sllm_pf_cost value > 0 } } add_resource = { energy = -1 mult = sllm_pf_cost } }
+	log = "SLLM:PFTLACT/;/req=\\[This.sllm_out_req]/;/w=\\[This.sllm_pf_w]/;/st=\\[This.sllm_pf_st]/;/sid=\\[This.sllm_save_id]"
+}
+
+# 핵 대치 결말(2026-11-05, 앱 src/preftl-standoff.ts). 플레이어 나라 scope, 관측소 필요 없음. ID = 원시문명 번호.
+#   WAR = yes 핵전쟁: 수도 행성 인구 절반·황폐화 50·두 시대 후퇴(원자력 → 산업, 초기 우주 → 기계) · no 평화적 종결(그들 쪽 효과 없음)
+#   BONUS = yes 우리 공(평화 때 우리가 긴장을 많이 낮췄음): 통합력 +150
+# 회신 SLLM:PFTLACT w=30 · st 1 함 · 2 문명 없음
+sllm_preftl_so_end = {
+	set_variable = { which = sllm_out_req value = $REQ$ }
+	set_variable = { which = sllm_pf_st value = 2 }
+	save_event_target_as = sllm_pf_me
+	every_country = {
+		limit = { is_primitive = yes check_variable = { which = sllm_pf_id value = $ID$ } }
+		if = {
+			limit = { always = $WAR$ }
+			capital_scope = {
+				add_planet_devastation = 50
+				every_owned_pop_group = { kill_pop_group = { pop_group = this percentage = 0.5 } }
+			}
+			if = { limit = { has_pre_ftl_age = atomic_age } set_pre_ftl_age = industrial_age }
+			else_if = { limit = { has_pre_ftl_age = early_space_age } set_pre_ftl_age = machine_age }
+		}
+		event_target:sllm_pf_me = { set_variable = { which = sllm_pf_st value = 1 } }
+	}
+	if = { limit = { always = $BONUS$ check_variable = { which = sllm_pf_st value = 1 } } add_resource = { unity = 150 } }
+	set_variable = { which = sllm_pf_w value = 30 }
+	log = "SLLM:PFTLACT/;/req=\\[This.sllm_out_req]/;/w=\\[This.sllm_pf_w]/;/st=\\[This.sllm_pf_st]/;/sid=\\[This.sllm_save_id]"
+}

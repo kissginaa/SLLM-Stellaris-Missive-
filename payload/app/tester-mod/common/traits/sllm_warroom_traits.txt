@@ -1,0 +1,200 @@
+# 작전지휘실 전쟁 성향(2026-11-05 사용자: 지도자 성향마다 소폭 효과, 약 +3%). 앱(src/warroom.ts WR_DOCTRINES)이 고른 성향을 sllm_wr_doc_set 으로 붙인다.
+# 저절로 붙거나 레벨 업에 나오지 않음(randomized = no, selectable_weight = 0). 함대를 맡으면 그 함대에 +3%, 평의회에 앉으면 제국 전체 함선에 +3%.
+
+sllm_doc_no_retreat = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_reckless"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_weapon_damage = 0.03
+	}
+	councilor_modifier = {
+		ship_weapon_damage = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_focused_striker = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_aggressive"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_fire_rate_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_fire_rate_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_raider = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_corsair"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_speed_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_speed_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_fortress = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_fortifier"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_armor_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_armor_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_elastic = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_skirmisher"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_shield_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_shield_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_guardian = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_unyielding"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_hull_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_hull_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_maneuver = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_trickster"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_evasion_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_evasion_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_calculator = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_fleet_logistician"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_weapon_range_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_weapon_range_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}
+
+sllm_doc_opportunist = {
+	randomized = no
+	initial = no
+	notify_on_gained = no
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_guerilla_tactics"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_disengage_chance_mult = 0.03
+	}
+	councilor_modifier = {
+		ship_disengage_chance_mult = 0.03
+	}
+	leader_class = { commander official scientist }
+	selectable_weight = 0
+}

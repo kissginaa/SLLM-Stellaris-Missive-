@@ -1,0 +1,10 @@
+# SLLM - 파파라치 기사(2026-10-31). 앱(src/paparazzi.ts papOpinionCommand)이 기사가 날 때 통신 중인 AI 제국 전부에 붙인다(who = 우리). 처음 조정값, 달마다 줄어듦.
+# 좋은 기사(명연설 등): +5. 나쁜 기사(카지노 탕진·암시장 단속): −5.
+sllm_pap_good = {
+	opinion = { base = 5 }
+	decay = { base = 1 }
+}
+sllm_pap_bad = {
+	opinion = { base = -5 }
+	decay = { base = 1 }
+}

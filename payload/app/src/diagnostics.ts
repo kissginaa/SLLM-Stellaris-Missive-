@@ -56,7 +56,7 @@ export function flushDiagnostics(): void {
 export function diagnosticStatus(){return {session,directory:sanitizeDiagnosticText(directory),maxFileBytes:LIMIT,rotatedFiles:ROTATIONS,writeError:failure,memoryEntries:recent.length};}
 export function diagnosticMemory(): string { return recent.join(''); }
 export function writeRawDiagnostic(file:string,text:string):void {
-  if(!directory||!['sllm_govraw.log','sllm_councilraw.log'].includes(file))return;
+  if(!directory||!['sllm_govraw.log','sllm_councilraw.log','sllm_radioraw.log'].includes(file))return;
   const target=path.join(path.dirname(directory),file),chunk=sanitizeDiagnosticText(text).slice(0,256*1024)+'\n';
   try {
     if (fs.existsSync(target) && fs.statSync(target).size + Buffer.byteLength(chunk) > LIMIT) {

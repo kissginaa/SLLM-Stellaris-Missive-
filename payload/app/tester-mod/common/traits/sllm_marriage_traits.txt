@@ -1,0 +1,132 @@
+# SLLM - NPC 지도자 부부의 결혼·사별 특성(2026-10-23 집 PC 초안, 사용자 확정: 결혼 = 직업별 +10%, 사별 = 부정 특성 2개).
+# 앱(src/marriage-traits.ts)이 결혼 완료·배우자 사망 때 add_trait/remove_trait 로 붙인다. 수치 키는 sllm_relation_traits.txt 와 같은 바닐라 키,
+#   상실감의 species_leader_exp_gain 은 바닐라 00_generic_leader_traits.txt(leader_trait_adventurous_spirit)와 같은 키.
+
+sllm_trait_married_commander = {
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_emotional_support_pet"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	fleet_modifier = {
+		ship_weapon_damage = 0.1
+	}
+	army_modifier = {
+		army_damage_mult = 0.1
+	}
+	leader_class = { commander }
+	randomized = no
+	selectable_weight = 0
+}
+
+sllm_trait_married_official = {
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_emotional_support_pet"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	planet_modifier = {
+		planet_jobs_produces_mult = 0.1
+	}
+	leader_class = { official }
+	randomized = no
+	selectable_weight = 0
+}
+
+sllm_trait_married_scientist = {
+	inline_script = {
+		script = trait/icon
+		CLASS = leader
+		ICON = "GFX_leader_trait_emotional_support_pet"
+		RARITY = common
+		COUNCIL = no
+		TIER = none
+	}
+	modifier = {
+		science_ship_survey_speed = 0.1
+		ship_anomaly_research_speed_mult = 0.1
+	}
+	councilor_modifier = {
+		all_technology_research_speed = 0.1
+	}
+	leader_class = { scientist }
+	randomized = no
+	selectable_weight = 0
+}
+
+sllm_trait_widowed_grief_commander = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	fleet_modifier = {
+		ship_weapon_damage = -0.1
+	}
+	army_modifier = {
+		army_damage_mult = -0.1
+	}
+	leader_class = { commander }
+	selectable_weight = 0
+}
+
+sllm_trait_widowed_grief_official = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	planet_modifier = {
+		planet_jobs_produces_mult = -0.1
+	}
+	leader_class = { official }
+	selectable_weight = 0
+}
+
+sllm_trait_widowed_grief_scientist = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	modifier = {
+		science_ship_survey_speed = -0.1
+		ship_anomaly_research_speed_mult = -0.1
+	}
+	councilor_modifier = {
+		all_technology_research_speed = -0.1
+	}
+	leader_class = { scientist }
+	selectable_weight = 0
+}
+
+sllm_trait_widowed_heartbroken = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_fallible"
+		COUNCIL = no
+		TIER = 1
+	}
+	self_modifier = {
+		species_leader_exp_gain = -0.25
+	}
+	leader_class = { commander scientist official }
+	selectable_weight = 0
+}

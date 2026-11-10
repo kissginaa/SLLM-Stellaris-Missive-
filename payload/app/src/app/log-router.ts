@@ -14,6 +14,10 @@ export const SLOT = {
   COMPAT_EVENT: 50,   // 호환 팩 사건 → 연대기·라디오
   CONTACT_BEGIN: 60,  // 연락처 목록 시작(세이브 번호)
   TERMINAL: 70,       // 연락처·단말기 응답
+  EMOTIONS: 75,      // 감정 기억 4종: CONTACT_END 뒤 통신 목록으로 3달마다 계산(알파 11, 2026-10-25)
+  SYSTEMS: 76,       // 성계 번호표 SYS_BEGIN·SYS·SYS_END + CONTACT_END 때 기한 지난 지도 이름표 치우기(알파 11, 2026-10-25)
+  GESTALT: 77,       // 단일 의식 이탈 노드 DEVIANT(월간 상황 안, 알파 11, 2026-10-25)
+  FALLEN: 78,        // 몰락제국 각성 알림: CONTACT_END 때 몰락 → 각성 바뀜 찾기(알파 11, 2026-10-25)
   LINE_DATE: 80,      // 로그 줄 앞의 게임 날짜
   REQSEEN: 90,        // 게임이 본 요청 번호 학습(game-link)
   OPSHIFT: 100,       // 호감 변화
@@ -22,6 +26,7 @@ export const SLOT = {
   AGENDA: 130,        // 의회·라디오 사건(onAgendaSignal)
   PLANETS: 140,       // 행성 목록
   MAIL: 150,          // 서신·뉴스·제국 번호(onMailSignal)
+  SAVESIGNAL: 151,    // 세이브 다시 읽기 신호: LOADED·NEWS ruler·EVT first_contact → flagProv.markStale(features/save-signal-app.ts, 2026-11-09)
   KEYBOARD: 160,      // 게임 안 키보드 입력
   SPEECH_PF: 170,     // 연설 프로필·상황
   SPEECH: 180,        // 연설 준비·적용
@@ -53,6 +58,47 @@ export const SLOT = {
   EMBASSY: 239,      // 대사관 보고서 EMBFAC(파벌)·EMBASSY(끝 줄) — 2026-10-19
   PRESS: 259,         // 언론사 인터뷰 준비·적용(PRESS)·월 신호로 준비 완료 — 2026-10-17
   CEREMONY: 237,     // 출항 의식 군사 함대 조회
+  RELATIONS: 228,    // 인물 관계: 사교회 식량 납부 SOCIALPAY·불만 특성 DISCONTENT 응답(2026-10-23 초안)
+  HOI: 217,         // 하츠 참고 외교: 물자 지원 적국 AIDEN·AIDEND, 파벌 공작 FSUP, 종속국 독립 AUTOFREE(2026-10-28)
+  MEMORY: 218,      // 들은 말 퍼지기: 상대의 동맹·우호국 RUMORNET·RUMORNETEND(2026-10-28 ChatSyncAuto 참고)
+  CIVIC: 214,      // 시민 정치: 여론조사·국민투표·특별사면 효과 응답 CIVIC(2026-11-03)
+  PREFTL: 215,     // 원시문명 관측 PFTL·PFTL_END(2026-11-03)
+  RENAME: 206,     // 이름의 정치: 개명 전 이름 RENAMEOLD·결과 RENAME(굴욕 조항·종속국 개명·AI 요구, 2026-11-04, src/features/rename-ledger.ts)
+  FLEETNAME: 207,  // 함대 명명 건: 전투 기록 BATTLE·BATTLESYS·BATTLEADM 다시 묶기 + 이름 바꾸기 응답 FLEETNAME(2026-11-04, src/features/fleetname-app.ts)
+  COLNAME: 208,    // 신규 식민지 이름 짓기: 개척 알림 COLNEW·이름 바꾸기 응답 COLNAME(2026-11-04, src/features/colname-app.ts)
+  GOVPOL: 211,     // 총독에게 행성 맡기기: 방침 표식 응답 GOVPOL(2026-11-03, src/features/govpolicy-app.ts)
+  EMP: 192,        // 비상대권: 상태·올리기·내리기·쥐기 응답(req) + 전쟁 끝남·굳음·반발 EMP(2026-11-05, src/features/emp-app.ts)
+  GOVQUOTA: 193,   // 행성 할당량: 매기기·거두기 응답(req) + 단계·버거움·완수·무너짐 GOVQUOTA(2026-11-05, src/features/govpolicy-app.ts)
+  GOVBUILD: 194,   // 총독이 지은 것: 완성·되돌림 GOVBUILD(왜 지었나 why 포함, 2026-11-05, src/features/govpolicy-app.ts)
+  VAULT: 212,      // 통치자 개인 금고 넣기·빼기 응답 VAULT(2026-10-30)
+  FLEETORDER: 213, // 자동 작전: 매달 사건 FOEV·FOEVF·FOEVS, 보고 FOREP·FOOP·FOOPF·FOOPS·FOFL·FOREP_END, 응답 FOSET(2026-11-04)
+  CYBER: 204,     // 해외발 여론 공작 상황: 시작·단계·대응·결말 CYBER(2026-11-04, src/features/cyber-app.ts)
+  INFAMY: 197, // 악명·전쟁범죄: 범죄 ATROC · 우리 단계 INFTIER · 악명 목록 INFY·INFEND(2026-11-04, src/features/infamy-app.ts)
+  WARROOM: 198, // 작전지휘실 2단계: 보고 WRREP·WRFL·WRSYS·WRWAR·WREND, 함대 명령 응답 WRSET(2026-11-05, src/features/galaxy-app.ts)
+  CAPTIVE: 201, // 사로잡은 적 제독: 사로잡음 CAPFROM·CAPTURE, 처리 응답 CAPSET(2026-11-04, src/features/captive-app.ts)
+  ALARM: 261,     // 일정표·쿨다운 알림: 읽기 ALARM·ALARMEND · 상황 막대 ALARMSET(2026-11-04, src/features/alarm-app.ts)
+  MTRANSFER: 187, // 정기 송금: 칸 적기·지우기 응답 MTSET · 매달 사건 MT(못 냄 short·끊김 stop·다 냄 end — 잘 낸 달은 줄 없음, 2026-11-09, src/features/mtransfer-hub.ts)
+  SCNMAP: 188,   // 시나리오 은하 지도: 섹터·총독 SCNSECBEG·SCNSEC·SCNSECEND(시나리오 모드가 매달 찍음, 2026-11-06, src/features/scenario-map-app.ts)
+  SCENARIO: 189, // 시나리오 알아보기: SCN·SCNN·SCNSEAT(시나리오 모드가 찍음, 2026-11-05, src/features/scenario-app.ts)
+  TENSION: 191,  // 대립 긴장도(시나리오 전용): TNN·TN·TNST·TNWAR·TNPEACE·TNADD·TNQ(2026-11-05, src/features/tension-app.ts)
+  REBELS: 195,   // 반란과 공작: 후원 RBQ·RBSET·RBAFF·RBAF, 취약 RBVF·RBV, 선동 RBSOWP·RBSOW·RBASF·RBASP·RBAS(2026-11-05, src/features/rebels-app.ts)
+  OVPRESS: 196,  // 역방향: AI 종주국 명령·AI 이웃의 종속국 쟁탈 VOPZ(2026-11-05, src/features/overlord-pressure-app.ts)
+  VREIGN: 199,   // 종속국 통치권: 후보 VRLDR·VRLEND·VRTGT·VRTEND·VRPZ·VRPZEND, 이름 VRNAME, 동조 VRALN, 적용 VRSET, 대리전 VRPXW, 전쟁 결말 VRWAR(2026-11-05, src/features/vassal-reign-app.ts)
+  VADMIN: 202,    // 종속국 행정: 성계 목록 VADMSYS·VADMEND · 적용 VADMSET · 우리 연구량 VADMRES(2026-11-04, src/features/vassal-admin-app.ts)
+  VASCOURT: 203, // 종속국 통치: 감면 액수 VCCTX · 적용 응답 VCSET · 환급 못 함 VCSHORT · 계약 재협상 반응 VCAGR(2026-11-04)
+  TEMPER: 205, // 외교 노선: 판세 읽기 TMPC·TMPTOP·TMPEND(해마다 1월 req=0·새로 관측), 성향 바꾸기 TMPSETP·TMPSET, 공작 비용 TMPPAY(2026-11-04)
+  BUDGET: 209, // 예산 회의: 소집 읽기 BUDCTX, 집행·중단 응답 BUDSET, 매달 BUDSTOP(국고 부족)·BUDEND(기간 끝)(2026-11-04)
+  COURT: 216,       // 정치: 음모 대응·수감·추방·망명·혼인 동맹 COURT(2026-10-28 월드박스·토탈워 참고)
+  CHILDREN: 219,     // 통치자의 아이: 성인식 CHILDADULT·후계자 CHILDHEIR 응답 — 2026-10-27
+  DEALS: 221,         // 외교 거래 DEALX·DEALCTX(읽기)·DEAL(적용·매달 지급·호감·참전)·DEALAW·DEALAWEND(동맹 방어 전쟁) — 2026-10-26
+  KHAN: 222,          // 그레이트 칸 특별 대우 KHAN·KHANGIFT(조사·선물 응답)·KHANFAVOR(칸의 총애 붙음·뗌) — 2026-10-26
+  FRONTIER: 223,      // 국경·전선 읽기 FRSYS·FR_END(외교 대화·성간 회의 프롬프트) — 2026-10-26
+  ISC_QUEST: 224,     // 성간 임시회의 과제: 측정 ISCQO·ISCQM, 자원 건네기 ISCQGIFT, 퀘스트 효과 QUESTAPPLY — 2026-10-26
+  ENCLAVE_SHOP: 225,  // 상인 수집품 결제 COLPAY(알파 11, 2026-10-25)
+  MARAUDER: 226,      // 약탈자 대응 MRD(상태·위협·돌리기·용병 흥정 응답)·MRCREF(용병 할인 정산) — 2026-10-26
+  FOREIGN_BANQUET: 227, // 타국 주최 만찬 참석자 FBGUEST·FBGUEST_END(2026-10-23 초안)
+  ISC: 229,          // 성간제국통신임시회의 참가 후보 ISCSEAT·ISC_END(2026-10-23 초안)
+  PROTESTS: 231,     // 시위 자료 PROTPLANET·RIGHTS(월간 상황 안) + 해산 응답 PROTESTDISPERSE — GAMESTATE(248)보다 먼저 모아 둔다(2026-10-23)
   OFFICIAL_HOLIDAYS: 232,
   ROOM_TROPHIES: 233, // Paid trophy receipt
   NATIONAL_EVENTS: 234, // National calendar and ceremony reward acknowledgements
@@ -71,7 +117,9 @@ export class LogRouter {
     this.hs.push({ slot, name, fn });
     this.hs.sort((a, b) => a.slot - b.slot);
   }
-  dispatch(m: SllmMessage): void { for (const h of this.hs) h.fn(m); }
+  /** 처리마다 문 판정(이름 → 꺼졌나). 시나리오에서 잠긴 기능의 줄은 그 기능에 보내지 않는다(2026-11-08). */
+  gate: ((name: string) => boolean) | null = null;
+  dispatch(m: SllmMessage): void { const g = this.gate; for (const h of this.hs) { if (g && g(h.name)) continue; h.fn(m); } }
   /** 등록된 처리 이름(부르는 순서) — selftest·진단용 */
   names(): string[] { return this.hs.map((h) => `${h.slot}:${h.name}`); }
 }

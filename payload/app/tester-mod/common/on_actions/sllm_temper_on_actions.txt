@@ -1,0 +1,4 @@
+# SLLM 외교 노선(2026-11-04) — 해마다 맥박(4.5: events 만).
+on_yearly_pulse_country = {
+	events = { sllm_tmp.1 }
+}

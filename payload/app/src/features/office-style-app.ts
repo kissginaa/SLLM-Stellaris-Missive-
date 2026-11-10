@@ -6,7 +6,8 @@ import * as path from 'path';
 import { ctx } from '../app/ctx';
 import { logDiagnostic } from '../diagnostics';
 import { pick } from './settings-ui';
-import { OFFICE_STYLES, isOfficeStyle, autoOfficeStyle } from '../office-style';
+import { OFFICE_STYLES, isOfficeStyle, autoOfficeStyle, autoTheme } from '../office-style';
+import { playerGestalt } from './gestalt-app';
 
 const L = pick;
 let data: { saves: Record<string, string> } | null = null;
@@ -21,12 +22,13 @@ function save(): void { try { fs.writeFileSync(file(), JSON.stringify(all()), 'u
 function view() {
   const sid = ctx.curSaveId; let ethics: string[] | null = null;
   try { ethics = ctx.playerIdx >= 0 ? ctx.flagProv.ethicsFor(ctx.playerIdx) : null; } catch { ethics = null; }
-  const auto = autoOfficeStyle(ethics), choice = (sid && all().saves[sid]) || 'auto';
+  const auto = autoOfficeStyle(ethics, playerGestalt()), choice = (sid && all().saves[sid]) || 'auto';
   const label = (k: string) => { const s = OFFICE_STYLES.find(([x]) => x === k); return s ? L(s[1], s[2]) : k; };
   return { emblemUrl: sid ? ctx.flagProv.emblemFor(ctx.playerIdx) : null, choice, auto, autoKnown: !!ethics, applied: choice === 'auto' ? auto : choice, autoLabel: label(auto), options: OFFICE_STYLES.map(([k]) => ({ key: k, label: label(k) })) };
 }
 export function registerOfficeStyle(): void {
   ipcMain.handle('officeStyle', async () => view());
+  ipcMain.handle('autoTheme', async () => { let ethics: string[] | null = null; try { ethics = ctx.playerIdx >= 0 ? ctx.flagProv.ethicsFor(ctx.playerIdx) : null; } catch { ethics = null; } return autoTheme(ethics, playerGestalt()); }); // 색 테마 「자동」(알파 11)
   ipcMain.handle('officeStyleSet', async (_e, key: unknown) => {
     const sid = ctx.curSaveId; if (!sid) return { ok: false, error: L('세이브를 불러온 뒤 바꿀 수 있습니다.', 'Load a save first.'), state: view() };
     if (key !== 'auto' && !isOfficeStyle(key)) return { ok: false, error: L('알 수 없는 집무실입니다.', 'Unknown office style.'), state: view() };

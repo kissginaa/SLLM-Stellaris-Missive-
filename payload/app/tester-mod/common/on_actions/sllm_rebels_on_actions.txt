@@ -1,0 +1,4 @@
+# SLLM 반란과 공작(2026-11-09) — 취약 판정 3달 세기(4.5: events 만). 맡기지 않은 판은 이벤트 trigger 에서 바로 끝난다.
+on_monthly_pulse_country = {
+	events = { sllm_rbm.1 }
+}

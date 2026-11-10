@@ -1,0 +1,9 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 두 거대 세력이 서로를. 단계가 바뀔 때마다 걷었다 다시 붙인다(효과: scripted_effects/sllm_tension.txt).
+# 위기(50 이상)
+sllm_tn_crisis = {
+	opinion = { base = -50 }
+}
+# 일촉즉발(90 이상) — 위기에 더해서
+sllm_tn_brink_op = {
+	opinion = { base = -50 }
+}

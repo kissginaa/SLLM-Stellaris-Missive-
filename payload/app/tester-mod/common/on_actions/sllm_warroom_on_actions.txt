@@ -1,0 +1,11 @@
+# SLLM 작전지휘실 — 빌려 온 동맹 함대의 독자 행동(2026-11-05). 매달 맥박. 모드 on_actions 는 게임 것과 합쳐진다(events 만).
+on_monthly_pulse_country = {
+	events = { sllm_wr.1 }
+}
+# 전쟁 성향(2026-11-05): 새 지도자 · 해마다 채우기
+on_added_to_leader_pool = {
+	events = { sllm_wr.10 }
+}
+on_yearly_pulse_country = {
+	events = { sllm_wr.11 }
+}

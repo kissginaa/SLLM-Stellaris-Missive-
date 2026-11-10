@@ -17,6 +17,10 @@ export interface Planet {
   pc: number; // 행성 종류 묶음(0 = 모름). PC_KO 참고
   className?: string; // Localized class name supplied by the game, including mod classes.
   governor: string | null; // 총독 이름. 총독이 없거나 읽지 못하면 null
+  /** 설립 뒤 개월(colony_age, 2026-10-23 행성 기념일). 모르면 없음 */ age?: number;
+  /** 총독 방침(2026-11-03): 행성 고유 번호(연결 모드가 처음 읽을 때 붙임)·맡긴 방침 번호(0 없음, src/govpolicy.ts). 옛 모드면 없음 */ idx?: number; gpol?: number; /** 숙련된 총독(맡긴 지 1년) */ gvet?: boolean;
+  /** 빈 일자리·실업자(게임 단위 그대로)·안정도 고정 보정 합(2026-11-05, Empire Dashboard Feed 에서 배운 기법). 옛 모드면 없음 */ jobs?: number; unemployed?: number; stabAdd?: number;
+  /** 행성 지정 번호(1 수도 2 광업 3 농업 4 에너지 5 연구 6 산업 7 교역 8 행정·신앙 9 요새 10 휴양 11 형벌·노예 12 도시 0 그 밖). 옛 모드면 없음 */ des?: number;
 }
 export interface PlanetList { run: number; sid: string; cls: number; empire: string; planets: Planet[] }
 
@@ -35,6 +39,29 @@ export function cleanPlanetClassName(value: unknown): string {
 }
 
 /** 게임 로그 줄을 받아 행성 목록을 모은다. 목록이 끝나면(PLANETS_END) 완성된 목록을 돌려준다. */
+/** colony_age·지정 번호(옛 모드면 없음 → 넣지 않는다). */
+function ageDes(kv: Record<string, string>): { age?: number; des?: number } {
+  const a = Number(kv.cage), d = Number(kv.des), out: { age?: number; des?: number } = {};
+  if (kv.cage !== undefined && kv.cage !== '' && Number.isFinite(a) && a >= 0) out.age = Math.round(a);
+  if (kv.des !== undefined && kv.des !== '' && Number.isInteger(d) && d >= 0 && d <= 12) out.des = d;
+  return out;
+}
+/** 행성 고유 번호·맡긴 방침(옛 모드면 없음). */
+function idxPol(kv: Record<string, string>): { idx?: number; gpol?: number; gvet?: boolean } {
+  const i = Number(kv.idx), g = Number(kv.gpol), out: { idx?: number; gpol?: number; gvet?: boolean } = {};
+  if (kv.gvet === '1') out.gvet = true;
+  if (kv.idx !== undefined && Number.isInteger(i) && i >= 1) out.idx = i;
+  if (kv.gpol !== undefined && Number.isInteger(g) && g >= 0 && g <= 8) out.gpol = g;
+  return out;
+}
+/** fj·un(-1 = 못 읽음)·sa(안정도 고정 보정). */
+function workOf(kv: Record<string, string>): { jobs?: number; unemployed?: number; stabAdd?: number } {
+  // 4.x 는 주민 단위가 커서 「1.2K」처럼 줄여 찍힐 수 있다
+  const g = (v: string | undefined): number | null => { const m = String(v ?? '').trim().replace(/,/g, '').match(/^(-?\d+(?:\.\d+)?)\s*([KkMm])?$/); return m ? Number(m[1]) * (m[2] ? (/[Kk]/.test(m[2]) ? 1e3 : 1e6) : 1) : null; };
+  const o: { jobs?: number; unemployed?: number; stabAdd?: number } = {}, fj = g(kv.fj), un = g(kv.un), sa = g(kv.sa);
+  if (fj !== null && fj >= 0) o.jobs = Math.round(fj); if (un !== null && un >= 0) o.unemployed = Math.round(un); if (sa !== null) o.stabAdd = Math.round(sa);
+  return o;
+}
 export class PlanetCollector {
   private cur: PlanetList | null = null;
   feed(m: SllmMessage): PlanetList | null {
@@ -43,7 +70,7 @@ export class PlanetCollector {
     } else if (m.kind === 'PLANET' && this.cur) {
       const name = (m.kv.name ?? '').trim();
       const className = cleanPlanetClassName(m.kv.class);
-      if (name) this.cur.planets.push({ name, ...popsOf(m.kv.pn, m.kv.pops), stability: num(m.kv.stab, -999), amenities: scale100(num(m.kv.amen, -999)), housing: scale100(num(m.kv.hous, -999)), capital: m.kv.cap === '1', pc: Number(m.kv.pc) || 0, governor: null, ...(className ? { className } : {}) });
+      if (name) this.cur.planets.push({ name, ...popsOf(m.kv.pn, m.kv.pops), stability: num(m.kv.stab, -999), amenities: scale100(num(m.kv.amen, -999)), housing: scale100(num(m.kv.hous, -999)), capital: m.kv.cap === '1', pc: Number(m.kv.pc) || 0, governor: null, ...(className ? { className } : {}), ...workOf(m.kv), ...ageDes(m.kv), ...idxPol(m.kv) });
     } else if (m.kind === 'GOV' && this.cur && this.cur.planets.length) {
       const g = (m.kv.name ?? '').trim();
       if (g) this.cur.planets[this.cur.planets.length - 1].governor = g;
@@ -95,6 +122,9 @@ export function planetFacts(p: Planet): string {
   if (p.stability !== null) f.push(`stability ${Math.round(p.stability)}` + (p.stability < 25 ? ' (low)' : p.stability >= 75 ? ' (high)' : ''));
   if (p.amenities !== null) f.push(p.amenities < 0 ? `amenities short by ${Math.round(-p.amenities)}` : `amenities surplus of ${Math.round(p.amenities)}`);
   if (p.housing !== null) f.push(p.housing < 0 ? `housing short by ${Math.round(-p.housing)}` : `housing surplus of ${Math.round(p.housing)}`);
+  if (p.unemployed !== undefined && p.unemployed > 0) f.push(`${p.unemployed} unemployed`);
+  if (p.jobs !== undefined && p.jobs > 0) f.push(`${p.jobs} open jobs`);
+  if (p.stabAdd !== undefined && p.stabAdd !== 0) f.push(`flat stability modifiers total ${p.stabAdd > 0 ? '+' : ''}${p.stabAdd}`);
   return f.length ? f.join(', ') + '.' : '(no figures could be read)';
 }
 

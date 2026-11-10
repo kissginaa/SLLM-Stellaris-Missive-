@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Emergency Council</title>
+<!--
+ 긴급회의(02 최신 확정, 2026-10-23 초안). 내각 회의실과 같은 방(배경·의자·말풍선은 cabinet-room.html 에서 그대로 옮김).
+ - 수동 소집만: 스크린에 주제를 적어 소집. 무료·재소집 제한 없음. 지난 회의는 기록에서 재개(이전 발언을 다시 만들지 않음).
+ - 자리를 누르면 그 평의원에게(지목). 아무도 고르지 않으면 전체에게 — 앱이 관련 담당 1명을 고르고, 「보충 발언」을 켜면 다른 1명이 덧붙인다.
+ - 「전원 의견 듣기」: 지금 참석자가 한 번씩. 통치자 대사는 AI 가 만들지 않는다. 총 발언 제한 없음, 플레이어가 「회의 종료」.
+ - 「결정 기록」: 통치자가 명시한 결정·약속만 남긴다(게임 실행은 아님).
+ 앱: src/features/emergency-app.ts(emState·emConvene·emResume·emSay·emDecide·emEnd·emClose). 문구는 ui(한, 영)만(언어 팩 호환).
+-->
+<style>
+ :root{--bg:#04080c;--text:#e3edf0;--dim:#8aa4ac;--hi:#5fd4e4;--gold:#d9b45a;--yes:#52b4e6;--no:#ee6a58;--abs:#8aa0a8;
+  --d-defense:#d0604e;--d-research:#7fd0e8;--d-state:#b48ae8;--d-economy:#e8c872;--d-interior:#6fd7a8;--holo:#6fe3f0;
+  --mono:"D2Coding","Cascadia Mono",Consolas,"Malgun Gothic",monospace}
+ *{box-sizing:border-box}
+ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden;user-select:none}
+ button,input{font:inherit;color:inherit}
+ /* 방: 배경이 창 전체 */
+ #room{position:fixed;inset:0;overflow:hidden;-webkit-app-region:drag}
+ #bg{position:absolute;inset:0;background:
+   radial-gradient(ellipse 30% 22% at 50% 24%,#5fd4e41c,transparent 70%),
+   radial-gradient(ellipse 80% 40% at 50% 0%,#d9b45a14,transparent 70%),
+   linear-gradient(180deg,#0e151b 0%,#0a1015 38%,#07090c 62%,#040507 100%)}
+ #bg.img{background-size:cover;background-position:center}
+ /* 초안: 바닥·벽 기둥·긴 탁자(원근) — 그림이 있으면 숨긴다 */
+ #draft{position:absolute;inset:0;pointer-events:none}
+ #bg.img + #draft{display:none}
+ #draft .pillar{position:absolute;top:0;bottom:38%;width:5%;background:linear-gradient(90deg,#0d1419,#1a242c 50%,#0d1419);box-shadow:0 0 30px #000}
+ #draft .floor{position:absolute;left:0;right:0;bottom:0;height:46%;background:repeating-linear-gradient(90deg,transparent 0 6.2%,#ffffff07 6.2% 6.4%),linear-gradient(#0b0f13,#040506)}
+ #table{position:absolute;left:50%;bottom:-4%;width:64%;height:64%;transform:translateX(-50%);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);
+   background:linear-gradient(180deg,#2b2016 0%,#3a2b1c 45%,#24190f 100%);box-shadow:inset 0 0 0 1px #6b5332}
+ #table::after{content:"";position:absolute;inset:0;clip-path:polygon(47% 0,53% 0,70% 100%,30% 100%);background:linear-gradient(180deg,#d9b45a10,#d9b45a1c)}
+ /* 정중앙 스크린 */
+ #screen{position:absolute;left:50%;top:4%;width:min(46%,760px);height:31%;transform:translateX(-50%);-webkit-app-region:no-drag;
+   border:1px solid #5fd4e466;background:linear-gradient(180deg,#071a22ee,#04121aee);box-shadow:0 0 40px #5fd4e425,inset 0 0 30px #5fd4e412;display:flex;flex-direction:column;padding:12px 16px;gap:8px;overflow:hidden}
+ #screen::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 3px)}
+ #screen .over{font:600 10px var(--mono);letter-spacing:.24em;color:var(--hi);display:flex;justify-content:space-between}
+ #plist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+ .prop{border:1px solid #5fd4e433;border-left:4px solid var(--ec,#5fd4e4);background:#0a222c;padding:7px 10px;cursor:pointer;text-align:left}
+ .prop:hover{border-color:#5fd4e488} .prop .an{font-weight:700;font-size:14px} .prop .by{color:var(--dim);font-size:11.5px}
+ .prop .rw,.cur .rw{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px} .rw span{font-size:11px;padding:1px 7px;border:1px solid #d9b45a88;color:var(--gold)}
+ .unv{font:10px var(--mono);color:var(--dim);border:1px dashed #5fd4e444;padding:0 5px;margin-left:6px}
+ .cur{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+ .cur .an{font-size:clamp(17px,1.8vw,24px);font-weight:700;color:#f2f7f8;text-shadow:0 0 12px #5fd4e455}
+ .cur .ad{color:#b9ccd1;font-size:13px} .cur .by{color:var(--dim);font-size:12px} .cur .by i{font-style:normal;color:var(--ec)}
+ #stances{display:flex;gap:10px;font:600 12px var(--mono)} #stances .y{color:var(--yes)} #stances .n{color:var(--no)} #stances .a{color:var(--abs)}
+ #other{align-self:flex-start;border:1px solid #5fd4e455;background:#5fd4e412;padding:2px 10px;font-size:11.5px;cursor:pointer}
+ /* 자리 */
+ #seats{position:absolute;inset:0;pointer-events:none}
+ .seat{position:absolute;transform:translate(-50%,0) scale(var(--s,1));transform-origin:50% 0;display:flex;flex-direction:column;align-items:center;gap:4px;width:150px;pointer-events:auto;cursor:pointer;-webkit-app-region:no-drag;text-align:center}
+ .seat .pt{position:relative;width:118px;height:140px;border-radius:6px 6px 2px 2px;overflow:hidden;display:grid;place-items:center;font-size:34px;font-weight:700;background:linear-gradient(#1c2a33,#0c1419);border:2px solid color-mix(in srgb,var(--ec) 70%,#000);box-shadow:0 10px 24px #000c}
+ .seat .pt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ .seat .plate{background:#120d08e6;border:1px solid #6b5332;padding:2px 8px;max-width:150px}
+ .seat .nm{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .seat .post{font:600 10px var(--mono);color:var(--ec);max-width:140px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+ .seat .v{font:600 10.5px var(--mono);padding:0 6px;border:1px solid;background:#000a} .v.yes{color:var(--yes)} .v.no{color:var(--no)} .v.abstain{color:var(--abs)} .seat .wait{font:10.5px var(--mono);color:var(--dim)}
+ .seat .crown{position:absolute;top:4px;right:6px;color:var(--gold);text-shadow:0 0 4px #000;z-index:2}
+ .seat.to .pt{outline:2px dashed var(--hi);outline-offset:3px}
+ .seat.talk .pt{box-shadow:0 0 0 2px #fff4,0 0 26px 8px color-mix(in srgb,var(--ec) 60%,transparent)}
+ /* 홀로그램(원격 참석): 청록 반투명·주사선·깜빡임 */
+ .seat.holo .pt{background:linear-gradient(#0a3a44aa,#04202888);border-color:var(--holo);filter:saturate(.2) sepia(.3) hue-rotate(140deg) brightness(1.25);opacity:.82;animation:holo 3.2s ease-in-out infinite}
+ .seat.holo .pt::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,#6fe3f02a 0 1px,transparent 1px 3px);mix-blend-mode:screen}
+ .seat.holo .pt img{mix-blend-mode:screen;opacity:.85}
+ .seat.holo::before{content:"";position:absolute;bottom:-6px;left:50%;width:90px;height:12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(#6fe3f0aa,transparent 70%)}
+ .seat .remote{font:600 9.5px var(--mono);color:var(--holo);letter-spacing:.06em;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+ @keyframes holo{0%,100%{opacity:.8}47%{opacity:.85}50%{opacity:.55}53%{opacity:.86}}
+ /* 말풍선 */
+ .bubble{position:absolute;z-index:6;max-width:min(440px,40vw);padding:8px 12px;background:#f2ecd9;color:#1a1a1a;border-radius:10px;font-size:13px;line-height:1.5;box-shadow:0 6px 18px #000a;transform:translate(-50%,-100%);pointer-events:none;opacity:0;transition:opacity .2s}
+ .bubble.on{opacity:1} .bubble b{display:block;font-size:11px;color:var(--bc);margin-bottom:2px}
+ .bubble.me{left:50%!important;top:auto!important;bottom:calc(var(--hud) + 14px);transform:translateX(-50%);background:#f6e7bf}
+ /* 아래 조작판 */
+ #hud{--h:var(--hud);position:fixed;left:0;right:0;bottom:0;height:var(--hud);-webkit-app-region:no-drag;display:grid;grid-template-columns:1fr auto;gap:12px;padding:10px 16px;background:linear-gradient(0deg,#03060aee,#03060acc 70%,transparent);align-items:end}
+ :root{--hud:138px}
+ /* 탁자 위 기록판: 가운데 아래, 반투명 유리. 위쪽(오래된 줄)은 흐려진다 */
+ #log{position:fixed;z-index:4;left:50%;bottom:calc(var(--hud) + 14px);width:min(42vw,700px);height:min(30vh,280px);transform:translateX(-50%);-webkit-app-region:no-drag;
+   overflow-y:auto;padding:14px 18px 10px;font-size:13.5px;line-height:1.6;user-select:text;
+   background:linear-gradient(180deg,#0a1a2433,#0a1a2499 35%,#0a1a24bb);border:1px solid #9fd6e233;border-radius:8px;backdrop-filter:blur(3px);
+   box-shadow:0 10px 30px #0006,inset 0 1px 0 #ffffff14;
+   -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22%);mask-image:linear-gradient(180deg,transparent 0,#000 22%)}
+ #log .ln{text-shadow:0 1px 3px #000c} #log{display:flex;flex-direction:column} #log > .ln:first-child{margin-top:auto} /* 새 말은 아래쪽, 탁자 가장자리 쪽에 */
+ .ln{margin:0 0 4px;white-space:pre-wrap} .ln .who{font-weight:700;margin-right:6px} .ln.me .who{color:var(--gold)} .ln.ai .who{color:var(--ec,var(--hi))} .ln.sys{color:var(--dim);font-size:11.5px}
+ #mid{display:flex;flex-direction:column;gap:6px;min-width:0}
+ #toRow{font-size:12px;color:var(--dim);display:flex;gap:8px;align-items:center} #toRow b{color:var(--text)}
+ #toAll{border:1px solid #5fd4e455;background:none;padding:0 8px;cursor:pointer}
+ .prompt{display:flex;border:1px solid #5fd4e466;background:#04121acc} .prompt input{flex:1;border:0;background:none;padding:8px 10px;outline:none} .prompt button{border:0;border-left:1px solid #5fd4e466;background:#5fd4e41a;padding:0 16px;cursor:pointer}
+ #status{font-size:12px;color:var(--gold);min-height:1.4em} #hint{font-size:11.5px;color:var(--dim)}
+ #acts{display:flex;flex-direction:column;gap:6px;align-items:stretch;align-self:center}
+ #acts button{border:1px solid #5fd4e466;background:#071820;padding:7px 14px;cursor:pointer;white-space:nowrap}
+ #apply{border-color:var(--gold)!important;color:var(--gold)} #back{color:var(--dim)}
+ button:disabled{opacity:.4;cursor:not-allowed} #acts button:hover:not(:disabled),.prompt button:hover:not(:disabled){filter:brightness(1.4)}
+ /* 위쪽 띠 */
+ #top{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:8px 14px;-webkit-app-region:drag;pointer-events:none}
+ #top > *{pointer-events:auto} #top .t{font:600 11px var(--mono);letter-spacing:.2em;color:var(--gold)} #top .sp{flex:1}
+ #top button{-webkit-app-region:no-drag;border:1px solid #ffffff22;background:#000a;padding:3px 10px;cursor:pointer;color:var(--dim)}
+ .tag{border:1px dashed var(--gold);color:var(--gold);font:10px var(--mono);padding:0 6px}
+ #cancel{position:fixed;left:50%;top:42%;transform:translateX(-50%);z-index:7;padding:10px 16px;border:1px solid var(--no);background:#2a1010ee;color:#ffd2cb;display:none}
+ #cancel.on{display:block}
+ [hidden]{display:none!important}
+ @media (max-height:700px){:root{--hud:130px} #screen{height:30%} #log{height:24vh}}
+ @media (prefers-reduced-motion:reduce){.seat.holo .pt{animation:none}}
+ /* 채택 결재(2026-10-19 사용자: 윈도 확인창이 「짜친다」 → 회의실 안 홀로그램 결재판) */
+ #seal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,#04121a99,#000c 75%);opacity:0;pointer-events:none;transition:opacity .22s}
+ #seal.on{opacity:1;pointer-events:auto}
+ #seal .card{position:relative;width:min(520px,86vw);padding:26px 30px 22px;color:var(--text);background:linear-gradient(170deg,#0b2430e6,#061219f0);border:1px solid #5fd4e466;box-shadow:0 0 40px #5fd4e433,inset 0 0 60px #5fd4e414;clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);transform:translateY(12px) scale(.97);transition:transform .25s}
+ #seal.on .card{transform:none}
+ #seal .card::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 3px,#5fd4e40a 3px 4px)}
+ #seal .k{font:600 10px var(--mono);letter-spacing:.3em;color:var(--hi);display:flex;justify-content:space-between;border-bottom:1px solid #5fd4e433;padding-bottom:8px}
+ #seal h3{margin:16px 0 4px;font-size:22px;letter-spacing:.02em;color:#fff;text-shadow:0 0 14px #5fd4e455}
+ #seal .by{font-size:12px;color:var(--dim)}
+ #seal .fx{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 6px}
+ #seal .fx span{font-size:12.5px;padding:4px 10px;border:1px solid #d9b45a77;color:var(--gold);background:#d9b45a12}
+ #seal .dur{font:11px var(--mono);color:var(--dim);letter-spacing:.06em}
+ #seal .row{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+ #seal button{font:inherit;font-size:13px;padding:9px 18px;cursor:pointer;border:1px solid #5fd4e455;background:#0a1d26;color:var(--dim)}
+ #seal button.go{border-color:var(--gold);color:#1a1408;background:linear-gradient(120deg,#e6c46a,#b68d36);font-weight:700;letter-spacing:.04em}
+ #seal button:hover{filter:brightness(1.25)}
+ #seal .stamp{position:absolute;right:30px;top:58px;font:900 13px var(--mono);letter-spacing:.2em;color:#d9b45a;border:2px solid #d9b45a;padding:4px 8px;transform:rotate(-8deg) scale(1.6);opacity:0}
+ #seal.done .stamp{opacity:.9;transform:rotate(-8deg) scale(1);transition:all .18s cubic-bezier(.2,1.6,.4,1)}
+</style>
+<style>
+ /* 긴급회의(2026-10-23 초안): 내각 회의실과 같은 방·자리, 스크린은 주제·결정, 아래는 발언 방식 */
+ #screen .topic{font-size:clamp(17px,1.8vw,24px);font-weight:700;color:#f2f7f8;text-shadow:0 0 12px #ff8a5a55;white-space:pre-wrap}
+ #screen .em-k{font:600 10px var(--mono);letter-spacing:.24em;color:#ff9a6a}
+ #screen .dec{display:flex;flex-direction:column;gap:3px;font-size:12.5px;overflow-y:auto;min-height:0}
+ #screen .dec .d{border-left:3px solid var(--gold);padding:1px 8px;color:#e9dfc4} #screen .dec .d.promise{border-left-color:var(--hi);color:#cfeff4}
+ #screen .start{display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto}
+ #screen textarea{width:100%;min-height:62px;resize:vertical;background:#04121acc;color:var(--text);border:1px solid #5fd4e466;padding:8px;font:inherit;-webkit-app-region:no-drag}
+ #screen .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center} #screen button{border:1px solid #5fd4e466;background:#071820;padding:6px 14px;cursor:pointer;color:var(--text)}
+ #screen button.go{border-color:#ff9a6a;color:#ffd9c8} #screen .past{display:flex;flex-direction:column;gap:4px} #screen .past button{text-align:left;font-size:12px}
+ #screen .note{font-size:11.5px;color:var(--dim)}
+ #modeRow{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--dim);flex-wrap:wrap} #modeRow label{display:flex;gap:4px;align-items:center;cursor:pointer}
+ #roll{border:1px solid #5fd4e455;background:none;padding:0 8px;cursor:pointer;color:var(--text)}
+ #decide{border-color:var(--gold)!important;color:var(--gold)} #end{color:#ffb7a5}
+ #pager{display:flex;gap:6px;align-items:center;font:11px var(--mono);color:var(--dim)} #pager button{border:1px solid #ffffff22;background:#000a;color:var(--dim);padding:1px 8px;cursor:pointer}
+ .ln.ruler .who{color:var(--gold)} .ln .md{font:10px var(--mono);color:var(--dim);margin-left:6px}
+ #decBox{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:#000a} #decBox.on{display:grid}
+ #decBox .card{width:min(520px,86vw);padding:20px 24px;background:linear-gradient(170deg,#0b2430f0,#061219f8);border:1px solid #5fd4e466;display:flex;flex-direction:column;gap:10px}
+ #decBox textarea{min-height:70px;background:#04121a;color:var(--text);border:1px solid #5fd4e466;padding:8px;font:inherit} #decBox .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+ #decBox button{border:1px solid #5fd4e466;background:#0a1d26;color:var(--text);padding:7px 14px;cursor:pointer} #decBox label{font-size:12.5px;display:flex;gap:6px;align-items:center}
+</style>
+<script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<link rel="stylesheet" href="window-chrome.css"><link rel="stylesheet" href="cabinet-room-art.css">
+</head><body>
+<div id="room">
+ <div id="bg"></div>
+ <div id="draft"><div class="floor"></div><div class="pillar" style="left:6%"></div><div class="pillar" style="left:22%"></div><div class="pillar" style="right:22%"></div><div class="pillar" style="right:6%"></div></div>
+ <div id="table"></div>
+ <section id="screen" aria-live="polite">
+  <div class="over"><span id="scrT"></span><span id="scrDate" data-i18n-skip></span></div>
+  <div id="scrBody" class="start"></div>
+ </section>
+ <div id="seats"></div>
+ <div class="bubble" id="bubble"></div>
+</div>
+<div id="log" aria-live="polite"></div>
+<div id="top"><span class="t" id="ttl"></span><span class="sp"></span><span id="pager"></span><span id="empire" data-i18n-skip class="t"></span><button id="x" type="button"></button></div>
+<div id="hud">
+ <div id="mid">
+  <div id="toRow"><span id="toCap"></span><b id="toWho" data-i18n-skip></b><button id="toAll" type="button" hidden></button></div>
+  <div id="modeRow"><label><input type="checkbox" id="supp"><span id="suppL"></span></label><button id="roll" type="button"></button></div>
+  <div class="prompt"><input id="q" autocomplete="off"><button id="send" type="button"></button></div>
+  <div id="status" role="status"></div>
+ </div>
+ <div id="acts"><button id="decide" type="button"></button><button id="end" type="button"></button><button id="back" type="button"></button></div>
+</div>
+<div id="decBox" role="dialog" aria-modal="true"><div class="card"><b id="decT"></b><textarea id="decQ"></textarea>
+ <div class="row" style="justify-content:flex-start"><label><input type="radio" name="dk" value="decision" checked><span id="dkD"></span></label><label><input type="radio" name="dk" value="promise"><span id="dkP"></span></label></div>
+ <div class="note" id="decN" style="font-size:11.5px;color:var(--dim)"></div>
+ <div class="row"><button id="decNo" type="button"></button><button id="decGo" type="button"></button></div></div></div>
+<script>
+ const $ = (id) => document.getElementById(id);
+ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+ const ui = (ko, en) => window.SLLMI18n?.pick ? window.SLLMI18n.pick(ko, en) : ko;
+ const dc = (d) => `var(--d-${d})`;
+ let S = null, to = null, busy = false, talking = null, POS = {}, IMG = { images: {}, defaults: {} };
+ const pic = (k, seed = '') => (k && SLLMVariant.pick(IMG.images, ['delegate:' + k, 'class:' + k], seed, IMG.defaults[k])) || null;
+ const open = () => !!(S && S.meeting && S.meeting.state === 'active');
+ { const im = new Image(); im.onload = () => { $('bg').classList.add('img'); $('bg').style.backgroundImage = `url("${im.src}")`; }; im.src = 'assets/rooms/cabinet-room-v1.png'; }
+ function statics() {
+  document.title = ui('긴급회의', 'Emergency Council');
+  $('ttl').textContent = ui('긴급회의', 'EMERGENCY COUNCIL'); $('scrT').textContent = ui('제국 평의회 · 긴급 소집', 'IMPERIAL COUNCIL · EMERGENCY SESSION');
+  $('x').textContent = '✕'; $('x').title = ui('집무실로 돌아가기 (Esc)', 'Back to the office (Esc)');
+  $('toCap').textContent = ui('발언 대상', 'Speaking to'); $('toAll').textContent = ui('전체에게', 'To everyone');
+  $('suppL').textContent = ui('다른 평의원 보충 발언 받기', 'Let another councilor add or rebut'); $('roll').textContent = ui('전원 의견 듣기', 'Hear every councilor');
+  $('q').placeholder = ui('평의회에 발언…', 'Speak to the council…'); $('send').textContent = ui('발언', 'Speak');
+  $('decide').textContent = ui('결정 기록', 'Record a decision'); $('end').textContent = ui('회의 종료', 'End meeting'); $('back').textContent = ui('‹ 집무실로 돌아가기', '‹ Back to the office');
+  $('decT').textContent = ui('통치자의 결정·약속 기록', 'Record the ruler\'s decision or promise'); $('dkD').textContent = ui('결정', 'Decision'); $('dkP').textContent = ui('약속', 'Promise');
+  $('decN').textContent = ui('회의 기록에만 남습니다. 게임에 자동으로 실행되지 않습니다.', 'Kept in the meeting record only. Nothing is carried out in the game automatically.');
+  $('decNo').textContent = ui('취소', 'Cancel'); $('decGo').textContent = ui('기록', 'Record');
+ }
+ /** 자리 계산(2026-10-19 배경 의자에 맞춤): 장관을 왼쪽·오른쪽에 번갈아(직책 순). 배경 그림(9종 모두 같은 구도)의 의자 자리를 그림 좌표(%)로 두고,
+  *  창 크기에 맞춰 background-size:cover 와 같은 방식으로 화면 좌표(px)로 바꾼다. 한쪽에 4명까지는 의자에 그대로, 더 많으면 의자 줄을 따라 사이사이에 앉는다.
+  *  CHAIRS: 왼쪽 줄, 스크린 쪽(멀리) → 내 앞(가까이). x = 의자 가운데, top·bot = 등받이 위·아래. 오른쪽은 좌우 대칭. */
+ const CHAIRS = [{ x: 25, top: 37, bot: 45 }, { x: 20.5, top: 36.5, bot: 48 }, { x: 13.8, top: 36, bot: 52 }, { x: 4.8, top: 36, bot: 57 }];
+ const BG = { w: 1672, h: 940 };
+ function chairAt(f) { // f: 0(멀리)~1(가까이), 의자 줄을 따라 보간
+  const k = Math.min(CHAIRS.length - 1.0001, Math.max(0, f * (CHAIRS.length - 1))), i = Math.floor(k), r = k - i, a = CHAIRS[i], b = CHAIRS[i + 1];
+  return { x: a.x + (b.x - a.x) * r, top: a.top + (b.top - a.top) * r, bot: a.bot + (b.bot - a.bot) * r };
+ }
+ function layoutOverflow(ms) {
+  const L = [], R = []; ms.forEach((m, i) => (i % 2 ? R : L).push(m)); POS = {};
+  const vw = window.innerWidth, vh = window.innerHeight, sc = Math.max(vw / BG.w, vh / BG.h), ox = (vw - BG.w * sc) / 2, oy = (vh - BG.h * sc) / 2;
+  const px = (xp, yp) => ({ x: ox + BG.w * sc * xp / 100, y: oy + BG.h * sc * yp / 100 });
+  const side = (row, sign) => {
+   const n = row.length, pts = row.map((m, i) => {
+    const C = CHAIRS.length, f = n <= C ? (C - n + i) / (C - 1) : i / (n - 1); // 4명 이하면 내 앞 의자부터 채운다(멀리 있는 의자는 너무 작아서)
+    const c = chairAt(f), xp = sign < 0 ? c.x : 100 - c.x, top = px(xp, c.top), bot = px(xp, c.bot);
+    return { m, f, x: Math.max(70, Math.min(vw - 70, top.x)), y: top.y, h: bot.y - top.y }; // 창이 좁아 의자가 잘리면 화면 안으로
+   });
+   for (let i = n - 2; i >= 0; i--) { // 화면 가장자리에서 밀려 겹치면 안쪽(스크린 쪽)으로 조금씩 민다
+    const near = pts[i + 1].x, minGap = 88;
+    pts[i].x = sign < 0 ? Math.max(pts[i].x, near + minGap) : Math.min(pts[i].x, near - minGap);
+   }
+   pts.forEach((p, i) => {
+    // 크기: 등받이 높이의 약 2/3, 그리고 옆자리와 겹치지 않게(자리 폭 150px 기준)
+    const gap = Math.min(...[pts[i - 1], pts[i + 1]].filter(Boolean).map((q) => Math.abs(q.x - p.x)), Infinity);
+    const s = Math.max(.5, Math.min(1, p.h / 140 * .7, gap * .95 / 150));
+    POS[p.m.lid] = { x: p.x, y: p.y, s, z: Math.round(10 + p.f * 10) };
+   });
+  };
+  side(L, -1); side(R, 1);
+ }
+ // Calibrated chair centers for each supplied image; near to far, four per side.
+ // Each tuple is [x%, head-top%, chair-seat%, maximum portrait-width%].
+ const CHAIR_MAP = {
+  standard:[[5.8,34,55,7.6],[14.5,34,49,5.8],[20.5,34,46,4],[23.9,34,44,3.2]],
+  authoritarian:[[11.8,41,59,7.5],[21,43,56,5.2],[26.4,44,54,3.8],[29.7,44.5,53,3]],
+  egalitarian:[[6.2,37,56,8],[17.5,37,51,6],[24.4,37,48,4.8],[28.7,37,46,3.6]],
+  xenophile:[[12,36,57,8],[21,35.5,51,5.7],[27,35,48,4.5],[31.6,35,46,3.5]],
+  xenophobe:[[7,35,54,7.2],[17.2,35,49,5.5],[23.4,35,47,4.2],[28.2,35,45,3.4]],
+  militarist:[[7.5,36,55,7.8],[16.6,37,51,5.5],[22.4,38,49,4.2],[26.4,38,47,3.4]],
+  pacifist:[[9,43,60,8.5],[18.8,42,56,6],[25.4,41,53,4.7],[29.1,40.8,51,3.4]],
+  spiritualist:[[10.3,41,61,8],[20,43,59,5.5],[26.6,44,57,4.3],[31,45,55,3.4]],
+  materialist:[[5.5,40,59,8],[17.6,38.5,54,6.2],[24.4,37,51,4.7],[29.2,36.5,49,3.9]]
+ };
+ const occupiedChairs = new Map();
+ function layout(ms) {
+  // Keep all members accessible for unsupported larger councils as before.
+  if (ms.length > 8) { layoutOverflow(ms); return; }
+  const ids = new Set(ms.map(m => m.lid));
+  for (const id of occupiedChairs.keys()) if (!ids.has(id)) occupiedChairs.delete(id);
+  for (const m of ms) if (!occupiedChairs.has(m.lid)) {
+   const used = new Set(occupiedChairs.values());
+   for (let slot = 0; slot < 8; slot++) if (!used.has(slot)) { occupiedChairs.set(m.lid, slot); break; }
+  }
+  const chairs = CHAIR_MAP[document.body.dataset.cabinetStyle] || CHAIR_MAP.standard;
+  const vw = innerWidth, vh = innerHeight, iw = Number(document.body.dataset.cabinetWidth) || 1672, ih = Number(document.body.dataset.cabinetHeight) || 941;
+  const scale = Math.min(vw / iw, vh / ih), w = iw * scale, h = ih * scale, ox = (vw-w)/2, oy = (vh-h)/2;
+  POS = {};
+  for (const m of ms) {
+   const slot = occupiedChairs.get(m.lid), row = Math.floor(slot/2), right = slot%2, c = chairs[row];
+   const x = ox+w*(right ? 100-c[0] : c[0])/100;
+   const size = Math.min(h*(c[2]-c[1])/100/140, w*c[3]/100/118);
+   // Bottom of portrait sits on the chair's seat; captions extend onto the table.
+   POS[m.lid] = {x, y:oy+h*c[2]/100-140*size, s:size, z:20-row};
+  }
+ }
+
+ function seatHtml(m) {
+  const p = POS[m.lid], img = pic(S.playerCls, m.name);
+  return `<div class="seat${m.away ? ' holo' : ' real'}${talking === m.lid ? ' talk' : ''}${to === m.lid ? ' to' : ''}" role="button" tabindex="0" data-l="${m.lid}" aria-label="${esc(m.name)}" style="left:${p.x}px;top:${p.y}px;--s:${p.s};z-index:${p.z};--ec:${dc(m.domain)}">
+   <div class="pt">${img ? `<img src="${esc(img)}" alt="">` : esc([...m.name][0] || '?')}</div>
+   <div class="plate"><div class="nm" data-i18n-skip title="${esc(m.name)}">${esc(m.name)}</div><div class="post" data-i18n-skip>${esc(m.title)} · Lv ${m.lv}</div></div>
+   ${m.away ? `<div class="remote" title="${esc(m.away)}"><span>${ui('원격 참석', 'Remote')}</span> · <span data-i18n-skip>${esc(m.away)}</span></div>` : ''}</div>`;
+ }
+ function drawSeats() {
+  layout(S.members);
+  $('seats').innerHTML = S.members.map(seatHtml).join('');
+  for (const el of $('seats').querySelectorAll('.seat')) { el.onclick = () => setTo(Number(el.dataset.l)); el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTo(Number(el.dataset.l)); } }; }
+  $('pager').innerHTML = S.pages > 1 ? `<button type="button" id="pgP">‹</button><span>${ui('자리', 'Seats')} ${S.page + 1}/${S.pages}</span><button type="button" id="pgN">›</button>` : '';
+  if (S.pages > 1) { $('pgP').onclick = () => window.sllm.emPage(Math.max(0, S.page - 1)).then(render); $('pgN').onclick = () => window.sllm.emPage(Math.min(S.pages - 1, S.page + 1)).then(render); }
+ }
+ function drawScreen() {
+  const b = $('scrBody'); $('scrDate').textContent = S.date || '';
+  if (open()) {
+   const m = S.meeting; b.className = 'cur';
+   b.innerHTML = `<div class="em-k">${ui('긴급 의제', 'EMERGENCY AGENDA')}${m.resumed ? ' · ' + ui('재개', 'RESUMED') : ''}</div><div class="topic" data-i18n-skip>${esc(m.topic)}</div>
+    <div class="note">${ui(`${m.openedOn} 소집 · 위기 설명은 통치자의 말이며 게임이 확인한 사실과 구분됩니다.`, `Convened ${m.openedOn} · the crisis description is the ruler's own words, kept apart from confirmed game facts.`)}</div>
+    <div class="dec">${m.decisions.map((d) => `<div class="d ${d.kind}"><b>${d.kind === 'promise' ? ui('약속', 'Promise') : ui('결정', 'Decision')}</b> <span data-i18n-skip>${esc(d.text)}</span></div>`).join('')}</div>`;
+   return;
+  }
+  b.className = 'start';
+  b.innerHTML = `<div class="em-k">${ui('긴급회의 소집', 'CONVENE AN EMERGENCY SESSION')}</div>
+   <textarea id="topic" placeholder="${esc(ui('무엇을 논의합니까? 위기 상황을 직접 적어 주세요.', 'What must be discussed? Describe the crisis in your own words.'))}"></textarea>
+   <div class="row"><button type="button" class="go" id="conv">${ui('소집', 'Convene')}</button><span class="note">${ui(`평의원 ${S.total}명 · 비용 없음 · 언제든 다시 소집할 수 있습니다 · 회의 중에는 게임을 일시정지해 두세요(앱이 멈추지 않습니다)`, `${S.total} councilor(s) · no cost · can be convened again anytime · pause the game during the session (the app will not pause it)`)}</span></div>
+   ${S.past.length ? `<div class="note">${ui('지난 회의 이어서 하기', 'Continue a past meeting')}</div><div class="past">${S.past.map((p) => `<button type="button" data-id="${esc(p.id)}"><span data-i18n-skip>${esc(p.openedOn)} · ${esc(p.topic)}</span>${p.decisions ? ' · ' + ui(`결정 ${p.decisions}`, `${p.decisions} decision(s)`) : ''}</button>`).join('')}</div>` : ''}`;
+  $('conv').onclick = async () => { const t = $('topic').value.trim(); if (!t) { $('topic').focus(); return; } const r = await window.sllm.emConvene(t); if (r && !r.ok) $('status').textContent = r.error || ''; if (r && r.state) render(r.state); };
+  for (const el of b.querySelectorAll('.past button')) el.onclick = async () => { const r = await window.sllm.emResume(el.dataset.id); if (r && !r.ok) $('status').textContent = r.error || ''; if (r && r.state) render(r.state); };
+ }
+ function drawLog() {
+  const lg = $('log'), atEnd = lg.scrollTop + lg.clientHeight >= lg.scrollHeight - 8, byL = Object.fromEntries(S.members.map((m) => [m.lid, m]));
+  const md = { supplement: ui('보충', 'adds'), roll_call: ui('전원 의견', 'roll call') };
+  lg.innerHTML = (S.meeting ? S.meeting.turns : []).map((t) => `<div class="ln ${t.ruler ? 'ruler' : 'ai'}" style="${byL[t.lid] ? '--ec:' + dc(byL[t.lid].domain) : ''}"><span class="who" data-i18n-skip>${esc(t.who)}</span><span data-i18n-skip>${esc(t.text)}</span>${md[t.mode] && !t.ruler ? `<span class="md">${md[t.mode]}</span>` : ''}</div>`).join('');
+  if (atEnd) lg.scrollTop = lg.scrollHeight;
+ }
+ function render(st) {
+  if (st) S = st; if (!S) return; if (to !== null && !S.members.some((m) => m.lid === to)) to = null;
+  $('empire').textContent = S.empire || ''; drawScreen(); drawSeats(); drawLog(); updTo();
+  const off = !open() || busy || S.busy || !!talking;
+  $('send').disabled = off; $('q').disabled = !open(); $('roll').disabled = off; $('supp').disabled = !open() || to !== null;
+  $('decide').disabled = !open() || busy; $('end').disabled = !open() || busy;
+  if (!open() && !busy) $('status').textContent = $('status').textContent || '';
+ }
+ /** 한 사람이 말한다: 그 자리 위 말풍선(내 말은 화면 아래 가운데, 1인칭). */
+ async function speak(who, name, color, text) {
+  talking = who; if (S) render(S);
+  const bb = $('bubble'), p = who === 'ruler' ? null : POS[who];
+  if (who !== 'ruler' && !p) { talking = null; return; }
+  bb.className = 'bubble' + (p ? '' : ' me'); bb.style.setProperty('--bc', color);
+  if (p) { bb.style.left = Math.min(window.innerWidth - 230, Math.max(230, p.x)) + 'px'; bb.style.top = Math.max(150, p.y - 8) + 'px'; } else { bb.style.left = ''; bb.style.top = ''; }
+  bb.innerHTML = `<b data-i18n-skip>${esc(name)}</b><span data-i18n-skip></span>`; const span = bb.lastChild;
+  requestAnimationFrame(() => bb.classList.add('on'));
+  const chars = [...text], step = Math.max(12, Math.min(38, 2600 / Math.max(chars.length, 1)));
+  for (let i = 1; i <= chars.length; i++) { if (!S || (who !== 'ruler' && !S.members.some((m) => m.lid === who))) { bb.classList.remove('on'); talking = null; return; } span.textContent = chars.slice(0, i).join(''); await new Promise((r) => setTimeout(r, step)); }
+  await new Promise((r) => setTimeout(r, Math.min(2200, 700 + chars.length * 12)));
+  bb.classList.remove('on'); await new Promise((r) => setTimeout(r, 200));
+  talking = null; if (S) render(S);
+ }
+ function setTo(lid) { if (!open()) return; to = to === lid ? null : lid; render(); }
+ function updTo() { const m = to !== null && S.members.find((x) => x.lid === to); $('toWho').textContent = m ? m.name : ui('전체', 'Everyone'); $('toAll').hidden = !m; }
+ $('toAll').onclick = () => setTo(to);
+ async function send(rollCall) {
+  const text = $('q').value.trim(); if ((!text && !rollCall) || busy || talking || !open()) return;
+  busy = true; $('status').textContent = ''; render();
+  try {
+   $('q').value = '';
+   const said = text ? speak('ruler', ui('통치자', 'Ruler'), 'var(--gold)', text) : Promise.resolve();
+   const r = await window.sllm.emSay({ text, to, supplement: $('supp').checked, rollCall: !!rollCall });
+   await said;
+   if (!r || !r.ok) { $('status').textContent = r?.error || ui('발언을 처리하지 못했습니다.', 'Could not process what you said.'); if (r && r.state) S = r.state; return; }
+   if (r.state) S = r.state;
+   for (const rp of r.replies || []) { const m = S.members.find((x) => x.lid === rp.lid); if (m) await speak(m.lid, `${m.name} · ${m.title}`, dc(m.domain), rp.say); }
+  } catch (e) { $('status').textContent = e.message; } finally { busy = false; render(); $('q').focus(); }
+ }
+ $('send').onclick = () => send(false); $('roll').onclick = () => send(true);
+ $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) send(false); });
+ $('decide').onclick = () => { $('decQ').value = ''; $('decBox').classList.add('on'); setTimeout(() => $('decQ').focus(), 20); };
+ $('decNo').onclick = () => $('decBox').classList.remove('on');
+ $('decGo').onclick = async () => { const t = $('decQ').value.trim(); if (!t) return; const kind = document.querySelector('input[name=dk]:checked').value; const r = await window.sllm.emDecide({ text: t, kind }); $('decBox').classList.remove('on'); if (r && !r.ok) $('status').textContent = r.error || ''; if (r && r.state) render(r.state); };
+ $('end').onclick = async () => { const r = await window.sllm.emEnd(); to = null; $('status').textContent = ui('회의를 마쳤습니다. 기록은 남아 있고 언제든 이어서 할 수 있습니다.', 'The meeting is over. The record is kept and can be continued anytime.'); if (r && r.state) render(r.state); };
+ $('back').onclick = $('x').onclick = () => window.sllm.emClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('decBox').classList.contains('on')) $('decBox').classList.remove('on'); else window.sllm.emClose(); } });
+ window.addEventListener('resize', () => { if (S && !talking) render(); });
+ statics();
+ document.addEventListener('sllm-language', () => { statics(); if (S) render(); });
+ window.sllm.onEmState((st) => { if (st && !talking) render(st); else if (st) S = st; });
+ window.sllm.onTheme((t) => applyTheme(t.theme, t.custom));
+ window.sllm.launcherState().then((s) => applyTheme(s.theme, s.custom));
+ window.sllm.getImageState().then((st) => { IMG = st || IMG; }, () => {}).then(() => window.sllm.emState()).then((st) => { if (st) render(st); });
+</script>
+<script src="cabinet-room-art.js"></script>
+</body></html>

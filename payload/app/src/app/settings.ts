@@ -23,6 +23,8 @@ import { ctx } from './ctx';
 /** 의회 발언권 횟수: 0 이면 자동(참석 제국 수), 아니면 1~200. */
 export const clampTurns = (v: unknown): number => { const n = Math.round(Number(v)); return Number.isFinite(n) && n >= 1 ? Math.min(100, n) : 20; };
 export const COUNCIL_MAX_SPEAKERS = 8; // 한 번의 발언에 답하는 최대 제국 수(ui/council.html MAX_SPEAKERS 와 같게)
+/** 찬반 팀당 발언 수 1~4(양쪽 합쳐 한 번에 답하는 최대 8개국을 넘지 않게). 이상하면 2. */
+export const clampTeamTurns = (v: unknown): number => { const n = Math.round(Number(v)); return Number.isFinite(n) && n >= 1 ? Math.min(4, n) : 2; };
 export const clampSlots = (v: unknown): number => { const n = Math.round(Number(v)); return Number.isFinite(n) && n >= 1 ? Math.min(40, n) : 0; }; // 발언권 추첨 횟수. 같은 나라가 여러 번 뽑힐 수 있어 답하는 나라 수(8)보다 크게 둔다
 export type DevCouncilVote = 'normal' | 'for' | 'against';
 export const devVoteMode = (v: unknown): DevCouncilVote => v === 'for' || v === 'against' ? v : 'normal';
@@ -38,13 +40,27 @@ export interface Settings {
   modDir: string | null;
   setupDone: boolean;
   mediaPrefs: MediaPrefs;
-  councilMode: 'weighted' | 'equal';
+  /** 의회 발언권(2026-10-29): teams = 찬성 2·반대 2 고정(팀 안은 가중치 비율, 기본) · weighted = 의석 비율 추첨 · equal = 한 번씩 */ councilMode: 'teams' | 'weighted' | 'equal';
+  /** 2 이상이면 찬반 팀 기본값으로 한 번 옮긴 뒤 */ councilModeV?: number;
+  /** 찬반 팀 방식에서 한 발언에 답하는 팀당 제국 수(1~4, 기본 2 — 플레이어가 정함, 2026-10-29) */ councilTeamTurns: number;
   councilSlots: number;
   councilTurns: number;
   speechTurns: number;
   radioStation: string;
   devMode: boolean;
   mailEnabled: boolean;
+  /** 감정 기억: 원한·야망이 아주 강한 AI 가 실제로 선전포고(알파 11, 기본 꺼짐) */
+  emotionWar?: boolean;
+  /** 아이 수 제한 풀기(배우자마다 2명·모두 8명 상한을 없앰, 기본 꺼짐) */
+  childLimitOff?: boolean;
+  /** 국정감사(12년마다 의회 질의, 하드코어 — 2026-11-03, 기본 꺼짐) */
+  auditOn?: boolean;
+  /** 불신임(지지율이 석 달 기준 아래면 의회가 불신임안, 하드코어 — 2026-11-03, 기본 꺼짐) */
+  noconfOn?: boolean;
+  /** 게임을 켜면 SLLM 도 자동으로 켜기(Windows 시작 프로그램에 작은 감시기 등록, 기본 꺼짐 — 2026-10-30) */
+  gameWatcher?: boolean;
+  /** 가족 사건 알림(민간인 자녀의 삶): 모두 / 큰 사건만 / 끄기(신문에만) — 2026-10-28 */
+  familyNotify?: 'all' | 'big' | 'off';
   keepOnTop: boolean;
   autoHide: boolean;
   dock: DockMode;
@@ -70,12 +86,15 @@ export interface Settings {
   fadeOpacity: number;
   saveDir: string | null;
   gameDir: string | null;
+  /** 모드 초상화 자동 그리기(2026-10-26). 없으면 켜짐. */
+  modPortraits?: boolean;
   pauseGate: boolean;
   aiEveryMin: number;
   gossipOn: boolean;
   extraOn: boolean; // 호외(큰 사건 속보) 내기
   extraMax: number; // 한 해에 낼 호외 수 상한(1~12)
   papersOn: boolean[];
+  newsSubPicked: boolean; // 신문 구독(2026-11-10): 집무실 홈페이지에서 처음 구독할 신문사를 골랐는지
   aiMode: 'player2' | 'custom';
   aiActive: string;
   aiConns: AiConn[];
@@ -95,13 +114,21 @@ export const settings: Settings = {
   modDir: null,
   setupDone: false,
   mediaPrefs: sanitizeMedia(null),
-  councilMode: 'weighted',
+  councilMode: 'teams',
+  councilModeV: 2,
+  councilTeamTurns: 2,
   councilSlots: 0,
   councilTurns: 20,
   speechTurns: 20,
   radioStation: 'stn',
   devMode: false,
   mailEnabled: false,
+  emotionWar: false,
+  childLimitOff: false,
+  auditOn: false,
+  noconfOn: false,
+  gameWatcher: false,
+  familyNotify: 'all',
   keepOnTop: true,
   autoHide: true,
   dock: 'right',
@@ -132,6 +159,7 @@ export const settings: Settings = {
   extraOn: true,
   extraMax: 1,
   papersOn: [true, true, true],
+  newsSubPicked: false,
   aiMode: 'player2',
   aiActive: '',
   aiConns: [],
@@ -168,9 +196,11 @@ export function loadSettingsFile(): void { // 설정 파일 읽기 + 값 정리.
   settings.radioStation = radioStation(settings.radioStation).id;
   settings.devMode = settings.devMode === true;
   settings.councilSlots = clampSlots(settings.councilSlots);
+  settings.councilTeamTurns = clampTeamTurns(settings.councilTeamTurns);
   settings.speechTurns = clampSpeechTurns(settings.speechTurns);
   settings.councilTurns = clampTurns(settings.councilTurns);
-  settings.councilMode = settings.councilMode === 'equal' ? 'equal' : 'weighted';
+  if (!((settings.councilModeV ?? 0) >= 2)) { settings.councilMode = 'teams'; settings.councilModeV = 2; } // 2026-10-29: 기본을 찬반 2:2 로 한 번 옮긴다(이후 사용자가 고른 값은 그대로)
+  settings.councilMode = settings.councilMode === 'equal' || settings.councilMode === 'weighted' ? settings.councilMode : 'teams';
   if (!okFrac(settings.dockPos)) settings.dockPos = null;
   settings.dockLock = settings.dockLock !== false; settings.forceOverlay = settings.forceOverlay === true || (settings as any).devOverlayPreview === true; delete (settings as any).devOverlayPreview;
   if (!settings.freePos || !Number.isFinite(settings.freePos.x) || !Number.isFinite(settings.freePos.y)) settings.freePos = null;
@@ -190,6 +220,7 @@ export function loadSettingsFile(): void { // 설정 파일 읽기 + 값 정리.
   settings.extraOn = settings.extraOn !== false;
   settings.extraMax = (typeof settings.extraMax === 'number' && settings.extraMax >= 1 && settings.extraMax <= 12) ? Math.round(settings.extraMax) : 1;
   settings.papersOn = PAPERS.map((_, i) => !Array.isArray(settings.papersOn) || settings.papersOn[i] !== false);
+  settings.newsSubPicked = settings.newsSubPicked === true;
   settings.aiMode = settings.aiMode === 'custom' ? 'custom' : 'player2';
   settings.aiConns = (Array.isArray(settings.aiConns) ? settings.aiConns : [])
     .filter((c) => c && typeof c.id === 'string' && c.id)

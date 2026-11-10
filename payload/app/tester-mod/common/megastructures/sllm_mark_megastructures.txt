@@ -1,0 +1,27 @@
+# SLLM 지도 이름표(알파 11, 2026-10-25, DTP dtp_mark_mega 기법). 모양 없는 구조물을 성계 별 자리에 세워, 이름만 은하 지도에 뜨게 한다.
+# 짓거나 고를 수 없다(potential·possible = no). 세우고 치우는 것은 scripted_effects/sllm_map_marks.txt.
+sllm_mark_aid = {
+	entity = "invisible_turret_entity"
+	portrait = "GFX_megastructure_construction_background"
+	show_in_outliner = no
+	place_entity_on_planet_plane = no
+	potential = { always = no }
+	possible = { always = no }
+}
+sllm_mark_war = {
+	entity = "invisible_turret_entity"
+	portrait = "GFX_megastructure_construction_background"
+	show_in_outliner = no
+	place_entity_on_planet_plane = no
+	potential = { always = no }
+	possible = { always = no }
+}
+# 대화에서 언급된 성계(성계 번호표로 가리킴, 1년 뒤 앱이 치움)
+sllm_mark_talk = {
+	entity = "invisible_turret_entity"
+	portrait = "GFX_megastructure_construction_background"
+	show_in_outliner = no
+	place_entity_on_planet_plane = no
+	potential = { always = no }
+	possible = { always = no }
+}

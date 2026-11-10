@@ -1,0 +1,6 @@
+# SLLM 공동 대응 협약(알파 11, 2026-10-25): 협약을 맺은 양쪽 모두. 위기가 끝나면 앱이 지운다. 화력 +5%(사용자 확정).
+sllm_crisis_pact = {
+	icon = "gfx/interface/icons/modifiers/mod_navy_size_add.dds"
+	icon_frame = 1
+	ship_fire_rate_mult = 0.05
+}

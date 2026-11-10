@@ -1,0 +1,40 @@
+# SLLM 종속국 통치(2026-11-04).
+# sllm_vc.1 — 매달: 조공 감면을 승인한 종속국에 에너지를 실제로 돌려준다(감면 중일 때만 돈다).
+# sllm_vc.2 — 계약 재협상이 받아들여졌을 때(바닐라 on_agreement_change_accepted, THIS = 계약, owner = 종주국, target = 종속국):
+#             종주국이 플레이어면 새 조건 아래 종속국의 월 충성도 방향을 앱에 알린다 → 종속국 통치자가 반응 서신을 보낸다.
+namespace = sllm_vc
+
+country_event = {
+	id = sllm_vc.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_country_flag = sllm_vc_relief_any
+	}
+	immediate = {
+		sllm_vc_monthly = yes
+	}
+}
+
+event = {
+	id = sllm_vc.2
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		if = {
+			limit = {
+				owner = { is_ai = no }
+				target = { is_variable_set = sllm_idx }
+			}
+			target = {
+				if = { limit = { has_monthly_loyalty >= 2 } set_variable = { which = sllm_vc_ml value = 2 } }
+				else_if = { limit = { has_monthly_loyalty >= 0.5 } set_variable = { which = sllm_vc_ml value = 1 } }
+				else_if = { limit = { has_monthly_loyalty > -0.5 } set_variable = { which = sllm_vc_ml value = 0 } }
+				else_if = { limit = { has_monthly_loyalty > -2 } set_variable = { which = sllm_vc_ml value = -1 } }
+				else = { set_variable = { which = sllm_vc_ml value = -2 } }
+				log = "SLLM:VCAGR/;/idx=\\[This.sllm_idx]/;/ml=\\[This.sllm_vc_ml]/;/date=\\[GetDate]"
+			}
+		}
+	}
+}

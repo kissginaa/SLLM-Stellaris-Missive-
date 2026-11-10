@@ -1,0 +1,8 @@
+﻿l_english:
+ sllm_edict_halt_fleetorder:0 "SLLM: Halt All Automated Operations"
+ sllm_edict_halt_fleetorder_desc:0 "Emergency switch. Immediately stops every SLLM automated fleet operation and returns fleets to manual control, without opening the app."
+ sllm_edict_halt_budget:0 "SLLM: Suspend All Budgets"
+ sllm_edict_halt_budget_desc:0 "Emergency switch. Immediately suspends every budget line approved at the SLLM budget meeting. No further monthly payments are taken."
+ opinion_sllm_tmp_meddling:0 "Meddled in Our Foreign Policy"
+ # 2026-11-05: 게임은 호감 수정자 이름 그대로를 문구 키로 쓴다(opinion_ 붙은 키는 안 읽힘) — 같은 문구를 이름 키로도
+ sllm_tmp_meddling:0 "Meddled in Our Foreign Policy"

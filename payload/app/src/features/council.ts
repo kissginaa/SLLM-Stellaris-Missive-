@@ -1,6 +1,6 @@
 // A-00b 6번: 은하 의회(앱 쪽) — 안건 알림·회원 정보 수집(RESOLUTION·RESKEY·GCMEMBER·GCPOS·GCFORCE·GCSTATE), 회의 창, 토론, 강제 결정.
 // 2026-10-15 main.ts에서 옮김(동작 변경 없음) + A-16 연결: 회의 창을 열 때 councilState.open, 토론 결과마다 noteDebate,
-// 강제 결정 맨 앞에서 check(미달·모르는 회의·불완전 정보면 state 'refused'로 거절, 게임에 아무것도 안 보냄), 창을 닫을 때 clear.
+// 강제 결정 맨 앞에서 check(모르는 회의면 state 'refused'로 거절, 게임에 아무것도 안 보냄 — 80%·정보 완전성 잠금은 2026-10-29에 없앰), 창을 닫을 때 clear.
 // 라디오 사건(EVT)도 원래 onAgendaSignal 안에서 처리하던 것을 그대로 옮겼다(SLOT.AGENDA).
 import { BrowserWindow, ipcMain, screen } from 'electron';
 import * as path from 'path';
@@ -23,7 +23,10 @@ import { radio, radioAired } from './radio-app';
 import { ctx } from '../app/ctx';
 import { pick, locFolder } from './settings-ui';
 import { isXenophobe, rulerLibraryItem } from './portrait-lib-app';
+import { scenarioLocked } from './scenario-locks-app'; // 시나리오에서는 은하 의회를 치운다(2026-11-06)
 
+/** 앱이 여는 비(非)게임 안건(국제 대회 개최지 선정 회의, 2026-10-31): 설득 결과를 받아 7월 투표에 반영. 키가 sllm_host_ 로 시작. */
+export const councilHooks: { debated: (key: string, moves: Array<{ gi: number; delta: number }>) => void } = { debated: () => {} };
 export const council = {
   win: null as BrowserWindow | null,
   /** 표결 중인 안건(알림·트레이 메뉴·회의 창이 쓴다) */
@@ -50,6 +53,7 @@ export const joinLabel = (): string => pick(JOIN_LABEL, 'Join the resolution mee
 export function clearAgenda() { if (agendaTimer) { clearTimeout(agendaTimer); agendaTimer = null; } council.pendingAgenda = null; ctx.refreshTray(); }
 export function announceAgenda() {
   const a = council.pendingAgenda; if (!a) return;
+  if (scenarioLocked('galcouncil')) { clearAgenda(); return; } // 회랑의 삼파전: 은하 의회 없음
   ctx.refreshTray();
   { const t = resolutionText(a.key, ctx.flagProv.game(), locFolder())?.title ?? agendaTitle(a.key), pr = a.proposer || '?', tg = a.target ? pick(', 대상: ', ', target: ') + a.target : '';
     ctx.notify({ kind: 'event', title: pick('은하 공동체 안건', 'Galactic Community resolution'), body: pick(`${t}이(가) 표결에 올랐습니다 (제안: ${pr}${tg})`, `${t} is up for a vote (proposed by ${pr}${tg})`), action: joinLabel() }); }
@@ -123,6 +127,7 @@ export async function readCouncilWithRetry(a: AgendaInfo, setText: (t: string) =
 }
 export async function openCouncilLive() {
   const a = council.pendingAgenda; if (!a) return;
+  if (scenarioLocked('galcouncil')) { clearAgenda(); return; }
   if (ctx.gameRunning) {
     const release = holdBusy(pick('의회를 소집하는 중…', 'Convening the council…'));
     try { const ok = await readCouncilWithRetry(a, setBusyMsg); if (!ok) ctx.toUi('event', pick('의회 정보를 끝내 완전히 읽지 못했습니다. 강제 결정은 잠기고 토론만 가능합니다. 회의 창의 "정보 다시 읽기"로 다시 시도할 수 있습니다.', 'Could not fully read the council. Forced decisions are locked and only debate is available. Try again with "Re-read information" in the meeting window.')); }
@@ -187,17 +192,18 @@ export function registerCouncil(router: LogRouter): void {
       if (!speakers.length) return { ok: false, error: pick('답할 제국이 없습니다', 'No empire is left to answer') };
       if (settings.devMode && settings.devCouncilNoAi) councilState.noteDebate(ctx.curSaveId, councilState.view()?.key ?? '', req?.dir === 'a' ? 'a' : 'f', [], devFixedVotes()); // A-16: AI 없이 진행해도 플레이어가 민 방향은 기록
       if (settings.devMode && settings.devCouncilNoAi) return { ok: true, replies: speakers.map((s) => ({ id: s.id, text: s.stance === 'f' ? pick('이 안건에 찬성합니다.', 'We support this resolution.') : s.stance === 'a' ? pick('이 안건에 반대합니다.', 'We oppose this resolution.') : pick('판단을 유보하겠습니다.', 'We reserve judgement.'), shift: 0, delta: 0, reason: pick('개발자 모드 · AI 호출 생략', 'Developer mode · AI call skipped') })) };
-      const r: DebateReq = { title: String(req.title || '').slice(0, 120), desc: String(req.desc || '').slice(0, 1200), proposer: String(req.proposer || '').slice(0, 60), target: String(req.target || '').slice(0, 60), player: ctx.playerName, dir: req.dir === 'a' ? 'a' : 'f', text: String(req.text || '').slice(0, 600), repeat: !!req.repeat, speakers, history: Array.isArray(req.history) ? req.history.slice(-8).map((h: unknown) => String(h).slice(0, 200)) : [], tally: { f: Number(tally.f) || 0, a: Number(tally.a) || 0, u: Number(tally.u) || 0 } };
+      const r: DebateReq = { title: String(req.title || '').slice(0, 120), desc: String(req.desc || '').slice(0, 1200), proposer: String(req.proposer || '').slice(0, 60), target: String(req.target || '').slice(0, 60), player: ctx.playerName, dir: req.dir === 'a' ? 'a' : 'f', text: String(req.text || '').slice(0, 600), repeat: !!req.repeat, ...(req.to ? { to: String(req.to).slice(0, 60) } : {}), speakers, history: Array.isArray(req.history) ? req.history.slice(-8).map((h: unknown) => String(h).slice(0, 200)) : [], tally: { f: Number(tally.f) || 0, a: Number(tally.a) || 0, u: Number(tally.u) || 0 } };
       const ids = speakers.map((x: { id: number }) => x.id);
       const logRaw = (tag: string, raw: string) => { writeRawDiagnostic('sllm_councilraw.log',new Date().toISOString()+' '+tag+'\n'+raw+'\n'); };
       const replies = await ctx.ai.session(async (chat) => { // 재요청까지 같은 연결로
-        let raw = await chat(debateMessages(r), { maxTokens: 3000, json: true });
+        let raw = await chat(debateMessages(r), { maxTokens: 4500, json: true }); // 2026-11-04: 발언이 2~4문장으로 길어짐
         let rp = parseDebate(raw, ids);
-        if (!rp.length) { logRaw('1차 해석 실패', raw); raw = await chat(debateMessages(r), { maxTokens: 3000 }); rp = parseDebate(raw, ids); if (!rp.length) logRaw('2차 해석 실패', raw); }
+        if (!rp.length) { logRaw('1차 해석 실패', raw); raw = await chat(debateMessages(r), { maxTokens: 4500 }); rp = parseDebate(raw, ids); if (!rp.length) logRaw('2차 해석 실패', raw); }
         return rp;
       });
       if (!replies.length) return { ok: false, error: pick('답을 해석하지 못했습니다(sllm_councilraw.log 참고)', 'Could not parse the replies (see sllm_councilraw.log)') };
       const out = withDeltas(replies, speakers, r.dir, r.repeat);
+      const hostKey = String(req.hostKey || ''); if (/^sllm_host_(oly|worlds)_\d+$/.test(hostKey)) { const giOf = new Map(sp.map(recordOf).map((x) => [Number(x.id), Number(x.gi)])); try { councilHooks.debated(hostKey, out.map((o) => ({ gi: giOf.get(o.id) ?? -9, delta: Number(o.delta) || 0 })).filter((x) => Number.isSafeInteger(x.gi) && x.gi >= 0)); } catch (e) { logDiagnostic('warn', 'council.host_hook_failed', { error: String(e) }); } } // 개최지 선정 회의(2026-10-31)
       councilState.noteDebate(ctx.curSaveId, councilState.view()?.key ?? '', r.dir, out, devFixedVotes()); // A-16: 화면과 같은 설득 변화를 앱 집계에도
       return { ok: true, replies: out };
     } catch (e) { return { ok: false, error: (e as Error).message }; }
@@ -221,7 +227,7 @@ export function registerCouncil(router: LogRouter): void {
   });
   async function forceResolution(key: unknown, pass: unknown): Promise<{ ok: boolean; state: string; error?: string }> {
     const k = String(key || ''), isPass = pass === true, sid = ctx.curSaveId;
-    { // A-16: 게임에 무엇이든 보내기 전에 앱이 들고 있는 집계로 80%를 다시 확인한다(화면 판단과 다르면 보내지 않음)
+    { // A-16: 게임에 무엇이든 보내기 전에 지금 이 회의(세이브·안건)가 맞는지 확인한다. 80%·정보 완전성 잠금은 2026-10-29 사용자 결정으로 없앰
       const chk = councilState.check(ctx.curSaveId, k, isPass, settings.devMode ? { vote: settings.devCouncilVote, percent: settings.devCouncilPercent } : null);
       if (!chk.ok) { logDiagnostic('warn', 'council.force.refused', { key: k, pass: isPass, reason: chk.reason, pct: chk.pct }); return { ok: false, state: 'refused', error: chk.reason }; }
     }

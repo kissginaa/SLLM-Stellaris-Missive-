@@ -1,0 +1,315 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 12.2 — 함대 자동 작전 · 포로와 전쟁범죄 · 종속국 통치 · 예산 회의 · 갤럭틱 포럼 · 게임 4.5.3 대응 (0.1.0-alpha.12.2)[/h1]
+
+알파 12.1 이후의 업데이트입니다. 함대 사령부에 [b]자동 작전·합동 작전[/b]과 [b]포로·악명[/b]이 생겼고, 종속국을 다루는 방법이 크게 늘었습니다. 집무실에는 [b]예산 회의 · 외교 노선 · 일정표 · 행성 이름 짓기[/b], 인터넷에는 국제 게시판 [b]갤럭틱 포럼[/b]이 들어왔습니다. 스텔라리스 [b]4.5.3[/b]에서도 게임 연결이 다시 작동합니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]🔌 스텔라리스 4.5.3 대응[/h2]
+[list]
+[*]4.5.3 업데이트 뒤 「현재 게임 버전은 DLL 연결이 지원하지 않습니다」로 막히던 게임 연결을 [b]4.5.3용으로 다시 만들었습니다[/b].
+[*][b]이제 게임 패치 때마다 설치기를 다시 깔 필요가 없습니다.[/b] 앱 업데이트로 새 연결 파일을 받으면, 게임이 꺼져 있을 때 앱이 게임 폴더의 연결 파일을 직접 바꿉니다(우리가 넣은 파일일 때만, 바꾼 뒤 확인하고 실패하면 되돌림).
+[/list]
+
+[h2]⚓ 함대 자동 작전 · 합동 작전 (함대 사령부)[/h2]
+[list]
+[*][b]자동 작전[/b]: 전쟁 중 함대가 스스로 적 함대·성계를 찾아 싸웁니다. 해군 작전 최대 3개, 피해를 입으면 수리하러 돌아오고, 직접 지휘하고 싶은 함대는 빼 둘 수 있습니다.
+[*][b]작전 지시[/b]: 제독에게 말로 지시하면(AI) 전력비(1.0~1.6배)·수리 기준(40~80%)·작전 수·작전 반경(12·25·40칸)·우선 목표 성계로 바뀌고, 제독이 무전으로 답합니다. 새 조건 3가지: [b]적 요새 피하기 · 우리 영토 안에서만 · 끝까지 추격[/b].
+[*]작전 무전은 틀 문장이고, [b]작전 결과 보고서[/b]와 [b]무전에 답하기[/b]만 누를 때 AI를 씁니다.
+[*][b]합동 작전[/b]: 연방·방위 조약·같은 전쟁의 우방에게 함대를 빌려 오거나(1~3개 함대, 360일) 우리 함대를 원정군으로 빌려줍니다. 수락 여부는 호감·신뢰로 정해집니다. [i](모드 파일 변경)[/i]
+[*][b]비상 정지 칙령[/b]: 앱을 열지 않아도 게임의 칙령 화면에서 SLLM 자동 작전을 바로 멈출 수 있습니다(비용·칙령 한도 없음).
+[/list]
+
+[h2]⛓️ 사로잡은 적 제독 · 악명과 전쟁범죄 (함대 사령부)[/h2]
+[list]
+[*]적 함대의 마지막 배를 격침하면 [b]25% 확률로 그 제독을 사로잡습니다[/b](동시에 3명까지). [b]심문실[/b]에서 AI 대화로 심문하면 협조도(0~100)가 움직입니다.
+[*]처리: 몸값(에너지 300·영향력 25, 상대 호감 +15) · 심문(협조도에 비례해 첩보 수준 +, 한 번) · 회유(협조도 70 이상, 우리 지도자로 · 상대 호감 −50) · 처형(상대 호감 −100) · 석방(상대 호감 +40).
+[*][b]악명(0~100)[/b]: 무차별 폭격 · 아마겟돈 폭격 · 행성 말살 · 숙청 · 포로 처형이 기록되고 악명이 쌓입니다. 25 「악명」 · 50 「오명」 · 75 「공공의 적」 단계마다 외교 영향력(−10/−20/−35%)·신뢰 증가(−15/−30/−50%)·교신하는 나라들 호감(−20/−50/−100)이 깎입니다.
+[*][b]숨은 악명[/b]: 은폐 공작·비밀 처형은 당장은 드러나지 않지만, 해마다 들킬 수 있고 들키면 1.5배로 공개 악명이 되며 폭로 기사가 납니다(AI).
+[*][b]전범[/b]: 폭격·말살에 나선 제독에게 표식이 남습니다. 전쟁에 지면 이긴 나라가 인도를 요구하고(AI 서신), 인도 · 자국 군사법정 · 거부 중에서 고릅니다.
+[*]외교 대화·연대기·외교 노선이 우리 악명을 압니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🤝 종속국 통치 · 종속국 행정[/h2]
+[list]
+[*][b]조공 감면 요청[/b]: 가끔 종속국이 「올해 조공을 덜어 달라」고 청합니다(전쟁 중·충성도가 낮을 때 더 자주). 전액 = 1년간 매달 그 나라 월수입 15% 환급 + 충성도 매달 +1, 절반 = 환급 절반, 거절 = 충성도 매달 −1(1년).
+[*][b]감독관 파견[/b]: 우리 지도자 한 명을 종속국에 보냅니다(영향력 50). 충성도 매달 +1.5, 해마다 보고서가 옵니다.
+[*][b]계약 재협상 반응[/b]: 게임 외교 화면의 「계약 재협상」이 받아들여지면 종속국 통치자가 새 조건에 대한 서신을 보냅니다(AI).
+[*][b]성계 이양[/b]: 종속국 성계를 가져오거나(자치도 +10) 우리 성계를 줍니다(자치도 −6). 국경이 붙지 않아도 되고, 영향력 25 + 식민지당 50. 수도·점령당한 행성이 있는 성계는 안 되고, 같은 성계는 5년에 한 번, 평화 때만.
+[*][b]기술 원조[/b]: 영향력 100으로 우리 월 연구량 6달 치를 종속국 연구에 보탭니다(자치도 −8, 3년에 한 번).
+[*][b]동화 정책[/b]: 영향력 50. 종속국 인구가 우리 윤리에 끌리고(+100%) 반대 윤리는 덜 끌립니다(−75%). 5년마다 종속국 정부 윤리가 우리 쪽으로 한 걸음, 하는 동안 해마다 자치도 +3. 군체·기계 지성에는 못 겁니다.
+[*][b]종속국 개명 칙령[/b]: 종속국 수도 행성·성계 이름을 우리가 정합니다(자치도 +15). [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]📜 외교 거래 · 이름의 정치[/h2]
+[list]
+[*]새 거래 항목 [b]「성계 할양」[/b]: 성계 하나를 주고받습니다.
+[*][b]「개명 요구」[/b]: 상대 수도 행성이나 수도 성계의 이름을 바꾸게 합니다. 자존심 문제라 성사 확률이 따로 깎입니다(행성 −30, 성계 −18).
+[*][b]「이름 반환」[/b]: 빼앗은 이름을 돌려주는 화해 카드(+20). 원래 이름은 장부에 남습니다.
+[*]전쟁에서 지면 AI가 [b]우리에게 개명을 요구[/b]할 수도 있습니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🏛️ 집무실: 예산 회의 · 외교 노선 · 일정표 · 행성 이름 짓기[/h2]
+[list]
+[*][b]예산 회의[/b]: 통치자가 소집하면(1년에 한 번) 장관마다 자기 분야 예산을 1건씩 요청합니다(예: 함선 설계 연구 +15%). 전액 · 삭감(효과·비용 절반) · 거절. 비용은 매달 에너지(월수입의 6%, 삭감 3%)로 빠지고, 모자라면 그 예산이 멈춥니다. 장관마다 상시 지시 한 줄(「함선 기술 위주로」)을 둘 수 있습니다.
+[*][b]외교 노선[/b]: AI 제국마다 강경(−100)~온건(+100) 압력이 쌓이고, ±60을 넘으면 그 나라의 [b]게임 안 외교 성향이 실제로 바뀝니다[/b]. 외교 대화·외교 거래·해마다의 은하 판세·첩보 「노선 공작」으로 움직입니다(AI 없음).
+[*][b]일정표[/b]: 게임이 숨겨 둔 재사용 대기(첩보 작전·유물·고립 거주지 등 75가지)와 우리 기능의 대기를 매달 한 번 읽어 남은 날을 보여 줍니다. 날이 되면 집무실 알림이 뜨고, 동화 정책·기술 원조는 게임 「상황」 화면에도 막대로 보입니다. 항목마다 알림을 끌 수 있습니다.
+[*][b]행성 이름 짓기[/b]: 우리가 직접 개척한 행성이 생기면 알림이 뜹니다. 게임 종족 이름 표에서 고른 후보 3개 · 기본 이름 그대로 · [b]정착민에게 물어보기[/b](AI, 이름에 얽힌 이유 한 줄).
+[*][b]함대 이름 건의[/b]: 함대가 처음 이기면 제독이 함대 이름을 건의하고, 다음 내각 회의 안건 목록에 올라옵니다(AI 후보 3개). 채택 · 직접 짓기 · 기각.
+[*][b]총독에게 행성 맡기기[/b]: 이제 [b]게임 자동화 버튼을 켜지 않아도[/b] 총독이 직접 짓습니다. 맡길 때와 1년 뒤 숙련될 때 게임 안에 총독 초상화가 있는 보고 창이 뜹니다. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🕵️ 첩보: 해외발 여론 공작 · 역제소[/h2]
+[list]
+[*]AI 제국의 여론 첩보 작전이 [b]「해외발 여론 공작」[/b]으로 잡혀 게임 「상황」 화면에 진행됩니다. 무시 · 사이버 사령부 · 외교 항의 · 역공작으로 대응하고, 격퇴하거나 장악당하면 결과가 남습니다(효과는 작게).
+[*][b]은하재판소 역제소[/b]: 진행 중인 공작을 재판소에 걸 수 있습니다. 증거가 없어도 제소는 되지만 거의 집니다. 공작 하나에 한 번. [i](모드 파일 변경)[/i]
+[/list]
+
+[h2]🌐 인터넷: 갤럭틱 포럼 · 원시문명 인터넷 염탐[/h2]
+[list]
+[*][b]갤럭틱 포럼[/b](인터넷 창 네 번째 탭): 외국 시민들이 쓰는 익명 국제 게시판입니다. 글쓴이는 익명이지만 국기가 보입니다. 큰 사건마다 스레드가 생기고(원글 + 답글 8~12, AI 한 번), 새 소식이 없으면 잡담 스레드가 올라옵니다. 우리도 답글을 달 수 있습니다. 외계인혐오 제국 시민은 잘 오지 않지만, 오면 매우 공격적입니다.
+[*][b]원시문명 인터넷 염탐[/b](원시문명 관측): [b]원자력 시대[/b]부터 그들의 컴퓨터망을 엿봅니다. 원자력 시대는 녹색 인광 단말기의 격식 있는 게시판, [b]초기 우주 시대[/b]는 2000년대 초 운영체제 창과 대중 게시판입니다. 한 문명당 게임 1달에 한 번 접속(스레드 3개).
+[*]몰래 [b]글을 쓸[/b] 수도 있습니다(접속 한 번에 3개). 수상한 글일수록 인지도가 오르지만, 초기 우주 시대의 대중 인터넷에서는 소음에 묻혀 아주 드물게만 오릅니다.
+[/list]
+
+[h2]🔧 그 밖에 · 버그 수정[/h2]
+[list]
+[*][b]AI가 우리 제국을 더 잘 압니다[/b]: 자동 저장 세이브에서 정부 형태·국시·기원·건국 종족 특성을 읽어 대화에 넣습니다(테스터 요청).
+[*][b]은하 의회[/b]: 강제 통과·부결은 찬성(반대)이 60% 이상일 때만 됩니다. 대표들의 발언이 2~4문장으로 길어졌습니다.
+[*]국제 대회 유치·개최 비용은 통치자 금고가 아니라 게임 자원에서 나갑니다.
+[*]내각 회의실(의제 회의)이 빈 화면으로 뜨던 문제를 고쳤습니다.
+[*]원시문명 화면에서 우리가 지은 관측소가 「다른 나라 관측소」로 뜨던 문제를 고쳤습니다.
+[*]갤럭틱 포럼 글자가 번져 읽기 어렵던 문제를 고쳤습니다.
+[/list]
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 12.2 — Fleet Auto-Operations · Captives & War Crimes · Ruling Subjects · Budget Meetings · Galactic Forum · Game 4.5.3 Support (0.1.0-alpha.12.2)[/h1]
+
+An update following Alpha 12.1. Fleet Command gains [b]auto-operations and joint operations[/b] plus [b]captives and infamy[/b], and there are many new ways to handle your subjects. The Office gets [b]budget meetings, diplomatic stance, a schedule and colony naming[/b], and the Internet gets an international board, the [b]Galactic Forum[/b]. The game connection works again on Stellaris [b]4.5.3[/b].
+
+⚠️ [b]Mod files changed.[/b] Update this mod (Workshop) and the app together, then fully restart the game.
+
+[h2]🔌 Stellaris 4.5.3 support[/h2]
+[list]
+[*]After the 4.5.3 update the game connection stopped with "This game version is not supported by the DLL connection". It has been [b]rebuilt for 4.5.3[/b].
+[*][b]You no longer need to reinstall after a game patch.[/b] When an app update brings a new connection file, the app swaps it into the game folder while the game is closed (only if it is the file we installed; it is verified afterwards and rolled back on failure).
+[/list]
+
+[h2]⚓ Fleet auto-operations · Joint operations (Fleet Command)[/h2]
+[list]
+[*][b]Auto-operations[/b]: in war, fleets find and engage enemy fleets and systems on their own. Up to 3 naval operations; damaged fleets return for repairs; fleets you want to command yourself can be left out.
+[*][b]Orders[/b]: tell an admiral what you want (AI) and it becomes settings — power ratio (1.0–1.6×), repair threshold (40–80%), number of operations, range (12/25/40 jumps), priority target — and the admiral radios back. Three new conditions: [b]avoid enemy fortresses · stay inside our borders · pursue to the end[/b].
+[*]Operation radio chatter is template text; AI is used only when you open an [b]after-action report[/b] or [b]answer a radio call[/b].
+[*][b]Joint operations[/b]: borrow fleets from federation members, defensive-pact partners or co-belligerents (1–3 fleets, 360 days), or lend ours as an expeditionary force. Acceptance depends on opinion and trust. [i](mod file change)[/i]
+[*][b]Emergency halt edict[/b]: stop SLLM auto-operations from the game's Edicts screen without opening the app (no cost, no edict cap).
+[/list]
+
+[h2]⛓️ Captured admirals · Infamy & war crimes (Fleet Command)[/h2]
+[list]
+[*]Sink the last ship of an enemy fleet and there is a [b]25% chance to capture its admiral[/b] (up to 3 at once). Interrogate them in the [b]interrogation room[/b] through AI conversation, which moves their cooperation (0–100).
+[*]Options: ransom (300 energy, 25 influence; their empire +15 opinion) · interrogate (intel level gain scaled by cooperation, once) · turn them (cooperation 70+, they join our leaders; −50 opinion) · execute (−100 opinion) · release (+40 opinion).
+[*][b]Infamy (0–100)[/b]: indiscriminate bombardment, Armageddon bombardment, colony annihilation, purges and executing prisoners are recorded and build infamy. At 25 "Infamous", 50 "Notorious" and 75 "Public Enemy", diplomatic weight (−10/−20/−35%), trust growth (−15/−30/−50%) and opinion from every empire in contact (−20/−50/−100) drop.
+[*][b]Hidden infamy[/b]: cover-ups and secret executions stay hidden for now, but can come out each year — then they count 1.5× as public infamy and an exposé runs (AI).
+[*][b]War criminals[/b]: admirals who bombarded or annihilated are marked. If you lose a war, the victor demands their extradition (AI letter): hand them over, try them in your own military court, or refuse.
+[*]Diplomatic chat, the chronicle and diplomatic stance all know your infamy. [i](mod file change)[/i]
+[/list]
+
+[h2]🤝 Ruling subjects · Subject administration[/h2]
+[list]
+[*][b]Tribute relief requests[/b]: now and then a subject asks for lighter tribute this year (more often in war or with low loyalty). Full = 15% of their monthly income refunded each month for a year + loyalty +1 per month; half = half the refund; refuse = loyalty −1 per month (1 year).
+[*][b]Send an overseer[/b]: post one of your leaders to a subject (50 influence). Loyalty +1.5 per month and a yearly report.
+[*][b]Renegotiation reactions[/b]: when "Renegotiate agreement" is accepted in the game's diplomacy screen, the subject's ruler writes about the new terms (AI).
+[*][b]System transfer[/b]: take a subject's system (autonomy +10) or give one of ours (autonomy −6). Borders need not touch; 25 influence + 50 per colony. Not for systems with a capital or an occupied planet; once per system every 5 years; peacetime only.
+[*][b]Technology aid[/b]: 100 influence adds 6 months of our monthly research to the subject's (autonomy −8, once every 3 years).
+[*][b]Assimilation policy[/b]: 50 influence. The subject's pops are drawn to our ethics (+100%) and away from the opposites (−75%). Every 5 years its government ethics move one step toward ours; autonomy +3 per year while it runs. Not for gestalt subjects.
+[*][b]Subject renaming edict[/b]: you name the subject's capital planet or system (autonomy +15). [i](mod file change)[/i]
+[/list]
+
+[h2]📜 Diplomatic deals · The politics of names[/h2]
+[list]
+[*]New deal item [b]"Cede a system"[/b]: hand over or receive one system.
+[*][b]"Demand a renaming"[/b]: make them rename their capital planet or capital system. It is a matter of pride, so it lowers the odds on its own (planet −30, system −18).
+[*][b]"Return a name"[/b]: a reconciliation card that gives back a name you took (+20). Original names are kept in a ledger.
+[*]If you lose a war, the AI may [b]demand that you rename[/b]. [i](mod file change)[/i]
+[/list]
+
+[h2]🏛️ Office: Budget meetings · Diplomatic stance · Schedule · Colony naming[/h2]
+[list]
+[*][b]Budget meetings[/b]: convene once a year and each minister asks for one budget in their field (e.g. voidcraft research +15%). Approve · cut (half effect and cost) · refuse. Costs come out monthly as energy (6% of monthly income, 3% when cut); if you run short, that budget stops. Each minister can keep a standing instruction ("focus on ship tech").
+[*][b]Diplomatic stance[/b]: every AI empire builds pressure from hard-line (−100) to moderate (+100); past ±60 its [b]in-game AI personality actually changes[/b]. Moved by diplomatic chat, deals, the yearly galactic balance and espionage "stance operations" (no AI).
+[*][b]Schedule[/b]: reads hidden game cooldowns (espionage, relics, enclaves and more — 75 kinds) and our own features' cooldowns once a month and shows the days left. You get an office alert when one comes due; assimilation and tech aid also show as bars in the game's Situations screen. Reminders can be muted per item.
+[*][b]Colony naming[/b]: when you colonize a planet yourself you get an alert: 3 candidates from the game's species name lists · keep the default · [b]ask the settlers[/b] (AI, with a one-line reason).
+[*][b]Fleet name proposals[/b]: after a fleet's first victory its admiral proposes a name, which appears on the next cabinet meeting agenda (3 AI candidates). Adopt · name it yourself · reject.
+[*][b]Entrust planets to governors[/b]: governors now build [b]without turning on the game's automation[/b]. An in-game report window with the governor's portrait appears when you hand over a planet and when they become seasoned a year later. [i](mod file change)[/i]
+[/list]
+
+[h2]🕵️ Espionage: Foreign influence campaigns · Counter-suits[/h2]
+[list]
+[*]AI empires' public-opinion espionage now appears as a [b]"foreign influence campaign"[/b] running in the game's Situations screen. Respond by ignoring it, the cyber command, a diplomatic protest or a counter-operation; repelled or overrun, the outcome is recorded (small effects).
+[*][b]Counter-suit at the Galactic Tribunal[/b]: take an ongoing campaign to court. You can file without evidence, but you will almost always lose. Once per campaign. [i](mod file change)[/i]
+[/list]
+
+[h2]🌐 Internet: Galactic Forum · Pre-FTL internet snooping[/h2]
+[list]
+[*][b]Galactic Forum[/b] (fourth tab of the Internet window): an anonymous international board for foreign citizens. Posters are anonymous but their flags show. Each major event gets a thread (opening post + 8–12 replies, one AI call), and small-talk threads appear when there is no news. You can reply too. Citizens of xenophobic empires rarely show up, but when they do they are very aggressive.
+[*][b]Pre-FTL internet snooping[/b] (Pre-FTL Observation): peek into their computer networks from the [b]Atomic Age[/b]. The Atomic Age is a formal board on a green phosphor terminal; the [b]Early Space Age[/b] is an early-2000s desktop window and a public forum. One visit per civilization per game month (3 threads).
+[*]You can also [b]post[/b] in secret (3 per visit). The stranger the post, the more awareness rises — but on the Early Space Age public internet it drowns in the noise and only very rarely does.
+[/list]
+
+[h2]🔧 Other · Fixes[/h2]
+[list]
+[*][b]The AI knows your empire better[/b]: government, civics, origin and founder species traits are read from the autosave and used in conversations (tester request).
+[*][b]Galactic Council[/b]: forcing a pass or fail now needs 60%+ in favor (or against). Delegates now speak in 2–4 sentences.
+[*]Bidding for and hosting international tournaments is paid from game resources, not the ruler's vault.
+[*]Fixed the cabinet room (agenda meetings) opening blank.
+[*]Fixed the observation post you built showing as "another power's post" on the Pre-FTL screen.
+[*]Fixed the blurry, hard-to-read text on the Galactic Forum.
+[/list]
+
+When the app update prompt appears, apply it, update the mod too, and restart the game.
+
+===== Discord (한국어) — 1/4 =====
+
+# SLLM 알파 12.2 — 함대 자동 작전 · 포로와 전쟁범죄 · 종속국 통치 · 예산 회의 · 갤럭틱 포럼 · 게임 4.5.3 대응 (0.1.0-alpha.12.2)
+
+⚠️ **모드 파일이 바뀌었습니다.** 창작마당 모드와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+## 🔌 스텔라리스 4.5.3 대응
+- 4.5.3에서 「DLL 연결이 지원하지 않습니다」로 막히던 게임 연결을 **4.5.3용으로 다시 만들었습니다**.
+- **이제 게임 패치 때마다 설치기를 다시 깔 필요가 없습니다.** 앱 업데이트로 새 연결 파일이 오면, 게임이 꺼져 있을 때 앱이 게임 폴더의 파일을 직접 바꿉니다(우리가 넣은 파일일 때만, 확인 후 실패하면 되돌림).
+
+## ⚓ 함대 자동 작전 · 합동 작전 (함대 사령부)
+- **자동 작전**: 전쟁 중 함대가 스스로 적을 찾아 싸움. 해군 작전 최대 3개, 피해 입으면 수리 복귀, 직접 지휘할 함대는 빼 둘 수 있음.
+- **작전 지시**: 제독에게 말로 지시하면(AI) 전력비(1.0~1.6배)·수리 기준(40~80%)·작전 수·반경(12·25·40칸)·우선 목표로 바뀌고 제독이 무전으로 답함. 새 조건: **적 요새 피하기 · 우리 영토 안에서만 · 끝까지 추격**.
+- 무전은 틀 문장, **결과 보고서**와 **무전에 답하기**만 AI.
+- **합동 작전**: 연방·방위 조약·같은 전쟁의 우방에게 함대를 빌려 오거나(1~3개, 360일) 우리 함대를 원정군으로 빌려줌. 수락은 호감·신뢰로.
+- **비상 정지 칙령**: 게임 칙령 화면에서 SLLM 자동 작전을 바로 멈춤(비용·한도 없음).
+
+===== Discord (한국어) — 2/4 =====
+
+## ⛓️ 사로잡은 적 제독 · 악명과 전쟁범죄 (함대 사령부)
+- 적 함대 마지막 배를 격침하면 **25% 확률로 제독 포로**(동시에 3명까지). **심문실**에서 AI 대화로 심문, 협조도(0~100)가 움직임.
+- 처리: 몸값(에너지 300·영향력 25, 상대 호감 +15) · 심문(첩보 수준 +, 한 번) · 회유(협조도 70+, 우리 지도자로, 호감 −50) · 처형(호감 −100) · 석방(호감 +40).
+- **악명(0~100)**: 무차별 폭격·아마겟돈 폭격·행성 말살·숙청·포로 처형이 쌓임. 25 「악명」 · 50 「오명」 · 75 「공공의 적」마다 외교 영향력(−10/−20/−35%)·신뢰 증가(−15/−30/−50%)·교신국 호감(−20/−50/−100) 감소.
+- **숨은 악명**: 은폐 공작·비밀 처형은 해마다 들킬 수 있고, 들키면 1.5배로 공개 악명 + 폭로 기사(AI).
+- **전범**: 폭격·말살한 제독에 표식. 전쟁에 지면 승전국이 인도 요구(AI 서신) → 인도 · 자국 군사법정 · 거부.
+
+## 🤝 종속국 통치 · 종속국 행정
+- **조공 감면 요청**: 전액 = 1년간 매달 그 나라 월수입 15% 환급 + 충성도 매달 +1 · 절반 = 환급 절반 · 거절 = 충성도 매달 −1(1년).
+- **감독관 파견**: 우리 지도자를 보냄(영향력 50), 충성도 매달 +1.5, 해마다 보고서.
+- **계약 재협상 반응**: 게임의 「계약 재협상」이 받아들여지면 종속국 통치자가 서신(AI).
+- **성계 이양**: 가져오기(자치도 +10) · 주기(자치도 −6). 국경 무관, 영향력 25 + 식민지당 50, 수도·점령 행성 성계 불가, 같은 성계 5년에 한 번, 평화 때만.
+- **기술 원조**: 영향력 100 → 우리 월 연구량 6달 치(자치도 −8, 3년에 한 번).
+- **동화 정책**: 영향력 50. 우리 윤리 끌림 +100%·반대 윤리 −75%, 5년마다 정부 윤리 한 걸음, 해마다 자치도 +3. 군체·기계 지성 불가.
+- **종속국 개명 칙령**: 수도 행성·성계 이름을 우리가 정함(자치도 +15).
+
+===== Discord (한국어) — 3/4 =====
+
+## 📜 외교 거래 · 이름의 정치
+- 새 항목 **「성계 할양」**(성계 하나 주고받기).
+- **「개명 요구」**: 상대 수도 행성·성계 이름 바꾸게 하기. 자존심 문제라 확률이 따로 깎임(행성 −30, 성계 −18).
+- **「이름 반환」**: 빼앗은 이름을 돌려주는 화해 카드(+20). 원래 이름은 장부에.
+- 전쟁에서 지면 AI가 **우리에게 개명을 요구**할 수도 있음.
+
+## 🏛️ 집무실
+- **예산 회의**: 1년에 한 번 소집, 장관마다 자기 분야 예산 1건(예: 함선 설계 연구 +15%). 전액 · 삭감(절반) · 거절. 매달 에너지(월수입 6%, 삭감 3%), 모자라면 멈춤. 장관별 상시 지시 한 줄.
+- **외교 노선**: AI 제국마다 강경(−100)~온건(+100) 압력, ±60을 넘으면 **게임 안 외교 성향이 실제로 바뀜**. 외교 대화·거래·은하 판세·첩보 「노선 공작」으로 움직임(AI 없음).
+- **일정표**: 게임이 숨긴 재사용 대기(첩보·유물·고립 거주지 등 75가지)와 우리 기능 대기를 매달 읽어 남은 날 표시. 날이 되면 알림, 동화 정책·기술 원조는 게임 「상황」 화면에도 막대로. 항목별 알림 끄기.
+- **행성 이름 짓기**: 직접 개척한 행성 → 게임 이름 표 후보 3개 · 기본 이름 · **정착민에게 물어보기**(AI, 이유 한 줄).
+- **함대 이름 건의**: 함대 첫 승리 → 제독 건의가 다음 내각 회의 안건에(AI 후보 3개). 채택 · 직접 짓기 · 기각.
+- **총독에게 행성 맡기기**: 이제 **게임 자동화 버튼 없이** 총독이 직접 지음. 맡길 때·1년 뒤 숙련될 때 게임 안에 총독 초상화 보고 창.
+
+## 🕵️ 첩보: 해외발 여론 공작 · 역제소
+- AI의 여론 첩보 작전이 **「해외발 여론 공작」**으로 게임 「상황」 화면에 진행. 무시 · 사이버 사령부 · 외교 항의 · 역공작으로 대응(효과는 작게).
+- **은하재판소 역제소**: 증거가 없어도 제소는 되지만 거의 짐. 공작 하나에 한 번.
+
+===== Discord (한국어) — 4/4 =====
+
+## 🌐 인터넷: 갤럭틱 포럼 · 원시문명 인터넷 염탐
+- **갤럭틱 포럼**(인터넷 네 번째 탭): 외국 시민의 익명 국제 게시판, 국기가 보임. 큰 사건마다 스레드(원글 + 답글 8~12, AI 한 번), 새 소식이 없으면 잡담. 우리도 답글 가능. 외계인혐오 제국 시민은 드물지만 매우 공격적.
+- **원시문명 인터넷 염탐**: **원자력 시대**부터. 원자력 = 녹색 인광 단말기의 격식 있는 게시판, **초기 우주** = 2000년대 초 운영체제 창 + 대중 게시판. 한 문명당 게임 1달에 한 번(스레드 3개).
+- 몰래 **글쓰기**(접속 한 번에 3개). 수상할수록 인지도 상승, 단 초기 우주 시대 대중 인터넷에선 아주 드물게만.
+
+## 🔧 그 밖에 · 버그 수정
+- **AI가 우리 제국을 더 잘 앎**: 자동 저장에서 정부 형태·국시·기원·건국 종족 특성을 읽어 대화에(테스터 요청).
+- **은하 의회**: 강제 통과·부결은 60% 이상일 때만, 대표 발언 2~4문장으로.
+- 국제 대회 유치·개최 비용은 금고가 아니라 게임 자원에서.
+- 내각 회의실(의제 회의) 빈 화면 수정.
+- 우리가 지은 관측소가 「다른 나라 관측소」로 뜨던 문제 수정.
+- 갤럭틱 포럼 글자 번짐 수정.
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Discord (English) — 1/4 =====
+
+# SLLM Alpha 12.2 — Fleet Auto-Operations · Captives & War Crimes · Ruling Subjects · Budget Meetings · Galactic Forum · Game 4.5.3 Support (0.1.0-alpha.12.2)
+
+⚠️ **Mod files changed.** Update the Workshop mod and the app together, then fully restart the game.
+
+## 🔌 Stellaris 4.5.3 support
+- The game connection that stopped on 4.5.3 ("not supported by the DLL connection") has been **rebuilt for 4.5.3**.
+- **No more reinstalling after a game patch.** When an app update brings a new connection file, the app swaps it into the game folder while the game is closed (only our own file; verified, rolled back on failure).
+
+## ⚓ Fleet auto-operations · Joint operations (Fleet Command)
+- **Auto-operations**: in war, fleets find and fight the enemy on their own. Up to 3 naval operations, repair returns, and you can keep fleets under your own command.
+- **Orders**: tell an admiral (AI) and it becomes power ratio (1.0–1.6×), repair threshold (40–80%), operation count, range (12/25/40 jumps) and a priority target; the admiral radios back. New conditions: **avoid enemy fortresses · stay inside our borders · pursue to the end**.
+- Radio chatter is template text; only **after-action reports** and **answering a radio call** use AI.
+- **Joint operations**: borrow fleets from federation members, pact partners or co-belligerents (1–3 fleets, 360 days), or lend ours as an expeditionary force. Acceptance depends on opinion and trust.
+- **Emergency halt edict**: stop SLLM auto-operations from the game's Edicts screen (no cost, no cap).
+
+===== Discord (English) — 2/4 =====
+
+## ⛓️ Captured admirals · Infamy & war crimes (Fleet Command)
+- Sink an enemy fleet's last ship for a **25% chance to capture its admiral** (up to 3). Interrogate them in the **interrogation room** (AI); the talk moves cooperation (0–100).
+- Options: ransom (300 energy, 25 influence; +15 opinion) · interrogate (intel gain, once) · turn them (cooperation 70+, joins us; −50 opinion) · execute (−100) · release (+40).
+- **Infamy (0–100)**: indiscriminate and Armageddon bombardment, annihilation, purges and executing prisoners. At 25 "Infamous", 50 "Notorious", 75 "Public Enemy": diplomatic weight −10/−20/−35%, trust growth −15/−30/−50%, opinion from every contact −20/−50/−100.
+- **Hidden infamy**: cover-ups and secret executions may surface each year — then 1.5× public infamy and an exposé (AI).
+- **War criminals**: admirals who bombarded or annihilated are marked. Lose a war and the victor demands extradition (AI letter): hand over · military court · refuse.
+
+## 🤝 Ruling subjects · Subject administration
+- **Tribute relief**: full = 15% of their monthly income refunded monthly for a year + loyalty +1/month · half = half refund · refuse = loyalty −1/month (1 year).
+- **Overseer**: post one of your leaders (50 influence); loyalty +1.5/month, yearly reports.
+- **Renegotiation reactions**: when "Renegotiate agreement" is accepted in-game, the subject's ruler writes back (AI).
+- **System transfer**: take (autonomy +10) or give (autonomy −6). Borders need not touch; 25 influence + 50 per colony; no capital or occupied-planet systems; once per system per 5 years; peacetime only.
+- **Tech aid**: 100 influence → 6 months of our monthly research (autonomy −8, every 3 years).
+- **Assimilation**: 50 influence. Attraction to our ethics +100%, to opposites −75%; government ethics step toward ours every 5 years; autonomy +3/year. Not for gestalts.
+- **Renaming edict**: name the subject's capital planet or system (autonomy +15).
+
+===== Discord (English) — 3/4 =====
+
+## 📜 Diplomatic deals · The politics of names
+- New item **"Cede a system"** (give or receive one system).
+- **"Demand a renaming"** of their capital planet or system. A matter of pride, so it lowers the odds by itself (planet −30, system −18).
+- **"Return a name"**: a reconciliation card that gives a taken name back (+20). Original names are kept in a ledger.
+- Lose a war and the AI may **demand that you rename**.
+
+## 🏛️ Office
+- **Budget meetings**: once a year, each minister asks for one budget (e.g. voidcraft research +15%). Approve · cut (half) · refuse. Paid monthly in energy (6% of income, 3% when cut); stops if you run short. Standing instructions per minister.
+- **Diplomatic stance**: hard-line (−100) to moderate (+100) pressure per AI empire; past ±60 its **in-game AI personality really changes**. Moved by chat, deals, the galactic balance and espionage "stance operations" (no AI).
+- **Schedule**: reads hidden game cooldowns (espionage, relics, enclaves… 75 kinds) and our own once a month and shows days left. Alert when due; assimilation and tech aid also show as Situations bars. Mute per item.
+- **Colony naming**: colonize a planet yourself → 3 name-list candidates · keep default · **ask the settlers** (AI, with a reason).
+- **Fleet name proposals**: after a fleet's first win its admiral proposes a name on the next cabinet agenda (3 AI candidates). Adopt · name it · reject.
+- **Entrust planets to governors**: governors now build **without the game's automation toggle**. An in-game report window with the governor's portrait on handover and when seasoned.
+
+## 🕵️ Espionage: Foreign influence campaigns · Counter-suits
+- AI public-opinion espionage now runs as a **"foreign influence campaign"** in the game's Situations screen. Ignore · cyber command · diplomatic protest · counter-operation (small effects).
+- **Counter-suit at the Galactic Tribunal**: file without evidence if you like, but you will almost always lose. Once per campaign.
+
+===== Discord (English) — 4/4 =====
+
+## 🌐 Internet: Galactic Forum · Pre-FTL internet snooping
+- **Galactic Forum** (fourth Internet tab): an anonymous international board with flags. A thread per major event (opening post + 8–12 replies, one AI call), small talk when there is no news. You can reply. Xenophobes rarely post — and are very aggressive when they do.
+- **Pre-FTL internet snooping** from the **Atomic Age**: Atomic = formal board on a green phosphor terminal; **Early Space** = early-2000s desktop window and public forum. One visit per civilization per game month (3 threads).
+- **Post** in secret (3 per visit). Stranger posts raise awareness more — but on the Early Space public internet only very rarely.
+
+## 🔧 Other · Fixes
+- **The AI knows your empire better**: government, civics, origin and founder traits from the autosave (tester request).
+- **Galactic Council**: forcing needs 60%+; delegates speak in 2–4 sentences.
+- Tournament bids and hosting are paid from game resources, not the vault.
+- Fixed the cabinet room (agenda meetings) opening blank.
+- Fixed our own observation post showing as "another power's post".
+- Fixed blurry Galactic Forum text.
+
+When the app update prompt appears, apply it, update the mod too, and restart the game.

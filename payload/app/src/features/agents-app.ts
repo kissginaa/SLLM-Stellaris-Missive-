@@ -59,9 +59,13 @@ export function setAgentCover(target: string, on: boolean): boolean {
   const a = agentFor(target); if (!a) return false;
   if (on) a.dip = true; else delete a.dip; save(); logDiagnostic('info', 'agents.cover', { dip: on }); return true;
 }
-function onSnap(snap: { sid: string; date: string; spynets: Array<{ target: string; assets?: string[] }> }): void {
+/** 마지막 월간 상황의 첩보망 침투 수준(대상 제국 이름 → 0~100). 대사관 첩보 탭이 게임 정보 값 대신 쓸 수 있게(2026-10-27). */
+const spyPow = { sid: '', map: new Map<string, number>() };
+export function spyPowerOf(target: string): number { return spyPow.sid && spyPow.sid === ctx.curSaveId ? spyPow.map.get(target) ?? 0 : 0; }
+function onSnap(snap: { sid: string; date: string; spynets: Array<{ target: string; power?: number; assets?: string[] }> }): void {
   const sid = ctx.curSaveId; if (!sid || (snap.sid && snap.sid !== sid)) return;
-  const s = saveOf(sid), { born, lost } = syncAgents(s.agents, snap.spynets, snap.date);
+  spyPow.sid = sid; spyPow.map = new Map(snap.spynets.filter((n) => n.target).map((n) => [n.target, Math.max(0, Number(n.power) || 0)] as const));
+  const s = saveOf(sid), { born, lost, recalled } = syncAgents(s.agents, snap.spynets, snap.date);
   for (const t of born) {
     const idx = idxOf(t), g: 'm' | 'f' = Math.random() < 0.5 ? 'm' : 'f';
     const name = (idx ? gameName(g, idx) : null) || randomName(); // 위장 신분: 상대 제국 종족 이름
@@ -88,6 +92,6 @@ function onSnap(snap: { sid: string; date: string; spynets: Array<{ target: stri
     logDiagnostic('info', 'agents.letters', { n: mail.length });
   }
   if (s.agents.length > 200) s.agents.splice(0, s.agents.length - 200);
-  save(); if (born.length || lost.length) logDiagnostic('info', 'agents.sync', { born: born.length, lost: lost.length });
+  save(); if (born.length || lost.length || recalled.length) logDiagnostic('info', 'agents.sync', { born: born.length, lost: lost.length, recalled: recalled.length });
 }
 export function registerAgents(): void { onGameSnapshot((snap) => onSnap(snap)); }

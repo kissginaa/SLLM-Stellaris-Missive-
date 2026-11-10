@@ -14,7 +14,7 @@ import { safeSend } from '../safe-send';
 import { terminalRequest } from './terminal';
 import { office, officeView, setOfficeLetters, pushOffice } from './office-app';
 import { fleetView } from './fleet-app';
-import { peopleOf, onPeopleChanged } from './people-app';
+import { peopleOf, onPeopleChanged, onPeopleMonth } from './people-app';
 import { memOf, personOf, ensurePersona, personaLast, personaNote, personaJson } from './persona-app';
 import { wins } from './windows';
 import { gestaltCode } from './gestalt-app';
@@ -110,6 +110,7 @@ export function addFarewell(sid: string, a: { key: string; lid: number; name: st
 export function registerLetters(): void {
   setOfficeLetters(unread);
   onPeopleChanged(onMonth);
+  onPeopleMonth(onMonth); // 2026-11-03: 명단이 매달 오지 않으므로 달마다도 부른다(뽑기는 날짜로 한 번만)
   ipcMain.handle('lettersList', async () => listView());
   ipcMain.handle('officeLetterBadge', async () => unread());
   /** 모두 읽음 표시(2026-10-18): 봉투만 읽음으로 바꾼다. 본문(AI)은 쓰지 않고, 나중에 직접 열 때 처음 쓴다. */
@@ -143,13 +144,13 @@ export function registerLetters(): void {
   ipcMain.handle('letterFavor', async (_e, id: unknown, yes: unknown) => {
     const sid = ctx.curSaveId; if (!sid) return { ok: false, error: L('세이브를 불러온 뒤에 할 수 있습니다.', 'Load a save first.') };
     const s = saveOf(sid), l = s.letters.find((x) => x.id === Number(id)), f = l?.favor;
-    if (!l || !f || f.state !== 'open') return { ok: false, error: L('이미 답한 부탁입니다.', 'This request was already answered.') };
+    if (!l || !f || (f.state !== 'open' && f.state !== 'failed')) return { ok: false, error: L('이미 답한 부탁입니다.', 'This request was already answered.') };
     const what = FAVOR_MEMO[f.kind], whatEn = FAVOR_MEMO_EN[f.kind];
     if (!yes) { f.state = 'declined'; save(); personaNote(sid, l.key, L(`지도자가 ${what} 부탁을 거절했다`, `The leader declined my ${whatEn} request`), FAVOR_TRUST.declined); return { ok: true, letter: view(l) }; }
     if (!/^\d+$/.test(sid) || !ctx.gameRunning) return { ok: false, error: L('게임이 켜져 있어야 부탁을 들어줄 수 있습니다.', 'The game must be running to grant this.') };
     if (!personOf(l.key)) return { ok: false, error: L('이 인물은 이제 제국에 없습니다.', 'This person is no longer in your empire.') };
-    const cid = randomUUID().replace(/-/g, ''), req = ++link.reqCounter;
-    f.state = 'pending'; save(); // 보내기 전에 기록: 응답 전에 앱이 꺼져도 두 번 보내지 않는다
+    const cid = f.cid && /^[a-f0-9]{32}$/.test(f.cid) ? f.cid : randomUUID().replace(/-/g, ''), req = ++link.reqCounter; // 다시 시도할 때는 같은 번호(게임이 이미 적용했으면 duplicate)
+    f.cid = cid; f.state = 'pending'; save(); // 보내기 전에 기록: 응답 전에 앱이 꺼져도 두 번 보내지 않는다
     let status = 'uncertain';
     try { const r = await terminalRequest(favorCommand(req, sid, cid, l.lid, FAVORS[f.kind].energy), 'LETTERAPPLY', req); if (r.kv.cid === cid && r.kv.sid === sid) status = r.kv.status ?? 'uncertain'; }
     catch (e) { logDiagnostic('warn', 'letters.favor.failed', { error: String(e) }); }
@@ -157,7 +158,8 @@ export function registerLetters(): void {
     else if (status === 'poor') { f.state = 'open'; f.note = L('에너지가 모자라 들어주지 못했습니다.', 'Not enough energy.'); }
     else if (status === 'no_target') { f.state = 'failed'; f.note = L('게임에서 이 인물을 찾지 못했습니다.', 'This person was not found in game.'); }
     else if (status === 'duplicate') { f.state = 'granted'; f.note = ''; }
-    else { f.state = 'failed'; f.note = L('게임 적용을 확인하지 못했습니다(자동 재전송 없음).', 'Could not confirm in game (no automatic resend).'); }
+    // 2026-10-29 테스터 「들어주기를 눌러도 시간 초과」: 실패로 굳히지 않고 다시 누를 수 있게 둔다. 같은 cid 라 이미 적용됐으면 게임이 duplicate 로 답한다(두 번 적용 없음).
+    else { f.state = 'open'; f.note = L('게임에서 응답을 받지 못했습니다. 게임이 켜져 있고 일시정지 메뉴가 닫혀 있는지 확인한 뒤 다시 눌러 주세요(두 번 적용되지 않습니다).', 'No response from the game. Make sure the game is running with no menu open, then press again (it will not be applied twice).'); }
     save(); logDiagnostic('info', 'letters.favor', { kind: f.kind, status });
     return { ok: true, letter: view(l) };
   });

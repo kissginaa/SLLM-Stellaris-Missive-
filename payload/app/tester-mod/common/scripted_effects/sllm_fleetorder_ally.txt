@@ -1,0 +1,194 @@
+# SLLM 합동 작전(2026-11-04) — 동맹 함대를 빌려 오고(우리 자동 작전 풀에 들어감) 우리 함대를 빌려준다(원정군 파견).
+# 바닐라 용병 엔클레이브와 같은 함대 임대 give_fleet(소유는 그대로, 지휘권만 기간 동안 넘김)을 쓴다. 판정(수락 확률)은 앱이 하고, 여기서는 실행만.
+# 부르는 법(플레이어 나라 범위, 콘솔 effect):
+#   빌려 오기: sllm_fo_ally_lease = { REQ = 9 TID = 4 N = 2 DAYS = 360 }   TID = 상대 sllm_idx, N = 함대 수(1~3)
+#   돌려보내기: sllm_fo_ally_return = { REQ = 9 TID = 4 }
+#   원정군 파견: sllm_fo_lend_out = { REQ = 9 TID = 4 FID = 12 DAYS = 360 }   FID = 보고 때 붙인 우리 함대 번호
+# 빌려준 쪽 나라에는 sllm_fo_lending 표식과 sllm_fo_lend_n(보낸 수)이 붙고, 매달(sllm_fo.2) 잃은 함대·반환을 점검한다.
+# 로그: FOSET(응답) · FOALLYF(빌려 온 함대 하나) · FOALLY(매달 사건: ev 1 반환 끝 · 2 일부 잃음 · 3 모두 잃음 · 4 돌려보냄) · FOALLYC·FOLENT(보고)
+
+# 상대 찾기 → event_target:sllm_fo_x, 플레이어 → event_target:sllm_fo_p, 찾으면 sllm_fo_xok = 1.
+sllm_fo_find_country = {
+	save_event_target_as = sllm_fo_p
+	set_variable = { which = sllm_fo_xok value = 0 }
+	random_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } sllm_is_empire = yes is_ai = yes }
+		save_event_target_as = sllm_fo_x
+		event_target:sllm_fo_p = { set_variable = { which = sllm_fo_xok value = 1 } }
+	}
+}
+
+# 빌려줄 함대 하나(가장 센 것)를 넘긴다. 범위 = 빌려주는 나라, $TO$ = 받는 나라 event_target 이름.
+sllm_fo_lease_one = {
+	if = {
+		limit = { any_owned_fleet = { sllm_fo_lendable_fleet = yes } }
+		ordered_owned_fleet = {
+			limit = { sllm_fo_lendable_fleet = yes }
+			order_by = trigger:fleet_power
+			position = 0
+			give_fleet = { controller = event_target:$TO$ days = $DAYS$ }
+			set_fleet_flag = sllm_fo_ally
+			set_variable = { which = sllm_fo_op value = 0 }
+			set_fleet_stance = aggressive
+			set_variable = { which = sllm_fo_fp value = trigger:fleet_power }
+			prev = { change_variable = { which = sllm_fo_lend_n value = 1 } }
+			log = "SLLM:FOALLYF/;/req=\\[Root.sllm_fo_req]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/pow=\\[This.sllm_fo_fp]/;/at=\\[This.System.GetName]"
+		}
+	}
+}
+
+# ── 빌려 오기 ──
+sllm_fo_ally_lease = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	set_variable = { which = sllm_fo_nq value = $N$ }
+	set_variable = { which = sllm_fo_lent value = 0 }
+	sllm_fo_find_country = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_fo_xok value = 1 } event_target:sllm_fo_x = { NOT = { has_country_flag = sllm_fo_lending } } }
+		event_target:sllm_fo_x = {
+			set_variable = { which = sllm_fo_lend_n value = 0 }
+			set_variable = { which = sllm_fo_lend_lost value = 0 }
+			sllm_fo_lease_one = { TO = sllm_fo_p DAYS = $DAYS$ }
+			if = { limit = { event_target:sllm_fo_p = { check_variable = { which = sllm_fo_nq value >= 2 } } } sllm_fo_lease_one = { TO = sllm_fo_p DAYS = $DAYS$ } }
+			if = { limit = { event_target:sllm_fo_p = { check_variable = { which = sllm_fo_nq value >= 3 } } } sllm_fo_lease_one = { TO = sllm_fo_p DAYS = $DAYS$ } }
+			if = { limit = { check_variable = { which = sllm_fo_lend_n value > 0 } } set_country_flag = sllm_fo_lending }
+			event_target:sllm_fo_p = { set_variable = { which = sllm_fo_lent value = prev.sllm_fo_lend_n } }
+		}
+		if = { limit = { check_variable = { which = sllm_fo_lent value > 0 } } log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=lease/;/n=\\[Root.sllm_fo_lent]/;/status=applied" }
+		else = { log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=lease/;/n=0/;/status=no_fleet" }
+	}
+	else = { log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=lease/;/n=0/;/status=no_target" }
+}
+
+# ── 돌려보내기(우리가 먼저 계약을 끝냄) ──
+sllm_fo_ally_return = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	sllm_fo_find_country = { TID = $TID$ }
+	if = {
+		limit = { check_variable = { which = sllm_fo_xok value = 1 } }
+		event_target:sllm_fo_x = {
+			every_owned_fleet = {
+				limit = { has_fleet_flag = sllm_fo_ally }
+				if = { limit = { is_leased = yes } end_fleet_contract = { initiator = event_target:sllm_fo_p reason = cancelled } }
+				remove_fleet_flag = sllm_fo_ally
+				remove_fleet_flag = sllm_fo_lead
+				set_variable = { which = sllm_fo_op value = 0 }
+			}
+			remove_country_flag = sllm_fo_lending
+			log = "SLLM:FOALLY/;/ev=4/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/ai=1/;/n=\\[This.sllm_fo_lend_n]/;/left=\\[This.sllm_fo_lend_n]/;/date=\\[GetDate]"
+		}
+		log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=return/;/status=applied"
+	}
+	else = { log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=return/;/status=no_target" }
+}
+
+# ── 원정군 파견: 우리 함대 하나를 동맹에게 빌려준다(그 나라 AI 가 자기 전쟁 계획에 쓴다). 받는 나라 호감 +25. ──
+sllm_fo_lend_out = {
+	set_variable = { which = sllm_fo_req value = $REQ$ }
+	sllm_fo_find_country = { TID = $TID$ }
+	if = {
+		limit = {
+			check_variable = { which = sllm_fo_xok value = 1 }
+			any_owned_fleet = { is_variable_set = sllm_fo_fid check_variable = { which = sllm_fo_fid value = $FID$ } sllm_fo_lendable_fleet = yes }
+		}
+		if = { limit = { NOT = { has_country_flag = sllm_fo_lending } } set_variable = { which = sllm_fo_lend_n value = 0 } set_variable = { which = sllm_fo_lend_lost value = 0 } }
+		every_owned_fleet = {
+			limit = { is_variable_set = sllm_fo_fid check_variable = { which = sllm_fo_fid value = $FID$ } sllm_fo_lendable_fleet = yes }
+			set_variable = { which = sllm_fo_op value = 0 }
+			remove_fleet_flag = sllm_fo_lead
+			remove_fleet_flag = sllm_fo_repair
+			if = { limit = { is_in_combat = no } remove_auto_move_target = yes }
+			give_fleet = { controller = event_target:sllm_fo_x days = $DAYS$ }
+			set_fleet_flag = sllm_fo_ally
+			prev = { change_variable = { which = sllm_fo_lend_n value = 1 } }
+		}
+		set_country_flag = sllm_fo_lending
+		event_target:sllm_fo_x = { add_opinion_modifier = { modifier = sllm_fo_fleet_aid who = event_target:sllm_fo_p } }
+		log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=lend/;/status=applied"
+	}
+	else = { log = "SLLM:FOSET/;/req=\\[Root.sllm_fo_req]/;/what=lend/;/status=no_target" }
+}
+
+# ── 매달(빌려준 나라마다, sllm_fo.2): 살아 있는 함대(total)와 아직 빌려준 상태인 함대(leased)를 센다. ──
+# total < 보낸 수 → 잃음(AI 가 빌려준 쪽이면 플레이어에게 호감 −30). total = 0 → 모두 잃음. leased = 0 → 계약이 끝나 돌아옴(잃은 게 없으면 호감 +15).
+sllm_fo_lend_tick = {
+	every_playable_country = { limit = { is_ai = no } save_event_target_as = sllm_fo_p }
+	set_variable = { which = sllm_fo_lt value = 0 }
+	set_variable = { which = sllm_fo_ll value = 0 }
+	every_owned_fleet = {
+		limit = { has_fleet_flag = sllm_fo_ally }
+		prev = { change_variable = { which = sllm_fo_lt value = 1 } }
+		if = { limit = { is_leased = yes } prev = { change_variable = { which = sllm_fo_ll value = 1 } } }
+	}
+	if = { limit = { is_ai = yes } set_variable = { which = sllm_fo_aiv value = 1 } } else = { set_variable = { which = sllm_fo_aiv value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_fo_lt value < sllm_fo_lend_n } }
+		change_variable = { which = sllm_fo_lend_lost value = 1 }
+		if = {
+			limit = { check_variable = { which = sllm_fo_lt value = 0 } }
+			log = "SLLM:FOALLY/;/ev=3/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/ai=\\[This.sllm_fo_aiv]/;/n=\\[This.sllm_fo_lend_n]/;/left=0/;/date=\\[GetDate]"
+		}
+		else = {
+			log = "SLLM:FOALLY/;/ev=2/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/ai=\\[This.sllm_fo_aiv]/;/n=\\[This.sllm_fo_lend_n]/;/left=\\[This.sllm_fo_lt]/;/date=\\[GetDate]"
+		}
+		if = { limit = { is_ai = yes exists = event_target:sllm_fo_p } add_opinion_modifier = { modifier = sllm_fo_fleet_lost who = event_target:sllm_fo_p } }
+		set_variable = { which = sllm_fo_lend_n value = sllm_fo_lt }
+	}
+	if = {
+		limit = { OR = { check_variable = { which = sllm_fo_lt value = 0 } check_variable = { which = sllm_fo_ll value = 0 } } }
+		if = {
+			limit = { check_variable = { which = sllm_fo_lt value > 0 } }
+			log = "SLLM:FOALLY/;/ev=1/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/ai=\\[This.sllm_fo_aiv]/;/n=\\[This.sllm_fo_lend_n]/;/left=\\[This.sllm_fo_lt]/;/date=\\[GetDate]"
+			if = { limit = { is_ai = yes exists = event_target:sllm_fo_p check_variable = { which = sllm_fo_lend_lost value = 0 } } add_opinion_modifier = { modifier = sllm_fo_fleet_returned who = event_target:sllm_fo_p } }
+		}
+		every_owned_fleet = { limit = { has_fleet_flag = sllm_fo_ally } remove_fleet_flag = sllm_fo_ally }
+		remove_country_flag = sllm_fo_lending
+	}
+}
+
+# ── 보고(sllm_fo_report 안에서): 동맹 후보와 우리가 빌려준 함대 ──
+sllm_fo_ally_report = {
+	save_event_target_as = sllm_fo_p
+	every_country = {
+		limit = { sllm_fo_ally_ok = yes }
+		# 호감·신뢰 단계(0~4), 관계(3 연방 · 2 방위 조약 · 1 같은 전쟁), 빌려줄 수 있는 함대 수·전력
+		if = { limit = { opinion = { who = event_target:sllm_fo_p value >= 150 } } set_variable = { which = sllm_fo_aop value = 4 } }
+		else_if = { limit = { opinion = { who = event_target:sllm_fo_p value >= 75 } } set_variable = { which = sllm_fo_aop value = 3 } }
+		else_if = { limit = { opinion = { who = event_target:sllm_fo_p value >= 25 } } set_variable = { which = sllm_fo_aop value = 2 } }
+		else_if = { limit = { opinion = { who = event_target:sllm_fo_p value >= 0 } } set_variable = { which = sllm_fo_aop value = 1 } }
+		else = { set_variable = { which = sllm_fo_aop value = 0 } }
+		if = { limit = { trust = { who = event_target:sllm_fo_p value >= 75 } } set_variable = { which = sllm_fo_atr value = 3 } }
+		else_if = { limit = { trust = { who = event_target:sllm_fo_p value >= 40 } } set_variable = { which = sllm_fo_atr value = 2 } }
+		else_if = { limit = { trust = { who = event_target:sllm_fo_p value >= 10 } } set_variable = { which = sllm_fo_atr value = 1 } }
+		else = { set_variable = { which = sllm_fo_atr value = 0 } }
+		if = { limit = { is_in_federation_with = event_target:sllm_fo_p } set_variable = { which = sllm_fo_arel value = 3 } }
+		else_if = { limit = { has_defensive_pact = event_target:sllm_fo_p } set_variable = { which = sllm_fo_arel value = 2 } }
+		else = { set_variable = { which = sllm_fo_arel value = 1 } }
+		set_variable = { which = sllm_fo_acw value = 0 }
+		if = {
+			limit = {
+				any_war = {
+					OR = {
+						AND = { is_war_participant = { who = event_target:sllm_fo_p side = attackers } is_war_participant = { who = prev side = attackers } }
+						AND = { is_war_participant = { who = event_target:sllm_fo_p side = defenders } is_war_participant = { who = prev side = defenders } }
+					}
+				}
+			}
+			set_variable = { which = sllm_fo_acw value = 1 }
+		}
+		set_variable = { which = sllm_fo_an value = 0 }
+		set_variable = { which = sllm_fo_apow value = 0 }
+		every_owned_fleet = {
+			limit = { sllm_fo_lendable_fleet = yes }
+			set_variable = { which = sllm_fo_fp value = trigger:fleet_power }
+			save_event_target_as = sllm_fo_f
+			prev = { change_variable = { which = sllm_fo_an value = 1 } change_variable = { which = sllm_fo_apow value = event_target:sllm_fo_f.sllm_fo_fp } }
+		}
+		if = { limit = { has_country_flag = sllm_fo_lending } set_variable = { which = sllm_fo_alend value = 1 } } else = { set_variable = { which = sllm_fo_alend value = 0 } }
+		log = "SLLM:FOALLYC/;/req=\\[Root.sllm_fo_req]/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/op=\\[This.sllm_fo_aop]/;/tr=\\[This.sllm_fo_atr]/;/rel=\\[This.sllm_fo_arel]/;/cw=\\[This.sllm_fo_acw]/;/n=\\[This.sllm_fo_an]/;/pow=\\[This.sllm_fo_apow]/;/lend=\\[This.sllm_fo_alend]"
+	}
+	every_owned_fleet = {
+		limit = { has_fleet_flag = sllm_fo_ally is_leased = yes exists = controller }
+		log = "SLLM:FOLENT/;/req=\\[Root.sllm_fo_req]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/to=\\[This.Controller.GetName]"
+	}
+}

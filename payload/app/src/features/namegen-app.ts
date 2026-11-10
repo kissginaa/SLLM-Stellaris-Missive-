@@ -35,3 +35,15 @@ export function gameName(g: NameGender, idx = ctx.playerIdx, rand: () => number 
     return empireName(mix.length ? mix : [{ share: 1, cls: 'HUM' }], c.lists, loc, g, rand)?.name ?? null;
   } catch (e) { logDiagnostic('warn', 'namegen.failed', { error: e }); return null; }
 }
+/** 한·영 본명 한 쌍(레전드 오브 갤럭시 선수, 2026-10-30). 같은 씨앗으로 두 번 뽑아 같은 이름의 한국어판·영어판을 얻는다(한국어 이름이 없으면 영어 그대로).
+ *  cls 가 있으면 그 종족 계열 이름 표(레전드 — 초상화 종족), 없으면 idx 제국의 종족 비율대로. 재료가 없으면 null(나중에 다시). */
+export function namePair(g: NameGender, cls: string | null, seed: number, idx = ctx.playerIdx): { ko: string; en: string } | null {
+  try {
+    const c = load(); if (!c.lists.size) return null;
+    const info = ctx.flagProv.portraitInfoFor(idx);
+    const mix = cls ? [{ share: 1, cls }] : info?.pop?.length ? info.pop : info?.mix?.length ? info.mix : info?.founder ? [{ share: 1, cls: info.founder.cls, list: info.founder.list }] : [{ share: 1, cls: 'HUM' }];
+    const rnd = () => { let s = seed >>> 0 || 1; return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+    const en = empireName(mix, c.lists, c.loc.en, g, rnd())?.name, ko = empireName(mix, c.lists, { ...c.loc.en, ...c.loc.ko }, g, rnd())?.name; // i18n-data: 게임 이름 지역화
+    return en ? { en, ko: ko ?? en } : null;
+  } catch (e) { logDiagnostic('warn', 'namegen.pair_failed', { error: e }); return null; }
+}

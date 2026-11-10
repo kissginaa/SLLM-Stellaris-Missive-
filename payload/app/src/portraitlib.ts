@@ -8,12 +8,15 @@ export interface LibItem { id: string; cls: string; species: string; defaultRole
 export interface LibFile { version: number; items: LibItem[]; groups: Record<string, string[]> }
 
 const FILE_RE = /^[A-Za-z0-9_]{1,80}\.webp$/;
+/** 앱이 그린 모드 초상화 라이브러리(portrait_library_mods)는 PNG 도 받는다(2026-10-26). pak·바닐라 라이브러리는 그대로 WebP 만. */
+const MOD_FILE_RE = /^[A-Za-z0-9_]{1,80}\.(webp|png)$/;
 const ID_RE = /^[A-Za-z0-9_]{1,80}$/;
 const CLS_RE = /^[a-z]{3,12}$/;
 const ROLE_RE = /^[a-z]{3,12}$/;
 
 /** library.json 내용을 검증해 안전한 항목만 남긴다(파일 이름이 폴더 밖을 가리키지 못하게). */
-export function parseLibrary(raw: unknown): LibFile {
+export function parseLibrary(raw: unknown, allowPng = false): LibFile {
+  const fileOk = (f: string) => (allowPng ? MOD_FILE_RE : FILE_RE).test(f);
   const out: LibFile = { version: 1, items: [], groups: {} };
   const o = raw as { items?: unknown; groups?: unknown };
   if (!o || !Array.isArray(o.items)) return out;
@@ -22,7 +25,7 @@ export function parseLibrary(raw: unknown): LibFile {
   for (const it of o.items as Record<string, unknown>[]) {
     if (!it || typeof it.id !== 'string' || !ID_RE.test(it.id) || typeof it.cls !== 'string' || !CLS_RE.test(it.cls)) continue;
     const roles: Record<string, string> = {};
-    if (it.roles && typeof it.roles === 'object') for (const [r, f] of Object.entries(it.roles as Record<string, unknown>)) if (ROLE_RE.test(r) && typeof f === 'string' && FILE_RE.test(f)) roles[r] = f;
+    if (it.roles && typeof it.roles === 'object') for (const [r, f] of Object.entries(it.roles as Record<string, unknown>)) if (ROLE_RE.test(r) && typeof f === 'string' && fileOk(f)) roles[r] = f;
     if (!Object.keys(roles).length) continue;
     const dr = typeof it.defaultRole === 'string' && roles[it.defaultRole] ? it.defaultRole : Object.keys(roles)[0];
     const ports = Array.isArray(it.portraits) ? (it.portraits as unknown[]).filter((p): p is string => typeof p === 'string' && p.length < 60).slice(0, 40) : [];
@@ -54,8 +57,8 @@ export function extractPak(pak: string, out: string): boolean {
   } catch { return false; }
 }
 
-export function loadLibrary(dir: string): LibFile {
-  try { return parseLibrary(JSON.parse(fs.readFileSync(path.join(dir, 'library.json'), 'utf8'))); } catch { return { version: 1, items: [], groups: {} }; }
+export function loadLibrary(dir: string, allowPng = false): LibFile {
+  try { return parseLibrary(JSON.parse(fs.readFileSync(path.join(dir, 'library.json'), 'utf8')), allowPng); } catch { return { version: 1, items: [], groups: {} }; }
 }
 
 /** 항목 id 와 역할로 실제 그림 파일 경로를 찾는다. 역할 그림이 없으면 기본 옷 그림. 없거나 이상하면 null. */
@@ -64,7 +67,7 @@ export function libraryFile(lib: LibFile, dir: string, id: unknown, role: unknow
   const it = lib.items.find((x) => x.id === id);
   if (!it) return null;
   const f = (typeof role === 'string' && it.roles[role]) || it.roles[it.defaultRole];
-  if (!f || !FILE_RE.test(f)) return null;
+  if (!f || !MOD_FILE_RE.test(f)) return null; // 이름은 parseLibrary 가 이미 걸렀다(바닐라는 WebP 만)
   const p = path.join(dir, f);
   return fs.existsSync(p) ? p : null;
 }

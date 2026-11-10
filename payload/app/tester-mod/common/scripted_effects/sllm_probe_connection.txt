@@ -2,6 +2,6 @@
 sllm_probe_hello = {
  sllm_probe_init_vars = yes
  set_variable = { which = sllm_out_req value = $REQ$ }
- log = "SLLM:HELLO/;/protocol=5/;/version=0.1.0-alpha.10/;/sid=\\[This.sllm_save_id]/;/date=\\[GetDate]/;/req=\\[This.sllm_out_req]"
+ log = "SLLM:HELLO/;/protocol=6/;/version=0.1.0-alpha.12.23/;/sid=\\[This.sllm_save_id]/;/date=\\[GetDate]/;/req=\\[This.sllm_out_req]"
 }
 

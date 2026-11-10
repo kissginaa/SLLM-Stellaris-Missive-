@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Back-alley Bar</title>
+<!-- 뒷골목 선술집(2026-10-30, 변장 잠행). 앱: src/features/tavern-app.ts · 자료·프롬프트: src/tavern.ts. 입구: 외출 지도 → 뒷골목 선술집(혼자만).
+     몰입형 화면(2026-10-30 사용자: 「몰입감이 없다」 → 카드 격자 대신 술집 장면): 1600×900 무대를 창에 맞춰 늘림.
+       골목(변장 고르기) → 문을 밀고 들어감 → 술집 안(그림 bg 또는 앱이 그린 장면). 테이블을 누르면 몸을 기울여(확대) 말풍선으로 엿듣기,
+       합석하면 테이블 가까이(그림 tables/<key> 또는 그린 실루엣) + 아래 대화창(비주얼 노벨식). 의심은 화면 가장자리의 붉은 기운·옆 테이블의 시선으로.
+     그림 자리(11_선술집_그림_의뢰서.md): tavern/bg, tavern/bartender, tavern/tables/(key), tavern/disguise/(id) — webp 또는 png. 테이블 자리(SPOT)는 그림이 오면 맞춤.
+     문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--pink:#ff3fa4;--cyan:#33e6ff;--amber:#ffb347;--red:#ff4d5e;--text:#ece8f6;--dim:#9a92b4}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:#000;color:var(--text);font:15px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden;user-select:none}
+ button,input{font:inherit;color:var(--text)}
+ #drag{position:absolute;z-index:30;left:0;right:0;top:0;height:30px;-webkit-app-region:drag}
+ #hud{position:absolute;z-index:31;right:10px;top:6px;display:flex;gap:10px;align-items:center;-webkit-app-region:no-drag}
+ #hud .v{font-size:12px;color:var(--dim);padding:2px 9px;border-radius:10px;background:#0008} #hud .v b{color:var(--amber)}
+ #eye{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);padding:2px 9px;border-radius:10px;background:#0008} #eye svg{width:20px;height:20px} #eye .m{width:70px;height:4px;border-radius:2px;background:#ffffff1a;overflow:hidden} #eye .m i{display:block;height:100%;background:var(--amber);transition:width .6s,background .6s}
+ #x{background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer} #x:hover{color:#fff}
+ /* 무대 */
+ #stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:#06050a}
+ #cam{position:absolute;inset:0;transform-origin:0 0;transition:transform 1s cubic-bezier(.3,.7,.2,1),filter 1s}
+ #scene,#artbg{position:absolute;inset:0;width:100%;height:100%} #artbg{background-size:cover;background-position:center;display:none}
+ .fx{position:absolute;inset:0;pointer-events:none}
+ #haze{background:radial-gradient(ellipse at 30% 40%,#ff3fa414,transparent 50%),radial-gradient(ellipse at 75% 30%,#33e6ff12,transparent 45%);animation:haze 14s ease-in-out infinite alternate} @keyframes haze{to{transform:translateX(-40px) scale(1.05);opacity:.7}}
+ #vig{background:radial-gradient(ellipse at 50% 50%,transparent 45%,#000c 100%)}
+ #heat{background:radial-gradient(ellipse at 50% 50%,transparent 40%,#ff1030 130%);opacity:0;transition:opacity 1s} #heat.pulse{animation:beat 1.2s ease-in-out infinite} @keyframes beat{50%{filter:brightness(1.5)}}
+ /* 테이블 자리 */
+ .spot{position:absolute;transform:translate(-50%,-50%);width:250px;height:190px;cursor:pointer;border-radius:50%}
+ .spot .glow{position:absolute;inset:20px;border-radius:50%;box-shadow:0 0 0 2px #33e6ff00;transition:box-shadow .3s,background .3s}
+ .spot:hover .glow{box-shadow:0 0 30px 6px #33e6ff55;background:#33e6ff0c}
+ .spot .tag{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);white-space:nowrap;font-size:13px;padding:2px 10px;border-radius:10px;background:#000a;border:1px solid #33e6ff55;color:#bff6ff;opacity:0;transition:opacity .3s}
+ .spot:hover .tag,.spot.near .tag{opacity:1}
+ .spot.watch::after{content:'👁';position:absolute;right:30px;top:6px;font-size:18px;filter:drop-shadow(0 0 6px #ff4d5e);animation:look 1.5s ease-in-out infinite} @keyframes look{50%{transform:translateX(-6px)}}
+ /* 말풍선 */
+ .bub{position:absolute;max-width:330px;padding:9px 13px;border-radius:14px;background:#0f0b18ee;border:1px solid #ffffff33;font-size:15px;line-height:1.4;box-shadow:0 6px 18px #000a;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s;pointer-events:none}
+ .bub.on{opacity:1;transform:none} .bub::after{content:'';position:absolute;left:28px;bottom:-9px;border:9px solid transparent;border-top-color:#0f0b18ee;border-bottom:0}
+ .bub.deep{border-color:#ffb34788;color:#ffe2b0} .bub.bar{border-color:#33e6ff66}
+ /* 상호작용 고리 */
+ #ring{position:absolute;display:none;gap:10px;transform:translate(-50%,0)} #ring.on{display:flex}
+ .act{padding:8px 16px;border-radius:20px;border:1px solid #ffffff33;background:#0a0812e6;cursor:pointer;font-size:14px;white-space:nowrap;box-shadow:0 4px 14px #000c}
+ .act:hover:not(:disabled){border-color:var(--cyan);color:#bff6ff;box-shadow:0 0 14px #33e6ff66} .act:disabled{opacity:.4;cursor:default} .act.hot{border-color:var(--pink);color:#ffd6ee}
+ /* 골목(변장 고르기) */
+ #alley{position:absolute;inset:0;z-index:5}
+ #alley .ttl{position:absolute;left:0;right:0;top:70px;text-align:center;font-size:30px;font-weight:800;letter-spacing:.2em;color:#ffd6ee;text-shadow:0 0 8px var(--pink),0 0 24px var(--pink);animation:flick 5s infinite}
+ @keyframes flick{0%,17%,21%,61%,64%,100%{opacity:1}19%,62%{opacity:.3}}
+ #alley .sub{position:absolute;left:0;right:0;top:120px;text-align:center;color:var(--dim)}
+ .coat{position:absolute;top:200px;width:330px;height:560px;cursor:pointer;border-radius:8px;overflow:hidden;transition:transform .3s,box-shadow .3s;background:linear-gradient(#1a1228,#07060c);border:1px solid #ffffff14}
+ .coat:hover{transform:translateY(-8px);box-shadow:0 0 34px #ff3fa455;border-color:#ff3fa488}
+ .coat .pic{position:absolute;inset:0 0 150px 0;background-size:cover;background-position:center top}
+ .coat .pic svg{width:100%;height:100%} .coat .cap{position:absolute;left:0;right:0;bottom:0;height:150px;padding:14px;background:linear-gradient(#07060c00,#07060cf0 30%)}
+ .coat b{display:block;color:#bff6ff;font-size:18px;margin-bottom:4px} .coat small{color:var(--dim);font-size:13px}
+ #door{position:absolute;inset:0;z-index:20;background:#000;opacity:0;pointer-events:none;transition:opacity .7s}
+ /* 합석(가까이) */
+ #close{position:absolute;inset:0;z-index:8;display:none} #close.on{display:block}
+ #close .bgc{position:absolute;inset:0;background-size:cover;background-position:center}
+ #close .bgc::after{content:'';position:absolute;inset:0;background:linear-gradient(#0000 40%,#05040acc 75%)}
+ #close svg.sil{position:absolute;inset:0;width:100%;height:100%}
+ #vn{position:absolute;left:80px;right:80px;bottom:30px;min-height:190px;padding:18px 24px 14px;border-radius:12px;background:#0b0912ee;border:1px solid #ff3fa466;box-shadow:0 0 30px #ff3fa422}
+ #vn .who{position:absolute;left:24px;top:-17px;padding:3px 16px;border-radius:6px;background:#2a0a24;border:1px solid var(--pink);color:#ffd6ee;font-weight:700;font-size:14px}
+ #vn .txt{min-height:78px;font-size:18px;line-height:1.55;white-space:pre-wrap}
+ #vn .txt .me{color:#ffe0a8} #vn .txt .sys{color:var(--dim);font-style:italic}
+ #vn .in{display:flex;gap:10px;align-items:center;margin-top:10px;border-top:1px solid #ffffff14;padding-top:10px}
+ #vn .in span{color:var(--pink)} #vn .in input{flex:1;background:transparent;border:0;outline:0;font-size:16px}
+ #vn .tools{position:absolute;right:16px;top:-17px;display:flex;gap:8px}
+ #vn .tools button{padding:3px 12px;border-radius:6px;border:1px solid #ffffff33;background:#0b0912;cursor:pointer;font-size:12px} #vn .tools button:hover{border-color:var(--cyan)}
+ #log{position:absolute;left:80px;right:80px;bottom:240px;max-height:300px;overflow:auto;display:none;padding:12px 18px;border-radius:10px;background:#05040ae8;border:1px solid #ffffff22;font-size:14px} #log.on{display:block} #log div{margin:3px 0} #log .me{color:#ffe0a8} #log .sys{color:var(--dim)}
+ .dots::after{content:'…';animation:dots 1s steps(3) infinite} @keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}}
+ /* 탄로 */
+ #boom{position:absolute;inset:0;z-index:25;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:#000c;text-align:center}
+ #boom.on{display:flex;animation:alarm .5s ease-in-out 6} @keyframes alarm{50%{background:#7a0018cc}}
+ #boom h2{margin:0;font-size:40px;color:var(--red);text-shadow:0 0 18px var(--red)} #boom p{max-width:760px;margin:0;font-size:18px}
+ #boom button,.leave{padding:9px 22px;border-radius:22px;border:1px solid var(--pink);background:#2a0a24;color:#ffd6ee;cursor:pointer;font-size:15px}
+ #toast{position:absolute;z-index:28;left:50%;top:40px;transform:translateX(-50%);padding:7px 18px;border-radius:18px;background:#0b0912ee;border:1px solid #33e6ff66;display:none;max-width:80%;font-size:14px} #toast.err{border-color:var(--red)}
+ /* 잭스: 배경을 뺀 그림(bartender_cut)을 그림 속 바 카운터 뒤에 세움 — 카운터 높이에서 아래를 흐리게 잘라 카운터 뒤에 선 것처럼 */
+ #barman{position:absolute;left:185px;top:172px;width:270px;height:360px;background-size:contain;background-repeat:no-repeat;background-position:center top;display:none;pointer-events:none;-webkit-mask-image:linear-gradient(#000 70%,transparent 75%);filter:brightness(.82) saturate(1.05) drop-shadow(0 0 14px #ff3fa455) drop-shadow(-6px 0 10px #33e6ff33)} #barman.on{display:block}
+ #tender{position:absolute;left:30px;bottom:0;width:430px;height:575px;background-size:cover;background-position:center top;border-radius:10px 10px 0 0;opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s;pointer-events:none;z-index:5;box-shadow:0 0 50px #000;-webkit-mask-image:linear-gradient(#000 80%,transparent)} #tender.on{opacity:1;transform:none}
+ #exitBtn{position:absolute;left:24px;bottom:22px;z-index:6}
+ #loading{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:6;color:var(--dim);font-size:14px;display:none;padding:4px 14px;border-radius:12px;background:#0009} #loading.on{display:block}
+</style></head>
+<body>
+<div id="drag"></div>
+<div id="hud"><span id="eye"></span><span class="v" id="vault"></span><button id="x" type="button">✕</button></div>
+<div id="stage">
+ <div id="cam"><svg id="scene" viewBox="0 0 1600 900"></svg><div id="artbg"></div><div id="barman"></div><div class="fx" id="haze"></div><div id="spots"></div><div id="bubs"></div><div id="ring"></div></div>
+ <div id="tender"></div>
+ <div class="fx" id="vig"></div><div class="fx" id="heat"></div>
+ <div id="loading"></div>
+ <button class="leave" id="exitBtn" type="button"></button>
+ <div id="close"><div class="bgc"></div><svg class="sil" viewBox="0 0 1600 900"></svg><div id="log"></div><div id="vn"><span class="who"></span><span class="tools"></span><div class="txt"></div><div class="in"><span>▸</span><input maxlength="400"></div></div></div>
+ <div id="alley"></div>
+ <div id="boom"></div><div id="toast"></div><div id="door"></div>
+</div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+ const fmt = (n) => Math.round(n).toLocaleString();
+ let S = null, focus = null, mode = 'room', typedRoom = {}, shownThem = 0, playing = 0, lastSus = 0, entering = false;
+ // 테이블 자리(무대 1600×900 기준). 그림(bg)이 오면 그림 속 테이블에 맞춰 고침.
+ const DRAWN_SPOT = { workers: [640, 640], traders: [930, 560], students: [1220, 650], families: [1400, 470] }, DRAWN_BAR = [250, 420];
+ // 받은 그림(tavern/bg.webp, 2026-10-30) 속 테이블 자리: 창가 안쪽 · 안쪽 오른쪽 · 붉은 의자 테이블 · 오른쪽 앞 / 바 카운터 안쪽
+ const ART_SPOT = { workers: [740, 440], traders: [990, 465], students: [1185, 520], families: [1470, 660] }, ART_BAR = [300, 400];
+ let SPOT = DRAWN_SPOT, BAR = DRAWN_BAR;
+ const RIM = { workers: '#ffb347', traders: '#33e6ff', students: '#c78bff', families: '#ff6f91' };
+ const toast = (t, bad) => { const m = $('toast'); m.textContent = t || ''; m.className = bad ? 'err' : ''; m.style.display = t ? 'block' : 'none'; if (t) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4200); };
+ const call = async (p) => { const r = await p; if (r && r.state) S = r.state; if (r && !r.ok && r.error) toast(r.error, true); return r || {}; };
+ function fit() { const s = Math.min(innerWidth / 1600, innerHeight / 900), st = $('stage'); st.style.transform = `translate(${-800 * s}px,${-450 * s}px) scale(${s})`; }
+ addEventListener('resize', fit); fit();
+ $('stage').addEventListener('scroll', (e) => { e.target.scrollTop = 0; e.target.scrollLeft = 0; }); // 입력칸 포커스가 무대를 밀어 올리지 않게
+
+ // ---- 앱이 그린 술집(그림이 없을 때)
+ const person = (x, y, s, rim, flip) => `<g transform="translate(${x},${y}) scale(${flip ? -s : s},${s})"><path d="M-34 0 C-34 -60 -22 -88 0 -90 C22 -88 34 -60 34 0 Z" fill="#0b0912"/><circle cx="0" cy="-112" r="24" fill="#0b0912"/><path d="M24 -126 a24 24 0 0 1 0 28 M30 -60 C34 -40 34 -20 34 0" stroke="${rim}" stroke-width="3" fill="none" opacity=".8"/></g>`;
+ function drawScene() {
+  const sv = $('scene'); let s = `<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140c22"/><stop offset="1" stop-color="#0a0712"/></linearGradient>
+   <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120c1c"/><stop offset="1" stop-color="#050408"/></linearGradient>
+   <linearGradient id="win" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16243e"/><stop offset="1" stop-color="#2a1236"/></linearGradient>
+   <filter id="bl"><feGaussianBlur stdDeviation="6"/></filter><filter id="gl"><feGaussianBlur stdDeviation="3"/></filter>
+   <radialGradient id="pool" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffb34744"/><stop offset="1" stop-color="#ffb34700"/></radialGradient></defs>
+   <rect width="1600" height="900" fill="url(#wall)"/><rect y="520" width="1600" height="380" fill="url(#floor)"/>
+   <g opacity=".6">${Array.from({ length: 22 }, (_, i) => `<line x1="${i * 80 - 400}" y1="900" x2="${800 + (i * 80 - 800) * 0.25}" y2="520" stroke="#ffffff08"/>`).join('')}</g>
+   <rect x="1060" y="110" width="420" height="300" rx="6" fill="url(#win)" stroke="#2a2440" stroke-width="10"/>
+   <g filter="url(#bl)">${[[1120, 300, '#ff3fa4'], [1210, 260, '#33e6ff'], [1300, 330, '#ffb347'], [1390, 280, '#ff3fa4'], [1180, 360, '#33e6ff'], [1440, 350, '#c78bff']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="14" fill="${c}" opacity=".7"/>`).join('')}</g>
+   <g class="rain" stroke="#9fdcff66" stroke-width="1.5">${Array.from({ length: 40 }, (_, i) => `<line x1="${1070 + (i * 37) % 400}" y1="${120 + (i * 53) % 270}" x2="${1064 + (i * 37) % 400}" y2="${140 + (i * 53) % 270}"/>`).join('')}</g>
+   <line x1="1270" y1="110" x2="1270" y2="410" stroke="#2a2440" stroke-width="8"/>
+   <g class="neon"><path d="M560 120 h360" stroke="#ff3fa4" stroke-width="5" filter="url(#gl)"/><path d="M560 120 h360" stroke="#ffd6ee" stroke-width="2"/>
+   <path d="M700 170 l40 50 l40 -50 z M740 220 v40 M720 260 h40" stroke="#33e6ff" stroke-width="4" fill="none" filter="url(#gl)"/><path d="M700 170 l40 50 l40 -50 z M740 220 v40 M720 260 h40" stroke="#dffbff" stroke-width="1.5" fill="none"/></g>
+   <rect x="0" y="150" width="520" height="16" fill="#1c1430"/><rect x="0" y="250" width="520" height="16" fill="#1c1430"/>
+   ${Array.from({ length: 18 }, (_, i) => { const x = 20 + i * 27, y = i % 2 ? 196 : 108, c = ['#ff3fa4', '#33e6ff', '#ffb347', '#8cff9e', '#c78bff'][i % 5]; return `<rect x="${x}" y="${y}" width="14" height="44" rx="4" fill="${c}" opacity=".55"/><rect x="${x + 4}" y="${y - 12}" width="6" height="14" fill="${c}" opacity=".5"/>`; }).join('')}
+   ${person(250, 560, 1.15, '#33e6ff', false)}<path d="M285 470 l60 40" stroke="#c9d6e8" stroke-width="12" stroke-linecap="round"/><circle cx="350" cy="512" r="9" fill="#c9d6e8"/>
+   <path d="M0 560 L560 590 L560 900 L0 900 Z" fill="#120c1a"/><path d="M0 560 L560 590" stroke="#33e6ff" stroke-width="3" filter="url(#gl)"/><path d="M0 560 L560 590" stroke="#c7f6ff" stroke-width="1"/>
+   ${[120, 300, 470].map((x) => `<rect x="${x - 20}" y="640" width="40" height="10" rx="5" fill="#2a2036"/><rect x="${x - 4}" y="650" width="8" height="120" fill="#1c1428"/>`).join('')}`;
+  for (const [k, [x, y]] of Object.entries(SPOT)) { const r = RIM[k];
+   s += `<ellipse cx="${x}" cy="${y + 40}" rx="140" ry="40" fill="url(#pool)"/>${person(x - 70, y + 20, 0.9, r, false)}${person(x + 72, y + 22, 0.9, r, true)}${k !== 'families' ? person(x + 4, y - 4, 0.78, r, false) : ''}
+    <ellipse cx="${x}" cy="${y + 26}" rx="92" ry="24" fill="#1e1628" stroke="#3a2c50" stroke-width="3"/><rect x="${x - 7}" y="${y + 40}" width="14" height="70" fill="#151020"/>
+    <rect x="${x - 28}" y="${y + 6}" width="10" height="18" rx="2" fill="${r}" opacity=".7"/><rect x="${x + 16}" y="${y + 8}" width="10" height="16" rx="2" fill="#ffffff55"/><circle cx="${x}" cy="${y + 22}" r="5" fill="#ffb347" opacity=".9"/>`; }
+  sv.innerHTML = s;
+ }
+ drawScene();
+ setInterval(() => { const r = document.querySelector('#scene .rain'); if (r) r.setAttribute('transform', `translate(0,${(Date.now() / 18) % 20})`); }, 60);
+
+ // ---- 의심(가장자리 붉은 기운 + 눈)
+ function drawEye() {
+  const e = $('eye'); e.textContent = ''; const V = S && S.visit; if (!V) { $('heat').style.opacity = 0; return; }
+  const p = S.sus.now / S.sus.max; e.innerHTML = `<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="${p < 0.4 ? '#9a92b4' : p < 0.75 ? '#ffb347' : '#ff4d5e'}" stroke-width="2"/><circle cx="12" cy="12" r="${2 + p * 3}" fill="${p < 0.4 ? '#9a92b4' : p < 0.75 ? '#ffb347' : '#ff4d5e'}"/></svg>`;
+  const m = h('span', 'm'), i = h('i'); i.style.width = Math.round(p * 100) + '%'; i.style.background = p < 0.4 ? '#9a92b4' : p < 0.75 ? '#ffb347' : '#ff4d5e'; m.append(i); e.append(document.createTextNode(L('의심', 'Suspicion')), m);
+  e.title = L('말을 걸거나 엿듣거나 변장에 안 맞게 행동하면 오릅니다. 가득 차면 정체가 드러납니다. 한 잔 돌리면 조금 내려갑니다.', 'Rises when you talk, eavesdrop or act out of character. When full, you are recognised. Buying a round lowers it.');
+  $('heat').style.opacity = Math.max(0, (p - 0.3) * 1.1); $('heat').classList.toggle('pulse', p >= 0.75);
+  if (S.sus.now > lastSus && lastSus < 50 && S.sus.now >= 50) toast(L('옆 테이블에서 누군가 이쪽을 힐끔 봅니다.', 'Someone at the next table glances your way.'));
+  if (S.sus.now > lastSus && lastSus < 75 && S.sus.now >= 75) toast(L('수군거림이 들립니다. "저 사람… 어디서 봤는데?"', 'Whispers. "That one… haven\'t I seen that face?"'), true);
+  lastSus = S.sus.now;
+ }
+ // ---- 방 안: 테이블 자리
+ function drawSpots() {
+  const sp = $('spots'); sp.textContent = ''; const V = S.visit; if (!V) return;
+  const p = S.sus.now / S.sus.max;
+  for (const t of S.tables) { const [x, y] = SPOT[t.key], d = h('div', 'spot' + (focus === t.key ? ' near' : '') + (p >= 0.6 && focus !== t.key && t.key === watcher() ? ' watch' : '')); d.style.left = x + 'px'; d.style.top = y + 'px';
+   d.append(h('div', 'glow'), h('div', 'tag', t.name + (t.fits ? L(' · 변장과 잘 맞음', ' · fits your disguise') : '')));
+   d.onclick = (e) => { e.stopPropagation(); lean(t.key); }; sp.append(d); }
+  const b = h('div', 'spot'); b.style.left = BAR[0] + 'px'; b.style.top = BAR[1] + 40 + 'px'; b.append(h('div', 'glow'), h('div', 'tag', S.bartender.name)); b.onclick = (e) => { e.stopPropagation(); lean('bar'); }; sp.append(b);
+ }
+ const watcher = () => { const ks = Object.keys(SPOT); return ks[(Math.floor(Date.now() / 9000)) % ks.length]; };
+ // ---- 몸 기울이기(확대)
+ function camTo(k) {
+  const c = $('cam'); if (!k) { c.style.transform = ''; return; } const [x, y] = k === 'bar' ? BAR : SPOT[k], z = 1.45;
+  const tx = Math.max(-(1600 * z - 1600), Math.min(0, 800 - x * z)), ty = Math.max(-(900 * z - 900), Math.min(0, 580 - y * z)); c.style.transform = `translate(${tx}px,${ty}px) scale(${z})`;
+ }
+ function lean(k) {
+  if (!S.visit || S.visit.exposed) return; focus = k; camTo(k); drawSpots(); drawRing(); $('bubs').textContent = ''; playing++;
+  $('tender').classList.toggle('on', k === 'bar' && !!(S.art && S.art.bartender) && !S.art.barman); if (k === 'bar' && S.art.bartender) $('tender').style.backgroundImage = `url(${S.art.bartender})`;
+  if (k === 'bar') return playBubbles([{ t: S.bartender.greet, c: 'bar' }, { t: S.visit.rumor, c: 'bar' }], BAR, playing);
+  const H = S.visit.heard && S.visit.heard[k]; if (H) playBubbles([...H.lines.map((t) => ({ t })), ...H.deep.map((t) => ({ t, c: 'deep' }))], SPOT[k], playing);
+ }
+ function unlean() { $('tender').classList.remove('on'); $('exitBtn').style.visibility = ''; focus = null; camTo(null); $('bubs').textContent = ''; $('ring').classList.remove('on'); playing++; if (S) drawSpots(); }
+ $('stage').addEventListener('click', (e) => { if (mode === 'room' && focus && !e.target.closest('.act,.spot,#ring,#exitBtn,#hud')) unlean(); });
+ async function playBubbles(list, [x, y], token) {
+  const box = $('bubs'), key = focus, offs = [[-330, -165], [40, -205], [-310, -275], [60, -315], [-290, -385]];
+  for (let i = 0; i < list.length; i++) { if (token !== playing) return; const b = h('div', 'bub' + (list[i].c ? ' ' + list[i].c : '')); const [ox, oy] = offs[i % offs.length]; b.style.left = x + ox + (key === 'bar' ? 420 : 0) + 'px'; b.style.top = y + oy + 'px'; box.append(b);
+   await sleep(30); b.classList.add('on'); const full = String(list[i].t || ''), seen = typedRoom[key + i] === full; if (seen) b.textContent = full; else { for (let j = 1; j <= full.length; j++) { if (token !== playing) return; b.textContent = full.slice(0, j); await sleep(18); } typedRoom[key + i] = full; await sleep(500); } }
+ }
+ function drawRing() {
+  const r = $('ring'); r.textContent = ''; const V = S.visit; if (!focus || !V || V.exposed) { r.classList.remove('on'); return; }
+  const [x, y] = focus === 'bar' ? BAR : SPOT[focus]; r.style.left = x + (focus === 'bar' ? 420 : 0) + 'px'; r.style.top = y + 120 + 'px'; $('exitBtn').style.visibility = focus === 'bar' ? 'hidden' : ''; r.classList.add('on');
+  const act = (t, f, cls, dis) => { const b = h('button', 'act' + (cls ? ' ' + cls : ''), t); b.type = 'button'; b.disabled = !!dis; b.onclick = (e) => { e.stopPropagation(); f(); }; r.append(b); return b; };
+  if (focus === 'bar') { act(L('물러나기', 'Step back'), unlean); return; }
+  const t = S.tables.find((x) => x.key === focus), H = V.heard && V.heard[focus];
+  if (!H) act(V.loading ? L('귀를 기울이는 중…', 'Listening…') : L('귀 기울이기', 'Listen in'), async () => { await call(window.sllm.tavernListen(focus)); lean(focus); }, '', V.loading);
+  act(t.round ? L('한 잔 돌림', 'Round bought') : L(`한 잔 돌리기 · ${S.roundCost}`, `Buy a round · ${S.roundCost}`), async () => { const r2 = await call(window.sllm.tavernRound(focus)); if (r2.ok) { toast(r2.msg); lean(focus); } drawEye(); }, '', t.round || V.loading);
+  act(L('합석하기', 'Join them'), () => sit(focus), 'hot', V.loading);
+  act(L('물러나기', 'Step back'), unlean);
+ }
+ // ---- 합석(가까이 + 대화창)
+ async function sit(k) { const r = await call(window.sllm.tavernSit(k)); if (!r.ok) return; await fade(async () => { mode = 'talk'; shownThem = 0; drawClose(true); }); }
+ async function stand() { await call(window.sllm.tavernSit('')); await fade(async () => { mode = 'room'; $('close').classList.remove('on'); render(); if (focus) lean(focus); }); }
+ async function fade(fn) { const d = $('door'); d.style.opacity = 1; await sleep(450); await fn(); d.style.opacity = 0; }
+ function drawClose(first) {
+  const V = S.visit, c = $('close'); if (!V || !V.seat) { c.classList.remove('on'); return; } c.classList.add('on');
+  const a = S.art.tables[V.seat], bg = c.querySelector('.bgc'), sil = c.querySelector('svg.sil'), rim = RIM[V.seat];
+  bg.style.backgroundImage = a ? `url(${a})` : (S.art.bg ? `url(${S.art.bg})` : 'radial-gradient(ellipse at 50% 40%,#2a1838,#06050a 70%)'); bg.style.filter = a ? '' : 'blur(6px) brightness(.55)';
+  sil.innerHTML = a ? '' : `<g style="filter:blur(7px) brightness(.55)" transform="translate(${-(SPOT[V.seat][0] * 1.8 - 800)},${-(SPOT[V.seat][1] * 1.8 - 380)}) scale(1.8)">${$('scene').innerHTML}</g><rect width="1600" height="900" fill="#06050a" opacity=".35"/><g transform="translate(0,-70)"><ellipse cx="800" cy="760" rx="520" ry="110" fill="#1a1424" stroke="#3a2c50" stroke-width="4"/>${person(470, 700, 2.2, rim, false)}${person(1130, 700, 2.2, rim, true)}${V.seat !== 'families' ? person(800, 640, 1.9, rim, false) : ''}<rect x="650" y="660" width="26" height="60" rx="4" fill="${rim}" opacity=".6"/><rect x="900" y="668" width="24" height="52" rx="4" fill="#ffffff44"/></g>`;
+  const vn = $('vn'); vn.querySelector('.who').textContent = V.seatName;
+  const tools = vn.querySelector('.tools'); tools.textContent = ''; const tb = (t, f) => { const b = h('button', '', t); b.type = 'button'; b.onclick = f; tools.append(b); };
+  const tt = S.tables.find((x) => x.key === V.seat); if (!tt.round) tb(L(`한 잔 돌리기 · ${S.roundCost}`, `Buy a round · ${S.roundCost}`), async () => { const r = await call(window.sllm.tavernRound(V.seat)); if (r.ok) toast(r.msg); drawEye(); drawClose(); });
+  tb(L('지난 말', 'Log'), () => { $('log').classList.toggle('on'); drawLog(); }); tb(L('일어나기', 'Leave the table'), stand);
+  const txt = vn.querySelector('.txt'), them = V.chat.filter((x) => x.who === 'them'), last = V.chat[V.chat.length - 1];
+  if (V.asking) { txt.textContent = ''; const me = h('div', 'me', `${L('나', 'Me')}: ${last && last.who === 'me' ? last.text : ''}`), w = h('div', 'sys dots', L('다들 잔을 내려놓고 쳐다봅니다', 'They put their glasses down and look at you')); txt.append(me, w); }
+  else if (them.length > shownThem) { shownThem = them.length; typeVN(txt, them[them.length - 1].text); }
+  else if (last && last.who !== 'me' && txt.querySelector('.dots')) { txt.textContent = ''; txt.append(h('div', 'sys', them.length ? them[them.length - 1].text : '')); } // 답을 못 받았을 때(AI 미연결 등) 「쳐다봅니다」 점이 남지 않게(2026-10-31 감사)
+  else if (first || !them.length) { txt.textContent = ''; const sys = V.chat.find((x) => x.who === 'sys'); txt.append(h('div', 'sys', them.length ? them[them.length - 1].text : (sys ? sys.text : '') + '\n' + L('그들은 당신이 통치자인 줄 모릅니다. 너무 통치자처럼 말하면 의심을 삽니다.', 'They have no idea you are the ruler. Talk too much like one and suspicion rises.'))); }
+  const inp = vn.querySelector('input'); inp.placeholder = L('무슨 말을 할까요? (Enter)', 'What do you say? (Enter)'); inp.disabled = V.asking; if (!V.asking) setTimeout(() => inp.focus({ preventScroll: true }), 0);
+  drawLog();
+ }
+ let vnTok = 0;
+ async function typeVN(el, text) { const tk = ++vnTok; el.textContent = ''; const d = h('div', ''); el.append(d); for (let j = 1; j <= text.length; j++) { if (tk !== vnTok) return; d.textContent = text.slice(0, j); await sleep(22); } }
+ function drawLog() { const lg = $('log'); if (!lg.classList.contains('on') || !S.visit) return; lg.textContent = ''; for (const c of S.visit.chat) lg.append(h('div', c.who, c.who === 'me' ? `${L('나', 'Me')}: ${c.text}` : c.text)); lg.scrollTop = lg.scrollHeight; }
+ $('vn').querySelector('input').addEventListener('keydown', async (e) => { if (e.key !== 'Enter') return; const inp = e.target, t = inp.value.trim(); if (!t || !S.visit || S.visit.asking) return; inp.value = ''; const p = call(window.sllm.tavernSay(t)); setTimeout(() => { if (S.visit) { S.visit.asking = true; S.visit.chat.push({ who: 'me', text: t }); drawClose(); } }, 0); await p; render(); });
+ // ---- 골목(변장 고르기)
+ const coatSvg = (id) => `<svg viewBox="0 0 330 410"><rect width="330" height="410" fill="#0d0a16"/><g stroke="#9fdcff33">${Array.from({ length: 30 }, (_, i) => `<line x1="${(i * 41) % 330}" y1="${(i * 67) % 410}" x2="${(i * 41) % 330 - 6}" y2="${(i * 67) % 410 + 22}"/>`).join('')}</g>
+   <path d="M95 410 C95 250 120 200 165 195 C210 200 235 250 235 410 Z" fill="#05040a"/><path d="M118 168 C118 120 212 120 212 168 C212 200 190 214 165 214 C140 214 118 200 118 168 Z" fill="#05040a"/>
+   ${id === 'merchant' ? '<path d="M80 150 Q165 110 250 150 Q165 140 80 150 Z" fill="#05040a"/><path d="M80 150 Q165 140 250 150" stroke="#ff3fa4" stroke-width="2"/><rect x="215" y="240" width="60" height="44" rx="8" fill="#05040a" stroke="#ffb347" stroke-width="2"/>' : id === 'dockworker' ? '<path d="M120 150 Q165 108 210 150 Z" fill="#05040a" stroke="#33e6ff" stroke-width="2"/><path d="M245 250 l30 60" stroke="#c9d6e8" stroke-width="8" stroke-linecap="round"/>' : '<path d="M108 190 Q165 90 222 190 Q165 150 108 190 Z" fill="#05040a" stroke="#8cff9e" stroke-width="2"/><rect x="135" y="300" width="20" height="8" fill="#8cff9e" opacity=".7"/>'}
+   <path d="M95 410 C95 250 120 200 165 195 C210 200 235 250 235 410" stroke="#ff3fa4" stroke-width="2" fill="none" opacity=".6"/></svg>`;
+ function drawAlley() {
+  const a = $('alley'); a.textContent = ''; const V = S.visit; a.style.display = V ? 'none' : ''; if (V) return;
+  a.style.background = 'radial-gradient(ellipse at 50% 0%,#2a0f2e,#05040a 70%)';
+  a.append(h('div', 'ttl', L('뒷골목 선술집', 'BACK-ALLEY BAR')), h('div', 'sub', S.banned ? S.lines.banned : L('비가 내리는 골목. 경호원은 골목 입구에서 기다립니다. 어떤 모습으로 문을 밀고 들어갈까요?', 'A rainy alley. Your guards wait at its mouth. Who will you be when you push the door open?')));
+  if (S.banned) return;
+  S.disguises.forEach((d, i) => { const c = h('div', 'coat'); c.style.left = 170 + i * 440 + 'px'; const p = h('div', 'pic'); if (S.art.disguise[d.id]) p.style.backgroundImage = `url(${S.art.disguise[d.id]})`; else p.innerHTML = coatSvg(d.id); const cap = h('div', 'cap'); cap.append(h('b', '', d.name), h('small', '', d.about)); c.append(p, cap);
+   c.onclick = async () => { if (entering) return; entering = true; await fade(async () => { await call(window.sllm.tavernEnter(d.id)); render(); }); entering = false; toast(L('문을 밀고 들어갑니다. 습한 공기, 싸구려 합성주 냄새, 낮은 웅성거림.', 'You push the door open. Damp air, cheap synth-liquor, a low murmur.')); }; a.append(c); });
+  if (S.exposures) a.append(Object.assign(h('div', 'sub', L(`지금까지 정체가 드러난 적 ${S.exposures}번`, `Recognised ${S.exposures} time(s) so far`)), { style: 'top:800px' }));
+ }
+ function drawBoom() {
+  const bm = $('boom'), V = S && S.visit; bm.textContent = ''; bm.classList.toggle('on', !!(V && V.exposed)); if (!V || !V.exposed) return;
+  const b = h('button', '', L('궁으로 돌아가기', 'Back to the palace')); b.type = 'button'; b.onclick = () => window.sllm.tavernClose();
+  bm.append(h('h2', '', L('정체가 드러났다!', 'You have been recognised!')), h('p', '', V.exposedText), h('p', '', L('경호원에게 둘러싸여 궁으로 돌아갑니다. 오늘은 다시 올 수 없습니다.', 'Surrounded by your guards, you are hurried back to the palace. You cannot return today.')), b);
+ }
+ function render() {
+  if (!S || !S.ready) return;
+  $('vault').innerHTML = ''; $('vault').append(document.createTextNode(L('금고 ', 'Vault ')), h('b', '', fmt(S.vault)));
+  const art = S.art.bg; $('artbg').style.display = art ? 'block' : 'none'; if (art) $('artbg').style.backgroundImage = `url(${art})`; $('scene').style.display = art ? 'none' : ''; SPOT = art ? ART_SPOT : DRAWN_SPOT; BAR = art ? ART_BAR : DRAWN_BAR; const bm = $('barman'), bmOn = !!(art && S.art.barman && S.visit); bm.classList.toggle('on', bmOn); if (bmOn) bm.style.backgroundImage = `url(${S.art.barman})`;
+  drawEye(); drawAlley(); drawBoom();
+  const V = S.visit; $('exitBtn').style.display = V && !V.exposed && mode === 'room' ? '' : 'none'; $('exitBtn').textContent = L('조용히 빠져나가기', 'Slip out quietly');
+  $('loading').classList.toggle('on', !!(V && V.loading)); if (V && V.loading) setTimeout(async () => { if (S && S.visit && S.visit.loading) { const was = focus; S = await window.sllm.tavernState(); render(); if (!S.visit.loading && was && mode === 'room') lean(was); } }, 800); /* 엿듣기 준비 확인(알림을 놓쳐도) */ $('loading').textContent = L('시끄러운 술집에 귀가 익는 중…', 'Your ears adjust to the noisy bar…');
+  if (!V) { mode = 'room'; focus = null; camTo(null); $('spots').textContent = ''; $('bubs').textContent = ''; $('ring').classList.remove('on'); $('close').classList.remove('on'); return; }
+  if (V.exposed) { $('close').classList.remove('on'); $('ring').classList.remove('on'); $('cam').style.filter = 'blur(3px)'; return; }
+  if (mode === 'talk' && V.seat) { drawClose(); return; }
+  drawSpots(); drawRing();
+ }
+ $('exitBtn').onclick = () => { toast(S.lines.leave); setTimeout(() => window.sllm.tavernClose(), 900); };
+ $('x').onclick = () => window.sllm.tavernClose();
+ document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (mode === 'talk') { if ($('log').classList.contains('on')) $('log').classList.remove('on'); else stand(); } else if (focus) unlean(); else window.sllm.tavernClose(); });
+ document.addEventListener('sllm-language', () => { drawScene(); render(); });
+ if (window.sllm.onTavernState) window.sllm.onTavernState((s) => { const wasLoading = S && S.visit && S.visit.loading; S = s; render(); if (wasLoading && S.visit && !S.visit.loading && focus && mode === 'room') lean(focus); });
+ window.sllm.tavernState().then((s) => { S = s; render(); });
+</script>
+</body></html>

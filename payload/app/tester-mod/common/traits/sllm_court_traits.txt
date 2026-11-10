@@ -1,0 +1,29 @@
+# SLLM 정치(2026-10-28): 음모가 드러나 체포된 지도자. 앱이 체포 때 붙이고 석방 때 뗀다(src/court.ts courtLeaderCommand).
+# 가둔 사람이 일을 맡지 못하게 크게 깎는다. 아이콘은 바닐라 그림.
+sllm_trait_imprisoned = {
+	leader_trait_type = negative
+	randomized = no
+	inline_script = {
+		script = trait/icon_negative
+		ICON = "GFX_leader_trait_nervous"
+		COUNCIL = no
+		TIER = 1
+	}
+	self_modifier = {
+		species_leader_exp_gain = -0.5
+	}
+	fleet_modifier = {
+		ship_weapon_damage = -0.5
+	}
+	army_modifier = {
+		army_damage_mult = -0.5
+	}
+	planet_modifier = {
+		planet_jobs_produces_mult = -0.3
+	}
+	modifier = {
+		science_ship_survey_speed = -0.5
+	}
+	leader_class = { commander scientist official }
+	selectable_weight = 0
+}

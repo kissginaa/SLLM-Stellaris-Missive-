@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Bedchamber</title>
+<!-- 통치자 침실(2026-10-30, 계획서 8번). 앱: src/features/bedroom-app.ts · 자료: src/bedroom.ts. 입구: 개인실 책상 위 열쇠(private-rooms.js).
+     몰입형 1600×900 무대(선술집·암시장과 같은 방식). 그림: assets/private-rooms/private/<성향>-bedroom.webp(02_침실_그림_의뢰서.md 의 고정 배치), 없으면 앱이 그린 밤 침실.
+     자리(SPOT, 무대 좌표)는 의뢰서 2번 표의 % 를 그대로 옮김 — 그림이 오면 재서 맞춤.
+     꾸미기: 자리 누르기 → 그 자리에 맞는 가진 물건 고르기. 어항 = 펫샵 물고기, 양탄자 = 애완동물. 배우자·연인 부르기 → 침대 곁에서 대화(물을 때만 AI).
+     문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--gold:#ffcf7a;--rose:#ff9ab8;--cyan:#7fe6ff;--text:#f2ece4;--dim:#a99f94;--hi:#ffcf7a}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:#000;color:var(--text);font:15px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden;user-select:none}
+ button,input{font:inherit;color:var(--text)}
+ #drag{position:absolute;z-index:30;left:0;right:0;top:0;height:30px;-webkit-app-region:drag}
+ #x{position:absolute;z-index:31;right:12px;top:6px;background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer;-webkit-app-region:no-drag} #x:hover{color:#fff}
+ #stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:#07060a}
+ #scene,#artbg{position:absolute;inset:0;width:100%;height:100%} #artbg{background-size:100% 100%;display:none}
+ #glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 100%,transparent 50%,#000a 100%)}
+ /* 자리 */
+ .slot{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:12px;transition:box-shadow .25s,background .25s}
+ .slot:hover{box-shadow:0 0 0 2px #ffcf7a66,0 0 26px #ffcf7a33;background:#ffcf7a0d}
+ .slot.empty{visibility:hidden} body.deco .slot.empty{visibility:visible;border:2px dashed #ffcf7a77;background:#ffcf7a0a}
+ body.deco .slot.empty::after{content:'+';font-size:30px;color:#ffcf7aaa}
+ .slot img.it{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 14px #000c);pointer-events:none}
+ .slot.room{transform:translateX(-50%);border-radius:0} .slot.room img.rm{display:block;width:100%;height:auto;pointer-events:none} .slot.room:hover{background:none;box-shadow:none} .slot.room:hover img.rm{filter:brightness(1.12) drop-shadow(0 0 14px #ffcf7a66)} /* 방에 세우는 가구(2026-10-31) */
+ .slot .gl{width:76%;height:76%;max-width:120px;max-height:120px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#20160a;background:linear-gradient(135deg,#ffe2a8,#b07a2e);box-shadow:0 0 16px #ffcf7a55;pointer-events:none}
+ .slot.wall .pic{width:100%;height:100%;object-fit:cover;border:7px solid #b8893a;border-radius:3px;box-shadow:inset 0 0 0 2px #5a3a10,0 10px 22px #000c;background:#1a140c}
+ .slot .tag{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);white-space:nowrap;font-size:12px;padding:1px 9px;border-radius:9px;background:#000c;border:1px solid #ffcf7a55;opacity:0;transition:opacity .2s;pointer-events:none}
+ .slot:hover .tag,body.deco .slot .tag{opacity:1}
+ /* 어항 */
+ #tank{position:absolute;left:96px;top:250px;width:368px;height:270px;overflow:hidden;cursor:pointer;border-radius:6px}
+ .fish{position:absolute;width:64px;height:40px;animation:swim linear infinite} .fish .b{width:100%;height:100%;animation:bob 2.4s ease-in-out infinite alternate}
+ .fish img{width:100%;height:100%;object-fit:contain} .fish.flip .b{transform:scaleX(-1)}
+ @keyframes swim{0%{left:-70px}100%{left:380px}} @keyframes swimR{0%{left:380px}100%{left:-70px}} @keyframes bob{to{translate:0 10px}}
+ .bubl{position:absolute;bottom:-10px;width:6px;height:6px;border-radius:50%;border:1px solid #bff4ff99;animation:rise linear infinite} @keyframes rise{to{bottom:290px;opacity:0}}
+ /* 애완동물 */
+ /* 개인 금고(2026-10-31): 어항 받침장에 박힌 작은 금고 — 누르면 금고 창(vault-ui.js) */
+ #safe{position:absolute;z-index:4;left:208px;top:520px;width:64px;height:56px;padding:0;border-radius:6px;border:2px solid #6a5a44;background:linear-gradient(145deg,#8a8478,#4a463e 55%,#2e2b26);box-shadow:inset 0 0 0 3px #00000055,inset 0 2px 0 #ffffff33,0 4px 10px #000a;cursor:pointer}
+ #safe .dial{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(#d8cfb8,#8a7a58 60%,#3a3220);box-shadow:0 0 0 2px #2a2418} #safe .hd{position:absolute;right:6px;top:50%;width:5px;height:18px;margin-top:-9px;border-radius:2px;background:#c8b888}
+ #safe:hover{box-shadow:inset 0 0 0 3px #00000055,0 0 0 2px #ffcf7a99,0 0 22px #ffcf7a66} #safe::after{content:attr(data-tag);position:absolute;left:50%;bottom:-22px;transform:translateX(-50%);white-space:nowrap;font-size:12px;padding:1px 9px;border-radius:9px;background:#000c;border:1px solid #ffcf7a55;opacity:0;transition:opacity .2s;pointer-events:none;color:#f0e6d6} #safe:hover::after{opacity:1}
+ body.noart #safe{left:410px;top:560px}
+ /* 완성 침실(2026-10-31): 금고는 그림 속에 있다 — 그 자리를 누르는 투명 단추로, 올리면 금빛으로 빛난다 */
+ body.fullart #safe{left:4px;top:578px;width:248px;height:214px;border:0;border-radius:14px;background:transparent;box-shadow:none} body.fullart #safe .dial,body.fullart #safe .hd{display:none}
+ body.fullart #safe:hover{background:radial-gradient(closest-side,#ffcf7a2a,#ffcf7a00);box-shadow:0 0 0 2px #ffcf7a66,0 0 30px #ffcf7a55} body.fullart #safe::after{bottom:auto;top:-26px}
+ body.fullart #guest{left:780px}
+ #pets{position:absolute;inset:0;z-index:5;pointer-events:none} #pets .pet{pointer-events:auto} #guest{z-index:3} /* 가구(z 1~4) 위에 애완동물(2026-10-31) */
+ .pet{position:absolute;width:118px;height:118px;transform:translate(-50%,-100%);cursor:pointer;animation:breathe 3.2s ease-in-out infinite}
+ .pet img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 10px #000c)} .pet .nm{position:absolute;left:50%;bottom:-20px;transform:translateX(-50%);font-size:12px;white-space:nowrap;padding:0 8px;border-radius:8px;background:#000a;opacity:0;transition:opacity .2s} .pet:hover .nm{opacity:1}
+ body.deco .pet{pointer-events:none;opacity:.55}
+ @keyframes breathe{50%{transform:translate(-50%,-100%) scale(1.03,0.98)}}
+ /* 손님(배우자) */
+ #guest{position:absolute;left:820px;top:330px;width:200px;height:330px;display:none;pointer-events:none} #guest.on{display:block}
+ #guest img{width:100%;height:100%;object-fit:contain;object-position:bottom}
+ .bub{position:absolute;max-width:420px;padding:9px 13px;border-radius:14px;background:#140f0cee;border:1px solid #ffcf7a55;font-size:15px;line-height:1.45;box-shadow:0 6px 18px #000a;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s;pointer-events:none;z-index:6}
+ .bub.on{opacity:1;transform:none}
+ /* 아래 막대 */
+ #bar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;gap:10px;justify-content:center;padding:14px;background:linear-gradient(transparent,#000c)}
+ .act{padding:8px 18px;border-radius:20px;border:1px solid #ffffff33;background:#0c0a08e8;cursor:pointer;font-size:14px;white-space:nowrap}
+ .act:hover:not(:disabled){border-color:var(--gold);color:#ffe8c0;box-shadow:0 0 14px #ffcf7a44} .act.on{border-color:var(--gold);color:#ffe8c0;background:#2a1e0ce8} .act:disabled{opacity:.4;cursor:default}
+ /* 고르기 판 */
+ #panel{position:absolute;z-index:12;left:50%;top:50%;transform:translate(-50%,-50%);width:760px;max-height:620px;overflow:auto;display:none;padding:18px 22px;border-radius:14px;background:#0f0b08f4;border:1px solid #ffcf7a77;box-shadow:0 0 50px #000}
+ #panel.on{display:block} #panel h3{margin:0 0 4px;color:#ffe2b0;font-size:18px} #panel .sub{color:var(--dim);font-size:13px;margin-bottom:12px}
+ #panel .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+ .opt{padding:8px;border-radius:10px;border:1px solid #ffffff1f;background:#00000055;cursor:pointer;text-align:center;font-size:13px;line-height:1.3}
+ .opt:hover{border-color:var(--gold);box-shadow:0 0 14px #ffcf7a33} .opt.cur{border-color:var(--gold);background:#2a1e0c} .opt .ic{height:72px;display:flex;align-items:center;justify-content:center} .opt .ic img{max-width:68px;max-height:68px}
+ .opt .ic .gl{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#20160a;background:linear-gradient(135deg,#ffe2a8,#b07a2e)} .opt small{display:block;color:var(--dim);font-size:11px}
+ #panel .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+ /* 대화 */
+ #talk{position:absolute;z-index:10;right:24px;top:60px;bottom:80px;width:440px;display:none;flex-direction:column;border-radius:14px;background:#0d0a08e6;border:1px solid #ffcf7a55;box-shadow:0 0 30px #000c}
+ #talk.on{display:flex} #talk h3{margin:0;padding:12px 16px;border-bottom:1px solid #ffffff14;font-size:15px;color:#ffe2b0;display:flex;justify-content:space-between;align-items:center}
+ #log{flex:1;overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px;user-select:text}
+ .ln{max-width:88%;padding:7px 11px;border-radius:12px;font-size:14px;line-height:1.45} .ln.me{align-self:flex-end;background:#2a1e0c;border:1px solid #ffcf7a44} .ln.them{align-self:flex-start;background:#1a1218;border:1px solid #ff9ab844}
+ #talk form{display:flex;gap:8px;padding:12px;border-top:1px solid #ffffff14} #talk input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid #ffffff33;background:#00000066}
+ #toast{position:absolute;z-index:28;left:50%;top:40px;transform:translateX(-50%);padding:7px 18px;border-radius:18px;background:#0f0b08ee;border:1px solid #ffcf7a66;display:none;max-width:80%;font-size:14px} #toast.err{border-color:#ff6a7a}
+ #door{position:absolute;inset:0;z-index:20;background:#000;opacity:1;pointer-events:none;transition:opacity 1.2s}
+</style></head>
+<body>
+<div id="drag"></div><button id="x" type="button">✕</button>
+<div id="stage">
+ <svg id="scene" viewBox="0 0 1600 900"></svg><div id="artbg"></div>
+ <div id="tank"></div><button id="safe" type="button"><i class="dial"></i><i class="hd"></i></button><div id="slots"></div><div id="pets"></div><div id="guest"></div><div id="bubs"></div><div id="glow"></div>
+ <div id="bar"></div><div id="panel"></div><div id="talk"></div><div id="toast"></div><div id="door"></div>
+</div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><script src="vault-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+ let ART = false, S = null, deco = false, picking = null, inviting = false, playing = 0;
+ // 자리(무대 1600×900): 02_침실_그림_의뢰서.md 2번 표(가로·세로 %)를 옮김. [가운데 x, 가운데 y, 너비, 높이]
+ const SPOT0 = {
+  bed: [1040, 560, 600, 400], floorA: [600, 690, 210, 220], cornerB: [1490, 590, 190, 330], rug: [800, 812, 300, 70], ceiling: [800, 46, 200, 70], window: [640, 250, 340, 330],
+  wall1: [880, 175, 130, 150], wall2: [1040, 165, 150, 170], wall3: [1200, 175, 130, 150],
+  shelf1: [720, 560, 90, 90], shelf2: [160, 190, 100, 80], shelf3: [280, 190, 100, 80], shelf4: [400, 190, 100, 80],
+ };
+ const PET_AT0 = [[740, 840], [860, 850], [980, 838]];
+ // 그림 침실(2026-10-31 받은 8장, 1672×941 → 무대 1600×900): 실제 배경에 맞춘 자리. 아이콘(진열용 그림)은 가운데 기준 [x, y, 너비, 높이].
+ const SPOT_ART = {
+  bed: [1196, 520, 600, 300], floorA: [520, 700, 230, 220], cornerB: [1515, 600, 170, 300], rug: [1050, 800, 600, 110], ceiling: [800, 50, 260, 80], window: [668, 290, 460, 360],
+  wall1: [1100, 255, 90, 110], wall2: [1200, 245, 110, 140], wall3: [1300, 255, 90, 110],
+  shelf1: [835, 640, 70, 70], shelf2: [80, 232, 60, 60], shelf3: [150, 232, 60, 60], shelf4: [220, 232, 60, 60],
+ };
+ // 방에 세우는 그림(store/room/<id>.png): [가운데 x, 기준선 y, 너비, 'b' 바닥선 · 't' 천장]. 그림은 아래(천장등은 위) 여백을 정리해 둔 것.
+ const ROOM_AT = { bed: [1196, 670, 622, 'b'], floorA: [520, 812, 225, 'b'], cornerB: [1500, 768, 190, 'b'], rug: [1050, 862, 1060, 'b'], ceiling: [800, 0, 300, 't'], window: [668, 96, 480, 't'] };
+ const SLOT_Z = { rug: 1, window: 1, wall: 1, bed: 2, floor: 3, corner: 3, shelf: 4, ceiling: 4 };
+ const PET_ART = [[770, 838], [1010, 852], [1250, 838]];
+ let SPOT = SPOT0, PET_AT = PET_AT0;
+ // 성향별 색(앱이 그린 방): [벽, 바닥, 침대, 강조]
+ const PAL = { authoritarian: ['#2a0e12', '#160a08', '#6a1622', '#ffcf7a'], egalitarian: ['#2a2218', '#18120c', '#c8b89a', '#ffe2a8'], xenophile: ['#26142a', '#140c16', '#7a3a6a', '#ff9ab8'], xenophobe: ['#121a22', '#0a0e14', '#2e3e50', '#9fc4e8'],
+  militarist: ['#1a1c1a', '#0e100e', '#3a4030', '#c8d090'], pacifist: ['#1a2630', '#0e161c', '#d8e8f0', '#bfeaff'], spiritualist: ['#20142e', '#120c1a', '#4a2a6a', '#e0b8ff'], materialist: ['#0e1e22', '#081214', '#24484e', '#7fe6ff'] };
+ const toast = (t, bad) => { const m = $('toast'); m.textContent = t || ''; m.className = bad ? 'err' : ''; m.style.display = t ? 'block' : 'none'; if (t) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4200); };
+ const call = async (p) => { const r = await p; if (r && r.state) S = r.state; if (r && !r.ok && r.error) toast(r.error, true); return r || {}; };
+ function fit() { const s = Math.min(innerWidth / 1600, innerHeight / 900); $('stage').style.transform = `translate(${-800 * s}px,${-450 * s}px) scale(${s})`; }
+ addEventListener('resize', fit); fit();
+ $('stage').addEventListener('scroll', (e) => { e.target.scrollTop = 0; e.target.scrollLeft = 0; });
+ const glyph = (name) => h('div', 'gl', String(name || '?').trim().charAt(0));
+
+ // ---- 앱이 그린 밤 침실(그림이 없을 때)
+ function drawScene() {
+  const bedItem = !!(S && S.slots && S.slots.find((x) => x.id === 'bed' && x.item)), [wall, floor, bed, acc] = PAL[(S && S.theme) || 'authoritarian'] || PAL.authoritarian;
+  $('scene').innerHTML = `<defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${wall}"/><stop offset="1" stop-color="#000"/></linearGradient>
+   <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${floor}"/><stop offset="1" stop-color="#000"/></linearGradient>
+   <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050816"/><stop offset="1" stop-color="#1a1430"/></linearGradient>
+   <linearGradient id="wat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a8aa0" stop-opacity=".55"/><stop offset="1" stop-color="#06283a" stop-opacity=".9"/></linearGradient>
+   <radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${acc}" stop-opacity=".35"/><stop offset="1" stop-color="${acc}" stop-opacity="0"/></radialGradient><filter id="bl"><feGaussianBlur stdDeviation="6"/></filter></defs>
+   <rect width="1600" height="900" fill="url(#w)"/><path d="M0 620 L1600 620 L1600 900 L0 900Z" fill="url(#f)"/>
+   <rect x="470" y="85" width="340" height="330" rx="8" fill="url(#sky)" stroke="${acc}" stroke-opacity=".5" stroke-width="5"/>
+   ${Array.from({ length: 40 }, (_, i) => `<circle cx="${480 + ((i * 97) % 320)}" cy="${95 + ((i * 53) % 200)}" r="${i % 5 ? 1 : 1.8}" fill="#fff" opacity=".7"/>`).join('')}
+   <g fill="${acc}" opacity=".55">${Array.from({ length: 14 }, (_, i) => `<rect x="${482 + i * 23}" y="${300 + ((i * 37) % 80)}" width="16" height="${115 - ((i * 37) % 80)}"/>`).join('')}</g>
+   <path d="M640 85 V415 M470 250 H810" stroke="${acc}" stroke-opacity=".35" stroke-width="3"/>
+   <rect x="80" y="230" width="400" height="310" rx="8" fill="#000" stroke="${acc}" stroke-opacity=".5" stroke-width="6"/><rect x="96" y="250" width="368" height="270" fill="url(#wat)"/>
+   <path d="M96 500 Q180 480 260 500 T464 495 V520 H96Z" fill="#c8b07a" opacity=".55"/>
+   ${[140, 200, 380, 420].map((x, i) => `<path d="M${x} 505 q${i % 2 ? 12 : -10} -50 0 -${80 + i * 12}" stroke="#2a8a4a" stroke-width="5" fill="none" opacity=".7"/>`).join('')}
+   <rect x="80" y="214" width="400" height="10" fill="${acc}" opacity=".35"/>
+   <rect x="96" y="220" width="368" height="8" fill="${acc}" opacity=".25"/>
+   <circle cx="800" cy="40" r="120" fill="url(#lamp)"/>
+   ${bedItem ? '' : `<path d="M760 420 H1320 V470 H760Z" fill="${bed}" opacity=".9"/><rect x="760" y="460" width="560" height="200" rx="10" fill="${bed}"/><rect x="740" y="640" width="600" height="40" rx="8" fill="#000" opacity=".5"/>
+   <rect x="780" y="480" width="200" height="60" rx="18" fill="#fff" opacity=".18"/><rect x="1100" y="480" width="200" height="60" rx="18" fill="#fff" opacity=".18"/><path d="M760 560 H1320 V660 H760Z" fill="#000" opacity=".18"/>`}
+   <rect x="660" y="580" width="110" height="80" fill="#000" opacity=".35" stroke="${acc}" stroke-opacity=".3"/>
+   <ellipse cx="860" cy="830" rx="260" ry="50" fill="${acc}" opacity=".12"/><ellipse cx="860" cy="830" rx="230" ry="40" fill="none" stroke="${acc}" stroke-opacity=".3" stroke-width="2"/>
+   <circle cx="715" cy="560" r="60" fill="url(#lamp)" filter="url(#bl)"/>`;
+ }
+
+ // 2026-10-31 사용자 결정: 산 가구는 침실에 놓지 않음(개인실 버프 용도만 — 가구 편의). 침실은 완성 그림(17_침실_완성_그림_의뢰서) 오기 전까지 기본 침대만 얹음.
+ function drawBed() {
+  const box = $('slots'); box.textContent = ''; deco = false; document.body.classList.remove('deco');
+  const ra = ROOM_AT.bed; if (!ART || !S.art.bed || S.art.full) return;
+  const d = h('div', 'slot room bed'); Object.assign(d.style, { left: ra[0] + 'px', width: ra[2] + 'px', height: 'auto', top: 'auto', bottom: (900 - ra[1]) + 'px', zIndex: 2, pointerEvents: 'none' }); const im = h('img', 'rm'); im.src = S.art.bed; d.append(im); box.append(d);
+ }
+ function openComfort() {
+  const c = S.comfort; if (!c) return; picking = null; inviting = false; const p = $('panel'); p.textContent = ''; p.classList.add('on');
+  p.append(h('h3', '', '🛋 ' + L('가구 편의 — 통치자 컨디션', 'Furniture comfort — the ruler\'s condition')));
+  p.append(h('div', 'sub', L('백화점 40층(리빙관)·42층(갤러리)에서 산 가구·장식은 개인실과 침실을 편안하게 만들어 통치자의 컨디션을 올립니다. 모은 종류가 3·6·10·15종이 될 때마다 한 단계씩 올라갑니다(같은 물건 여러 개는 1종).', 'Furniture and decor bought on store floors 40 (living) and 42 (gallery) make your private rooms comfortable and lift the ruler\'s condition. Each 3, 6, 10 and 15 kinds collected raises it one tier (duplicates count once).')));
+  const st = h('div', 'grid'); c.steps.forEach((n, i) => { const o = h('div', 'opt' + (c.tier === i + 1 ? ' cur' : '')); o.append(h('div', 'ic', c.tier > i ? '★' : '☆'), h('div', '', L(`${i + 1}단계 · ${n}종`, `Tier ${i + 1} · ${n} kinds`))); st.append(o); }); p.append(st);
+  p.append(h('div', '', L(`지금: ${c.kinds}종 · ${c.tier}단계${c.fx ? ' — ' + c.fx : ''}`, `Now: ${c.kinds} kinds · tier ${c.tier}${c.fx ? ' — ' + c.fx : ''}`)));
+  if (c.next) p.append(h('div', 'sub', L(`다음 단계까지 ${c.next}종 — ${c.nextFx}`, `${c.next} more kinds for the next tier — ${c.nextFx}`)));
+  if (c.tier && !c.applied) p.append(h('div', 'sub', L('게임이 켜져 있으면 침실에 들어올 때 게임에 반영됩니다.', 'Applied to the game when you enter the bedroom with the game running.')));
+  const row = h('div', 'row'); row.append(btn(L('닫기', 'Close'), closePanel)); p.append(row);
+ }
+ function drawSlots() {
+  const box = $('slots'); box.textContent = ''; document.body.classList.toggle('deco', deco);
+  for (const s of S.slots) {
+   const [x, y, w, hh] = SPOT[s.id], d = h('div', 'slot ' + s.kind + (s.item ? '' : ' empty')); Object.assign(d.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: hh + 'px', zIndex: SLOT_Z[s.kind] || 2 });
+   const ra = ART && ROOM_AT[s.id], room = ra && s.item && s.item.room ? s.item.room : (ra && s.id === 'bed' && !s.item && S.art.bed && !deco ? S.art.bed : null);
+   if (room) { // 방에 세우는 그림: 바닥선(천장등은 천장)에 맞춰 실제 크기로
+    d.classList.add('room'); d.classList.remove('empty'); Object.assign(d.style, { left: ra[0] + 'px', width: ra[2] + 'px', height: 'auto', top: ra[3] === 't' ? ra[1] + 'px' : 'auto', bottom: ra[3] === 'b' ? (900 - ra[1]) + 'px' : 'auto' });
+    const im = h('img', 'rm'); im.src = room; d.append(im);
+   } else if (s.item) {
+    if (s.kind === 'wall') { if (s.picture) { const im = h('img', 'pic'); im.src = s.picture; d.append(im); } else if (s.item.icon) { const im = h('img', 'it'); im.src = s.item.icon; d.append(im); } else d.append(glyph(s.item.name)); }
+    else if (s.item.icon) { const im = h('img', 'it'); im.src = s.item.icon; d.append(im); } else d.append(glyph(s.item.name));
+   }
+      d.append(h('div', 'tag', s.item ? s.item.name : s.name));
+   d.onclick = (e) => { e.stopPropagation(); if (deco || !s.item) { openPick(s.id); return; } if (s.picture) { showPicture(s); return; } say(s.item.name, x, y - hh / 2 - 60); };
+   box.append(d);
+  }
+ }
+ function drawTank() {
+  const t = $('tank'); t.textContent = ''; const fish = S.fish || [];
+  fish.forEach((f, i) => { const d = h('div', 'fish' + (i % 2 ? ' flip' : '')), b = h('div', 'b'); d.style.top = 30 + ((i * 61) % 190) + 'px'; d.style.animationDuration = 14 + (i * 5) % 11 + 's'; d.style.animationDelay = -(i * 3.7) + 's'; if (i % 2) d.style.animationName = 'swimR';
+   if (f.icon) { const im = h('img'); im.src = f.icon; b.append(im); } else b.innerHTML = `<svg viewBox="0 0 64 40"><path d="M6 20 Q22 4 44 14 L60 4 V36 L44 26 Q22 36 6 20Z" fill="hsl(${(i * 47) % 360} 80% 60%)" opacity=".9"/><circle cx="16" cy="18" r="2.5" fill="#000"/></svg>`;
+   d.title = f.name; d.append(b); t.append(d); });
+  for (let i = 0; i < 6; i++) { const b = h('div', 'bubl'); b.style.left = 20 + i * 60 + 'px'; b.style.animationDuration = 5 + i + 's'; b.style.animationDelay = -i * 1.3 + 's'; t.append(b); }
+  t.onclick = async () => { if (!fish.length) { say(S.empty.tank, 280, 120); return; } const f = fish[Math.floor(Math.random() * fish.length)]; say(await window.sllm.bedroomTouch(f.uid), 280, 120); };
+ }
+ function drawPets() {
+  const box = $('pets'); box.textContent = '';
+  (S.pets || []).forEach((p, i) => { const [x, y] = PET_AT[i], d = h('div', 'pet'); d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.animationDelay = -i + 's';
+   if (p.icon) { const im = h('img'); im.src = p.icon; d.append(im); } else d.innerHTML = `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="78" rx="34" ry="18" fill="#c8a070"/><circle cx="72" cy="58" r="16" fill="#c8a070"/><path d="M62 46 l4 -12 l6 10 M76 44 l6 -12 l4 12" fill="#c8a070"/><circle cx="76" cy="56" r="2.4" fill="#000"/><path d="M18 76 q-12 -10 -4 -22" stroke="#c8a070" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`;
+   d.append(h('span', 'nm', `${p.name} · ${p.species}`)); d.onclick = async (e) => { e.stopPropagation(); say(await window.sllm.bedroomTouch(p.uid), x - 120, y - 190); }; box.append(d); });
+ }
+ function drawGuest() {
+  const g = $('guest'); g.textContent = ''; g.classList.toggle('on', !!S.guest); if (!S.guest) return;
+  g.innerHTML = `<svg viewBox="0 0 200 330"><defs><radialGradient id="gg" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".25"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient></defs><ellipse cx="100" cy="170" rx="100" ry="160" fill="url(#gg)"/>
+   <circle cx="100" cy="70" r="34" fill="#0c0808"/><path d="M40 330 C40 190 60 120 100 112 C140 120 160 190 160 330Z" fill="#0c0808"/><path d="M66 70 a34 34 0 0 1 68 0" stroke="#ffcf7a" stroke-opacity=".5" stroke-width="2" fill="none"/></svg>`;
+ }
+ async function say(text, x, y) {
+  const box = $('bubs'), tk = ++playing; box.textContent = ''; if (!text) return; const b = h('div', 'bub'); b.style.left = Math.max(20, Math.min(1160, x)) + 'px'; b.style.top = Math.max(40, y) + 'px'; box.append(b); await sleep(30); b.classList.add('on');
+  for (let j = 1; j <= text.length; j++) { if (tk !== playing) return; b.textContent = text.slice(0, j); await sleep(14); }
+  setTimeout(() => { if (tk === playing) b.classList.remove('on'); }, 4200);
+ }
+ function showPicture(s) { const p = $('panel'); p.textContent = ''; p.classList.add('on'); p.append(h('h3', '', s.item.name)); const im = h('img'); im.src = s.picture; im.style.cssText = 'max-width:100%;max-height:480px;display:block;margin:10px auto;border-radius:6px'; p.append(im); const row = h('div', 'row'); row.append(btn(L('다른 그림 넣기', 'Change picture'), () => frame(s.id)), btn(L('닫기', 'Close'), closePanel)); p.append(row); }
+ const btn = (t, f, cls) => { const b = h('button', 'act' + (cls ? ' ' + cls : ''), t); b.type = 'button'; b.onclick = (e) => { e.stopPropagation(); f(); }; return b; };
+ function closePanel() { picking = null; inviting = false; $('panel').classList.remove('on'); }
+ async function frame(slot) { const r = await call(window.sllm.bedroomFrame(slot)); if (r.ok) { closePanel(); render(); } }
+ function openPick(slotId) {
+  picking = slotId; inviting = false; const s = S.slots.find((x) => x.id === slotId), p = $('panel'); p.textContent = ''; p.classList.add('on');
+  p.append(h('h3', '', s.name), h('div', 'sub', L('이 자리에 놓을 물건을 고르세요. 백화점 40·42층과 암시장에서 산 물건이 여기에 들어옵니다.', 'Choose what goes here. Things bought on store floors 40 and 42, and at the black market, show up here.')));
+  const grid = h('div', 'grid'), list = S.things.filter((t) => t.kind === s.kind);
+  if (!list.length) grid.append(h('div', 'sub', L('이 자리에 맞는 물건이 아직 없습니다.', 'Nothing you own fits this spot yet.')));
+  for (const t of list) { const o = h('div', 'opt' + (t.ref === s.ref ? ' cur' : '')), ic = h('div', 'ic'); if (t.icon) { const im = h('img'); im.src = t.icon; ic.append(im); } else ic.append(glyph(t.name));
+   o.append(ic, h('div', '', t.name)); if (t.at && t.at !== s.id) o.append(h('small', '', L(`지금: ${S.slots.find((x) => x.id === t.at).name}`, `Now: ${S.slots.find((x) => x.id === t.at).name}`))); if (t.fake === true) o.append(h('small', '', L('가짜로 감정됨', 'Appraised fake')));
+   o.onclick = async () => { const r = await call(window.sllm.bedroomPlace(s.id, t.ref)); if (r.ok) { closePanel(); render(); const ns = S.slots.find((x) => x.id === s.id); if (ns && ns.item && ns.item.custom && !ns.picture) toast(L('빈 액자입니다. 자리를 다시 눌러 그림을 넣으세요.', 'An empty frame. Click it again to put in a picture.')); } }; grid.append(o); }
+  p.append(grid); const row = h('div', 'row');
+  if (s.item && s.item.custom) row.append(btn(L('그림 넣기', 'Put in a picture'), () => frame(s.id), 'on'));
+  if (s.ref) row.append(btn(L('치우기', 'Remove'), async () => { const r = await call(window.sllm.bedroomPlace(s.id, '')); if (r.ok) { closePanel(); render(); } }));
+  row.append(btn(L('닫기', 'Close'), closePanel)); p.append(row);
+ }
+ function openInvite() {
+  inviting = true; picking = null; const p = $('panel'); p.textContent = ''; p.classList.add('on'); p.append(h('h3', '', L('누구를 침실로 부를까요?', 'Whom will you invite?')));
+  const stage = (st) => st === 'married' ? L('배우자', 'Spouse') : st === 'engaged' ? L('약혼자', 'Betrothed') : L('연인', 'Partner');
+  const grid = h('div', 'grid'); if (!S.partners.length) grid.append(h('div', 'sub', S.empty.spouse));
+  for (const q of S.partners) { const o = h('div', 'opt' + (S.guest && S.guest.key === q.key ? ' cur' : '')); o.append(h('div', 'ic', '♥'), h('div', '', q.name), h('small', '', stage(q.stage))); o.onclick = async () => { const r = await call(window.sllm.bedroomInvite(q.key)); if (r.ok) { closePanel(); render(); say(L(`${q.name}이(가) 조용히 문을 열고 들어옵니다.`, `${q.name} slips quietly through the door.`), 600, 300); } }; grid.append(o); }
+  p.append(grid); if (S.secretaryPartner) p.append(h('div', 'sub', L('비서와는 개인실 소파나 비서실에서 이야기하세요.', 'Talk with your secretary on the private-room sofa or in her office.')));
+  const row = h('div', 'row'); row.append(btn(L('닫기', 'Close'), closePanel)); p.append(row);
+ }
+ function drawTalk() {
+  const t = $('talk'); t.textContent = ''; t.classList.toggle('on', !!S.guest); if (!S.guest) return;
+  const hd = h('h3', '', L(`${S.guest.name}와(과) 단둘이`, `Alone with ${S.guest.name}`)); hd.append(btn(L('돌려보내기', 'Say goodnight'), async () => { await call(window.sllm.bedroomInvite('')); render(); })); t.append(hd);
+  const log = h('div', ''); log.id = 'log'; for (const c of S.chat) log.append(h('div', 'ln ' + c.who, c.text)); if (S.asking) log.append(h('div', 'ln them', '…')); t.append(log);
+  const f = h('form'), inp = h('input'); inp.placeholder = L('하고 싶은 말…', 'Say something…'); inp.maxLength = 500; inp.disabled = !!S.asking; const go = h('button', 'act', L('말하기', 'Say')); go.type = 'submit'; go.disabled = !!S.asking;
+  f.onsubmit = async (e) => { e.preventDefault(); const v = inp.value.trim(); if (!v) return; inp.value = ''; await call(window.sllm.bedroomSay(v)); render(); }; f.append(inp, go); t.append(f);
+  setTimeout(() => { log.scrollTop = log.scrollHeight; if (!S.asking) inp.focus({ preventScroll: true }); }, 0);
+ }
+ function drawBar() {
+  const b = $('bar'); b.textContent = '';
+  if (window.SLLMVault) b.append(btn('💰 ' + L('개인 금고', 'Private vault'), () => window.SLLMVault.open()));
+  if (S.comfort) b.append(btn('🛋 ' + L(`가구 편의 ${S.comfort.tier}단계`, `Comfort tier ${S.comfort.tier}`), openComfort, S.comfort.tier ? 'on' : ''));
+  b.append(btn(S.guest ? L(`${S.guest.name}와(과) 함께`, `With ${S.guest.name}`) : L('연인·배우자 부르기', 'Invite your partner'), openInvite, S.guest ? 'on' : ''));
+  b.append(btn(L('‹ 개인실로', '‹ Back to the private room'), () => window.sllm.bedroomClose()));
+ }
+ function render() {
+  if (!S || !S.ready) return;
+  const art = S.art && S.art.bg; ART = !!art; SPOT = art ? SPOT_ART : SPOT0; PET_AT = art ? PET_ART : PET_AT0; Object.assign($('tank').style, art ? (S.art.full ? { left: '32px', top: '276px', width: '236px', height: '172px' } : { left: '30px', top: '265px', width: '242px', height: '205px' }) : { left: '', top: '', width: '', height: '' }); $('artbg').style.display = art ? 'block' : 'none'; if (art) $('artbg').style.backgroundImage = `url(${art})`; $('scene').style.display = art ? 'none' : ''; if (!art) drawScene();
+  document.body.classList.toggle('noart', !art); document.body.classList.toggle('fullart', !!(art && S.art.full)); const sf = $('safe'); sf.dataset.tag = L('개인 금고', 'Private vault'); sf.title = L('개인 금고', 'Private vault'); sf.style.display = window.SLLMVault ? '' : 'none'; sf.onclick = (e) => { e.stopPropagation(); if (window.SLLMVault) window.SLLMVault.open(); };
+  drawBed(); drawTank(); drawPets(); drawGuest(); drawTalk(); drawBar();
+  if (S.pets && !S.pets.length && deco) say(S.empty.rug, 640, 690);
+ }
+ $('stage').addEventListener('click', (e) => { if ($('panel').classList.contains('on') && !e.target.closest('#panel')) closePanel(); });
+ $('x').onclick = () => window.sllm.bedroomClose();
+ document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (window.SLLMVault && window.SLLMVault.isOpen()) return; if ($('panel').classList.contains('on')) closePanel(); else if (deco) { deco = false; render(); } else window.sllm.bedroomClose(); });
+ document.addEventListener('sllm-language', () => render());
+ if (window.sllm.onBedroomState) window.sllm.onBedroomState((s) => { S = s; render(); });
+ window.sllm.bedroomState().then((s) => { S = s; render(); setTimeout(() => { $('door').style.opacity = 0; }, 150); });
+</script>
+</body></html>

@@ -1,0 +1,4 @@
+# SLLM 사로잡은 적 제독(2026-11-04). 바닐라 목록에 덧붙는다(4.5: events 만).
+on_ship_destroyed_perp = {
+	events = { sllm_cap.1 }
+}

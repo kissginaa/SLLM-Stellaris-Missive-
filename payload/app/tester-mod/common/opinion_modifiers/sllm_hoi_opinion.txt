@@ -1,0 +1,26 @@
+# SLLM 하츠 참고 외교(2026-10-28). 앱: src/hoi.ts HOI_MODS. 효과: sllm_deal_opinion(외교 거래와 같은 효과)으로 붙인다.
+# 물자 지원 시작: 받는 쪽 +30(약 2년 반에 걸쳐 줄어듦)
+sllm_aid_start = {
+	opinion = { base = 30 }
+	decay = { base = 1 }
+}
+# 물자 지원 해마다: +10
+sllm_aid_year = {
+	opinion = { base = 10 }
+	decay = { base = 0.5 }
+}
+# 우리가 적에게 물자를 대는 것을 앎: -20
+sllm_aid_enemy = {
+	opinion = { base = -20 }
+	decay = { base = 0.5 }
+}
+# 참전 요청에 물자 지원으로 답함: -10(거절 -30 대신)
+sllm_deal_cta_aid = {
+	opinion = { base = -10 }
+	decay = { base = 0.5 }
+}
+# 우리 파벌 공작이 발각됨: -50
+sllm_fsup_exposed = {
+	opinion = { base = -50 }
+	decay = { base = 1 }
+}

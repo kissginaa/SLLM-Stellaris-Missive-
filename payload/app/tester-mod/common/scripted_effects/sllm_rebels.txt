@@ -1,0 +1,233 @@
+# SLLM 반란과 공작(2026-11-05, Potent Rebellions 를 참고만 해서 새로 씀) — 앱: src/features/rebels-app.ts · 규칙: src/rebels.ts
+# 모든 효과는 플레이어 범위(This = 플레이어, event_target:sllm_rb_me)에서 부른다. 회신 줄은 로그 자리 REBELS(195).
+#   RBQ(후원 청할 만한가) · RBSET(적용) · RBAFF+RBAF(AI 가 우리 반란군을 도움) · RBVF+RBV(취약 판정) · RBSOWP+RBSOW(우리 선동) · RBASF+RBASP+RBAS(AI 의 선동)
+# 다른 나라·행성 이름은 그 범위 안에서 This.GetName 으로 따로 찍는다(로그 문구에서 event_target 은 쓰지 않는다): Prev = 바로 바깥 범위.
+
+# 통신 번호 TID 인 나라를 AS 로 저장. 찾으면 sllm_rb_ok = 1.
+sllm_rb_find = {
+	set_variable = { which = sllm_rb_ok value = 0 }
+	random_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } sllm_is_empire = yes }
+		save_event_target_as = $AS$
+		event_target:sllm_rb_me = { set_variable = { which = sllm_rb_ok value = 1 } }
+	}
+}
+sllm_rb_set = {
+	log = "SLLM:RBSET/;/req=\\[This.sllm_rb_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_rb_st]"
+}
+
+# ② 반란국(TID)이 우리에게 후원을 청할 만한가: 서로 연락이 닿고, 반란국이나 원래 나라(PID)가 우리와 가깝고(sllm_near 깃발), 우리와 원래 나라가 사이가 나쁨(경쟁·전쟁·관계 0 미만).
+sllm_rb_aid_q = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	sllm_rb_near_refresh = yes # 새 반란국은 아직 깃발이 없을 수 있다
+	set_variable = { which = sllm_rb_q value = 0 }
+	sllm_rb_find = { TID = $TID$ AS = sllm_rb_reb }
+	if = {
+		limit = { check_variable = { which = sllm_rb_ok value = 1 } }
+		sllm_rb_find = { TID = $PID$ AS = sllm_rb_par }
+		if = {
+			limit = {
+				check_variable = { which = sllm_rb_ok value = 1 }
+				has_communications = event_target:sllm_rb_reb
+				OR = {
+					event_target:sllm_rb_reb = { has_country_flag = sllm_near_@prev }
+					event_target:sllm_rb_par = { has_country_flag = sllm_near_@prev }
+				}
+				OR = {
+					is_rival = event_target:sllm_rb_par
+					is_at_war_with = event_target:sllm_rb_par
+					opinion = { who = event_target:sllm_rb_par value < 0 }
+					event_target:sllm_rb_par = { is_rival = event_target:sllm_rb_me }
+				}
+			}
+			set_variable = { which = sllm_rb_q value = 1 }
+		}
+	}
+	log = "SLLM:RBQ/;/req=\\[This.sllm_rb_req]/;/sid=\\[This.sllm_save_id]/;/ok=\\[This.sllm_rb_q]"
+}
+# 후원 시작: 반란국이 우리를 좋게 본다(단계별 관계).
+sllm_rb_aid_start = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 4 }
+	sllm_rb_find = { TID = $TID$ AS = sllm_rb_reb }
+	if = {
+		limit = { check_variable = { which = sllm_rb_ok value = 1 } }
+		event_target:sllm_rb_reb = { add_opinion_modifier = { who = event_target:sllm_rb_me modifier = sllm_rb_benefactor_$TIER$ } }
+		set_variable = { which = sllm_rb_st value = 0 }
+	}
+	sllm_rb_set = yes
+}
+# 매달 지급: 에너지·광물 AMT 씩. 모자라면 보내지 않고 st 3, 반란국이 없으면 st 4.
+sllm_rb_pay = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 4 }
+	sllm_rb_find = { TID = $TID$ AS = sllm_rb_reb }
+	if = {
+		limit = { check_variable = { which = sllm_rb_ok value = 1 } }
+		if = {
+			limit = { OR = { NOT = { resource_stockpile_compare = { resource = energy value >= $AMT$ } } NOT = { resource_stockpile_compare = { resource = minerals value >= $AMT$ } } } }
+			set_variable = { which = sllm_rb_st value = 3 }
+		}
+		else = {
+			add_resource = { energy = -$AMT$ minerals = -$AMT$ }
+			event_target:sllm_rb_reb = { add_resource = { energy = $AMT$ minerals = $AMT$ } }
+			set_variable = { which = sllm_rb_st value = 0 }
+		}
+	}
+	sllm_rb_set = yes
+}
+# 후원이 들킴: 원래 나라(PID)가 우리를 나쁘게 본다(단계별).
+sllm_rb_aid_caught = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 4 }
+	sllm_rb_find = { TID = $PID$ AS = sllm_rb_par }
+	if = {
+		limit = { check_variable = { which = sllm_rb_ok value = 1 } }
+		event_target:sllm_rb_par = { add_opinion_modifier = { who = event_target:sllm_rb_me modifier = sllm_rb_funder_$TIER$ } }
+		set_variable = { which = sllm_rb_st value = 0 }
+	}
+	sllm_rb_set = yes
+}
+# 우리에게서 갈라진 반란국(TID)을 우리를 싫어하는 AI 하나가 돕는다(한 번, 에너지·광물 AMT). st 1 = 도움.
+sllm_rb_ai_fund = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 0 }
+	sllm_rb_find = { TID = $TID$ AS = sllm_rb_reb }
+	if = {
+		limit = { check_variable = { which = sllm_rb_ok value = 1 } any_country = { sllm_rb_fund_foe = yes } }
+		random_country = {
+			limit = { sllm_rb_fund_foe = yes }
+			save_event_target_as = sllm_rb_foe
+			log = "SLLM:RBAFF/;/req=\\[Prev.sllm_rb_req]/;/foe=\\[This.GetName]"
+			event_target:sllm_rb_reb = {
+				add_resource = { energy = $AMT$ minerals = $AMT$ }
+				add_opinion_modifier = { who = event_target:sllm_rb_foe modifier = sllm_rb_benefactor_2 }
+			}
+		}
+		set_variable = { which = sllm_rb_st value = 1 }
+	}
+	log = "SLLM:RBAF/;/req=\\[This.sllm_rb_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_rb_st]"
+}
+
+# 가까운 나라 깃발 다시 붙이기(3달마다 취약 판정 때). 이 범위 = 플레이어. 깃발은 100일 — 앱이 판정을 멈추면 저절로 사라진다(그동안 AI 공작도 멈춤).
+sllm_rb_near_refresh = {
+	every_country = {
+		limit = { sllm_rb_near_check = yes }
+		set_timed_country_flag = { flag = sllm_near_@prev days = 100 }
+	}
+}
+# ③ 취약 국가: 함대가 우리를 압도하는 적대 이웃이 있는데 함대 한도를 90% 미만으로 쓰면 수정자(DAYS 일, 판정마다 다시 붙임). 시작 20년은 봐준다.
+sllm_rb_vuln = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 0 }
+	sllm_rb_near_refresh = yes
+	export_trigger_value_to_variable = { trigger = used_naval_capacity_percent variable = sllm_rb_use }
+	multiply_variable = { which = sllm_rb_use value = 100 }
+	round_variable = sllm_rb_use
+	if = {
+		limit = {
+			years_passed > 20
+			NOT = { used_naval_capacity_percent > 0.89 }
+			any_neighbor_country = { sllm_rb_threat = yes }
+		}
+		random_neighbor_country = { limit = { sllm_rb_threat = yes } log = "SLLM:RBVF/;/req=\\[Prev.sllm_rb_req]/;/foe=\\[This.GetName]" }
+		add_modifier = { modifier = sllm_rb_vulnerable days = $DAYS$ }
+		set_variable = { which = sllm_rb_st value = 1 }
+	}
+	else_if = {
+		limit = { has_modifier = sllm_rb_vulnerable }
+		remove_modifier = sllm_rb_vulnerable
+	}
+	log = "SLLM:RBV/;/req=\\[This.sllm_rb_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_rb_st]/;/use=\\[This.sllm_rb_use]"
+}
+
+# ④ 선동: 영향력 INF 를 내고 TID 의 수도 아닌 행성 하나에 불안(DAYS 일). DET = yes 면 들켜 그 나라가 우리를 나쁘게 본다.
+#   st 0 성공 · 3 영향력 부족 · 4 나라 없음 · 5 심을 행성 없음
+sllm_rb_sow = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 4 }
+	sllm_rb_find = { TID = $TID$ AS = sllm_rb_tgt }
+	if = {
+		limit = { check_variable = { which = sllm_rb_ok value = 1 } }
+		if = {
+			limit = { NOT = { resource_stockpile_compare = { resource = influence value >= $INF$ } } }
+			set_variable = { which = sllm_rb_st value = 3 }
+		}
+		else_if = {
+			limit = { NOT = { event_target:sllm_rb_tgt = { any_owned_colony = { sllm_rb_sowable = yes } } } }
+			set_variable = { which = sllm_rb_st value = 5 }
+		}
+		else = {
+			add_resource = { influence = -$INF$ }
+			event_target:sllm_rb_tgt = {
+				set_variable = { which = sllm_rb_req value = prev.sllm_rb_req }
+				random_owned_colony = {
+					limit = { sllm_rb_sowable = yes }
+					add_modifier = { modifier = sllm_rb_sown days = $DAYS$ }
+					log = "SLLM:RBSOWP/;/req=\\[Prev.sllm_rb_req]/;/planet=\\[This.GetName]"
+				}
+				clear_variable = sllm_rb_req
+				if = { limit = { always = $DET$ } add_opinion_modifier = { who = event_target:sllm_rb_me modifier = sllm_rb_caught_sowing } }
+			}
+			set_variable = { which = sllm_rb_st value = 0 }
+		}
+	}
+	log = "SLLM:RBSOW/;/req=\\[This.sllm_rb_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_rb_st]"
+}
+# AI 가 우리 행성에 선동: 우리를 싫어하는 AI 하나가 우리 수도 아닌 행성 하나에 불안(DAYS 일). st 1 = 당함.
+sllm_rb_ai_sow = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_variable = { which = sllm_rb_st value = 0 }
+	if = {
+		limit = { any_owned_colony = { sllm_rb_sowable = yes } any_country = { sllm_rb_hater = yes } }
+		random_country = { limit = { sllm_rb_hater = yes } log = "SLLM:RBASF/;/req=\\[Prev.sllm_rb_req]/;/foe=\\[This.GetName]" }
+		random_owned_colony = {
+			limit = { sllm_rb_sowable = yes }
+			add_modifier = { modifier = sllm_rb_sown days = $DAYS$ }
+			log = "SLLM:RBASP/;/req=\\[Prev.sllm_rb_req]/;/planet=\\[This.GetName]"
+		}
+		set_variable = { which = sllm_rb_st value = 1 }
+	}
+	log = "SLLM:RBAS/;/req=\\[This.sllm_rb_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_rb_st]"
+}
+
+# ③ 취약 판정을 모드에 맡기기(2026-11-09 사용자: 「매달 확인이 필요 없는 것은 바뀔 때만」 · 회랑 방식).
+# 앱이 세이브마다 한 번 부르면(sllm_rb_auto_on) 그 뒤로는 sllm_rbm.1 이 3달마다 스스로 판정하고, 상태가 바뀐 때만 RBV(req=0) 줄을 남긴다.
+sllm_rb_auto_on = {
+	set_variable = { which = sllm_rb_req value = $REQ$ }
+	set_country_flag = sllm_rb_auto
+	clear_variable = sllm_rb_vl # 다음 판정은 상태를 한 번 꼭 알린다(앱 장부 맞추기)
+	set_variable = { which = sllm_rb_st value = 0 }
+	sllm_rb_set = yes
+}
+# 3달마다(이 범위 = 플레이어). sllm_rb_vuln 과 같은 판정·수정자. 줄은 바뀐 때만(첫 판정 포함).
+sllm_rb_vuln_auto = {
+	save_event_target_as = sllm_rb_me
+	set_variable = { which = sllm_rb_st value = 0 }
+	sllm_rb_near_refresh = yes
+	export_trigger_value_to_variable = { trigger = used_naval_capacity_percent variable = sllm_rb_use }
+	multiply_variable = { which = sllm_rb_use value = 100 }
+	round_variable = sllm_rb_use
+	if = {
+		limit = {
+			years_passed > 20
+			NOT = { used_naval_capacity_percent > 0.89 }
+			any_neighbor_country = { sllm_rb_threat = yes }
+		}
+		add_modifier = { modifier = sllm_rb_vulnerable days = 100 }
+		set_variable = { which = sllm_rb_st value = 1 }
+	}
+	else_if = {
+		limit = { has_modifier = sllm_rb_vulnerable }
+		remove_modifier = sllm_rb_vulnerable
+	}
+	if = {
+		limit = { OR = { NOT = { is_variable_set = sllm_rb_vl } NOT = { check_variable = { which = sllm_rb_vl value = sllm_rb_st } } } }
+		set_variable = { which = sllm_rb_vl value = sllm_rb_st }
+		if = {
+			limit = { check_variable = { which = sllm_rb_st value = 1 } }
+			random_neighbor_country = { limit = { sllm_rb_threat = yes } log = "SLLM:RBVF/;/req=0/;/foe=\\[This.GetName]" }
+		}
+		log = "SLLM:RBV/;/req=0/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_rb_st]/;/use=\\[This.sllm_rb_use]"
+	}
+}

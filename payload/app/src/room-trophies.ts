@@ -45,9 +45,11 @@ export class RoomTrophies {
    try{process.kill(owner.pid,0);return false;}catch(e){if((e as NodeJS.ErrnoException).code!=='ESRCH')return false;}
    fs.unlinkSync(lock);return true;}catch{return false;}
  }
+ /** First empty wall niche (12 = 6 × 2 in the gallery painting), or null when the wall is full. */
+ private freeSlot(s:TrophyState){const used=new Set(s.items.filter(x=>!x.deleted&&x.slot!==null).map(x=>x.slot));for(let i=0;i<12;i++)if(!used.has(i))return i;return null;}
  prepare(actor:RoomActor,revision:number,input:unknown){const s=this.read(actor.sid);if(s.revision!==revision)throw Error('CONFLICT');if(s.requests.some(x=>x.status==='pending'))throw Error('PAYMENT_PENDING');if(!actor.rulerId||!actor.rulerName||!actor.date)throw Error('INVALID_TROPHY');const r:Request={id:randomUUID(),details:trophyDetails(input),creation:{...actor},status:'pending'};s.requests.push(r);s.history.push({action:'payment-requested',actor:{...actor},request:structuredClone(r)});return {state:this.commit(s),request:r};}
  receipt(sid:string,id:string,status:string){const s=this.read(sid),r=s.requests.find(x=>x.id===id);if(!r)throw Error('INVALID_TROPHY');if(r.status!=='pending')return s;if(status!=='paid'&&status!=='short')return s;
-  r.status=status==='paid'?'confirmed':'short';if(status==='paid'&&!s.items.some(x=>x.id===id)){const item:Trophy={id,details:structuredClone(r.details),creation:{...r.creation},owner:'player',slot:null};s.items.push(item);s.history.push({action:'created',actor:{...r.creation},item:structuredClone(item)});}else s.history.push({action:'insufficient-energy',actor:{...r.creation},request:structuredClone(r)});return this.commit(s);
+  r.status=status==='paid'?'confirmed':'short';if(status==='paid'&&!s.items.some(x=>x.id===id)){const item:Trophy={id,details:structuredClone(r.details),creation:{...r.creation},owner:'player',slot:this.freeSlot(s)};s.items.push(item);s.history.push({action:'created',actor:{...r.creation},item:structuredClone(item)});}else s.history.push({action:'insufficient-energy',actor:{...r.creation},request:structuredClone(r)});return this.commit(s);
  }
  /** Only after the game confirmed that this request was never paid (no payment flag in the current save). Nothing is refunded or charged. */
  cancelUnpaid(actor:RoomActor,id:string){const s=this.read(actor.sid),r=s.requests.find(x=>x.id===id);if(!r||r.status!=='pending')throw Error('INVALID_TROPHY');r.status='cancelled';s.history.push({action:'payment-cancelled',actor:{...actor},request:structuredClone(r)});return this.commit(s);}
@@ -87,7 +89,7 @@ export class RoomTrophies {
    case 'delete':t.deleted=true;t.slot=null;break;
    case 'display':if(input!==null&&(!Number.isInteger(input)||input<0||input>=12))throw Error('INVALID_TROPHY');if(input!==null&&s.items.some(x=>!x.deleted&&x.id!==id&&x.slot===input))throw Error('TROPHY_SLOT');t.slot=input;break;
    case 'gift':if(!secretaryReady)throw Error('SECRETARY_UNAVAILABLE');if(s.items.filter(x=>!x.deleted&&x.owner==='secretary').length>=6)throw Error('TROPHY_CAPACITY');t.owner='secretary';t.slot=null;break;
-   case 'reclaim':if(!(t.owner==='secretary'&&secretaryReady)&&!(t.owner==='person'&&t.recipient?.key&&personPresent(t.recipient.key)))throw Error('TROPHY_OWNERSHIP');t.owner='player';t.slot=null;break;
+   case 'reclaim':if(!(t.owner==='secretary'&&secretaryReady)&&!(t.owner==='person'&&t.recipient?.key&&personPresent(t.recipient.key)))throw Error('TROPHY_OWNERSHIP');t.owner='player';t.slot=this.freeSlot(s);break;
    default:throw Error('INVALID_TROPHY');
   }s.history.push({action,actor:{...actor},item:structuredClone(t)});return this.commit(s);
  }

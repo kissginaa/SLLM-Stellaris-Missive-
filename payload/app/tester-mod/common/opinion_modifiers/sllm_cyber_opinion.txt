@@ -1,0 +1,14 @@
+# SLLM 사이버전·여론 공작(2026-11-04): 외교 항의 — 공작한 나라는 항의받아 언짢고(-20), 우리는 공작당한 것을 기억한다(-30).
+sllm_cyber_protested = {
+	opinion = { base = -20 }
+	decay = { base = 1 }
+}
+sllm_cyber_meddled = {
+	opinion = { base = -30 }
+	decay = { base = 1 }
+}
+# 역제소 유죄(2026-11-04): 은하재판소가 여론 공작 유죄를 선고하면 다른 제국들이 그 나라를 조금 싫어한다.
+sllm_cyber_convicted = {
+	opinion = { base = -15 }
+	decay = { base = 1 }
+}

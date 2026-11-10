@@ -7,7 +7,8 @@ import { openPendingMediation } from './mediation-app';
 import { app, BrowserWindow, ipcMain, Notification, screen, globalShortcut, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import { logDiagnostic } from '../diagnostics';
-import { settings, saveSettings, clampTurns, clampSlots, devVoteMode, devVotePercent } from '../app/settings';
+import { enableWatcher, disableWatcher } from '../game-watcher'; // 게임을 켜면 SLLM 자동 실행(2026-10-30)
+import { settings, saveSettings, clampTurns, clampSlots, clampTeamTurns, devVoteMode, devVotePercent } from '../app/settings';
 import { safeSend } from '../safe-send';
 import { ToastMsg, ctx } from '../app/ctx';
 import { GameWindowWatcher, GameWin, dockRect, launcherRect, layoutScale, fitSize, toFrac, focusGame, Frac, DockMode, Rect } from '../gameWindow';
@@ -461,12 +462,24 @@ export function registerWindows(): void {
         settings.launcherPos = null;
         previewLauncherPos = null;
       }
-      if ((prefs as any).councilMode === 'weighted' || (prefs as any).councilMode === 'equal')
+      if ((prefs as any).councilMode === 'weighted' || (prefs as any).councilMode === 'equal' || (prefs as any).councilMode === 'teams')
         settings.councilMode = (prefs as any).councilMode;
       if ((prefs as any).councilTurns !== undefined) settings.councilTurns = clampTurns((prefs as any).councilTurns);
       if ((prefs as any).speechTurns !== undefined) settings.speechTurns = clampSpeechTurns((prefs as any).speechTurns);
       if ((prefs as any).councilSlots !== undefined) settings.councilSlots = clampSlots((prefs as any).councilSlots);
+      if ((prefs as any).councilTeamTurns !== undefined) settings.councilTeamTurns = clampTeamTurns((prefs as any).councilTeamTurns); // 찬반 팀당 발언 수(2026-10-29)
       if (typeof (prefs as any).forceOverlay === 'boolean') settings.forceOverlay = (prefs as any).forceOverlay;
+      if (typeof (prefs as any).emotionWar === 'boolean') settings.emotionWar = (prefs as any).emotionWar; // 감정 기억 선전포고(알파 11)
+      if (typeof (prefs as any).childLimitOff === 'boolean') settings.childLimitOff = (prefs as any).childLimitOff; // 아이 수 제한 풀기
+      if (typeof (prefs as any).auditOn === 'boolean') settings.auditOn = (prefs as any).auditOn; // 국정감사(하드코어, 2026-11-03)
+      if (typeof (prefs as any).noconfOn === 'boolean') settings.noconfOn = (prefs as any).noconfOn; // 불신임(하드코어, 2026-11-03)
+      if (typeof (prefs as any).gameWatcher === 'boolean') { // 게임을 켜면 SLLM 자동 실행(시작 프로그램 감시기 등록·해제)
+        settings.gameWatcher = (prefs as any).gameWatcher;
+        const wp = { dataDir: app.getPath('userData'), appDir: app.getAppPath() };
+        if (settings.gameWatcher) void enableWatcher(wp).then((r) => logDiagnostic(r.ok ? 'info' : 'warn', 'watcher.enable', r)).catch(() => undefined);
+        else void disableWatcher(wp).then(() => logDiagnostic('info', 'watcher.disable', {})).catch(() => undefined);
+      }
+      if (['all', 'big', 'off'].includes((prefs as any).familyNotify)) settings.familyNotify = (prefs as any).familyNotify; // 가족 사건 알림(2026-10-28)
       if (typeof (prefs as any).devMode === 'boolean') {
         settings.devMode = (prefs as any).devMode;
         applyScale(true);

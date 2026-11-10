@@ -10,6 +10,7 @@ import { settings, saveSettings } from '../app/settings';
 import { ctx } from '../app/ctx';
 import { addonImages } from './addons-app';
 import { pick } from './settings-ui';
+import { peopleOf } from './people-app';
 
 export function imagesDir(): string { return path.join(app.getPath('userData'), 'sllm_images'); }
 export function imageUrl(f: string): string { return pathToFileURL(path.join(imagesDir(), f)).href; }
@@ -29,6 +30,16 @@ export function imageState() {
   // 모드 폴더(gfx/sllm_planetbg)의 행성 종류별 배경 사진: pc<번호>.jpg
   const planetBgs: Record<number, string> = {};
   for (let n = 1; n <= 40; n++) { const f = path.join(ctx.MOD_DIR, 'gfx', 'sllm_planetbg', `pc${n}.jpg`); if (fs.existsSync(f)) planetBgs[n] = pathToFileURL(f).href; }
+  // 지도자 개인 초상화(2026-10-24): 지금 세이브의 것만 인물 이름(name:<이름>)으로도 깐다 — 화면들은 인물 이름을 시드로 그림을 고르므로(ui/portrait-variants.js) 모든 장면에 그대로 쓰인다.
+  const sid = ctx.curSaveId || '';
+  if (sid) {
+    const live = new Map(peopleOf(sid).map((p) => [String(p.lid), p.name] as const));
+    for (const k of Object.keys(own)) {
+      const m = /^person:(\d+):(?:(\d+)|n:(.+))$/.exec(k); if (!m || m[1] !== sid) continue;
+      const name = m[3] ?? live.get(m[2]) ?? settings.imageLabels[k];
+      if (name) images['name:' + name] = images[k];
+    }
+  }
   const labels: Record<string, string> = {};
   for (const k of Object.keys(images)) if (settings.imageLabels[k]) labels[k] = settings.imageLabels[k];
   return { bg: bg ? imageUrl(bg) : null, bgOpacity: settings.bgOpacity, images, own: Object.keys(own), labels, scope: settings.imageScope, defaults, planetBgs, save: ctx.curSaveId };

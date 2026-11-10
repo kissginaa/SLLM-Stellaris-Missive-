@@ -1,0 +1,15 @@
+# SLLM 정기 송금(2026-11-09) — 매달 한 번, 정기 송금 칸이 있을 때만(sllm_mt_on). 효과: common/scripted_effects/sllm_mtransfer.txt
+namespace = sllm_mt
+
+country_event = {
+	id = sllm_mt.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_country_flag = sllm_mt_on
+	}
+	immediate = {
+		sllm_mt_monthly = yes
+	}
+}

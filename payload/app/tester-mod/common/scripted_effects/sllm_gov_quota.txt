@@ -1,0 +1,81 @@
+# 행성 할당량(2026-11-05, Advanced Policies 「Planetary Quota」 참고 — 이름·단계·수치는 우리식). 앱: src/govpolicy.ts GOV_QUOTA · src/features/govpolicy-app.ts
+# 방침을 맡긴 행성에만. 준비 6달 → 1단계 24달 → 2단계 24달 → 3단계 24달 → 마무리(방침에 맞는 자원 한 번에). 단계가 오를수록 생산은 늘고 안정도는 깎인다.
+# 안정도가 10 아래로 석 달 이어지면 무너진다(보상 없음 + 실망). 방침을 거두면 할당량도 그만둔다(보상 없음). 로그 SLLM:GOVQUOTA/;/ev=…
+# 매달 sllm_gov.1 → 행성마다 sllm_quota_tick (행성 scope)
+
+sllm_quota_clear = {
+	remove_planet_flag = sllm_quota_on
+	remove_planet_flag = sllm_quota_strained
+	remove_modifier = sllm_quota_p0
+	remove_modifier = sllm_quota_p1
+	remove_modifier = sllm_quota_p2
+	remove_modifier = sllm_quota_p3
+	clear_variable = sllm_quota_ph
+	clear_variable = sllm_quota_m
+	clear_variable = sllm_quota_low
+}
+
+sllm_quota_begin = {
+	sllm_quota_clear = yes
+	set_planet_flag = sllm_quota_on
+	set_variable = { which = sllm_quota_ph value = 0 }
+	set_variable = { which = sllm_quota_m value = 0 }
+	set_variable = { which = sllm_quota_low value = 0 }
+	add_modifier = { modifier = sllm_quota_p0 days = -1 }
+}
+
+# $FROM$ 단계 → $TO$ 단계
+sllm_quota_go = {
+	remove_modifier = sllm_quota_p$FROM$
+	add_modifier = { modifier = sllm_quota_p$TO$ days = -1 }
+	set_variable = { which = sllm_quota_ph value = $TO$ }
+	set_variable = { which = sllm_quota_m value = 0 }
+	remove_planet_flag = sllm_quota_strained
+	log = "SLLM:GOVQUOTA/;/ev=phase/;/ph=\\[This.sllm_quota_ph]/;/pl=\\[This.GetName]" # 단계는 변수로 찍는다(로그 문자열에 $매개변수$ 금지, F-39)
+}
+
+# 마무리: 방침에 맞는 자원을 한 번에(앱 GOV_QUOTA.reward 와 같은 값)
+sllm_quota_finish = {
+	if = { limit = { has_planet_flag = sllm_gov_research } owner = { add_resource = { physics_research = 1000 society_research = 1000 engineering_research = 1000 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_foundry } owner = { add_resource = { alloys = 1500 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_factory } owner = { add_resource = { consumer_goods = 2000 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_mining } owner = { add_resource = { minerals = 4000 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_generator } owner = { add_resource = { energy = 4000 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_farming } owner = { add_resource = { food = 3000 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_urban } owner = { add_resource = { energy = 3000 } } }
+	else_if = { limit = { has_planet_flag = sllm_gov_fortress } owner = { add_resource = { alloys = 1000 unity = 500 } } }
+	sllm_quota_clear = yes
+	add_modifier = { modifier = sllm_quota_done days = 720 }
+	log = "SLLM:GOVQUOTA/;/ev=done/;/pl=\\[This.GetName]"
+}
+
+sllm_quota_tick = {
+	if = {
+		limit = { NOT = { sllm_gov_has_mandate = yes } }
+		sllm_quota_clear = yes
+		log = "SLLM:GOVQUOTA/;/ev=cancel/;/pl=\\[This.GetName]"
+	}
+	else = {
+		change_variable = { which = sllm_quota_m value = 1 }
+		if = { limit = { check_variable = { which = sllm_quota_ph value >= 1 } planet_stability < 10 } change_variable = { which = sllm_quota_low value = 1 } }
+		else = { set_variable = { which = sllm_quota_low value = 0 } }
+		if = {
+			limit = { check_variable = { which = sllm_quota_low value >= 3 } }
+			sllm_quota_clear = yes
+			add_modifier = { modifier = sllm_quota_fail days = 720 }
+			log = "SLLM:GOVQUOTA/;/ev=fail/;/pl=\\[This.GetName]"
+		}
+		else = {
+			# 버거움: 안정도 25 아래면 단계마다 한 번 알린다(앱: 총독 보고 · 시위 거리)
+			if = {
+				limit = { check_variable = { which = sllm_quota_ph value >= 1 } planet_stability < 25 NOT = { has_planet_flag = sllm_quota_strained } }
+				set_planet_flag = sllm_quota_strained
+				log = "SLLM:GOVQUOTA/;/ev=strain/;/pl=\\[This.GetName]"
+			}
+			if = { limit = { check_variable = { which = sllm_quota_ph value = 0 } check_variable = { which = sllm_quota_m value >= 6 } } sllm_quota_go = { FROM = 0 TO = 1 } }
+			else_if = { limit = { check_variable = { which = sllm_quota_ph value = 1 } check_variable = { which = sllm_quota_m value >= 24 } } sllm_quota_go = { FROM = 1 TO = 2 } }
+			else_if = { limit = { check_variable = { which = sllm_quota_ph value = 2 } check_variable = { which = sllm_quota_m value >= 24 } } sllm_quota_go = { FROM = 2 TO = 3 } }
+			else_if = { limit = { check_variable = { which = sllm_quota_ph value = 3 } check_variable = { which = sllm_quota_m value >= 24 } } sllm_quota_finish = yes }
+		}
+	}
+}

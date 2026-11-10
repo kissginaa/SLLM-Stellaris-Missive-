@@ -4,6 +4,8 @@ import { app, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ctx } from '../app/ctx';
+import { refreshFrontier, frontierFor } from './frontier-app'; // 국경·영유권(2026-10-26)
+import { frontierBrief } from '../frontier';
 import { logDiagnostic } from '../diagnostics';
 import type { SllmMessage } from '../protocol';
 import { LogRouter, SLOT } from '../app/log-router';
@@ -73,7 +75,8 @@ async function runVerdict(war: string, declText: string): Promise<void> {
     const gc = galcomStance(voices, w, us), speakers = pickSpeakers(voices, w, us, 4), counts = countStances(voices, w, us);
     let texts: { galcom: string; items: Array<{ name: string; text: string }> } | null = null;
     if (speakers.length || gc) {
-      try { const raw = await ctx.ai.chat(reactionMessages(ctx.playerName || 'the player empire', w, speakers.map((s) => { const past = ourPastStanceOn(all().ours[safeKey(ctx.curSaveId)], s.v.idx); return { name: s.v.name, stance: s.stance, ethics: s.v.ethics, ...(past ? { memory: `In ${past.date} the player's government issued a ${past.stance} statement about this empire's war "${past.war}"${past.text ? ': "' + past.text.slice(0, 140) + '"' : ''}` } : {}) }; }), gc && gc.stance !== 'silent' ? gc.stance : null, declText), { purpose: 'war-reactions', json: true, maxTokens: 1400 }); texts = parseReactions(raw); }
+      await refreshFrontier(speakers.map((s) => s.v.idx)).catch(() => {}); // 국경·영유권 사이(2026-10-26)
+      try { const raw = await ctx.ai.chat(reactionMessages(ctx.playerName || 'the player empire', w, speakers.map((s) => { const past = ourPastStanceOn(all().ours[safeKey(ctx.curSaveId)], s.v.idx); return { name: s.v.name, stance: s.stance, ethics: s.v.ethics, ...(past ? { memory: `In ${past.date} the player's government issued a ${past.stance} statement about this empire's war "${past.war}"${past.text ? ': "' + past.text.slice(0, 140) + '"' : ''}` } : {}), ...(frontierBrief(frontierFor(s.v.idx)) ? { geo: frontierBrief(frontierFor(s.v.idx)) } : {}) }; }), gc && gc.stance !== 'silent' ? gc.stance : null, declText), { purpose: 'war-reactions', json: true, maxTokens: 1400 }); texts = parseReactions(raw); }
       catch (e) { logDiagnostic('warn', 'condemn.ai_failed', { war, error: e }); }
     }
     if (!current(owner) || condemn.pending.get(war) !== p) return;

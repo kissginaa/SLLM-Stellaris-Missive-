@@ -1,0 +1,26 @@
+# SLLM 총독 방침(2026-11-04): 게임 안 총독 창(events/sllm_gov_events.txt sllm_gov.10·11)에 쓰는 문구 조각. THIS = 행성.
+# 방침 표식 순서는 앱 src/govpolicy.ts GOV_POLICIES 와 같다.
+
+defined_text = {
+	name = sllm_gov_mandate_now
+	random = no
+	text = { localization_key = sllm_gov_mname_research trigger = { has_planet_flag = sllm_gov_research } }
+	text = { localization_key = sllm_gov_mname_foundry trigger = { has_planet_flag = sllm_gov_foundry } }
+	text = { localization_key = sllm_gov_mname_factory trigger = { has_planet_flag = sllm_gov_factory } }
+	text = { localization_key = sllm_gov_mname_mining trigger = { has_planet_flag = sllm_gov_mining } }
+	text = { localization_key = sllm_gov_mname_generator trigger = { has_planet_flag = sllm_gov_generator } }
+	text = { localization_key = sllm_gov_mname_farming trigger = { has_planet_flag = sllm_gov_farming } }
+	text = { localization_key = sllm_gov_mname_urban trigger = { has_planet_flag = sllm_gov_urban } }
+	text = { localization_key = sllm_gov_mname_fortress trigger = { has_planet_flag = sllm_gov_fortress } }
+	text = { localization_key = sllm_gov_mname_unity trigger = { has_planet_flag = sllm_gov_unity } }
+	text = { localization_key = sllm_gov_mname_trade trigger = { has_planet_flag = sllm_gov_trade } }
+	default = sllm_gov_mname_none
+}
+
+defined_text = {
+	name = sllm_gov_temper_say
+	random = no
+	text = { localization_key = sllm_gov_tsay_frugal trigger = { has_planet_flag = sllm_gov_frugal } }
+	text = { localization_key = sllm_gov_tsay_bold trigger = { has_planet_flag = sllm_gov_bold } }
+	default = sllm_gov_tsay_normal
+}

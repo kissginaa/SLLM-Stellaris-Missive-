@@ -12,16 +12,20 @@ import { link } from '../app/game-link';
 import { logDiagnostic } from '../diagnostics';
 import { pick } from './settings-ui';
 import { terminal, terminalRequest, terminalReplies, terminalView, contactAllowed } from './terminal';
-import { agentFor, agentView, setAgentCover, agentHasMail, openAgentLetter, agentHooks } from './agents-app';
+import { agentFor, agentView, setAgentCover, agentHasMail, openAgentLetter, agentHooks, spyPowerOf } from './agents-app';
 import { office } from './office-app'; // 첩보 공작원(2026-10-20 알파 9 ④)
 import { chronNoteWorld, chronNote } from './chronicle-app';
 import { noteExtra } from './media';
 import { gameName } from './namegen-app';
 import { randomName } from '../debate';
 import { MANNERS, agentPromptLine } from '../agents';
-import { diplomaticBoost, expelReason, canReturn, farewellMessages, type ExpelWhy, ambassadorTalkMessages, cleanTalkReply, regularDue, TALK_MAX, TALK_TEXT, type TalkTurn } from '../embassy';
+import { withSpyPower, diplomaticBoost, expelReason, canReturn, farewellMessages, type ExpelWhy, ambassadorTalkMessages, cleanTalkReply, regularDue, TALK_MAX, TALK_TEXT, type TalkTurn } from '../embassy';
 import { type EmbRaw, type EmbFaction, type EmbReport, embFromKv, factionFromKv, assessEmbassy, assessOfficial, assessSecret, embChanges, seriesChanges, embPointFromKv, pushPoint, type EmbPoint, type Ambassador, factionLines, embassyMessages, spyReportMessages, parseEmbassyReport, embassyCommand, INTEL_NAME, LEVEL_NAME } from '../embassy';
+import { refreshFrontier, frontierFor } from './frontier-app'; // 국경·영유권 등(2026-10-26)
+import { frontierFactsUs } from '../frontier';
 import { stanceOfEmpire, stanceLabel } from './condemn-app'; // 우리 전쟁에 대한 이 나라의 성명(2026-10-20)
+import { hoiHooks, fsupViewFor } from './hoi-app'; // 파벌 공작(2026-10-28 하츠 참고)
+import { noteSecretHook } from '../app/deal-hooks'; // 첩보 보고서의 확인된 비밀 → 거래 갈고리(2026-10-26) — deals-app 이 등록(가져오기 고리 방지)
 
 const L = pick; // 한국어·영어·언어 팩
 const T = (x: [string, string]) => L(x[0], x[1]);
@@ -83,7 +87,7 @@ function reopenEmbassy(sid: string, idx: number, x: Expel, date: string): void {
 }
 /** 지난 보고 이후 달라진 점(공식은 대사관이 있을 때, 비밀은 첩보망이 닿을 때만 보여 준다). */
 function changesOf(e: Entry) {
-  const all = embChanges(e.prev, e.raw), o = assessOfficial(e.raw).available, sc = assessSecret(e.raw).available;
+  const all = embChanges(e.prev, e.raw), o = assessOfficial(e.raw).available, sc = assessSecret(effRaw(e.raw)).available;
   const pick2 = (ch: 'official' | 'secret') => all.filter((c) => c.ch === ch && (ch === 'official' ? o : sc)).map((c) => ({ text: T(c.text), worse: c.worse }));
   return { official: pick2('official'), secret: pick2('secret'), prevDate: e.prev?.date ?? '' };
 }
@@ -101,23 +105,25 @@ function monSave(): void { if (monTimer) return; monTimer = setTimeout(() => { m
 const seriesOf = (sid: string, idx: number): EmbPoint[] => monAll()[sid]?.[String(idx)] ?? [];
 /** 감시 기록에서 본 변화: 공식은 대사관이 있을 때, 비밀은 첩보망이 닿을 때만. */
 function monChanges(sid: string, idx: number, e?: Entry) {
-  const ch = seriesChanges(seriesOf(sid, idx)), o = e ? assessOfficial(e.raw).available : true, sc = e ? assessSecret(e.raw).available : false;
+  const ch = seriesChanges(seriesOf(sid, idx)), o = e ? assessOfficial(e.raw).available : true, sc = e ? assessSecret(effRaw(e.raw)).available : false;
   const pick3 = (c: 'official' | 'secret') => ch.filter((x) => x.ch === c && (c === 'official' ? o : sc)).map((x) => ({ text: T(x.text), worse: x.worse }));
   return { official: pick3('official'), secret: pick3('secret') };
 }
 const facBuf = new Map<number, EmbFaction[]>(); // 요청 번호 → 모은 파벌 줄
 const busy = new Set<number>();
 
+/** 첩보 수준을 첩보망 침투 수준으로 보완한 자료(2026-10-27: 게임 정보 값 조건이 실패해 늘 0 이던 문제). */
+function effRaw(r: EmbRaw): EmbRaw { return withSpyPower(r, spyPowerOf(r.name)); }
 function detail(sid: string, idx: number) {
   const e = saveOf(sid)[String(idx)]; if (!e) return null;
-  const a = assessEmbassy(e.raw), o = assessOfficial(e.raw), ag0 = agentFor(e.raw.name), sc = ag0?.dip ? diplomaticBoost(assessSecret(e.raw)) : assessSecret(e.raw), x = expelOf(sid, idx);
+  const a = assessEmbassy(e.raw), o = assessOfficial(e.raw), ag0 = agentFor(e.raw.name), sc = ag0?.dip ? diplomaticBoost(assessSecret(effRaw(e.raw))) : assessSecret(effRaw(e.raw)), x = expelOf(sid, idx);
   return {
     official: { available: o.available, level: o.level, levelName: T(LEVEL_NAME[o.level]), threat: o.threat, signals: o.shown.map((s) => ({ text: T(s.text), weight: s.weight })), factions: factionLines(e.raw, L, false) },
     amb: e.amb ? { ...e.amb, manner: e.amb.mi !== undefined && MANNERS[e.amb.mi] ? L(MANNERS[e.amb.mi][0], MANNERS[e.amb.mi][1]) : e.amb.manner } : null, changes: changesOf(e), monthly: monChanges(sid, idx, e), series: seriesOf(sid, idx).map((p) => ({ date: p.date, op: p.op })),
-    secret: { available: sc.available, level: sc.level, levelName: T(LEVEL_NAME[sc.level]), threat: sc.threat, confidence: T(sc.confidence), signals: sc.shown.map((s) => ({ text: T(s.text), weight: s.weight, rumor: s.rumor })), hidden: sc.hidden, rumors: sc.rumors, factions: factionLines(e.raw, L, true), report: e.spy ?? null, amb: e.spyAmb ?? null, agent: ag0 ? { ...agentView(ag0, e.raw.date || ctx.gameDate || ''), canDip: o.available && !x?.active } : null },
+    secret: { available: sc.available, level: sc.level, levelName: T(LEVEL_NAME[sc.level]), threat: sc.threat, confidence: T(sc.confidence), signals: sc.shown.map((s) => ({ text: T(s.text), weight: s.weight, rumor: s.rumor })), hidden: sc.hidden, rumors: sc.rumors, factions: factionLines(e.raw, L, true), ops: sc.available ? fsupViewFor(idx, e.raw.factions) : null, report: e.spy ?? null, amb: e.spyAmb ?? null, agent: ag0 ? { ...agentView(ag0, e.raw.date || ctx.gameDate || ''), canDip: o.available && !x?.active } : null },
     talk: (e.talk ?? []).slice(-TALK_MAX), due: isDue(sid, idx), canTalk: o.available && !x?.active,
     expel: x ? { active: x.active, date: x.date, back: x.back ?? '', why: T(WHY_TEXT[x.why]), amb: x.amb.name, cable: x.cable ?? null } : null,
-    idx, name: e.raw.name, date: e.raw.date, intel: e.raw.intel, intelName: T(INTEL_NAME[e.raw.intel]), level: a.level, levelName: T(LEVEL_NAME[a.level]), threat: a.threat,
+    idx, name: e.raw.name, date: e.raw.date, intel: effRaw(e.raw).intel, intelName: T(INTEL_NAME[effRaw(e.raw).intel]), level: a.level, levelName: T(LEVEL_NAME[a.level]), threat: a.threat,
     confidence: T(a.confidence), signals: a.shown.map((s) => ({ text: T(s.text), weight: s.weight })), hidden: a.hidden,
     factions: factionLines(e.raw, L), report: e.report ?? null,
     warStance: (() => { const w = stanceOfEmpire(idx); return w ? { ...w, label: stanceLabel(w.stance) } : null; })(), // 우리 전쟁에 대한 이 나라의 공개 성명
@@ -130,6 +136,7 @@ export function embassyView() {
 }
 
 export function registerEmbassy(router: LogRouter): void {
+  hoiHooks.intel = (idx) => { const sid = ctx.curSaveId; const e = sid ? saveOf(sid)[String(idx)] : undefined; return e ? { band: effRaw(e.raw).intel, date: e.raw.date } : null; }; // 파벌 공작의 첩보 수준
   agentHooks.dipLost = (idx, host, date) => expelAmbassador(idx, host, 'spy', date); // 외교관 위장 공작원 발각 → 대사 추방(2026-10-20)
   router.on(SLOT.EMBASSY, 'embassy', (m: SllmMessage) => {
     if (m.kind === 'EMBFAC') { const req = Number(m.kv.req), f = factionFromKv(m.kv); if (Number.isSafeInteger(req) && f) { const a = facBuf.get(req) ?? []; if (a.length < 20) a.push(f); facBuf.set(req, a); } return; }
@@ -165,7 +172,8 @@ export function registerEmbassy(router: LogRouter): void {
     busy.add(-idx - 2000000);
     try {
       if (!e.amb) { e.amb = newAmb(); save(); }
-      const reply = cleanTalkReply(await ctx.ai.chat(ambassadorTalkMessages(e.raw, ctx.playerName || 'the player empire', e.amb, e.talk ?? [], text, e.report, stanceOfEmpire(idx)), { purpose: 'embassy-talk', maxTokens: 700, conversationId: `embassy:${ctx.curSaveId}:${idx}` }));
+      await refreshFrontier([idx]).catch(() => {}); // 국경·영유권 등(2026-10-26)
+      const reply = cleanTalkReply(await ctx.ai.chat(ambassadorTalkMessages(e.raw, ctx.playerName || 'the player empire', e.amb, e.talk ?? [], text, e.report, stanceOfEmpire(idx), frontierFactsUs(frontierFor(idx))), { purpose: 'embassy-talk', maxTokens: 700, conversationId: `embassy:${ctx.curSaveId}:${idx}` }));
       if (!reply) return { ok: false, error: L('대사의 답을 받지 못했습니다. 다시 보내 주세요.', 'No reply from the ambassador. Please send again.') };
       if (ctx.curSaveId !== sid) return { ok: false, error: L('세이브가 바뀌었습니다.', 'The save changed.') };
       (e.talk ??= []).push({ me: text, them: reply, date: ctx.gameDate || e.raw.date }); if (e.talk.length > TALK_MAX) e.talk.splice(0, e.talk.length - TALK_MAX); save();
@@ -202,7 +210,7 @@ export function registerEmbassy(router: LogRouter): void {
       const prev = saveOf(sid)[String(idx)];
       const base = prev && prev.raw.date !== raw.date ? prev.raw : prev?.prev; // 같은 날짜에 다시 받아도 비교 기준이 사라지지 않게
       saveOf(sid)[String(idx)] = { raw, ...(prev?.report ? { report: prev.report } : {}), ...(prev?.spy ? { spy: prev.spy } : {}), ...(base ? { prev: base } : {}), ...(prev?.amb ? { amb: prev.amb } : {}), ...(prev?.spyAmb ? { spyAmb: prev.spyAmb } : {}) }; save();
-      logDiagnostic('info', 'embassy.probe', { idx, intel: raw.intel, factions: raw.factions.length, profile: !!pf });
+      logDiagnostic('info', 'embassy.probe', { idx, intel: raw.intel, spy: spyPowerOf(raw.name), factions: raw.factions.length, profile: !!pf });
       return { ok: true, detail: detail(sid, idx), state: embassyView() };
     } catch (e) { return { ok: false, error: (e as Error).message }; }
     finally { busy.delete(idx); facBuf.delete(req); }
@@ -217,7 +225,8 @@ export function registerEmbassy(router: LogRouter): void {
     try {
       const a = assessEmbassy(e.raw);
       if (!e.amb) { const mi = Math.floor(Math.random() * MANNERS.length); e.amb = { name: gameName(Math.random() < 0.5 ? 'm' : 'f') || randomName(), manner: MANNERS[mi][1], mi }; save(); } // 대사: 우리 제국 종족 이름 표(AI 가 짓지 않음)
-      const raw = await ctx.ai.chat(embassyMessages(e.raw, a, ctx.playerName || 'the player empire', e.amb, e.prev, stanceOfEmpire(idx)), { purpose: 'embassy-report', json: true, maxTokens: 2400 });
+      await refreshFrontier([idx]).catch(() => {}); // 국경·영유권 등(2026-10-26)
+      const raw = await ctx.ai.chat(embassyMessages(e.raw, a, ctx.playerName || 'the player empire', e.amb, e.prev, stanceOfEmpire(idx), frontierFactsUs(frontierFor(idx))), { purpose: 'embassy-report', json: true, maxTokens: 2400 });
       const rep = parseEmbassyReport(raw, e.raw.date);
       if (!rep) return { ok: false, error: L('대사의 보고서를 읽지 못했습니다. 다시 눌러 주세요.', 'Could not read the ambassador\'s report. Please try again.') };
       if (ctx.curSaveId !== sid) return { ok: false, error: L('세이브가 바뀌었습니다.', 'The save changed.') };
@@ -230,16 +239,18 @@ export function registerEmbassy(router: LogRouter): void {
   ipcMain.handle('embassySpyReport', async (_e, idxIn: unknown) => {
     const sid = ctx.curSaveId, idx = Number(idxIn), e = sid ? saveOf(sid)[String(idx)] : undefined;
     if (!sid || !e) return { ok: false, error: L('먼저 「최신 정보 받기」로 자료를 받아 주세요.', 'Get the latest information first.') };
-    const sc = agentFor(e.raw.name)?.dip ? diplomaticBoost(assessSecret(e.raw)) : assessSecret(e.raw); // 외교관 위장이면 소문이 확인된 정보로
+    const sc = agentFor(e.raw.name)?.dip ? diplomaticBoost(assessSecret(effRaw(e.raw))) : assessSecret(effRaw(e.raw)); // 외교관 위장이면 소문이 확인된 정보로
     if (!sc.available) return { ok: false, error: L('첩보망이 그 나라에 닿지 않아 보고할 내용이 없습니다. 첩보망을 키워 주세요.', 'Our network does not reach that empire, so there is nothing to report. Grow your espionage network.') };
     if (busy.has(-idx - 1000000)) return { ok: false, error: L('첩보부장이 보고서를 쓰는 중입니다.', 'The spymaster is writing the briefing.') };
     busy.add(-idx - 1000000);
     try {
-      const raw = await ctx.ai.chat(spyReportMessages(e.raw, sc, ctx.playerName || 'the player empire', e.spyAmb, (() => { const ag = agentFor(e.raw.name); return ag ? agentPromptLine(ag, e.raw.date || ctx.gameDate || '') : undefined; })()), { purpose: 'spy-report', json: true, maxTokens: 2400 });
+      await refreshFrontier([idx]).catch(() => {}); // 국경·영유권·명분·신뢰(2026-10-26)
+      const raw = await ctx.ai.chat(spyReportMessages(effRaw(e.raw), sc, ctx.playerName || 'the player empire', e.spyAmb, (() => { const ag = agentFor(e.raw.name); return ag ? agentPromptLine(ag, e.raw.date || ctx.gameDate || '') : undefined; })(), frontierFactsUs(frontierFor(idx), { secret: true })), { purpose: 'spy-report', json: true, maxTokens: 2400 });
       const rep = parseEmbassyReport(raw, e.raw.date);
       if (!rep) return { ok: false, error: L('첩보 보고서를 읽지 못했습니다. 다시 눌러 주세요.', 'Could not read the briefing. Please try again.') };
       if (ctx.curSaveId !== sid) return { ok: false, error: L('세이브가 바뀌었습니다.', 'The save changed.') };
       e.spy = rep; save(); // 공작원·첩보부장 이름은 AI 가 짓지 않는다(옛 기록의 spyAmb 는 그대로 둔다)
+      try { noteSecretHook(idx, e.raw.name, sc.shown); } catch { /* 갈고리는 부가 기능 */ } // 확인된 비밀 → 거래 갈고리(2026-10-26 외교 거래)
       return { ok: true, detail: detail(sid, idx) };
     } catch (err) { return { ok: false, error: (err as Error).message }; }
     finally { busy.delete(-idx - 1000000); }

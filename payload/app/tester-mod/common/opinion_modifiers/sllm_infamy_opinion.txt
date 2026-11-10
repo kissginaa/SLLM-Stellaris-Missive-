@@ -1,0 +1,23 @@
+# SLLM 악명(2026-11-04) — 교신하는 나라들이 악명 높은 나라를 보는 눈. 단계가 바뀌거나 해마다 다시 붙인다(줄어들지 않음).
+sllm_inf_op1 = {
+	opinion = { base = -20 }
+}
+sllm_inf_op2 = {
+	opinion = { base = -50 }
+}
+sllm_inf_op3 = {
+	opinion = { base = -100 }
+}
+# 3단계(2026-11-04): 전범 인도 요구에 대한 답
+sllm_wc_handed = {
+	opinion = { base = 30 }
+	decay = { base = 1 }
+}
+sllm_wc_tried = {
+	opinion = { base = 10 }
+	decay = { base = 1 }
+}
+sllm_wc_refused = {
+	opinion = { base = -40 }
+	decay = { base = 1 }
+}

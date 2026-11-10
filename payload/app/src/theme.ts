@@ -4,7 +4,7 @@
 export const ETHIC_THEMES = ['egalitarian', 'authoritarian', 'militarist', 'pacifist', 'materialist', 'spiritualist', 'xenophile', 'xenophobe', 'machine', 'hive'] as const;
 /** A-22 2단계: 바닐라 홀로그램풍(스텔라리스 원래 UI 느낌을 CSS로만 흉내, 게임 그림은 쓰지 않음) */
 export const EXTRA_THEMES = ['holo'] as const;
-export const THEME_NAMES = ['stellaris', 'terminal', 'starfield', 'custom', ...ETHIC_THEMES, ...EXTRA_THEMES] as const;
+export const THEME_NAMES = ['stellaris', 'terminal', 'starfield', 'custom', ...ETHIC_THEMES, ...EXTRA_THEMES, 'auto'] as const; // auto: 우리 제국 가치관에 맞춤(알파 11, ui/theme.js 가 앱에 물어 고른다)
 export type ThemeName = (typeof THEME_NAMES)[number];
 export const CUSTOM_KEYS = ['bg', 'panel', 'text', 'hi', 'gold'] as const;
 export type CustomColors = Partial<Record<(typeof CUSTOM_KEYS)[number], string>>;

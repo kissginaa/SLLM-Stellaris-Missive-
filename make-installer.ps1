@@ -1,6 +1,6 @@
 ﻿# SLLM 설치기 한 번에 만들기 (Windows). 더블클릭용 설치기_만들기.bat 이 이 파일을 부른다.
 # 순서: 도구 확인(+앱 업데이트 서명 키) → 실행 앱과 payload 비교 → 앱 빌드(tsc)+자동 검사 → 버전 확인 → 설치기 빌드 → 바탕화면 새 폴더에 복사 → 창작마당 모드 폴더에 앱 업데이트 묶음.
-# 규칙은 RELEASE_RULES_KO.md 그대로다(경로·방식 변경 없음). 창작마당 모드 폴더에는 앱 업데이트 묶음(sllm_app_update)만 넣는다(모드 파일은 건드리지 않음, 2026-10-18).
+# 규칙은 RELEASE_RULES_KO.md 그대로다(경로·방식 변경 없음). 창작마당 모드 폴더에는 앱 업데이트 묶음(sllm_app_update)을 넣고, 모드 파일은 payload/app/tester-mod 와 똑같이 맞춘 뒤(descriptor.mod·sllm_app_update 제외, 2026-10-27 · 썸네일은 2026-11-04부터 같이 맞춤) descriptor.mod 의 version 줄과 연결 신호(sllm_probe_connection.txt HELLO)의 버전을 같은 버전으로 맞춘다(2026-10-18 · 2026-10-24).
 # 버전: 버전이 적힌 곳 중 가장 높은 것으로 나머지를 자동으로 맞춘다(package.json·lock·descriptor.mod·HELLO·setup.nsi). 직접 정하려면 -Bump 0.1.0-alpha.6
 # -UpdateOnly (업데이트_만들기.bat): 설치기는 만들지 않고 창작마당용 앱 업데이트 묶음(sllm_app_update)만 만든다. 지난 묶음과 버전이 같으면 한 단계(…alpha.8 → …alpha.8.1 → …alpha.8.2) 자동으로 올린다.
 param([string]$Bump, [string]$MakeNSIS, [switch]$SkipTests, [switch]$UpdateOnly)
@@ -177,8 +177,43 @@ try {
   Say '창작마당 모드 폴더에 앱 업데이트 묶음 넣기 (sllm_app_update)'
   $mods = @($docMod)
   $ws = Join-Path $dev "dist\workshop_$ver\sllm_missive"; if (Test-Path -LiteralPath $ws) { $mods += $ws }
+  # 창작마당 모드 파일을 payload/app/tester-mod 와 똑같이 맞춘다(2026-10-27 사용자 결정). 전에는 버전 줄만 바꿔서 새 모드 파일이 빠진 채 올라갔다(알파 10.2·11).
+  # 창작마당용 descriptor.mod·앱 묶음(sllm_app_update)·옛 변경사항 글은 그대로 두고, 그 밖에 tester-mod 에 없는 옛 모드 파일은 지운다(/MIR).
+  # 썸네일(thumbnail.png)은 2026-11-04 사용자 결정으로 tester-mod 것을 그대로 올린다(전엔 창작마당 폴더 것을 따로 두어 새 썸네일이 안 넘어갔다). 스팀 한도 1MB.
+  $srcMod = Join-Path $payload 'tester-mod'
+  if (!(Test-Path -LiteralPath (Join-Path $srcMod 'common'))) { Fail "모드 원본이 없습니다: $srcMod" }
+  foreach ($md in $mods) {
+    if (!(Test-Path -LiteralPath $md)) { continue }
+    robocopy $srcMod $md /MIR /XD sllm_app_update /XF descriptor.mod '창작마당_변경사항_*.txt' /NFL /NDL /NJH /NJS /NP | Out-Null
+    if ($LASTEXITCODE -ge 8) { Fail "창작마당 모드 폴더에 모드 파일을 복사하지 못했습니다(robocopy $LASTEXITCODE): $md" }
+    $thumb = Join-Path $md 'thumbnail.png'; if ((Test-Path -LiteralPath $thumb) -and (Get-Item -LiteralPath $thumb).Length -gt 1MB) { Write-Host "  [주의] 썸네일이 1MB를 넘습니다. 스팀이 업로드를 거부할 수 있습니다: $thumb" -ForegroundColor Yellow }
+    $nSrc = @(Get-ChildItem -LiteralPath $srcMod -Recurse -File | Where-Object { $_.Name -ne 'descriptor.mod' -and $_.Name -ne 'thumbnail.png' }).Count
+    $nDst = @(Get-ChildItem -LiteralPath $md -Recurse -File | Where-Object { $_.FullName -notmatch '\\sllm_app_update\\' -and $_.Name -ne 'descriptor.mod' -and $_.Name -ne 'thumbnail.png' -and $_.Name -notlike '창작마당_변경사항_*.txt' }).Count
+    if ($nSrc -ne $nDst) { Fail "창작마당 모드 폴더의 모드 파일 수가 원본과 다릅니다(원본 $nSrc, 창작마당 $nDst): $md" }
+    Write-Host "  모드 파일 맞춤: tester-mod → $md ($nSrc 개)"
+  }
+  $global:LASTEXITCODE = 0
   & node (Join-Path $dev 'tools\make-app-update.js') bundle $payload @mods
-  if ($LASTEXITCODE) { if ($UpdateOnly) { Fail '앱 업데이트 묶음을 만들지 못했습니다(위 메시지를 확인하세요).' } else { Write-Host "  앱 업데이트 묶음을 만들지 못했습니다(설치기는 정상). 창작마당에 올리기 전에 위 메시지를 확인하세요." -ForegroundColor Yellow } }
+  $bundleOk = !$LASTEXITCODE
+  # 창작마당 모드 descriptor.mod 의 version 줄도 앱 묶음 버전으로 맞춘다(2026-10-24 사용자 결정). 다른 줄(이름·태그·remote_file_id 등)은 건드리지 않는다.
+  if ($bundleOk) {
+    $verRe = [regex]'(?m)^(\s*version\s*=\s*")([^"]*)(")'
+    foreach ($md in $mods) {
+      $dm = Join-Path $md 'descriptor.mod'; if (!(Test-Path -LiteralPath $dm)) { continue }
+      $t = ReadText $dm; $vm = $verRe.Match($t)
+      if (!$vm.Success) { Write-Host "  descriptor.mod 에 version 줄이 없습니다: $dm" -ForegroundColor Yellow }
+      elseif ($vm.Groups[2].Value -ne $ver) { WriteText $dm ($verRe.Replace($t, '${1}' + $ver + '${3}', 1)); Write-Host "  descriptor.mod 버전 맞춤: $($vm.Groups[2].Value) → $ver  ($dm)" }
+    }
+    # 창작마당 모드의 연결 신호(HELLO) 버전도 맞춘다(2026-10-24): 안 맞추면 앱이 「연결 모드가 앱보다 낮은 버전」이라고 경고한다.
+    $helloRe = [regex]'(/;/version=)([^/"\s]+)'
+    foreach ($md in $mods) {
+      foreach ($hf in (Get-ChildItem -LiteralPath $md -Recurse -File -Filter 'sllm_probe_connection.txt' -ErrorAction SilentlyContinue)) {
+        $t = ReadText $hf.FullName; $hm = $helloRe.Match($t)
+        if ($hm.Success -and $hm.Groups[2].Value -ne $ver) { WriteText $hf.FullName ($helloRe.Replace($t, '${1}' + $ver, 1)); Write-Host "  연결 신호(HELLO) 버전 맞춤: $($hm.Groups[2].Value) → $ver  ($($hf.FullName))" }
+      }
+    }
+  }
+  if (!$bundleOk) { if ($UpdateOnly) { Fail '앱 업데이트 묶음을 만들지 못했습니다(위 메시지를 확인하세요).' } else { Write-Host "  앱 업데이트 묶음을 만들지 못했습니다(설치기는 정상). 창작마당에 올리기 전에 위 메시지를 확인하세요." -ForegroundColor Yellow } }
   $newDll = (Get-FileHash -LiteralPath (Join-Path $payload 'native\command-bridge.dll') -Algorithm SHA256 -ErrorAction SilentlyContinue).Hash
   $dllChanged = $newDll -and $prevDll -and ($newDll.ToLower() -ne ([string]$prevDll).ToLower())
   Write-Host ""

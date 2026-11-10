@@ -1,0 +1,214 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 11.3 — 아이와 가족, 은하 변호사 (0.1.0-alpha.11.3)[/h1]
+
+알파 11 이후의 업데이트입니다. 통치자의 배우자와 아이를 키우는 육아와 가족 기능, 은하재판소를 도와주는 은하 변호사가 생겼고, 테스터 로그에서 나온 문제들을 고쳤습니다. 앱이 게임을 덜 방해하도록 무거운 계산도 따로 돌립니다. 새 기능은 대부분 틀 문장과 확률로 움직여, 아이와 직접 대화할 때가 아니면 AI를 쓰지 않습니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]👶 육아 — 아기방[/h2]
+[list]
+[*]통치자의 배우자와의 사이에서 아이가 태어납니다. 해마다 3%이고, 그해 그 배우자와 친밀한 장면이 있었다면 30%입니다. 배우자 1명당 2명, 통치자 한 명당 모두 합쳐 8명(성인이 된 아이 포함)까지이고, 임신 기간은 9개월입니다. 비서가 된 배우자와는 아이가 생기지 않습니다.
+[*]집무실 개인실의 [b]「아기방」[/b]에 들어가면 [b]「누구를 보러 가시겠습니까?」[/b] 목록이 먼저 나옵니다. 아이를 고르면 그 아이의 방으로 갑니다.
+[*]아이는 영유아(0~2세) → 어린이(3~11세) → 청소년(12~17세) → 성인(18세)으로 자랍니다. 아기방에는 나이대·성별·체격에 맞춘 실루엣으로 보입니다.
+[*]1·4·7·10·13·16세에 성장 사건이 열립니다. 답에 따라 아이의 성향이 쌓이고, 1년 안에 답하지 않으면 「부모가 바빴다」로 넘어갑니다. 아이를 잃는 사건도 있습니다. 이름은 아기방에서 바꿀 수 있습니다.
+[*][b]공부 정하기[/b]: 목록 아래의 직업 아이콘 세 개로 「어떤 공부를 시키겠습니까?」를 정합니다. 정하지 않으면 가장 높게 자란 성향으로 자동 결정됩니다.
+[*][b]대화[/b]: 어린이와 청소년만 대화할 수 있습니다(영유아는 말을 못 합니다). 어린이는 짧은 한마디로 답합니다. 횟수 제한은 없고, 대화는 성향에 영향을 주지 않으며 끝나면 기억으로만 남습니다.
+[*][b]초상화[/b]: 원하는 초상화로 바꿀 수 있고, 성인이 되면 그 초상화가 지도자 초상화가 됩니다.
+[*][b]성인식[/b]: 18세가 되면 게임 속 지도자로 등록됩니다. 직업은 고른 공부(없으면 가장 높은 성향), 특성은 자란 과정에 따라 붙고, 모두 [b]「통치자의 자녀」[/b](지도자 경험치 +15%)를 받습니다. 종족은 기본적으로 어머니 쪽을 60%, 아버지 쪽을 40% 확률로 따릅니다. 후계자로 지정할 수도 있습니다.
+[/list]
+
+[h2]👪 가족[/h2]
+[list]
+[*]가족 관계가 장부로 기록됩니다. 집무실 연락처의 인물 카드에 [b]「가족」[/b] 칸이 생겼습니다.
+[*]1:1 대화 속 인물이 자기 가족을 압니다. 배우자와 이야기하면 아이 이야기가 자연스럽게 나옵니다.
+[*]가족이 세상을 떠나면 남은 가족이 슬퍼합니다. 직업별 [b]슬픔 특성[/b]이 붙어 능력이 −10% 약해지고, 3년 뒤에 사라집니다.
+[*]게임에 특성 「통치자의 자녀」와 직업별 슬픔 특성이 추가되었습니다(모드 업데이트 필요).
+[/list]
+
+[h2]⚖️ 은하 변호사 (은하재판소)[/h2]
+[list]
+[*]재판을 시작할 때(첫 발언 전) 변호사를 한 번 선임하면 남은 증거 3개를 변호사가 맡습니다. AI를 쓰지 않고 확률로 판정합니다.
+[*][b]국제은하변호사[/b] 무료·승소 20% / [b]은하사무소 변호사[/b] 에너지 500 + 영향력 50·75% / [b]은하로펌 변호사[/b] 에너지 1000 + 영향력 100·95%.
+[*]증거 비용: 첫 증거는 기본 비용, 두 번째 증거부터 에너지 크레딧만 기본의 25%씩 더해집니다(증거 3개면 에너지 150%, 영향력은 그대로). 선임할 때 한 번에 냅니다.
+[*]결과는 「치열한 법정 공방 끝에…」처럼 상황에 맞는 말로 나오고, 증거마다 어느 변호사가 승소·패소했는지 알려 줍니다.
+[/list]
+
+[h2]🛠️ 고친 문제[/h2]
+[list]
+[*][b]은하재판소[/b]: 플레이어가 이겼다고 나오는데 판결문은 상대 손을 들어 주던 문제. 판정이 승자를 분명히 정하고, 판결문이 그 결과와 맞게 쓰입니다.
+[*][b]대사관 첩보 수준[/b]: 게임의 정보 값 조건이 늘 0으로 나와 첩보 탭이 잠겨 있던 문제. 첩보망의 침투 수준으로 보완해, 침투가 있으면 그 수준대로 첩보 보고서가 열립니다(모드 조건도 고침).
+[*][b]첩보 공작원[/b]: 게임은 접촉한 모든 나라에 침투 0의 첩보망을 두는데(한 세이브에 116개 중 110개), 거기에도 공작원이 부임하던 문제. 침투가 1 이상인 곳에만 부임하고, 침투가 0이 되면 추모관·청문회 없이 조용히 소환합니다. 첩보 보고서가 잠겨 있어도 현지 공작원 카드는 보입니다.
+[*][b]통신 목록[/b]: 안내 주석 한 줄이 뒤 코드를 삼켜 통신 목록 창 전체가 죽던 문제. 모든 화면 스크립트가 문법에 맞는지 검사합니다.
+[*][b]총독 보상·사건[/b]: 구역(sector)에서 지도자로 넘어가지 못해 error.log에 오류가 쌓이던 문제. 그 총독이 맡은 행성 쪽에서 지도자를 찾습니다.
+[*][b]만찬 사건[/b]: 그림이 없어 경고가 나던 문제. 지도 표식의 거대 구조물 문구도 한/영으로 채웠습니다.
+[*][b]로그 번호표[/b]: 외교 거래·약탈자·성계 명령의 번호가 로그에 req670$ 처럼 깨져 찍히던 문제. 번호를 변수로 넘기도록 고쳤습니다.
+[*][b]집무실[/b]: 화면마다 이벤트 듣개를 따로 달아 경고(MaxListenersExceeded)가 나던 문제. 하나로 합쳤습니다.
+[*][b]앱 메모리[/b]: 켜자마자 메모리가 치솟던 문제. 세이브를 읽을 때 같은 구역을 되풀이해 쪼개던 것을 없앴습니다.
+[*]영어 화면의 빠진 문구와 어색한 표현(예: 「1 years old」), 한국어 조사 오류(예: 「연맹와」)를 고쳤습니다.
+[/list]
+
+[h2]⚙️ 게임을 덜 방해하도록[/h2]
+[list]
+[*]스텔라리스는 거의 한 코어로 돌아가므로 앱의 무거운 계산을 따로 돌립니다: 세이브 읽기(자동 저장 때 앱이 1~2초 멈추던 것), 깃발·문양·행성 그림·직업 아이콘 변환, 모드 초상화 그리기.
+[*]동맹의 방어 전쟁 조사는 매달 상황 조사에서 해당될 때만 묻습니다.
+[/list]
+
+앱 업데이트 안내가 나타나면 적용해 주세요. 아직 알파 버전인 만큼 예상하지 못한 문제가 있을 수 있습니다. 발견한 문제와 의견을 남겨 주세요!
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 11.3 — Children, Family and Galactic Lawyers (0.1.0-alpha.11.3)[/h1]
+
+An update after Alpha 11. You can now raise children with your ruler's spouses, with family ties around them, and hire Galactic Lawyers for the Galactic Tribunal, and the problems found in tester logs are fixed. The app also runs its heavy work separately so it disturbs the game less. Most new features run on set phrases and chances, so no AI is used unless you talk to a child directly.
+
+⚠️ [b]The mod files changed.[/b] Update this mod (Workshop) and the app together, then restart the game completely.
+
+[h2]👶 Parenting — the Nursery[/h2]
+[list]
+[*]Your ruler's spouses can have children: 3% a year, or 30% if an intimate scene with that spouse took place that year. Up to 2 per spouse and 8 per ruler in total (grown children count); gestation takes 9 months. A spouse serving as your secretary has no children.
+[*]Open the [b]"Nursery"[/b] in your private rooms and [b]"Whom would you like to visit?"[/b] comes first. Pick a child to go to their room.
+[*]Children grow from infant (0–2) → child (3–11) → teen (12–17) → adult (18). The nursery shows silhouettes matched to age, sex and build.
+[*]Growth events happen at ages 1, 4, 7, 10, 13 and 16. Your answers build the child's leanings; with no answer within a year, "the parents were busy" applies. There is also an event for losing a child. You can rename a child in the nursery.
+[*][b]Choosing a study[/b]: three job icons below the list decide "What should they study?" With no choice, the highest-grown leaning decides.
+[*][b]Talking[/b]: only children and teens can talk (infants cannot). Children answer in one short sentence. There is no limit; talks do not change leanings and only leave a memory.
+[*][b]Portrait[/b]: you can replace it, and it becomes the leader portrait when they grow up.
+[*][b]Coming of age[/b]: at 18 they become a real in-game leader. Class is the chosen study (otherwise the highest leaning); traits come from how they grew up, and all get [b]"Ruler's Child"[/b] (+15% leader XP). Species follows the mother 60% / father 40% by default. A child can also be named heir.
+[/list]
+
+[h2]👪 Family[/h2]
+[list]
+[*]Family ties are now recorded. The Office contact card has a [b]"Family"[/b] section.
+[*]Characters in 1:1 talks know their own family; talking with a spouse can bring up the children.
+[*]When a family member dies, the relative grieves: a class-specific [b]grief trait[/b] lowers their abilities by 10% and expires after 3 years.
+[*]New game traits: "Ruler's Child" and the class-specific grief traits (mod update required).
+[/list]
+
+[h2]⚖️ Galactic Lawyers (Galactic Tribunal)[/h2]
+[list]
+[*]Hire a lawyer once when the trial starts (before your first statement) and they take the remaining 3 exhibits. No AI is used — it is a chance roll.
+[*][b]International Galactic Lawyer[/b]: free, 20% win / [b]Galactic Office Lawyer[/b]: 500 energy + 50 influence, 75% / [b]Galactic Law Firm Lawyer[/b]: 1000 energy + 100 influence, 95%.
+[*]Exhibit cost: the first exhibit is the base cost; from the second, only energy credits rise by 25% of the base each (3 exhibits = 150% energy, influence unchanged). Paid once when you hire.
+[*]Results read like "After a fierce courtroom battle…" and tell you which lawyer won or lost each exhibit.
+[/list]
+
+[h2]🛠️ Fixes[/h2]
+[list]
+[*][b]Galactic Tribunal[/b]: the verdict text could favor the other side even when you won. The verdict now names a clear winner and the text matches it.
+[*][b]Embassy intel level[/b]: the game's intel condition always read 0, so the espionage tab stayed locked. The app now also uses the spy network's infiltration level, so the report opens at that level (the mod condition is fixed too).
+[*][b]Spy agents[/b]: the game keeps an infiltration-0 network on every empire you contact (110 of 116 in one save), and agents were being posted to them. Agents now go only where infiltration is 1+, and are quietly recalled (no memorial, no hearing) when it drops to 0. The local agent card shows even while the secret report is locked.
+[*][b]Contact list[/b]: one comment line swallowed the code after it and killed the whole contact window. Every UI script is now syntax-checked.
+[*][b]Governor rewards and events[/b]: sector scopes cannot jump to a leader, which filled error.log. The leader is now found from the governor's planet.
+[*][b]Dinner event[/b] warning (missing picture) and the map-mark megastructure text are fixed in Korean and English.
+[*][b]Log numbers[/b]: numbers of deals, marauder and system commands were logged as req670$. They are now passed as variables.
+[*][b]Office[/b]: each screen added its own event listener and triggered MaxListeners warnings; merged into one.
+[*][b]App memory[/b]: memory shot up at startup because the save reader re-split the same section repeatedly. Removed.
+[*]Missing or awkward English text (e.g. "1 years old") and wrong Korean particles (e.g. "연맹와") fixed.
+[/list]
+
+[h2]⚙️ Disturbing the game less[/h2]
+[list]
+[*]Stellaris runs on about one core, so heavy app work now runs separately: reading saves (no more 1–2 second app freeze on autosave), converting flag, emblem, planet and job-icon images, and drawing mod portraits.
+[*]The allied defensive war check is asked only when the monthly scan says it applies.
+[/list]
+
+When the app update notice appears, please apply it. This is still an alpha, so unexpected problems may occur. Please report any issues and feedback!
+
+===== Discord (한국어) =====
+(메시지마다 2000자 미만으로 끊었습니다. 순서대로 따로 보내세요.)
+
+----- 메시지 1/3 (289자) -----
+# 🌌 SLLM 알파 11.3 — 아이와 가족, 은하 변호사
+알파 11 이후의 업데이트입니다. 통치자의 배우자와 아이를 키우는 육아와 가족 기능, 은하재판소를 도와주는 은하 변호사가 생겼고, 테스터 로그에서 나온 문제들을 고쳤습니다. 앱이 게임을 덜 방해하도록 무거운 계산도 따로 돌립니다. 새 기능은 대부분 틀 문장과 확률로 움직여, 아이와 직접 대화할 때가 아니면 AI를 쓰지 않습니다.
+
+⚠️ **모드 파일이 바뀌었습니다.** 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+----- 메시지 2/3 (1519자) -----
+## 👶 육아 — 아기방
+• 통치자의 배우자와의 사이에서 아이가 태어납니다. 해마다 3%이고, 그해 그 배우자와 친밀한 장면이 있었다면 30%입니다. 배우자 1명당 2명, 통치자 한 명당 모두 합쳐 8명(성인이 된 아이 포함)까지이고, 임신 기간은 9개월입니다. 비서가 된 배우자와는 아이가 생기지 않습니다.
+• 집무실 개인실의 **「아기방」**에 들어가면 **「누구를 보러 가시겠습니까?」** 목록이 먼저 나옵니다. 아이를 고르면 그 아이의 방으로 갑니다.
+• 아이는 영유아(0~2세) → 어린이(3~11세) → 청소년(12~17세) → 성인(18세)으로 자랍니다. 아기방에는 나이대·성별·체격에 맞춘 실루엣으로 보입니다.
+• 1·4·7·10·13·16세에 성장 사건이 열립니다. 답에 따라 아이의 성향이 쌓이고, 1년 안에 답하지 않으면 「부모가 바빴다」로 넘어갑니다. 아이를 잃는 사건도 있습니다. 이름은 아기방에서 바꿀 수 있습니다.
+• **공부 정하기**: 목록 아래의 직업 아이콘 세 개로 「어떤 공부를 시키겠습니까?」를 정합니다. 정하지 않으면 가장 높게 자란 성향으로 자동 결정됩니다.
+• **대화**: 어린이와 청소년만 대화할 수 있습니다(영유아는 말을 못 합니다). 어린이는 짧은 한마디로 답합니다. 횟수 제한은 없고, 대화는 성향에 영향을 주지 않으며 끝나면 기억으로만 남습니다.
+• **초상화**: 원하는 초상화로 바꿀 수 있고, 성인이 되면 그 초상화가 지도자 초상화가 됩니다.
+• **성인식**: 18세가 되면 게임 속 지도자로 등록됩니다. 직업은 고른 공부(없으면 가장 높은 성향), 특성은 자란 과정에 따라 붙고, 모두 **「통치자의 자녀」**(지도자 경험치 +15%)를 받습니다. 종족은 기본적으로 어머니 쪽을 60%, 아버지 쪽을 40% 확률로 따릅니다. 후계자로 지정할 수도 있습니다.
+## 👪 가족
+• 가족 관계가 장부로 기록됩니다. 집무실 연락처의 인물 카드에 **「가족」** 칸이 생겼습니다.
+• 1:1 대화 속 인물이 자기 가족을 압니다. 배우자와 이야기하면 아이 이야기가 자연스럽게 나옵니다.
+• 가족이 세상을 떠나면 남은 가족이 슬퍼합니다. 직업별 **슬픔 특성**이 붙어 능력이 −10% 약해지고, 3년 뒤에 사라집니다.
+• 게임에 특성 「통치자의 자녀」와 직업별 슬픔 특성이 추가되었습니다(모드 업데이트 필요).
+## ⚖️ 은하 변호사 (은하재판소)
+• 재판을 시작할 때(첫 발언 전) 변호사를 한 번 선임하면 남은 증거 3개를 변호사가 맡습니다. AI를 쓰지 않고 확률로 판정합니다.
+• **국제은하변호사** 무료·승소 20% / **은하사무소 변호사** 에너지 500 + 영향력 50·75% / **은하로펌 변호사** 에너지 1000 + 영향력 100·95%.
+• 증거 비용: 첫 증거는 기본 비용, 두 번째 증거부터 에너지 크레딧만 기본의 25%씩 더해집니다(증거 3개면 에너지 150%, 영향력은 그대로). 선임할 때 한 번에 냅니다.
+• 결과는 「치열한 법정 공방 끝에…」처럼 상황에 맞는 말로 나오고, 증거마다 어느 변호사가 승소·패소했는지 알려 줍니다.
+
+----- 메시지 3/3 (1156자) -----
+## 🛠️ 고친 문제
+• **은하재판소**: 플레이어가 이겼다고 나오는데 판결문은 상대 손을 들어 주던 문제. 판정이 승자를 분명히 정하고, 판결문이 그 결과와 맞게 쓰입니다.
+• **대사관 첩보 수준**: 게임의 정보 값 조건이 늘 0으로 나와 첩보 탭이 잠겨 있던 문제. 첩보망의 침투 수준으로 보완해, 침투가 있으면 그 수준대로 첩보 보고서가 열립니다(모드 조건도 고침).
+• **첩보 공작원**: 게임은 접촉한 모든 나라에 침투 0의 첩보망을 두는데(한 세이브에 116개 중 110개), 거기에도 공작원이 부임하던 문제. 침투가 1 이상인 곳에만 부임하고, 침투가 0이 되면 추모관·청문회 없이 조용히 소환합니다. 첩보 보고서가 잠겨 있어도 현지 공작원 카드는 보입니다.
+• **통신 목록**: 안내 주석 한 줄이 뒤 코드를 삼켜 통신 목록 창 전체가 죽던 문제. 모든 화면 스크립트가 문법에 맞는지 검사합니다.
+• **총독 보상·사건**: 구역(sector)에서 지도자로 넘어가지 못해 error.log에 오류가 쌓이던 문제. 그 총독이 맡은 행성 쪽에서 지도자를 찾습니다.
+• **만찬 사건**: 그림이 없어 경고가 나던 문제. 지도 표식의 거대 구조물 문구도 한/영으로 채웠습니다.
+• **로그 번호표**: 외교 거래·약탈자·성계 명령의 번호가 로그에 `req670$` 처럼 깨져 찍히던 문제. 번호를 변수로 넘기도록 고쳤습니다.
+• **집무실**: 화면마다 이벤트 듣개를 따로 달아 경고(MaxListenersExceeded)가 나던 문제. 하나로 합쳤습니다.
+• **앱 메모리**: 켜자마자 메모리가 치솟던 문제. 세이브를 읽을 때 같은 구역을 되풀이해 쪼개던 것을 없앴습니다.
+• 영어 화면의 빠진 문구와 어색한 표현(예: 「1 years old」), 한국어 조사 오류(예: 「연맹와」)를 고쳤습니다.
+## ⚙️ 게임을 덜 방해하도록
+• 스텔라리스는 거의 한 코어로 돌아가므로 앱의 무거운 계산을 따로 돌립니다: 세이브 읽기(자동 저장 때 앱이 1~2초 멈추던 것), 깃발·문양·행성 그림·직업 아이콘 변환, 모드 초상화 그리기.
+• 동맹의 방어 전쟁 조사는 매달 상황 조사에서 해당될 때만 묻습니다.
+
+앱 업데이트 안내가 나타나면 적용해 주세요. 아직 알파 버전인 만큼 예상하지 못한 문제가 있을 수 있습니다. 발견한 문제와 의견을 남겨 주세요!
+
+
+===== Discord (English) =====
+(Each message is under 2000 characters. Send them separately, in order.)
+
+----- Message 1/5 (563 chars) -----
+# 🌌 SLLM Alpha 11.3 — Children, Family and Galactic Lawyers
+An update after Alpha 11. You can now raise children with your ruler's spouses, with family ties around them, and hire Galactic Lawyers for the Galactic Tribunal, and the problems found in tester logs are fixed. The app also runs its heavy work separately so it disturbs the game less. Most new features run on set phrases and chances, so no AI is used unless you talk to a child directly.
+
+⚠️ **The mod files changed.** Update this mod (Workshop) and the app together, then restart the game completely.
+
+----- Message 2/5 (1509 chars) -----
+## 👶 Parenting — the Nursery
+• Your ruler's spouses can have children: 3% a year, or 30% if an intimate scene with that spouse took place that year. Up to 2 per spouse and 8 per ruler in total (grown children count); gestation takes 9 months. A spouse serving as your secretary has no children.
+• Open the **"Nursery"** in your private rooms and **"Whom would you like to visit?"** comes first. Pick a child to go to their room.
+• Children grow from infant (0–2) → child (3–11) → teen (12–17) → adult (18). The nursery shows silhouettes matched to age, sex and build.
+• Growth events happen at ages 1, 4, 7, 10, 13 and 16. Your answers build the child's leanings; with no answer within a year, "the parents were busy" applies. There is also an event for losing a child. You can rename a child in the nursery.
+• **Choosing a study**: three job icons below the list decide "What should they study?" With no choice, the highest-grown leaning decides.
+• **Talking**: only children and teens can talk (infants cannot). Children answer in one short sentence. There is no limit; talks do not change leanings and only leave a memory.
+• **Portrait**: you can replace it, and it becomes the leader portrait when they grow up.
+• **Coming of age**: at 18 they become a real in-game leader. Class is the chosen study (otherwise the highest leaning); traits come from how they grew up, and all get **"Ruler's Child"** (+15% leader XP). Species follows the mother 60% / father 40% by default. A child can also be named heir.
+
+----- Message 3/5 (1098 chars) -----
+## 👪 Family
+• Family ties are now recorded. The Office contact card has a **"Family"** section.
+• Characters in 1:1 talks know their own family; talking with a spouse can bring up the children.
+• When a family member dies, the relative grieves: a class-specific **grief trait** lowers their abilities by 10% and expires after 3 years.
+• New game traits: "Ruler's Child" and the class-specific grief traits (mod update required).
+## ⚖️ Galactic Lawyers (Galactic Tribunal)
+• Hire a lawyer once when the trial starts (before your first statement) and they take the remaining 3 exhibits. No AI is used — it is a chance roll.
+• **International Galactic Lawyer**: free, 20% win / **Galactic Office Lawyer**: 500 energy + 50 influence, 75% / **Galactic Law Firm Lawyer**: 1000 energy + 100 influence, 95%.
+• Exhibit cost: the first exhibit is the base cost; from the second, only energy credits rise by 25% of the base each (3 exhibits = 150% energy, influence unchanged). Paid once when you hire.
+• Results read like "After a fierce courtroom battle…" and tell you which lawyer won or lost each exhibit.
+
+----- Message 4/5 (1585 chars) -----
+## 🛠️ Fixes
+• **Galactic Tribunal**: the verdict text could favor the other side even when you won. The verdict now names a clear winner and the text matches it.
+• **Embassy intel level**: the game's intel condition always read 0, so the espionage tab stayed locked. The app now also uses the spy network's infiltration level, so the report opens at that level (the mod condition is fixed too).
+• **Spy agents**: the game keeps an infiltration-0 network on every empire you contact (110 of 116 in one save), and agents were being posted to them. Agents now go only where infiltration is 1+, and are quietly recalled (no memorial, no hearing) when it drops to 0. The local agent card shows even while the secret report is locked.
+• **Contact list**: one comment line swallowed the code after it and killed the whole contact window. Every UI script is now syntax-checked.
+• **Governor rewards and events**: sector scopes cannot jump to a leader, which filled error.log. The leader is now found from the governor's planet.
+• **Dinner event** warning (missing picture) and the map-mark megastructure text are fixed in Korean and English.
+• **Log numbers**: numbers of deals, marauder and system commands were logged as `req670$`. They are now passed as variables.
+• **Office**: each screen added its own event listener and triggered MaxListeners warnings; merged into one.
+• **App memory**: memory shot up at startup because the save reader re-split the same section repeatedly. Removed.
+• Missing or awkward English text (e.g. "1 years old") and wrong Korean particles (e.g. "연맹와") fixed.
+
+----- Message 5/5 (481 chars) -----
+## ⚙️ Disturbing the game less
+• Stellaris runs on about one core, so heavy app work now runs separately: reading saves (no more 1–2 second app freeze on autosave), converting flag, emblem, planet and job-icon images, and drawing mod portraits.
+• The allied defensive war check is asked only when the monthly scan says it applies.
+
+When the app update notice appears, please apply it. This is still an alpha, so unexpected problems may occur. Please report any issues and feedback!

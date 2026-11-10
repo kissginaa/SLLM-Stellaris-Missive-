@@ -1,0 +1,17 @@
+# SLLM 국정감사(2026-11-03 사용자 결정, 설정 「(하드코어) 국정감사」). 앱: src/audit.ts AUDIT, src/features/audit-app.ts(civicCommand, 회신 CIVIC). 국가 scope(모든 행성).
+# 무사히 마침 = 5년 안정도 +3 · 큰 논란 = 3년 안정도 −5 · 출석 거부/불출석 = 2년 안정도 −8.
+sllm_audit_clean = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_stability_add = 3
+}
+sllm_audit_scandal = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -5
+}
+sllm_audit_refused = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -8
+}

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>War Room</title>
+<!-- 작전지휘실(2026-11-05 사용자: 웅장하게, 화면 전체(작업 표시줄까지)). 2단계: 함대 명령 판(#rp 위 .cmd)·작전 회의(#cp). -->
+<!-- 함대 사령부의 「작전지휘실」 버튼이 연다(src/features/galaxy-app.ts). 그림·조작: warroom.js. -->
+<style>
+ :root{--bg:#06141b;--panel:#0b2230;--text:#dcecf0;--dim:#7fa3ad;--hi:#5fd4e4;--hi-text:#04161d;--gold:#e8c872;--linec:#5fd4e4;--good:#7bd88f;--bad:#e88;
+  --line:color-mix(in srgb,var(--linec) 34%,transparent);--line2:color-mix(in srgb,var(--linec) 15%,transparent);--glow:95,212,228}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:#010407;color:var(--text);font:13px/1.6 "Malgun Gothic",sans-serif;overflow:hidden;user-select:none}
+ button{font:inherit;color:inherit}
+ #wr{position:fixed;inset:0;animation:wrIn .9s ease-out both}
+ @keyframes wrIn{from{opacity:0;filter:brightness(1.8) blur(2px)}to{opacity:1;filter:none}}
+ /* 3단(2026-11-05 사용자: 헬다이버즈·매스 이펙트처럼 — 가운데 홀로그램 작전 탁자, 둘레에 장관·제독이 둘러섬) */
+ #room{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 46%,#0b2a36 0%,#06141c 38%,#020609 72%,#010305 100%)}
+ /* 배경 그림이 있으면(.hasbg): 그림 위 탁자에 지도를 얹고, CSS 로 그린 방·고리는 숨긴다 */
+ #bgimg{position:absolute;inset:0;background:#010305 center/cover no-repeat;opacity:0;transition:opacity .6s}
+ #wr.hasbg #bgimg{opacity:1} #wr.hasbg #room,#wr.hasbg #floor,#wr.hasbg #rimw{display:none} #wr.hasbg #glow{opacity:.45;animation:none}
+ #wr.hasbg #holo{-webkit-mask-image:radial-gradient(circle closest-side at 50% 50%,#000 90%,transparent 100%);mask-image:radial-gradient(circle closest-side at 50% 50%,#000 90%,transparent 100%)}
+ /* 홀로그램 느낌(2026-11-05 사용자): 빛으로 합성(screen) · 격자 · 위아래로 훑는 주사광 · 탁자에서 솟는 빛기둥 · 가끔 지직거림. 전시면 붉은 빛 */
+ #wr{--hg:120,225,240} #wr.war{--hg:255,140,110}
+ #wr.hasbg #stage{mix-blend-mode:screen} #wr.hasbg #holo{animation:hflick 9s steps(1) infinite}
+ @keyframes hflick{0%,100%{opacity:1}31%{opacity:.82}31.4%{opacity:1}64%{opacity:.9}64.3%{opacity:1}88%{opacity:.86}88.2%{opacity:1}}
+ #holo .hgrid,#holo .sweep{position:absolute;inset:0;pointer-events:none;display:none}
+ #wr.hasbg #holo .hgrid{display:block;background:repeating-linear-gradient(90deg,rgba(var(--hg),.07) 0 1px,transparent 1px 56px),repeating-linear-gradient(0deg,rgba(var(--hg),.07) 0 1px,transparent 1px 56px);
+  -webkit-mask-image:radial-gradient(circle closest-side,#000 40%,transparent 100%);mask-image:radial-gradient(circle closest-side,#000 40%,transparent 100%)}
+ #wr.hasbg #holo .sweep{display:block;top:-30%;bottom:auto;height:22%;background:linear-gradient(transparent,rgba(var(--hg),.06) 30%,rgba(var(--hg),.16) 50%,rgba(var(--hg),.06) 70%,transparent);animation:hsweep 7s linear infinite}
+ @keyframes hsweep{from{top:-30%}to{top:110%}}
+ #wr.hasbg #holo:after{background:repeating-linear-gradient(0deg,rgba(var(--hg),.07) 0 1px,transparent 1px 3px)}
+ #beam{position:absolute;pointer-events:none;z-index:2;display:none;mix-blend-mode:screen;background:radial-gradient(ellipse 50% 60% at 50% 100%,rgba(var(--hg),.2),rgba(var(--hg),.06) 55%,transparent 75%);
+  -webkit-mask-image:linear-gradient(transparent,#000 55%);mask-image:linear-gradient(transparent,#000 55%);animation:hbeam 5s ease-in-out infinite}
+ #wr.hasbg #beam{display:block} @keyframes hbeam{50%{opacity:.6}}
+ #floor{position:absolute;left:-20%;right:-20%;bottom:-6%;height:48%;transform:perspective(700px) rotateX(64deg);transform-origin:50% 100%;opacity:.55;
+  background:repeating-linear-gradient(90deg,rgba(95,212,228,.07) 0 1px,transparent 1px 90px),repeating-linear-gradient(0deg,rgba(95,212,228,.06) 0 1px,transparent 1px 90px);
+  -webkit-mask-image:radial-gradient(ellipse 55% 70% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 55% 70% at 50% 0%,#000 30%,transparent 80%)}
+ #glow{position:absolute;left:50%;top:44%;width:min(1300px,72vw);height:62vh;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(ellipse at center,rgba(95,212,228,.16),rgba(95,212,228,.05) 45%,transparent 70%);animation:breathe 6s ease-in-out infinite}
+ @keyframes breathe{50%{opacity:.75}}
+ #stage{position:absolute;left:50%;top:10vh;width:min(1180px,62vw);height:62vh;transform:translateX(-50%);z-index:2;pointer-events:none} /* 지도(#cvw)만 마우스를 받는다 — 탁자 뒤 제독 홀로그램을 누를 수 있게 */
+ #holo,#rimw{position:absolute;inset:0;transform:perspective(1700px) rotateX(34deg);transform-origin:50% 55%}
+ #rimw{pointer-events:none}
+ #rim{position:absolute;inset:-1.5%;border-radius:50%;border:2px solid rgba(95,212,228,.55);box-shadow:0 0 50px rgba(95,212,228,.32),inset 0 0 90px rgba(95,212,228,.16)}
+ #rim:before{content:"";position:absolute;inset:-14px;border-radius:50%;background:repeating-conic-gradient(rgba(95,212,228,.55) 0 .4deg,transparent .4deg 3deg);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));animation:spin 140s linear infinite}
+ #rim:after{content:"";position:absolute;inset:-30px;border-radius:50%;border:1px solid rgba(95,212,228,.18)}
+ @keyframes spin{to{transform:rotate(360deg)}}
+ #holo{-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 74%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 74%,transparent 100%);animation:flick 7s steps(1) infinite}
+ @keyframes flick{0%,100%{opacity:1}41%{opacity:.93}42%{opacity:1}77%{opacity:.96}78%{opacity:1}}
+ #holo:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(95,212,228,.05) 0 1px,transparent 1px 4px)}
+ #cvw{position:absolute;inset:0;cursor:grab;pointer-events:auto} #cvw.drag{cursor:grabbing} #cv{position:absolute;inset:0;width:100%;height:100%}
+ /* 둘러선 사람들: 뒤쪽(제독 — 함대에서 홀로그램으로 참석)·양옆(장관 — 직접 참석) */
+ .crew{position:absolute;display:flex;flex-direction:column;align-items:center;pointer-events:auto;transition:filter .3s,transform .3s}
+ .crew.back{z-index:1;width:150px} .crew.side{z-index:3;width:190px}
+ .crew .fig{position:relative;width:100%;display:flex;justify-content:center;animation:idle 5s ease-in-out infinite}
+ .crew.back .fig{height:190px} .crew.side .fig{height:270px}
+ @keyframes idle{50%{transform:translateY(-2px)}}
+ .crew .halo{position:absolute;left:50%;bottom:6%;width:150%;height:80%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 60%,rgba(95,212,228,.22),transparent 65%);transition:opacity .3s}
+ .crew img.pt,.crew svg.sil{position:relative;height:100%;width:100%;object-fit:cover;object-position:50% 18%;
+  -webkit-mask-image:radial-gradient(ellipse 50% 56% at 50% 42%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 50% 56% at 50% 42%,#000 52%,transparent 100%);filter:brightness(.6) contrast(1.05) saturate(.85)}
+ .crew .rimlt{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 50% 56% at 50% 42%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 50% 56% at 50% 42%,#000 52%,transparent 100%)}
+ .crew.side.l .rimlt{background:linear-gradient(90deg,transparent 55%,rgba(95,212,228,.28))} .crew.side.r .rimlt{background:linear-gradient(270deg,transparent 55%,rgba(95,212,228,.28))}
+ .crew.holo-p img.pt,.crew.holo-p svg.sil{filter:grayscale(1) sepia(1) hue-rotate(150deg) saturate(2.6) brightness(.95);opacity:.72}
+ .crew.holo-p .rimlt{background:repeating-linear-gradient(0deg,rgba(95,212,228,.16) 0 1px,transparent 1px 3px);animation:flick 4s steps(1) infinite}
+ .crew .np{margin-top:-26px;position:relative;text-align:center;background:#03090dd9;border:1px solid var(--line2);border-top:2px solid var(--line);padding:3px 12px 4px;border-radius:2px;white-space:nowrap;transition:border-color .3s}
+ .crew .np b{display:block;font-size:12.5px;font-weight:600;letter-spacing:.03em} .crew .np small{display:block;color:var(--dim);font-size:10.5px;letter-spacing:.04em;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+ .crew.adm .np b{color:var(--gold)}
+ .crew.talk img.pt,.crew.talk svg.sil{filter:brightness(.95) contrast(1.05)} .crew.holo-p.talk img.pt{filter:grayscale(1) sepia(1) hue-rotate(150deg) saturate(2.6) brightness(1.25);opacity:.95}
+ .crew.talk .halo{background:radial-gradient(ellipse at 50% 60%,rgba(95,212,228,.45),transparent 65%)} .crew.talk .np{border-top-color:var(--hi);box-shadow:0 0 18px rgba(var(--glow),.35)}
+ .crew.back{flex-direction:column-reverse} .crew.back .np{margin:0 0 4px;z-index:1}
+ .crew.adm{cursor:pointer} .crew.sm .np{padding:2px 7px 3px} .crew.sm .np b{font-size:11px;display:block;max-width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .crew.fav .np{border-color:var(--gold);box-shadow:0 0 14px color-mix(in srgb,var(--gold) 45%,transparent)} .crew.fav .np b:before{content:"✋ ";font-size:10px}
+ .crew.more{z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;border:1px dashed var(--line);background:#03090dcc;color:var(--hi);cursor:help}
+ .crew.more b{font-size:20px;font-weight:600;line-height:1} .crew.more small{color:var(--dim);font-size:10px;text-align:center;line-height:1.2;margin-top:3px}
+ /* 동맹(합동 작전실, 2026-11-05) */
+ .crew.ally .np{border-top-color:var(--ac,var(--gold))} .crew.ally .np b{color:var(--ac,var(--gold))}
+ .crew.ally img.pt,.crew.ally svg.sil{filter:grayscale(1) sepia(1) hue-rotate(5deg) saturate(1.6) brightness(.95);opacity:.75}
+ .crew.ally.talk img.pt,.crew.ally.talk svg.sil{filter:grayscale(1) sepia(1) hue-rotate(5deg) saturate(1.8) brightness(1.3);opacity:.95}
+ .fl.al{border-left:3px solid var(--ac,var(--gold))} .fl .altag{color:var(--ac,var(--gold))!important}
+ .alrow{border:1px solid var(--line2);border-left:3px solid var(--ac,var(--gold));border-radius:3px;padding:7px 10px;margin:0 0 6px}
+ .alrow b{display:block;font-size:13px} .alrow small{display:block;color:var(--dim);font-size:11.5px;margin-bottom:6px} .alrow .wb{width:100%} .alrow .alname{cursor:pointer} .alrow .alname:hover{color:var(--ac,var(--gold))} .alrow .alname.fav{color:var(--gold)}
+ .crew.more.amore{border-color:color-mix(in srgb,var(--gold) 50%,transparent);color:var(--gold)}
+ .alrow .alauto{color:var(--text)!important;font-style:italic;border-left:2px solid var(--ac,var(--gold));padding-left:7px} .alrow .alnote{font-size:10.5px!important}
+ .cpf{color:var(--gold);font-size:11.5px;margin:-4px 0 6px}
+ #bubs{position:absolute;inset:0;pointer-events:none;z-index:6}
+ .bub{position:absolute;width:300px;background:#04121af2;border:1px solid var(--hi);border-radius:4px;padding:8px 12px;font-size:12.5px;line-height:1.55;box-shadow:0 0 26px rgba(var(--glow),.25);cursor:pointer;pointer-events:auto;animation:bubIn .25s ease-out both}
+ .bub b{display:block;color:var(--hi);font-size:11px;letter-spacing:.04em;margin-bottom:2px} .bub.adm b{color:var(--gold)}
+ .bub:after{content:"";position:absolute;border:7px solid transparent}
+ .bub.up:after{left:var(--tx,50%);top:100%;margin-left:-7px;border-top-color:var(--hi)}
+ .bub.lt:after{right:100%;top:22px;border-right-color:var(--hi)} .bub.rt:after{left:100%;top:22px;border-left-color:var(--hi)}
+ @keyframes bubIn{from{opacity:0;margin-top:6px}to{opacity:1;margin-top:0}}
+
+ /* 화면 가장자리 어둡게 + 아주 옅은 주사선 */
+ #vig{position:absolute;inset:0;pointer-events:none;z-index:4;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.72) 100%),repeating-linear-gradient(0deg,rgba(95,212,228,.018) 0 1px,transparent 1px 3px)}
+ /* 머리: 가운데 큰 제목 */
+ #top{position:absolute;left:0;right:0;top:0;height:86px;pointer-events:none;z-index:5;background:linear-gradient(#010407f0,#01040700)}
+ #title{position:absolute;left:50%;top:16px;transform:translateX(-50%);text-align:center;line-height:1.2}
+ #title b{display:block;font-size:24px;letter-spacing:.55em;padding-left:.55em;color:var(--hi);font-weight:600;text-shadow:0 0 18px rgba(var(--glow),.45)}
+ #title small{display:block;margin-top:6px;color:var(--dim);letter-spacing:.18em;font-size:11px}
+ #title:before,#title:after{content:"";position:absolute;top:15px;width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--hi))}
+ #title:before{right:calc(100% + 18px)} #title:after{left:calc(100% + 18px);transform:scaleX(-1)}
+ #btns{position:absolute;right:18px;top:16px;display:flex;gap:8px;pointer-events:auto}
+ .wb{background:#06141bcc;border:1px solid var(--line);color:var(--text);padding:6px 14px;border-radius:3px;cursor:pointer;letter-spacing:.06em;font-size:12px}
+ .wb:hover{border-color:var(--hi);color:var(--hi)} .wb:disabled{opacity:.5;cursor:default} .wb.x{padding:6px 12px}
+ /* 떠 있는 유리 판 */
+ .glass{position:absolute;z-index:5;background:linear-gradient(160deg,#071a24d9,#030b10e6);border:1px solid var(--line2);border-radius:4px;backdrop-filter:blur(6px);box-shadow:0 0 0 1px #0008,0 10px 40px #000a;padding:14px 16px;overflow-y:auto}
+ .glass:before{content:"";position:absolute;left:-1px;top:-1px;width:18px;height:18px;border-left:2px solid var(--hi);border-top:2px solid var(--hi)}
+ .glass:after{content:"";position:absolute;right:-1px;bottom:-1px;width:18px;height:18px;border-right:2px solid var(--hi);border-bottom:2px solid var(--hi)}
+ #lp{left:22px;top:96px;width:250px;max-height:calc(100% - 140px)} #rp{right:22px;top:96px;width:280px;max-height:calc(100% - 140px)}
+ .sec{font-size:10.5px;color:var(--hi);letter-spacing:.3em;margin:0 0 10px;opacity:.85}
+ .fl{display:block;width:100%;text-align:left;border:1px solid var(--line2);border-radius:3px;background:#0000;color:var(--text);padding:7px 10px;margin:0 0 6px;cursor:pointer;transition:border-color .15s,background .15s}
+ .fl:hover{border-color:var(--line)} .fl.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent)} .fl b{font-weight:600} .fl small{display:block;color:var(--dim);font-size:11.5px}
+ .kv{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line2);padding:5px 0;font-size:12.5px} .kv span:first-child{color:var(--dim)}
+ #rp h2{margin:0 0 8px;font-size:19px;font-weight:600;letter-spacing:.04em}
+ .note{display:block;margin-top:14px;color:var(--dim);font-size:11.5px}
+ /* 아래: 범례 */
+ #bot{position:absolute;z-index:5;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:18px;align-items:center;font-size:11.5px;color:var(--dim);letter-spacing:.04em;background:#03090dcc;border:1px solid var(--line2);padding:6px 16px;border-radius:20px;pointer-events:none;white-space:nowrap}
+ #bot i{font-style:normal;color:var(--text)}
+ #tip{position:absolute;z-index:7;pointer-events:none;background:#06141bf2;border:1px solid var(--line);border-radius:3px;padding:3px 9px;font-size:12px;white-space:nowrap;display:none}
+ /* 2단계: 함대 명령 */
+ .cmd{border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);background:color-mix(in srgb,var(--gold) 6%,transparent);border-radius:3px;padding:10px 12px;margin:0 0 14px}
+ .cmd .sec{color:var(--gold)} .cmdf{display:block;font-size:15px;margin-bottom:2px} .cmd small{display:block;color:var(--dim);font-size:11.5px}
+ .cmdr{display:flex;flex-direction:column;gap:6px;margin-top:10px} .cmdr .wb{text-align:left}
+ .wb.go{border-color:color-mix(in srgb,var(--gold) 70%,transparent);color:var(--gold)} .wb.go:hover{background:color-mix(in srgb,var(--gold) 12%,transparent);color:#fff3c4;border-color:var(--gold)}
+ .wb.co{border-color:var(--hi);color:var(--hi);text-shadow:0 0 10px rgba(var(--glow),.5)}
+ #toast{position:absolute;z-index:8;left:50%;top:92px;transform:translateX(-50%);background:#06141bf0;border:1px solid var(--gold);color:var(--gold);padding:7px 18px;border-radius:3px;font-size:12.5px;letter-spacing:.04em;display:none;pointer-events:none;box-shadow:0 0 24px #000a;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+ /* 2단계: 작전 회의 — 지도 아래 가운데 넓은 유리 판 */
+ #cp{left:292px;right:322px;bottom:14px;max-height:27vh;display:none;flex-direction:column;padding:12px 16px 12px;overflow:hidden;animation:cpIn .35s ease-out both}
+ @keyframes cpIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+ #cp>div:first-child{display:flex;flex-direction:column;min-height:0;flex:1}
+ .cph{display:flex;align-items:baseline;gap:14px;margin-bottom:8px} .cph b{color:var(--hi);letter-spacing:.35em;font-size:13px;font-weight:600;text-shadow:0 0 12px rgba(var(--glow),.45)} .cph small{color:var(--dim);font-size:11px;letter-spacing:.05em}
+ .cps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px} .chip{border:1px solid var(--line2);border-radius:14px;padding:2px 10px;font-size:11.5px} .chip b{font-weight:600;margin-right:6px} .chip small{color:var(--dim)} .chip.adm{border-color:color-mix(in srgb,var(--gold) 40%,transparent)} .chip.adm b{color:var(--gold)}
+ .cpb{display:flex;gap:14px;min-height:0;flex:1}
+ .cpt{flex:1.3;overflow-y:auto;padding-right:4px;min-height:60px} .cpp{flex:1;overflow-y:auto;padding-right:4px}
+ .ln{margin:0 0 8px;font-size:12.5px;line-height:1.55} .ln b{display:block;color:var(--hi);font-size:11.5px;font-weight:600;letter-spacing:.03em} .ln.me b{color:var(--gold)} .ln.wait{color:var(--dim);font-style:italic} .ln.err{color:var(--bad)}
+ .plan{border:1px solid var(--line2);border-radius:3px;padding:8px 10px;margin:0 0 8px;transition:border-color .15s,background .15s;cursor:default}
+ .plan.hot{border-color:var(--hi);background:color-mix(in srgb,var(--hi) 7%,transparent)} .plan.done{opacity:.7}
+ .pt{display:flex;align-items:center;gap:8px} .pt i{font-style:normal;display:inline-flex;width:20px;height:20px;align-items:center;justify-content:center;border:1px solid var(--hi);border-radius:50%;color:var(--hi);font-size:11px;flex:none} .pt b{font-size:13px}
+ .plan small{display:block;color:var(--dim);font-size:11.5px;margin-top:2px} .plan p{margin:5px 0 0;font-size:12px}
+ .pr{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;align-items:center} .pr .ok{color:var(--good);font-size:11.5px}
+ .cpa{display:flex;gap:8px;margin-top:8px;flex:none} .cpa input{flex:1;background:#020a0ecc;border:1px solid var(--line);color:var(--text);padding:6px 10px;border-radius:3px;font:inherit;outline:none} .cpa input:focus{border-color:var(--hi)}
+ @media (max-width:1100px){#cp{left:22px;right:22px}}
+ #msg{position:absolute;z-index:6;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:var(--dim);letter-spacing:.08em;padding:40px;pointer-events:none;font-size:14px}
+ /* 명령에 대한 지휘관 의견(2026-11-05): 찬성·우려·반대 무전 카드 */
+ #op{position:absolute;z-index:9;left:50%;top:130px;transform:translateX(-50%);width:min(480px,calc(100% - 32px));background:#06141bf2;border:1px solid var(--line2,#1d4a5a);border-left:4px solid var(--st,var(--hi));border-radius:3px;padding:10px 14px 11px;box-shadow:0 0 28px #000b;display:none}
+ #op.show{display:block;animation:opin .25s ease-out} @keyframes opin{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
+ #op .oph{display:flex;align-items:baseline;gap:8px;margin-bottom:5px} #op .oph b{color:var(--text);font-size:13px} #op .oph small{color:var(--dim);font-size:11px;flex:1}
+ #op .ost{font-size:10.5px;letter-spacing:.12em;padding:1px 7px;border-radius:2px;color:#04161d;background:var(--st,var(--hi));font-weight:700}
+ #op p{margin:0;color:var(--text);font-size:12.5px;line-height:1.5} #op .opw{color:var(--dim);font-style:italic}
+ #op .opb{display:flex;gap:8px;margin-top:9px} #op .opb .wb{flex:1}
+ #op.agree{--st:var(--good)} #op.caution{--st:#f0b45a} #op.object{--st:#ff6a5a}
+ /* 작전 건의 카드(2026-11-05) */
+ #pp{position:absolute;z-index:9;left:50%;top:130px;transform:translateX(-50%);width:min(440px,calc(100% - 32px));background:#06141bf2;border:1px solid var(--line2,#1d4a5a);border-top:3px solid var(--gold);border-radius:3px;padding:10px 14px 11px;box-shadow:0 0 28px #000b;display:none}
+ #pp.show{display:block;animation:opin .25s ease-out} #pp .pph{color:var(--gold);letter-spacing:.25em;font-size:11px;margin-bottom:6px}
+ #pp .ppr{display:flex;align-items:baseline;gap:8px;padding:5px 6px;border-radius:2px;cursor:pointer} #pp .ppr:hover{background:color-mix(in srgb,var(--pc) 12%,transparent)}
+ #pp .ppr i{font-style:normal;display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;border:1px solid var(--pc);color:var(--pc);border-radius:50%;font-size:10.5px;flex:none} #pp .ppr b{font-size:13px;color:var(--text)} #pp .ppr small{color:var(--dim);font-size:11px;margin-left:auto}
+ #pp .opb{display:flex;gap:8px;margin-top:9px} #pp .opb .wb{flex:1}
+ .plan{border-left:3px solid var(--pc,var(--line2))} .ptag{font-size:10px;letter-spacing:.12em;color:#04161d;background:var(--gold);padding:0 6px;border-radius:2px;margin-left:auto} .plan small.mv{color:var(--text)} .plan small.ptl{color:var(--text);opacity:.85} .cph .cpprop{margin-left:auto;padding:3px 10px;font-size:11px}
+ /* 작전 지도 펜(2026-11-05): 전선·방어선·화살표 긋기 */
+ #pen{position:absolute;z-index:6;left:288px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px}
+ #pen .pb{width:34px;height:34px;border-radius:3px;border:1px solid var(--line2,#1d4a5a);background:#03090dd9;color:var(--mc,var(--dim));font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+ #pen .pb:hover{border-color:var(--mc,var(--hi))} #pen .pb.on{border-color:var(--mc,var(--hi));background:color-mix(in srgb,var(--mc,var(--hi)) 18%,#03090d);box-shadow:0 0 12px color-mix(in srgb,var(--mc,var(--hi)) 45%,transparent)}
+ /* 전쟁 성향 꼬리표(2026-11-05): 공격 붉게 · 방어 푸르게 · 전술 초록 */
+ .dtag{display:inline-block;font-style:normal;font-size:9.5px;letter-spacing:.06em;padding:0 5px;border-radius:2px;margin-top:2px;border:1px solid;line-height:15px;white-space:nowrap;font-weight:600}
+ .dtag.aggressive{color:#ff8a78;border-color:#ff8a7880;background:#ff5a4618} .dtag.defensive{color:#8ab8ff;border-color:#8ab8ff80;background:#5a8aff18} .dtag.tactical{color:#9be89b;border-color:#9be89b80;background:#5ad05a18}
+ .np .dtag{display:block;margin:2px auto 0;width:max-content}
+</style>
+<script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<link rel="stylesheet" href="window-chrome.css">
+</head><body>
+<div id="wr" data-i18n-skip>
+ <div id="bgimg"></div><div id="room"></div><div id="floor"></div><div id="glow"></div>
+ <div id="crewb"></div>
+ <div id="beam"></div>
+ <div id="stage"><div id="rimw"><div id="rim"></div></div><div id="holo"><div id="cvw"><canvas id="cv"></canvas></div><div class="hgrid"></div><div class="sweep"></div></div></div>
+ <div id="crews"></div>
+ <div id="bubs"></div>
+ <div id="vig"></div>
+ <div id="top"><div id="title"><b id="ttl"></b><small id="when"></small></div><div id="btns"></div></div>
+ <div id="lp" class="glass"></div>
+ <div id="rp" class="glass"></div>
+ <div id="cp" class="glass"></div>
+ <div id="toast"></div>
+<div id="op"></div>
+<div id="pp"></div>
+<div id="pen"></div>
+ <div id="bot"></div>
+ <div id="tip"></div>
+ <div id="msg"></div>
+</div>
+<script src="warroom.js"></script>
+</body></html>

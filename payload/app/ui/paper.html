@@ -34,17 +34,205 @@
  .masthead-brand{width:clamp(58px,8vw,108px);height:clamp(58px,8vw,108px);flex:none;display:block}
  .masthead-title{font-size:clamp(36px,7vw,112px);font-weight:900;letter-spacing:.08em;line-height:1.15;word-break:keep-all;min-width:0}
  @media(max-width:600px){#sheet{padding:20px 20px 26px}.masthead-title{font-size:clamp(28px,7vw,42px)}}
+ /* 2026-11-10 새 지면(사용자: 「신문지를 좀더 신문지 같이」, 「집무실 은하신문은 홈페이지 느낌으로」). 종이 = 종이 질감·제호 띠·망점 사진·지면 광고, 디스플레이 = 뉴스 홈페이지(배경 그림 없음). 그림: ui/news/ */
+ #ptex{position:fixed;inset:0;z-index:0;pointer-events:none;background:var(--ptex,none) 0 0/512px 512px repeat;mix-blend-mode:multiply;opacity:.6;display:none}
+ #fold{position:fixed;inset:0;z-index:3;pointer-events:none;background:url(news/paper/fold.webp) center/100% 100% no-repeat;mix-blend-mode:multiply;opacity:.7;display:none}
+ html[data-surface=paper] #ptex,html[data-surface=paper] #fold{display:block}
+ html.np-crisis #ptex{mix-blend-mode:normal;opacity:1}html.np-crisis #fold{mix-blend-mode:screen;opacity:.18}
+ html[data-scene] #ptex{display:none}
+ .np-mast{background:var(--mast,none) center/100% 100% no-repeat;padding:16px 21% 12px;min-height:150px;display:flex;align-items:center}
+ .np-mast .masthead-name{width:100%}
+ .np-sub{text-align:center;font:500 12.5px "Malgun Gothic",sans-serif;letter-spacing:.42em;margin:4px 0 0}
+ .np-bar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-top:4px double currentColor;border-bottom:1px solid currentColor;margin-top:10px;padding:6px 2px;font:700 13px "Malgun Gothic",sans-serif;letter-spacing:.12em}
+ .np-bar img{height:18px;vertical-align:-4px;margin-right:6px}.np-bar .wx{margin-left:auto;font-weight:500;letter-spacing:.04em}
+ .np-inv img,img.np-inv{filter:invert(1)}
+ .np-lead{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:30px;padding:20px 0 16px;border-bottom:1px solid currentColor}
+ .np-lead.nophoto{grid-template-columns:minmax(0,1fr)}
+ .np-kick{font:700 13px "Malgun Gothic",sans-serif;letter-spacing:.25em;margin-bottom:8px}
+ .np-h1{font-size:clamp(32px,4vw,54px);line-height:1.2;font-weight:900;margin:0 0 12px;word-break:keep-all}
+ .np-deck{font-size:19px;line-height:1.6;margin:0 0 14px;opacity:.88}
+ .np-fig{margin:0}.np-fig img{width:100%;display:block;aspect-ratio:3/2;object-fit:cover}
+ .np-fig figcaption{font:500 12.5px/1.5 "Malgun Gothic",sans-serif;margin-top:6px;opacity:.85;border-bottom:1px solid currentColor;padding-bottom:6px}
+ .np-body{font-size:16px;line-height:1.85;text-align:justify;word-break:keep-all;overflow-wrap:anywhere}
+ .np-body p{margin:0 0 .6em;text-indent:1em}.np-body p.first{text-indent:0}
+ .np-body p.first::first-letter{float:left;font-size:3.2em;line-height:.9;font-weight:900;margin:6px 8px 0 0;color:var(--acc)}
+ .np-cmt{margin:12px 0 0;padding:10px 12px;border-top:2px solid currentColor;border-bottom:1px solid currentColor;font-style:italic;font-size:15px;line-height:1.7}
+ .np-cmt b{display:block;font:700 11.5px "Malgun Gothic",sans-serif;letter-spacing:.2em;color:var(--acc);font-style:normal;margin-bottom:3px}
+ .np-cols.news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:2px}
+ .np-col{padding:16px 22px 10px;border-left:1px solid color-mix(in srgb,currentColor 40%,transparent)}.np-col:first-child{padding-left:0;border-left:0}.np-col:last-child{padding-right:0}
+ .np-col h2{font-size:25px;line-height:1.3;font-weight:900;margin:0 0 8px;word-break:keep-all}
+ .np-sec{font:700 12px "Malgun Gothic",sans-serif;letter-spacing:.14em;margin-bottom:8px;opacity:.75;display:flex;align-items:center;gap:6px}.np-sec img{height:16px}
+ .np-orn{display:block;margin:14px auto 6px;height:22px}
+ .np-ad{position:relative;margin-top:14px;border:3px double currentColor;padding:6px}
+ .np-ad img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:50% 60%;display:block;mix-blend-mode:multiply;filter:saturate(.75) sepia(.12)}
+ html.np-crisis .np-ad img{mix-blend-mode:normal;filter:saturate(.6) brightness(.85)}
+ .np-ad .cp{text-align:center;padding:8px 4px 4px;border-top:1px solid currentColor;margin-top:6px}
+ .np-ad .cp b{display:block;font-size:23px;line-height:1.25;font-weight:900}.np-ad .cp span{font:500 12px "Malgun Gothic",sans-serif;letter-spacing:.06em}
+ .np-ad .tag{position:absolute;top:10px;left:12px;font:700 10px "Malgun Gothic",sans-serif;letter-spacing:.3em;padding:1px 6px}
+ .np-briefs{border-top:4px double currentColor;margin-top:16px;padding-top:10px}
+ .np-briefs .h{font:700 14px "Malgun Gothic",sans-serif;letter-spacing:.3em;display:flex;align-items:center;gap:8px;margin-bottom:4px}.np-briefs .h img{height:16px}
+ .np-briefs .brief-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));column-gap:34px;font-size:15px;line-height:1.6}
+ .np-briefs .brief-grid div{border-bottom:1px dotted color-mix(in srgb,currentColor 55%,transparent);padding:6px 0}
+ .np-briefs .brief-grid div::before{content:"◆ ";color:var(--acc);font-size:10px;vertical-align:2px}
+ .np-stamp{position:absolute;right:34px;top:236px;width:200px;height:200px;transform:rotate(-12deg);display:flex;align-items:center;justify-content:center;z-index:4;pointer-events:none}
+ .np-stamp img{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply;opacity:.9}
+ .np-stamp span{font:900 50px/1 "Noto Serif KR","Batang",serif;color:#b3261e;opacity:.88;letter-spacing:.04em}
+ @media(max-width:900px){.np-lead{grid-template-columns:minmax(0,1fr)}.np-stamp{width:140px;height:140px;top:180px}.np-stamp span{font-size:34px}}
+ /* 디스플레이 = 뉴스 홈페이지 */
+ .web{--wink:#1b1d22;--wmute:#6b7280;--wline:#e3e5ea;background:#eef0f3;color:var(--wink);border-radius:10px;overflow:hidden;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
+ .web .ico{height:18px;vertical-align:-4px}.web .w{filter:invert(1)}
+ .web .chrome{background:#20242b;color:#cfd3da;font-size:12.5px;padding:7px 14px;display:flex;gap:10px;align-items:center;-webkit-app-region:drag}
+ .web .chrome .url{flex:1;background:#14171c;border-radius:14px;padding:4px 14px;color:#9aa3ad;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+ .web .chrome .ptabs{display:flex;gap:3px;align-self:flex-end;margin-bottom:-7px;-webkit-app-region:no-drag}.web .chrome .ptabs button{display:flex;align-items:center;gap:6px;background:#14171c;color:#9aa3ad;border:0;border-radius:8px 8px 0 0;padding:5px 12px 6px;font:600 12.5px/1 inherit;cursor:pointer;white-space:nowrap}.web .chrome .ptabs button:hover{color:#e9ebef}.web .chrome .ptabs button.on{background:#3a3f48;color:#fff;box-shadow:inset 0 2px var(--acc);cursor:default}.web .chrome .ptabs img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+ .web .chrome .nb{color:#e9ebef;border-color:#ffffff44;font-size:12px;padding:3px 10px;-webkit-app-region:no-drag}
+ .web header{color:#fff;text-shadow:0 1px 6px #000a}.web .hd{display:flex;align-items:center;gap:16px;padding:26px 24px;min-height:120px}
+ .web .em{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px #0008,0 0 0 2px #ffffff40;flex:none;overflow:hidden}.web .em img{width:100%;height:100%;object-fit:cover}
+ .web .nm{font:900 34px/1 "Noto Serif KR","Batang",serif;letter-spacing:.04em}.web .tg{font-size:12px;letter-spacing:.3em;opacity:.8;margin-top:6px}
+ .web .rt{margin-left:auto;font-size:13px;text-align:right;opacity:.92}
+ .web nav{background:#1b1d22;display:flex;gap:2px;padding:0 18px;align-items:center;overflow:hidden}
+ .web nav span{color:#e9ebef;font-size:15px;font-weight:700;padding:12px 12px;display:flex;gap:7px;align-items:center;white-space:nowrap}.web nav span.on{box-shadow:inset 0 -3px var(--acc);color:#fff}
+ .web .tick{background:#fff;border-bottom:1px solid var(--wline);padding:9px 24px;display:flex;gap:14px;align-items:center;font-size:14.5px;white-space:nowrap;overflow:hidden}
+ .web .tick .b{background:var(--acc);color:#fff;font-weight:800;padding:3px 10px;border-radius:3px;display:flex;gap:5px;align-items:center}.web .tick .b img{height:14px}.web .tick .sep{color:#bbb}
+ .web main{padding:22px 24px 26px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px}
+ .web .hero{position:relative;border-radius:10px;overflow:hidden;min-height:420px;background:#2a2e36;display:flex;align-items:flex-end}
+ .web .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ .web .hero .ov{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,#000d 100%)}
+ .web .hero .tx{position:relative;padding:24px 28px;color:#fff}
+ .web .cat{display:inline-flex;gap:6px;align-items:center;background:var(--acc);color:#fff;font-size:12.5px;font-weight:800;padding:3px 9px;border-radius:3px;letter-spacing:.05em}.web .cat img{height:13px}
+ .web .hero h1{font:900 38px/1.25 "Noto Serif KR","Batang",serif;margin:10px 0 8px;word-break:keep-all}
+ .web .hero p{margin:0;font-size:16px;line-height:1.65;opacity:.94}
+ .web .cap{font-size:12.5px;opacity:.75;margin-top:8px}
+ .web .cmt{margin-top:12px;padding:10px 12px;background:#ffffff18;border-left:3px solid var(--acc);font-size:14px;line-height:1.6}
+ .web .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;margin-top:22px}
+ .web .card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px #0001}
+ .web .card img.ph{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+ .web .card .bd{padding:12px 14px 14px}.web .card h3{font-size:18px;line-height:1.4;font-weight:800;margin:8px 0 6px;word-break:keep-all}
+ .web .card p{margin:0;font-size:14px;line-height:1.65;color:#41464f;overflow-wrap:anywhere}.web .card .mt{margin-top:10px;font-size:12.5px;color:#6b7280}
+ .web .card .cmt{background:#f4f5f7;color:#33373e}
+ .web .side .box{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px #0001;margin-bottom:18px}
+ .web .side h4{margin:0 0 10px;font-size:16px;display:flex;gap:7px;align-items:center}
+ .web .rank{list-style:none;margin:0;padding:0;counter-reset:r}.web .rank li{counter-increment:r;display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--wline);font-size:14.5px;line-height:1.45}
+ .web .rank li::before{content:counter(r);font:900 20px/1 "Noto Serif KR",serif;color:var(--acc);width:20px;flex:none}
+ .web .adq{position:relative;border-radius:10px;overflow:hidden;margin-bottom:18px;background:#ddd}.web .adq>img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover}
+ .web .adq .c{position:absolute;left:0;right:0;top:0;padding:14px 16px 26px;background:linear-gradient(#000b,transparent);color:#fff}.web .adq .c b{display:block;font-size:19px}.web .adq .c span{font-size:12.5px;opacity:.92}
+ .web .adtag{position:absolute;right:8px;bottom:8px;font-size:10.5px;background:#0008;color:#fff;padding:1px 6px;border-radius:3px}
+ .web .wide{grid-column:1/-1;position:relative;border-radius:10px;overflow:hidden;height:150px;background:#ccc}.web .wide>img{width:100%;height:100%;object-fit:cover;object-position:0 50%}
+ .web .wide .c{position:absolute;right:36px;top:50%;transform:translateY(-50%);text-align:right;color:#fff;text-shadow:0 2px 8px #000a;max-width:52%}
+ .web .wide .c b{display:block;font-size:28px;font-weight:900;line-height:1.2}.web .wide .c span{font-size:15px}
+ .web .foot{padding:0 24px 24px;font-size:12.5px;color:var(--wmute)}
+ .web .crisis-band{margin:0!important}
+ .web .pager{display:flex;justify-content:center;align-items:center;gap:6px;margin:22px 0 4px;flex-wrap:wrap}
+ .web .pager button{min-width:36px;height:36px;padding:0 10px;border-radius:8px;border:1px solid #d5d8de;background:#fff;color:#1b1d22;font-weight:700;cursor:pointer}
+ .web .pager button.on{background:var(--acc);border-color:var(--acc);color:#fff;cursor:default}.web .pager button:disabled{opacity:.35;cursor:default}.web .pager span{color:#9aa0a8;padding:0 2px}
+ .web .lv{cursor:pointer}.web .lv:hover{text-decoration:underline}
+ .web .live li{display:block;padding:8px 0;border-top:1px solid var(--wline);font-size:14px;line-height:1.45;cursor:pointer}.web .live li:hover{color:var(--acc)}
+ .web .live li small{display:block;color:var(--wmute);font-size:12px;margin-top:2px}.web .live li b{font-size:11px;color:#fff;background:var(--acc);border-radius:3px;padding:0 5px;margin-left:6px}
+ .web .chrome .ptabs button.off{opacity:.62}.web .chrome .ptabs button.off i{font-style:normal;font-size:10.5px;border:1px solid currentColor;border-radius:8px;padding:0 5px;margin-left:2px}
+ .web .subbtn{margin-top:8px;background:#ffffff26;color:#fff;border:1px solid #ffffff66;border-radius:14px;padding:3px 12px;font:600 12px/1.4 inherit;cursor:pointer}.web .subbtn:disabled{cursor:default;opacity:.8}
+ .web .subnote{background:#fff;border-radius:10px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 3px #0001;border-left:5px solid var(--acc);display:flex;gap:16px;align-items:center;flex-wrap:wrap}.web .subnote div{flex:1;min-width:240px;line-height:1.6}.web .subnote b{display:block;font-size:17px;margin-bottom:2px}
+ .web .subgo{background:var(--acc);color:#fff;border:0;border-radius:18px;padding:9px 20px;font:800 14px/1 inherit;cursor:pointer}
+ .sub-pick{position:fixed;inset:0;z-index:19;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
+ .sub-pick .box{background:#fff;color:#1b1d22;border-radius:14px;max-width:860px;width:100%;padding:26px 26px 22px;box-shadow:0 10px 40px #000a}.sub-pick h2{margin:0 0 6px;font-size:22px}.sub-pick p{margin:0 0 16px;color:#4b5160;line-height:1.6}
+ .sub-pick .g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.sub-pick .c{border:1px solid #e3e5ea;border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+ .sub-pick .c img{width:72px;height:72px;border-radius:50%;object-fit:cover}.sub-pick .c b{font-size:17px}.sub-pick .c span{font-size:13px;color:#4b5160;line-height:1.5;flex:1}.sub-pick .c button{border:0;border-radius:18px;padding:8px 16px;color:#fff;font:800 13.5px/1 inherit;cursor:pointer}
+ @media(max-width:700px){.sub-pick .g{grid-template-columns:minmax(0,1fr)}}
+ .lv-reader{position:fixed;inset:0;z-index:20;background:#0009;display:flex;align-items:center;justify-content:center;padding:20px}
+ .lv-reader .box{background:#fff;color:#1b1d22;border-radius:12px;max-width:760px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 10px 40px #000a;font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
+ .lv-reader img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:12px 12px 0 0}
+ .lv-reader .in{padding:18px 24px 22px}.lv-reader h2{margin:8px 0;font:900 28px/1.3 "Noto Serif KR",serif;word-break:keep-all}.lv-reader p{font-size:16px;line-height:1.8;margin:8px 0}
+ .lv-reader .meta{font-size:12.5px;color:#6b7280}.lv-reader .x{float:right;border:0;background:#eee;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer}
+ @media(max-width:900px){.web main{grid-template-columns:minmax(0,1fr)}.web .rt{display:none}}
 </style><script src="theme.js"></script><script src="scene-slots.js"></script><script src="media-brands.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><link rel="stylesheet" href="window-chrome.css"><link rel="stylesheet" href="special-rooms.css"></head><body data-room="paper">
-<div id="paperbg"></div><div id="scroll"><div id="sheet"></div></div><div id="dock"><button class="nb" id="bigBtn" type="button" hidden></button><button class="nb" id="surf" type="button"></button><span id="sceneBtn"></span></div>
+<div id="paperbg"></div><div id="ptex"></div><div id="fold"></div><div id="scroll"><div id="sheet"></div></div><div id="dock"><button class="nb" id="bigBtn" type="button" hidden></button><button class="nb" id="surf" type="button"></button><span id="sceneBtn"></span></div>
 <script>
  const $ = (id) => document.getElementById(id);
  const T = (x) => (window.SLLMI18n ? window.SLLMI18n.t(x) : x); // 지면 안(#sheet)은 자동 번역 대상이 아니라, 고정 문구만 직접 번역한다(기사 내용은 건드리지 않는다)
  let list = [], pos = 0, fonts = []; // fonts: 신문사(계열)별 서체 id (A-21, 설정 > 언론사)
  const FONT_FAMILY = { myeongjo: '"Noto Serif KR","Batang",serif', batang: '"Batang","바탕","BatangChe","Noto Serif KR",serif', gothic: '"Noto Sans KR","Malgun Gothic","맑은 고딕",sans-serif', pretendard: '"Pretendard","Pretendard Variable","Malgun Gothic",sans-serif' };
  const mk = (tag, css, text) => { const e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
+ // ---- 2026-11-10 새 지면 도구: 사진(망점), 광고, 분야, 우주 기상. 고정 문구는 L(한, 영) ----
+ const L = (k, e) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(k, e) : k); // 언어 팩 호환(한/영 + 카탈로그)
+ const NEWS = 'news/';
+ const PAPER_KEYS = ['stn', 'starcluster', 'void']; // 신문사 0 성간일보 · 1 성단 · 2 공허(그 밖은 성간일보 그림)
+ const paperKey = (i) => PAPER_KEYS[(i ?? 0) % 3] || 'stn';
+ const rng = (s) => { let x = (Number(s) || 1) * 9301 + 49297; return () => { x = (x * 9301 + 49297) % 233280; return x / 233280; }; };
+ // 분야: 기사 글로 고른다(종이 = 인쇄 장식 그림, 홈페이지 = 아이콘·색)
+ const SECTIONS = [
+  { re: /전쟁|선전포고|참전|함대|침공|교전|\bwar\b|fleet|invad|battle/i, ko: '전쟁', en: 'War', or: 1, ic: 12, col: '#8a2a1c' },
+  { re: /협정|조약|연방|외교|동맹|사절|첫 접촉|통신을|pact|treaty|federation|alliance|envoy|contact|diploma/i, ko: '외교', en: 'Diplomacy', or: 2, ic: 13, col: '#6a4c93' },
+  { re: /연구|과학|기술|발견|research|science|discover|technolog/i, ko: '과학', en: 'Science', or: 6, ic: 11, col: '#2a6f8f' },
+  { re: /경기|올림픽|선수|LoG|레전드 오브|sport|olympic|tournament/i, ko: '스포츠', en: 'Sports', or: 7, ic: 16, col: '#b8661b' },
+  { re: /사망|추모|서거|별세|died|memorial|funeral|passed away/i, ko: '부고', en: 'Obituaries', or: 8, ic: 7, col: '#444' },
+  { re: /무역|교역|경제|시장|물자|상선|에너지 크레딧|trade|market|econom|credits|cargo/i, ko: '경제', en: 'Economy', or: 4, ic: 15, col: '#2d7a5a' },
+  { re: /의회|선거|통치자|지도자|즉위|정부|내각|총리|재판|청문회|parliament|election|ruler|leader|government|court|hearing/i, ko: '국내', en: 'Politics', or: 3, ic: 14, col: '#2f5d8a' },
+ ];
+ const SOCIETY = { ko: '사회', en: 'Society', or: 5, ic: 11, col: '#555' };
+ const sectionOf = (a) => SECTIONS.find((s) => s.re.test(a.title || '')) || SECTIONS.find((s) => s.re.test(a.body || '')) || SOCIETY; // 제목이 먼저
+ const WEATHER = [[13, '태양 플레어 주의보 · 항로 지연 예상', 'Solar flare advisory · lane delays expected'], [14, '이온 폭풍 경보 · 통신 잡음', 'Ion storm warning · comms static'], [15, '성운 안개 · 센서 시야 흐림', 'Nebula haze · low sensor visibility'], [16, '맑음 · 하이퍼레인 소통 원활', 'Clear skies · hyperlanes flowing']];
+ // 광고 문구(그림의 빈 윗부분·아래 띠에 앱이 얹는다). [한 제목, 한 부제, 영 제목, 영 부제]
+ const AD_COPY = {
+  cosmetics: ['네뷸라 No.7', '성운에서 온 향기', 'Nebula No.7', 'A scent from the stars'], perfume: ['네뷸라 No.7', '성운에서 온 향기', 'Nebula No.7', 'A scent from the stars'],
+  energy_drink: ['번개 한 캔', '한 모금이면 초광속', 'Bottled Lightning', 'One sip to FTL'], holiday: ['쌍태양 휴양 행성', '이번 시즌 항로 할인 · 성간 여행사', 'Twin-Sun Resort World', 'Seasonal lane discounts · Stellar Travel'],
+  resort: ['두 개의 태양 아래, 휴양 행성', '이번 시즌 항로 할인 · 성간 여행사', 'Under two suns, a resort world', 'Seasonal lane discounts · Stellar Travel'],
+  fashion: ['궁정 예복 컬렉션', '은하가 주목하는 높은 깃', 'Court Formal Collection', 'The high collar the galaxy is watching'], family_meal: ['오늘 저녁은 합성 성찬', '온 가족이 둘러앉는 맛', 'Synthetic Feast Tonight', 'Dinner that brings everyone to the table'],
+  finance: ['성간 상호은행', '당신의 크레딧, 별처럼 단단하게', 'Interstellar Mutual Bank', 'Your credits, solid as a star'], bank: ['성간 상호은행', '당신의 크레딧, 별처럼 단단하게', 'Interstellar Mutual Bank', 'Your credits, solid as a star'],
+  maintenance_oil: ['정밀 정비 오일', '관절마다 새것처럼', 'Precision Servo Oil', 'Every joint like new'], upgrade_parts: ['신형 구동 모듈', '오늘 밤 업그레이드하세요', 'Next-Gen Actuators', 'Upgrade tonight'],
+  virtual_holiday: ['가상 휴양 데이터', '두 태양의 해변을 내려받으세요', 'Virtual Holiday Data', 'Download a two-sun beach'], exterior_coating: ['광택 외장 도색', '빛나는 새 외피', 'Mirror Shell Coating', 'A gleaming new exterior'],
+  charging_lounge: ['충전 라운지 오픈', '함께 충전하면 더 즐겁다', 'Charging Lounge Now Open', 'Charging is better together'],
+  insurance: ['은하 안심 우주선 보험', '소행성도, 해적도 걱정 없이 · 성간 상호보험조합', 'Galactic Starship Insurance', 'Asteroids and pirates? Covered.'],
+  hyperdrive_repair: ['초광속 엔진 수리', '출장 정비 24시간', 'Hyperdrive Repair', 'Mobile mechanics, around the clock'], synthetic_food: ['합성 미식 통조림', '우주 어디서나 따끈하게', 'Synthetic Gourmet Cans', 'Hot meals anywhere in space'],
+  butler_robot: ['집사 로봇 대여', '손님맞이는 맡겨 주세요', 'Butler Robots for Hire', 'Leave the guests to us'], colonists: ['개척민 모집', '새 행성이 당신을 기다립니다', 'Colonists Wanted', 'A new world is waiting'],
+  sports_merch: ['응원 목도리 입고', '경기장의 함성 속으로', 'Wear the Team Scarf', 'Into the roar of the arena'], real_estate: ['고리 세계 분양', '하늘이 원을 그리는 집', 'Ringworld Homes', 'Where the sky curves overhead'],
+  communicator: ['손목 통신기 신형', '은하 어디서나 연결', 'New Wrist Communicator', 'Connected anywhere in the galaxy'], starship: ['개인 우주선 특가', '고리 행성 너머로', 'Private Starships on Sale', 'Out past the ringed planet'],
+ };
+ const PRINT_ADS = ['insurance', 'hyperdrive_repair', 'synthetic_food', 'resort', 'butler_robot', 'colonists', 'bank', 'energy_drink', 'perfume', 'sports_merch', 'real_estate', 'communicator'];
+ const SQ_ADS = ['insurance', 'synthetic_food', 'butler_robot', 'bank', 'perfume', 'real_estate'], WIDE_ADS = ['starship', 'resort', 'energy_drink', 'communicator'];
+ const PHOTO_CLS = ['human', 'mammalian', 'reptilian', 'avian', 'arthropoid', 'molluscoid', 'fungoid', 'plantoid', 'lithoid', 'necroid', 'aquatic', 'toxoid', 'infernal', 'robot', 'cybernetic', 'psionics'];
+ const safeFile = (f) => (typeof f === 'string' && /^[a-z0-9_]+\.webp$/.test(f) ? f : '');
+ const adScene = (f) => { const s = f.replace(/\.webp$/, ''), c = PHOTO_CLS.find((k) => s.startsWith(k + '_')); return (c ? s.slice(c.length + 1) : s).replace(/^ad_/, ''); }; // 파일 = 계열_ad_장면.webp
+ const copyOf = (k) => { const c = AD_COPY[k] || AD_COPY.insurance; return [L(c[0], c[2]), L(c[1], c[3])]; };
+ /** 이 호의 광고들: 종족 광고 모델(it.ad, 독자 제국 종족 비율로 앱이 고름) + 종족 없는 인쇄·배너 광고(호 번호로 고정) */
+ function issueAds(it) {
+  const r = rng((it.id || 1) * 7 + 3), pick = (a) => a[Math.min(a.length - 1, Math.floor(r() * a.length))];
+  const sp = safeFile(it.ad), print = pick(PRINT_ADS);
+  const species = sp ? { img: NEWS + 'photos/' + sp, copy: copyOf(adScene(sp)) } : null;
+  const sq1 = pick(SQ_ADS); let sq2 = pick(SQ_ADS); if (sq2 === sq1) sq2 = SQ_ADS[(SQ_ADS.indexOf(sq1) + 1) % SQ_ADS.length];
+  return { paper: species || { img: NEWS + 'ads/print_' + print + '.webp', copy: copyOf(print) }, side: [species || { img: NEWS + 'ads/sq_' + sq1 + '.webp', copy: copyOf(sq1) }, { img: NEWS + 'ads/sq_' + sq2 + '.webp', copy: copyOf(sq2) }], wide: (() => { const w = pick(WIDE_ADS); return { img: NEWS + 'ads/wide_' + w + '.webp', copy: copyOf(w) }; })() };
+ }
+ // 망점 사진: 종이 지면은 컬러 사진을 그 자리에서 흑백 망점으로 바꾼다(망점 복사본을 따로 두지 않음). 못 바꾸면 흑백 사진.
+ const HT = new Map();
+ function halftoneURL(im, ink, light, cell) {
+  const W = 900, H = Math.max(1, Math.round(im.naturalHeight * W / im.naturalWidth)), c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); g.drawImage(im, 0, 0, W, H);
+  const d = g.getImageData(0, 0, W, H).data, Lm = new Float32Array(W * H), hist = new Uint32Array(256);
+  for (let i = 0; i < W * H; i++) { const v = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]; Lm[i] = v; hist[Math.min(255, v | 0)]++; }
+  const cut = W * H * 0.01; let lo = 0, hi = 255, acc = 0; while (lo < 254 && (acc += hist[lo]) < cut) lo++; acc = 0; while (hi > lo + 1 && (acc += hist[hi]) < cut) hi--;
+  const span = Math.max(1, hi - lo), px = (x, y) => Lm[Math.max(0, Math.min(H - 1, y | 0)) * W + Math.max(0, Math.min(W - 1, x | 0))];
+  const lum = (x, y) => { const o = cell / 3; let v = (px(x, y) * 2 + px(x - o, y - o) + px(x + o, y - o) + px(x - o, y + o) + px(x + o, y + o)) / 6; v = Math.min(1, Math.max(0, (v - lo) / span)); v = Math.pow(v, 0.6); return Math.min(1, Math.max(0, (v - 0.5) * 1.1 + 0.5)); };
+  g.clearRect(0, 0, W, H); g.fillStyle = ink;
+  const ca = Math.SQRT1_2, R = Math.hypot(W, H) / 2 + cell, cx = W / 2, cy = H / 2;
+  for (let v = -R; v <= R; v += cell) for (let u = -R; u <= R; u += cell) {
+   const x = cx + (u - v) * ca, y = cy + (u + v) * ca; if (x < -cell || y < -cell || x > W + cell || y > H + cell) continue;
+   const t = light ? lum(x, y) : 1 - lum(x, y); if (t < 0.04) continue;
+   g.beginPath(); g.arc(x, y, cell * 0.72 * Math.sqrt(t), 0, 6.2832); g.fill();
+  }
+  return c.toDataURL('image/png');
+ }
+ function htImg(file, ink, light, cell) {
+  const img = document.createElement('img'); img.alt = ''; const f = safeFile(file); if (!f) return img;
+  const key = f + '|' + ink + '|' + (light ? 1 : 0) + '|' + cell;
+  if (HT.has(key)) { img.src = HT.get(key); return img; }
+  const im = new Image();
+  im.onload = () => { try { const u = halftoneURL(im, ink, light, cell); HT.set(key, u); img.src = u; } catch (e) { img.style.filter = 'grayscale(1) contrast(1.25) sepia(.25)'; img.style.mixBlendMode = light ? 'screen' : 'multiply'; img.src = im.src; } };
+  im.onerror = () => img.remove();
+  im.src = NEWS + 'photos/' + f; return img;
+ }
+ const paras = (body, first) => { const box = mk('div'); box.className = 'np-body'; String(body || '').split(/\n+/).map((s) => s.trim()).filter(Boolean).forEach((s, i) => { const p = mk('p', '', s); if (first && i === 0) p.className = 'first'; box.append(p); }); return box; };
+ const orn = (n, cls) => { const im = mk('img'); im.src = NEWS + 'paper/or' + n + '.webp'; im.alt = ''; if (cls) im.className = cls; return im; };
+ const wic = (n, white) => { const im = mk('img'); im.src = NEWS + 'paper/ic' + n + '.webp'; im.alt = ''; im.className = 'ico' + (white ? ' w' : ''); return im; };
  function render() {
   const sheet = $('sheet'); sheet.textContent = '';
-  const it = list[pos];
+  const it = list[pos] || (surface() === 'display' ? { id: 0, date: ((liveData.facts || [])[0] || {}).date || '', headline: '', articles: [], briefs: [], paper: 0 } : undefined); // 신문이 아직 없어도 홈페이지는 늘 보여 준다(2026-11-10 사용자 제보: 게임 첫날 집무실 은하 뉴스가 옛 「아직 나온 호가 없습니다」 화면) — 탭·구독·실시간 소식
   const nav = (ink, mute) => { const n = mk('div', 'display:flex;gap:8px;align-items:center;color:' + ink);
    const pv = mk('button', '', T('‹ 지난 호')), ps = mk('span', 'font-size:13px;color:' + mute + ';min-width:48px;text-align:center', it ? (pos + 1) + ' / ' + list.length : ''), nx = mk('button', '', T('다음 호 ›')), cl = mk('button', '', '✕');
    pv.className = nx.className = 'nb'; cl.className = 'nb x'; cl.title = T('닫기 (Esc)'); pv.id = 'prev'; nx.id = 'next';
@@ -53,56 +241,257 @@
    n.append(pv, ps, nx, cl); return n; };
   if (!it) { const dsp = surface() === 'display', cv = (k, d) => { const x = getComputedStyle(document.documentElement).getPropertyValue(k).trim(); return /^#[0-9a-f]{6}$/i.test(x) ? x : d; }, ink0 = dsp ? cv('--text', '#dcecf0') : '#1d1a14', mute0 = dsp ? cv('--dim', '#8fb3bd') : '#4a4333'; document.body.style.background = dsp ? 'linear-gradient(#ffffff06 1px,transparent 1px) 0 0/100% 4px,radial-gradient(ellipse at 50% 0,' + cv('--hi', '#5fd4e4') + '26,transparent 60%),' + cv('--bg', '#06141b') : '#ece3cd'; document.documentElement.style.setProperty('--pbg', dsp ? cv('--bg', '#06141b') : '#ece3cd'); $('dock').style.color = ink0; sheet.style.cssText = 'color:' + ink0 + ';-webkit-app-region:drag'; const h = mk('div', 'display:flex;justify-content:flex-end'); h.append(nav(ink0, mute0)); /* 2026-10-19 집 PC 검수: 집무실(디스플레이)에서 「아직 나온 호가 없습니다」가 종이 색 글자로 나와 안 보이던 것 */ sheet.append(h, mk('div', 'padding:120px 30px;text-align:center;font-size:20px', T('아직 나온 호가 없습니다. 새해(1월 1일)가 되면 지난 한 해의 기록으로 신문이 나옵니다.'))); return; }
   let P = it.paperInfo || { name: '성간일보', sub: '', wire: '', bg: '#ece3cd', ink: '#1d1a14', accent: '#8a2a1c', briefsFact: false };
-  const disp = surface() === 'display', fid = (fonts[it.paper ?? 0] || 'auto'), fam = FONT_FAMILY[fid === 'auto' ? (disp ? 'gothic' : 'myeongjo') : fid] || FONT_FAMILY.myeongjo; if (disp) { const v = (k, d) => { const x = getComputedStyle(document.documentElement).getPropertyValue(k).trim(); return /^#[0-9a-f]{6}$/i.test(x) ? x : d; }; P = { ...P, bg: v('--bg', '#06141b'), ink: v('--text', '#dcecf0'), accent: v('--hi', '#5fd4e4') }; }
+  const disp = surface() === 'display', fid = ((disp ? fonts[webPaperIdx()] : fonts[it.paper ?? 0]) || 'auto') /* 홈페이지는 보고 있는 신문사 서체 */, fam = FONT_FAMILY[fid === 'auto' ? (disp ? 'gothic' : 'myeongjo') : fid] || FONT_FAMILY.myeongjo; if (disp) { const v = (k, d) => { const x = getComputedStyle(document.documentElement).getPropertyValue(k).trim(); return /^#[0-9a-f]{6}$/i.test(x) ? x : d; }; P = { ...P, bg: v('--bg', '#06141b'), ink: v('--text', '#dcecf0'), accent: v('--hi', '#5fd4e4') }; }
   const CRI = crisisIssue(it); if (CRI) P = { ...P, bg: '#140606', ink: '#f3e7e2', accent: '#ff3b2f' }; // 은하 위기 특별판(2026-10-17): 검붉은 비상 지면
   const ink = P.ink, mute = P.ink + 'bb';
   document.documentElement.style.setProperty('--pbg', P.bg); $('dock').style.color = ink;
-  document.body.style.background = disp ? 'linear-gradient(#ffffff06 1px,transparent 1px) 0 0/100% 4px,radial-gradient(ellipse at 50% 0,' + P.accent + '26,transparent 60%),' + P.bg : P.bg; sheet.style.cssText = 'color:' + ink + ';font-family:' + fam;
+  // 2026-11-10: 홈페이지는 신문사 본래 색(테마 색 아님), 위기 특별판은 붉은색
+  const ACC = CRI ? '#a3120c' : ((it.paperInfo && it.paperInfo.accent) || '#8a2a1c');
+  document.documentElement.classList.toggle('np-crisis', !!CRI && !disp);
+  if (disp) { renderWeb(it, P, CRI, ACC, nav, sheet, fid === 'auto' ? FONT_FAMILY.pretendard : fam); return; }
+  document.documentElement.style.setProperty('--acc', P.accent);
+  document.documentElement.style.setProperty('--ptex', 'url("' + NEWS + 'paper/tex_' + (CRI ? 'crisis' : paperKey(it.paper)) + '.webp")');
+  document.body.style.background = P.bg; sheet.style.cssText = 'position:relative;color:' + ink + ';font-family:' + fam;
   const t = mk('div', '-webkit-app-region:drag;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;letter-spacing:.06em;border-bottom:1px solid ' + ink + ';padding-bottom:9px;color:' + mute); t.append(mk('span', '', it.date), mk('span', 'flex:1;text-align:center', T(P.wire)), nav(ink, mute)); sheet.append(t);
-  const m = mk('div', 'text-align:center;padding:20px 0 14px;border-bottom:4px double ' + ink); const identity = mk('div'); identity.className = 'masthead-name';
+  const m = mk('div', 'padding:6px 0 0'); const identity = mk('div'); identity.className = 'masthead-name';
   const brand = document.createElement('img'); brand.className = 'masthead-brand'; brand.width = 96; brand.height = 96; MediaBrands.paper(brand, it.paper ?? 0);
   // 2026-10-18: 지면(#sheet)은 자동 번역 대상이 아니라 제호·부제·제휴 문구는 직접 번역(사용자가 바꾼 이름은 표에 없으니 그대로)
   // (고침: 위 설명이 같은 줄 코드 앞에 붙어 제호·브랜드 아이콘을 넣는 코드까지 주석이 되어 신문 제호가 사라졌었다)
   const title = mk('div', '', T(P.name)); title.className = 'masthead-title'; identity.append(brand, title, document.createElement('span')); // 오른쪽 빈 칸: 제호가 정확히 가운데 오게
-  m.append(identity, mk('div', 'font-size:13px;letter-spacing:.35em;margin-top:10px;color:' + mute, T(P.sub))); sheet.append(m);
+  // 2026-11-10: 제호 띠 그림(신문사별) 안에 브랜드·제호, 그 아래 부제와 분야 띠(인쇄 장식 그림)·우주 기상
+  const mast = mk('div'); mast.className = 'np-mast'; if (!CRI) mast.style.setProperty('--mast', 'url("' + NEWS + 'paper/mast_' + paperKey(it.paper) + '.webp")'); mast.append(identity);
+  const sub = mk('div', 'color:' + mute, T(P.sub)); sub.className = 'np-sub';
+  const bar = mk('div'); bar.className = 'np-bar' + (CRI ? ' np-inv' : '');
+  for (const s of [SECTIONS[0], SECTIONS[1], SECTIONS[6], SECTIONS[5], SOCIETY]) { const sp = mk('span'); sp.append(orn(s.or), document.createTextNode(L(s.ko, s.en))); bar.append(sp); }
+  const wx = WEATHER[Math.floor(rng(it.id)() * WEATHER.length)], ws = mk('span'); ws.className = 'wx'; ws.append(orn(wx[0]), document.createTextNode(L('우주 기상: ', 'Space weather: ') + L(wx[1], wx[2]))); bar.append(ws);
+  m.append(mast, sub, bar); sheet.append(m);
   if (CRI) { // 위기 특별판 띠: 제호 위에 경고 줄무늬와 위기 이름
    const band = mk('div', 'margin:14px 0 0;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:"Malgun Gothic",sans-serif;font-weight:900;letter-spacing:.18em;color:#fff;background:repeating-linear-gradient(-45deg,#a3120c 0 18px,#4a0705 18px 36px);border:2px solid #ff3b2f;text-shadow:0 0 6px #000');
    band.className = 'crisis-band'; band.append(mk('span', 'font-size:18px', '⚠ ' + T('은하 위기 특별판') + (window.SLLMI18n && window.SLLMI18n.language() === 'en' ? '' : ' · SPECIAL EDITION')), mk('span', 'font-size:13px;letter-spacing:.06em;font-weight:700', (window.SLLMI18n && window.SLLMI18n.language() === 'en' ? CRI.en : CRI.ko))); // i18n-data: 위기 이름 자료(한/영)·영어 부제는 한국어 화면에만
    sheet.insertBefore(band, m);
   }
-  const hd = mk('div', 'padding:26px 0 20px;border-bottom:1px solid ' + ink); hd.append(mk('div', 'font-size:14px;font-weight:700;letter-spacing:.2em;color:' + P.accent + ';margin-bottom:8px', it.extra ? T('호외 · 號外') : T('머리기사')), mk('h1', 'margin:0;font-size:clamp(32px,4.4vw,56px);line-height:1.25;font-weight:900', it.headline)); sheet.append(hd);
-  if (it.extra) { // 호외: 기사는 한 건, 나머지 지면은 AI 를 쓰지 않은 날려쓴 가짜 글씨로 채운다
+  // 머리기사: 첫 기사 + 그 사진(망점). 사진은 앱이 먼저 골라 LLM 이 그에 맞춰 글과 사진 설명을 썼다(2026-11-10)
+  const arts = it.articles || [], a0 = arts[0], sec0 = a0 ? sectionOf(a0) : SOCIETY, cmtBox = (a) => { const c = mk('div'); c.className = 'np-cmt'; c.append(mk('b', '', T('기자 논평 · ') + (a.reporter || '')), document.createTextNode(a.comment)); return c; };
+  const figure = (a, cell) => { const f = mk('figure'); f.className = 'np-fig'; f.append(htImg(a.photo, ink, !!CRI, cell)); f.append(mk('figcaption', '', '▲ ' + (a.caption ? a.caption + ' ' : '') + L('(사진 = ', '(Photo: ') + T(P.name) + ')')); return f; };
+  const lead = mk('div'); lead.className = 'np-lead' + (a0 && safeFile(a0.photo) ? '' : ' nophoto');
+  const lt = mk('div'), kick = mk('div', 'color:var(--acc)', (it.extra ? T('호외 · 號外') : T('머리기사')) + ' · ' + L(sec0.ko, sec0.en)); kick.className = 'np-kick';
+  const h1 = mk('h1', '', it.headline); h1.className = 'np-h1'; lt.append(kick, h1);
+  if (a0) { if (a0.title && a0.title !== it.headline) { const dk = mk('p', '', a0.title); dk.className = 'np-deck'; lt.append(dk); } lt.append(paras(a0.body, true)); if (a0.comment) lt.append(cmtBox(a0)); }
+  lead.append(lt); if (a0 && safeFile(a0.photo)) lead.append(figure(a0, 6));
+  if (it.extra) { // 호외: 기사는 한 건, 나머지 지면은 AI 를 쓰지 않은 날려쓴 가짜 글씨로 채운다. 붉은 호외 도장(2026-11-10)
+   const st = mk('div'); st.className = 'np-stamp'; const si = mk('img'); si.src = NEWS + 'paper/stamp.webp'; si.alt = ''; st.append(si, mk('span', '', L('號外', 'EXTRA'))); sheet.append(st);
+   sheet.append(lead);
    let seed = (it.id || 1) * 9301 + 49297; const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
    const scrib = (rows) => { const box = mk('div', 'color:' + ink + ';opacity:.42;font-style:italic;font-size:17px;line-height:1.9;letter-spacing:.06em;overflow:hidden'); for (let r = 0; r < rows; r++) { let s = ''; const w = 4 + Math.floor(rnd() * 4); for (let k = 0; k < w; k++) s += (k ? ' ' : '') + '~'.repeat(2 + Math.floor(rnd() * 6)); box.append(mk('div', 'white-space:nowrap;transform:rotate(' + ((rnd() - .5) * 1.4).toFixed(2) + 'deg)', s)); } return box; };
-   const grid = mk('div', 'display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0'); grid.className = 'news-grid';
-   const a = it.articles[0];
-   const art = mk('div', 'padding:22px 24px 8px;padding-left:0'); art.className = 'news-article';
-   if (a) { art.append(mk('h2', 'margin:0 0 12px;font-size:26px;line-height:1.3;font-weight:900', a.title), mk('div', 'font-size:17px;line-height:1.9;text-align:justify', a.body)); if (a.comment) art.append(mk('div', 'margin-top:12px;font-size:15px', a.comment)); }
-   grid.append(art);
-   for (let c = 0; c < 2; c++) { const col = mk('div', 'padding:22px 24px 8px;border-left:1px solid ' + ink + '55'); col.append(mk('div', 'height:22px;width:60%;background:' + ink + '22;margin-bottom:14px'), scrib(9)); grid.append(col); }
+   const grid = mk('div'); grid.className = 'np-cols news-grid';
+   for (let c = 0; c < 3; c++) { const col = mk('div'); col.className = 'np-col news-article'; col.append(mk('div', 'height:22px;width:60%;background:' + ink + '22;margin-bottom:14px'), scrib(7)); grid.append(col); }
    sheet.append(grid);
    const bx = mk('div', 'border-top:4px double ' + ink + ';margin-top:20px;padding-top:14px'); bx.append(scrib(4)); sheet.append(bx);
    sheet.append(mk('div', 'margin-top:20px;padding-top:10px;border-top:1px solid ' + ink + ';font-family:"Malgun Gothic",sans-serif;font-size:12.5px;text-align:right;color:' + mute, T('호외입니다. 기사 한 건만 실었으며 나머지 지면은 모양만 낸 가짜 글씨입니다.')));
    return;
   }
-  if (it.articles.length) {
-   const n = Math.min(it.articles.length, 3);
-   const grid = mk('div', 'display:grid;grid-template-columns:repeat(' + n + ',minmax(0,1fr));gap:0');
-   grid.className='news-grid';
-   it.articles.forEach((a, i) => {
-    const art = mk('div', 'padding:22px 24px 8px;' + ((i % n) ? 'border-left:1px solid ' + ink + '55;' : 'padding-left:0;') + (i >= n ? 'border-top:1px solid ' + ink + '55;' : ''));
-    art.className='news-article';
-    art.append(mk('h2', 'margin:0 0 12px;font-size:26px;line-height:1.3;font-weight:900', a.title), mk('div', 'font-size:17px;line-height:1.9;text-align:justify', a.body));
-    if (a.comment) { const c = mk('div', 'margin-top:16px;padding:12px 14px;background:' + ink + '14;border-left:4px solid ' + P.accent + ';font-size:15px;line-height:1.75'); c.append(mk('div', 'font-family:"Malgun Gothic",sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;color:' + P.accent + ';margin-bottom:4px', T('기자 논평 · ') + (a.reporter || '')), document.createTextNode(a.comment)); art.append(c); }
-    grid.append(art);
-   });
-   sheet.append(grid);
-  }
+  sheet.append(lead);
+  // 나머지 기사는 세 단에 나눠 싣고, 가장 짧은 단 끝에 지면 광고
+  const rest = arts.slice(1), ncol = Math.max(1, Math.min(3, rest.length + 1)), cols = mk('div'), colEls = [], weight = [];
+  cols.className = 'np-cols news-grid'; cols.style.gridTemplateColumns = 'repeat(' + ncol + ',minmax(0,1fr))';
+  for (let c = 0; c < ncol; c++) { const el = mk('div'); el.className = 'np-col news-article'; colEls.push(el); weight.push(0); cols.append(el); }
+  rest.forEach((a, i) => {
+   const c = i % ncol, el = colEls[c], sec = sectionOf(a);
+   if (el.childElementCount) el.append(orn(9, 'np-orn' + (CRI ? ' np-inv' : '')));
+   const h2 = mk('h2', '', a.title), sl = mk('div'); sl.className = 'np-sec' + (CRI ? ' np-inv' : ''); sl.append(orn(sec.or), document.createTextNode(L(sec.ko, sec.en)));
+   el.append(h2, sl); if (safeFile(a.photo)) el.append(figure(a, 5));
+   const bd = paras(a.body, true); if (safeFile(a.photo)) bd.style.marginTop = '8px'; el.append(bd); if (a.comment) el.append(cmtBox(a));
+   weight[c] += 2 + (safeFile(a.photo) ? 3 : 0) + String(a.body || '').length / 120;
+  });
+  const ads = issueAds(it), ac = rest.length ? weight.indexOf(Math.min(...weight)) : ncol - 1, ad = mk('div'), ai = mk('img'), tag = mk('span', 'background:' + ink + ';color:' + P.bg, L('광고', 'AD'));
+  ad.className = 'np-ad'; tag.className = 'tag'; ai.src = ads.paper.img; ai.alt = ''; const cp = mk('div'); cp.className = 'cp'; cp.append(mk('b', '', ads.paper.copy[0]), mk('span', '', ads.paper.copy[1])); ad.append(tag, ai, cp);
+  if (colEls[ac].childElementCount) colEls[ac].append(orn(9, 'np-orn' + (CRI ? ' np-inv' : '')));
+  if (!rest.length) ad.style.cssText = 'max-width:440px;margin:18px auto 0'; colEls[ac].append(ad);
+  sheet.append(cols);
   if (it.briefs.length) {
-   const bx = mk('div', 'border-top:4px double ' + ink + ';margin-top:20px;padding-top:14px'); bx.append(mk('div', 'font-family:"Malgun Gothic",sans-serif;font-size:14px;font-weight:700;letter-spacing:.2em;margin-bottom:10px', T('한 줄 소식')));
-   const bg = mk('div', 'display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));column-gap:34px;row-gap:8px;font-size:16px;line-height:1.6'); bg.className='brief-grid'; for (const br of it.briefs) bg.append(mk('div', 'border-bottom:1px dotted ' + ink + '77;padding-bottom:6px', '· ' + br)); bx.append(bg); sheet.append(bx);
+   const bx = mk('div'); bx.className = 'np-briefs'; const bh = mk('div'); bh.className = 'h' + (CRI ? ' np-inv' : ''); bh.append(orn(12), document.createTextNode(T('한 줄 소식'))); bx.append(bh);
+   const bg = mk('div'); bg.className = 'brief-grid'; for (const br of it.briefs) bg.append(mk('div', '', br)); bx.append(bg); sheet.append(bx);
   }
   sheet.append(mk('div', 'margin-top:20px;padding-top:10px;border-top:1px solid ' + ink + ';font-family:"Malgun Gothic",sans-serif;font-size:12.5px;text-align:right;color:' + mute, T(P.briefsFact ? '기사와 한 줄 소식은 게임에 기록된 사실만 싣습니다.' : '기사는 게임에 기록된 사실만, 논평은 기자의 의견이며, 한 줄 소식은 지어낸 이야기입니다.')));
+ }
+ // 2026-11-10: 디스플레이(집무실) 지면 = 뉴스 홈페이지. 기사 글은 종이 신문과 같고(같은 LLM 글), 사진은 컬러 그대로. 배경 그림 없음
+ // 2026-11-10 사용자: 「홈페이지가 연도별 정리면 이상하다」 → 호 넘기기 없이 모든 호의 기사를 최신순으로 잇는 피드.
+ //   홈 = 큰 기사(각 호의 기사), 분야 탭 = 모든 호에서 그 분야 기사 + 올해 그 분야 기사 많아야 3건을 누를 때 만든다(앱이 그해 그 분야 사실로만, 사실이 없으면 만들지 않음).
+ const TAB_RULES = [ // src/newsphoto.ts 의 TAB_RULES 와 같은 규칙
+  ['sports', /경기|올림픽|선수|LoG|레전드 오브|sport|olympic|tournament/i],
+  ['war', /전쟁|선전포고|참전|함대|침공|교전|폭격|포로|사로잡|제독|차지했다|\bwar\b|fleet|invad|battle|bombard|captive|captured|admiral|took .* planet/i],
+  ['diplomacy', /협정|조약|연방|외교|동맹|사절|처음으로 통신|조공국|속국|독립|감독관|물자 지원|성간 임시회의|은하재판소|pact|treaty|federation|alliance|envoy|first contact|subject|independen|overseer|lend-?lease|galactic court/i],
+  ['politics', /의회|선거|통치자|지도자|즉위|정부|내각|총리|재판|청문회|국정감사|불신임|사면|뇌물|매수|폭로|파벌|시위|인플루언서|사교회|결혼|parliament|election|ruler|leader|government|hearing|audit|pardon|bribe|faction|protest|influencer|soir[ée]e|wedding|married/i],
+  ['economy', /무역|교역|경제|시장|상선|에너지|합금|생산|크레딧|trade|market|econom|credit|alloy|production/i],
+ ];
+ const tabOfArt = (a) => { const t = (a.title || '') + ' ' + (a.body || ''); for (const [k, re] of TAB_RULES) if (re.test(a.title || '')) return k; for (const [k, re] of TAB_RULES) if (re.test(t)) return k; return 'galaxy'; };
+ const WEB_TABS = [['home', 0, '홈', 'Home'], ['war', 12, '전쟁', 'War'], ['diplomacy', 13, '외교', 'Diplomacy'], ['politics', 14, '국내', 'Politics'], ['economy', 15, '경제', 'Economy'], ['galaxy', 11, '은하', 'Galaxy'], ['sports', 16, '스포츠', 'Sports']];
+ const TAB_SEC = () => ({ war: SECTIONS[0], diplomacy: SECTIONS[1], politics: SECTIONS[6], economy: SECTIONS[5], sports: SECTIONS[3], galaxy: { ko: '은하', en: 'Galaxy', ic: 11, col: '#555' } }); // 카드 딱지 = 탭과 같은 분야
+ let liveData = { facts: [], stories: [] }; const liveBusy = {}; // 실시간 소식(연대기 줄)과 이미 쓴 온라인 기사
+ // 2026-11-10 사용자: 「목록은 9개씩, 게시판처럼 페이지 넘기기」
+ const WEB_PAGE = 9; let webTab = 'home', webPage = 1; const webAsk = {}; // webAsk[호|신문사|탭] = 'busy' | 'fail'
+ // 2026-11-10 사용자: 신문사 홈페이지 3곳을 브라우저 탭처럼 오간다. 각 홈페이지엔 그 신문사가 쓴 기사만. 처음엔 가장 최근 기사를 낸 신문사
+ let webPaper = null; const PAPER_FALLBACK = ['성간일보', '별무리 속보', '공허 통신'];
+ // 2026-11-10 사용자: LLM 을 아끼려고 신문 구독제(무료). 탭은 셋 다 보이고, 구독하지 않은 신문사는 「구독하기」만(새 기사를 쓰지 않는다)
+ const isSub = (i) => { const p = (liveData.papers || [])[i]; return !p || p.on !== false; };
+ const paperOn = () => { const on = [0, 1, 2].filter(isSub); return on.length ? on : [0, 1, 2]; }; // 구독한 신문사
+ const PAPER_TONE = [['보수 · 정통 일간지. 군사 행동에 우호적', 'Conservative daily. Favours military action'], ['진보 · 빠른 속보. 평화와 종족 간 협력을 환영', 'Progressive breaking news. Welcomes peace and cooperation'], ['중립 · 사실만 쓰는 통신사. 논평 없음', 'Neutral wire service. Facts only, no commentary']];
+ async function subscribe(i, on, only) {
+  if (!window.sllm.newsSubscribe) return;
+  try { const r = await window.sllm.newsSubscribe(i, on, !!only); if (r && r.ok) { liveData = { ...liveData, papers: r.papers || liveData.papers, subPicked: true }; document.querySelector('.sub-pick')?.remove(); if (only) webPaper = i; reWeb(); if (on) askSection(webTab); } } catch (e) { /* 다음 갱신 때 다시 */ }
+ }
+ function subPicker() { // 처음 한 번: 구독할 신문사 하나 고르기(나중에 탭에서 더 구독할 수 있다)
+  if (document.querySelector('.sub-pick') || liveData.subPicked !== false || surface() !== 'display') return;
+  const ov = mk('div'), box = mk('div'), g = mk('div'); ov.className = 'sub-pick'; box.className = 'box'; g.className = 'g';
+  box.append(mk('h2', '', L('어느 신문을 구독할까요?', 'Which newspaper will you subscribe to?')), mk('p', '', L('구독한 신문사만 기사를 씁니다. 구독은 무료이고, 나중에 홈페이지 위쪽 탭에서 다른 신문도 구독하거나 해지할 수 있습니다.', 'Only the papers you subscribe to write stories. Subscriptions are free, and you can add or cancel papers later from the tabs at the top of the homepage.')));
+  for (const i of [0, 1, 2]) {
+   const c = mk('div'), lg = document.createElement('img'), b = mk('button', 'background:' + (paperInfoOf(i).accent || '#8a2a1c'), L('이 신문 구독하기', 'Subscribe')); c.className = 'c'; lg.alt = ''; if (MediaBrands.web) MediaBrands.web(lg, i); else MediaBrands.paper(lg, i);
+   b.onclick = () => subscribe(i, true, true); c.append(lg, mk('b', '', T(paperInfoOf(i).name)), mk('span', '', L(PAPER_TONE[i][0], PAPER_TONE[i][1])), b); g.append(c); // i18n-data: 신문사 성향 한 줄(한/영)
+  }
+  box.append(g); ov.append(box); document.body.append(ov);
+ }
+ function webPaperIdx() {
+  const on = paperOn(); if (webPaper !== null && webPaper >= 0 && webPaper <= 2) return webPaper; // 구독하지 않은 신문사 탭도 열 수 있다(구독 안내)
+  let best = null, bd = '';
+  for (const it of list) if (on.includes(it.paper ?? 0) && String(it.date) > bd) { bd = String(it.date); best = it.paper ?? 0; }
+  for (const st of liveData.stories || []) if (on.includes(st.paper ?? 0) && String(st.date) > bd) { bd = String(st.date); best = st.paper ?? 0; }
+  return best ?? on[0];
+ }
+ const paperInfoOf = (i) => { const it = list.find((x) => (x.paper ?? 0) === i && x.paperInfo), lp = (liveData.papers || [])[i], o = { name: PAPER_FALLBACK[i] || PAPER_FALLBACK[0], sub: '', briefsFact: false, ...(it ? it.paperInfo : {}) }; if (lp) Object.assign(o, { name: lp.name, sub: lp.sub, accent: lp.accent, briefsFact: lp.briefsFact }); return o; };
+ const secKey = (tab, wp, it) => (wp === (it.paper ?? 0) ? tab : tab + '#' + wp); // 앱 sectionKey 와 같은 규칙
+ function webFeed(tab, wp) { // 그 신문사(wp)가 쓴 기사만, 최신 호부터: [{ a, it, gen }]
+  const out = [];
+  for (const it of list) {
+   if ((it.paper ?? 0) === wp) for (const a of it.articles || []) if (tab === 'home' || tabOfArt(a) === tab) out.push({ a, it, d: it.date });
+   if (tab !== 'home') for (const a of (it.sections && it.sections[secKey(tab, wp, it)]) || []) out.push({ a, it, gen: true, d: it.date });
+  }
+  for (const st of liveData.stories || []) if (st.article && (st.paper ?? 0) === wp && (tab === 'home' || tabOfArt({ title: st.fact }) === tab)) out.push({ a: st.article, it: { date: st.date, id: 0 }, live: true, d: st.date });
+  return out.map((x, i) => [x, i]).sort((p, q) => (p[0].d === q[0].d ? p[1] - q[1] : p[0].d < q[0].d ? 1 : -1)).map((p) => p[0]); // 날짜(YYYY.MM.DD) 최신순
+ }
+ async function askSection(tab) { // 올해(가장 최근 정기호) 그 분야 기사를 지금 보는 신문사가 아직 안 썼으면 쓴다
+  const cur = list.find((i) => !i.extra); if (!cur || tab === 'home' || !window.sllm.newsSection) return;
+  const wp = webPaperIdx(), sk = secKey(tab, wp, cur); if (!isSub(wp)) return; // 구독하지 않은 신문사는 쓰지 않는다
+  if (cur.sections && Array.isArray(cur.sections[sk])) return;
+  const k = cur.id + '|' + wp + '|' + tab; if (webAsk[k] === 'busy') return;
+  webAsk[k] = 'busy'; reWeb();
+  try {
+   const r = await window.sllm.newsSection(cur.id, tab, wp);
+   if (r && r.ok) { cur.sections = { ...(cur.sections || {}), [sk]: r.articles || [] }; delete webAsk[k]; } else webAsk[k] = r && r.busy ? 'busy' : 'fail';
+  } catch (e) { webAsk[k] = 'fail'; }
+  reWeb();
+ }
+ function loadLive() {
+  if (!window.sllm.newsLive || surface() !== 'display') return;
+  window.sllm.newsLive().then((d) => { if (d && JSON.stringify(d) !== JSON.stringify(liveData)) { liveData = d; reWeb(); } subPicker(); }).catch(() => {});
+ }
+ setInterval(loadLive, 20000); // 연대기는 앱 안 자료라 20초마다 다시 읽어도 LLM 을 쓰지 않는다
+ function closeReader() { const r = document.querySelector('.lv-reader'); if (r) { r.remove(); return true; } return false; }
+ function showReader(st) {
+  closeReader(); const a = st.article || {}, ov = mk('div'), box = mk('div'), inn = mk('div'); ov.className = 'lv-reader'; box.className = 'box'; inn.className = 'in';
+  ov.onclick = (e) => { if (e.target === ov) closeReader(); };
+  if (safeFile(a.photo)) { const im = mk('img'); im.src = NEWS + 'photos/' + safeFile(a.photo); im.alt = ''; box.append(im); }
+  const x = mk('button', '', '✕'); x.className = 'x'; x.title = T('닫기 (Esc)'); x.onclick = closeReader;
+  inn.append(x, mk('div', '', T(paperInfoOf(st.paper ?? 0).name) + ' · ' + L('온라인 기사', 'Online story') + ' · ' + st.date + (a.reporter ? ' · ' + a.reporter : '')), mk('h2', '', a.title || ''), ...String(a.body || '').split(/\n+/).filter(Boolean).map((t) => mk('p', '', t)));
+  inn.firstChild.nextSibling.className = 'meta';
+  if (a.caption && safeFile(a.photo)) { const c = mk('div', '', '▲ ' + a.caption); c.className = 'meta'; inn.append(c); }
+  box.append(inn); ov.append(box); document.body.append(ov);
+ }
+ async function openLive(key) { // 같은 사건도 지금 보는 신문사가 자기 논조로 따로 쓴다
+  const wp = webPaperIdx(), bk = wp + '|' + key, mine = (s) => s.key === key && (s.paper ?? 0) === wp;
+  const had = (liveData.stories || []).find(mine); if (had) { showReader(had); return; }
+  if (!isSub(wp)) { document.querySelector('.subnote .subgo')?.focus(); return; }
+  if (liveBusy[bk] === 1 || !window.sllm.newsLiveWrite) return;
+  liveBusy[bk] = 1; reWeb();
+  try {
+   const r = await window.sllm.newsLiveWrite(key, wp);
+   if (r && r.ok && r.story) { delete liveBusy[bk]; liveData = { ...liveData, facts: (liveData.facts || []).map((f) => (f.key === key ? { ...f, readBy: [...new Set([...(f.readBy || []), r.story.paper ?? wp])] } : f)), stories: [r.story, ...(liveData.stories || []).filter((s) => !mine(s))] }; reWeb(); if (webPaperIdx() === (r.story.paper ?? wp)) showReader(r.story); }
+   else { liveBusy[bk] = r && r.busy ? 1 : 'fail'; reWeb(); }
+  } catch (e) { liveBusy[bk] = 'fail'; reWeb(); }
+ }
+ const reWeb = () => { if (surface() !== 'display') return; const top = $('scroll').scrollTop; render(); $('scroll').scrollTop = top; };
+ function renderWeb(it, P, CRI, ACC, nav, sheet, fam) {
+  const wp = webPaperIdx(), PI = paperInfoOf(wp); P = { ...P, name: PI.name, sub: PI.sub, briefsFact: !!PI.briefsFact }; if (!CRI && PI.accent) ACC = PI.accent; // 지금 보는 신문사 홈페이지
+  document.documentElement.style.setProperty('--acc', ACC);
+  document.body.style.background = '#2a2e36'; sheet.style.cssText = 'padding:12px 14px 18px;font-family:' + fam;
+  const w = mk('div'); w.className = 'web'; w.style.setProperty('--acc', ACC); w.style.fontFamily = fam;
+  const cur = list.find((i) => !i.extra) || it, curW = list.find((i) => !i.extra && (i.paper ?? 0) === wp), ads = issueAds(it), r = rng((it.id || 1) * 13 + 5), feedHome = webFeed('home', wp);
+  const ch = mk('div'); ch.className = 'chrome'; for (let d = 0; d < 3; d++) ch.append(mk('span', 'width:11px;height:11px;border-radius:50%;background:#555;display:inline-block'));
+  const url = mk('span', '', '🔒 ' + T(P.name) + ' · ' + L('오늘의 은하', "Today's galaxy")); url.className = 'url';
+  const cl = mk('button', '', '✕'); cl.className = 'nb x'; cl.title = T('닫기 (Esc)'); cl.onclick = () => window.sllm.paperClose();
+  const on = paperOn(); { // 신문사 탭(셋 다. 구독하지 않은 곳은 흐리게 + 「구독」 표시)
+   const tabs = mk('span'); tabs.className = 'ptabs';
+   for (const i of [0, 1, 2]) { const b = mk('button'), lg = document.createElement('img'); lg.alt = ''; if (MediaBrands.web) MediaBrands.web(lg, i); else MediaBrands.paper(lg, i); b.append(lg, document.createTextNode(T(paperInfoOf(i).name))); if (!isSub(i)) { b.append(mk('i', '', L('미구독', 'Off'))); b.title = L('구독하지 않은 신문사', 'Not subscribed'); } b.className = (i === wp ? 'on' : '') + (isSub(i) ? '' : ' off'); if (i !== wp) b.onclick = () => { webPaper = i; webPage = 1; closeReader(); reWeb(); $('scroll').scrollTop = 0; askSection(webTab); }; tabs.append(b); }
+   ch.append(tabs);
+  }
+  ch.append(url, cl); w.append(ch);
+  if (CRI) { const band = mk('div', 'padding:9px 24px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-weight:900;letter-spacing:.14em;color:#fff;background:repeating-linear-gradient(-45deg,#a3120c 0 18px,#4a0705 18px 36px)'); band.className = 'crisis-band'; band.append(mk('span', '', '⚠ ' + L('은하 위기 특별판', 'GALACTIC CRISIS SPECIAL EDITION')), mk('span', 'font-size:13px;letter-spacing:.04em', L(CRI.ko, CRI.en))); w.append(band); } // i18n-data: 위기 이름 자료(한/영)
+  // 2026-11-10 사용자: 「홈페이지 배너도 그냥 만들자」 — 신문사별 머리 띠 그림(왼쪽은 어둡게 비워 제호 자리). 위기 특별판은 붉게 덮는다
+  const hd = mk('header', 'background:' + (CRI ? 'linear-gradient(90deg,#3a0503ee,#a3120c99 60%,#ff3b2f55),' : 'linear-gradient(90deg,#000a,#0004 45%,transparent 75%),') + 'url("' + NEWS + 'paper/hdr_' + paperKey(wp) + '.webp") center/cover no-repeat,' + ACC), hi = mk('div'); hi.className = 'hd';
+  const em = mk('div'), br = document.createElement('img'); em.className = 'em'; br.alt = ''; if (MediaBrands.web) MediaBrands.web(br, wp); else MediaBrands.paper(br, wp); em.append(br); // 홈페이지용 둥근 로고(brands/*-web)
+  const nm = mk('div'); nm.append(mk('div', '', T(P.name)), mk('div', '', T(P.sub))); nm.firstChild.className = 'nm'; nm.lastChild.className = 'tg';
+  const rtd = (feedHome[0] && feedHome[0].d) || it.date, rt = mk('div', '', rtd ? L('최근 소식 · ', 'Latest · ') + rtd : ''); rt.className = 'rt';
+  if (window.sllm.newsSubscribe) { // 구독 중 · 누르면 해지(마지막 하나는 해지 못 함) / 구독 안 함 · 누르면 구독
+   const sb = mk('button', '', isSub(wp) ? '✓ ' + L('구독 중', 'Subscribed') : '+ ' + L('구독하기', 'Subscribe')); sb.className = 'subbtn';
+   if (isSub(wp) && on.length <= 1) { sb.disabled = true; sb.title = L('구독한 신문이 하나뿐이라 해지할 수 없습니다', 'You cannot cancel your only subscription'); }
+   else { sb.title = isSub(wp) ? L('누르면 구독을 해지합니다. 이미 쓴 기사는 남습니다', 'Click to cancel. Stories already written stay') : L('무료로 구독합니다', 'Subscribe for free'); sb.onclick = () => subscribe(wp, !isSub(wp)); }
+   rt.append(mk('br'), sb);
+  } hi.append(em, nm, rt); hd.append(hi); w.append(hd);
+  const nv = mk('nav'), menu = mk('span'); menu.append(wic(1, true)); nv.append(menu);
+  for (const [k, ic, ko, en] of WEB_TABS) { const s = mk('span', 'cursor:pointer'); if (ic) s.append(wic(ic, true)); s.append(document.createTextNode(L(ko, en))); if (k === webTab) s.className = 'on'; s.onclick = () => { webTab = k; webPage = 1; reWeb(); $('scroll').scrollTop = 0; askSection(k); }; nv.append(s); }
+  w.append(nv);
+  const tk = mk('div'), bdg = mk('span'); tk.className = 'tick'; bdg.className = 'b'; bdg.append(wic(9, true), document.createTextNode(it.extra && !(liveData.facts || []).length ? L('호외', 'EXTRA') : L('속보', 'Breaking'))); tk.append(bdg);
+  const lf = (liveData.facts || []).slice(0, 6); // 속보 띠 = 연대기 줄 그대로(눌러야 기사를 쓴다). 없으면 신문의 한 줄 소식
+  if (lf.length) lf.forEach((f, i) => { if (i) { const sp = mk('span', '', '|'); sp.className = 'sep'; tk.append(sp); } const s = mk('span', '', f.text); s.className = 'lv'; s.title = L('눌러서 기사 보기', 'Click to read the story'); s.onclick = () => openLive(f.key); tk.append(s); });
+  else (it.extra && (it.paper ?? 0) === wp ? [it.headline] : []).concat((curW && curW.briefs) || []).slice(0, 6).forEach((s, i) => { if (i) { const sp = mk('span', '', '|'); sp.className = 'sep'; tk.append(sp); } tk.append(mk('span', '', s)); });
+  w.append(tk);
+  const main = mk('main'), sec = mk('section'), side = mk('aside'); side.className = 'side';
+  const catBadge = (s, extra) => { const c = mk('span', extra ? '' : 'background:' + s.col); c.className = 'cat'; c.append(wic(s.ic, true), document.createTextNode(L(s.ko, s.en) + (extra ? ' · ' + extra : ''))); return c; };
+  const feed = webTab === 'home' ? feedHome : webFeed(webTab, wp), k = cur.id + '|' + wp + '|' + webTab, st = webAsk[k];
+  if (!isSub(wp)) { const n = mk('div'), t = mk('div'), go = mk('button', '', L('무료 구독하기', 'Subscribe for free')); n.className = 'subnote'; go.className = 'subgo'; go.onclick = () => subscribe(wp, true); t.append(mk('b', '', L('구독하지 않은 신문입니다', 'You are not subscribed to this paper')), document.createTextNode(L('구독하면 이 신문사가 정기호와 분야 기사, 실시간 기사를 자기 논조로 씁니다. 지금은 이미 쓴 기사만 볼 수 있습니다.', 'Subscribe and this paper will write its yearly issues, section stories and live stories in its own voice. For now you can only read stories it has already written.'))); n.append(t, go); sec.append(n); }
+  if (webTab !== 'home' && st === 'busy') { const n = mk('div', 'background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 3px #0001;font-weight:700'); n.textContent = '📰 ' + L('기자들이 올해 이 분야 소식을 취재하고 있습니다…', 'Reporters are covering this year\'s stories in this section…'); sec.append(n); }
+  if (webTab !== 'home' && st === 'fail') { const n = mk('div', 'background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:16px;color:#8a2a1c'); n.textContent = L('기사를 만들지 못했습니다. 이 분야를 다시 누르면 다시 시도합니다.', 'Could not write the articles. Click this section again to retry.'); sec.append(n); }
+  const pages = Math.max(1, Math.ceil(Math.max(0, feed.length - 1) / WEB_PAGE)); if (webPage > pages) webPage = pages;
+  const h0 = webPage === 1 ? feed[0] : null; // 큰 기사는 첫 페이지에만
+  if (h0) {
+   const a0 = h0.a, s0 = TAB_SEC()[webTab === 'home' ? tabOfArt(a0) : webTab], hero = mk('div'); hero.className = 'hero';
+   if (safeFile(a0.photo)) { const hi2 = mk('img'); hi2.src = NEWS + 'photos/' + safeFile(a0.photo); hi2.alt = ''; hero.append(hi2); } else hero.style.background = 'linear-gradient(135deg,color-mix(in srgb,' + ACC + ' 55%,#000),#1b1d22)';
+   const ov = mk('div'); ov.className = 'ov'; const tx = mk('div'); tx.className = 'tx';
+   const top = h0.it === it && a0 === (it.articles || [])[0] && webTab === 'home';
+   tx.append(catBadge(s0, top ? (it.extra ? L('호외', 'Extra') : L('머리기사', 'Top story')) : h0.it.date), mk('h1', '', top ? it.headline : a0.title));
+   if (top && a0.title && a0.title !== it.headline) tx.append(mk('p', 'font-weight:700;margin-bottom:6px', a0.title));
+   tx.append(mk('p', '', a0.body)); if (a0.caption && safeFile(a0.photo)) { const c = mk('div', '', '▲ ' + a0.caption); c.className = 'cap'; tx.append(c); }
+   if (a0.comment) { const c = mk('div', '', T('기자 논평 · ') + (a0.reporter || '') + ' — ' + a0.comment); c.className = 'cmt'; tx.append(c); }
+   hero.append(ov, tx); sec.append(hero);
+  } else if (webPage === 1 && st !== 'busy' && isSub(wp)) { const n = mk('div', 'background:#fff;border-radius:10px;padding:40px 20px;text-align:center;color:#6b7280'); n.textContent = webTab === 'home' ? L('아직 기사가 없습니다. 속보나 실시간 소식을 누르면 그 소식의 기사를 볼 수 있습니다.', 'No articles yet. Click a breaking or live news item to read its story.') : L('올해 이 분야에는 기록된 소식이 없습니다.', 'No recorded news in this section this year.'); sec.append(n); }
+  const rest = feed.slice(1 + (webPage - 1) * WEB_PAGE, 1 + webPage * WEB_PAGE);
+  if (rest.length) {
+   const cards = mk('div'); cards.className = 'cards';
+   for (const { a, it: ii } of rest) {
+    const s = TAB_SEC()[webTab === 'home' ? tabOfArt(a) : webTab], cd = mk('div'), bd = mk('div'); cd.className = 'card'; bd.className = 'bd';
+    if (safeFile(a.photo)) { const im = mk('img'); im.className = 'ph'; im.src = NEWS + 'photos/' + safeFile(a.photo); im.alt = ''; if (a.caption) im.title = a.caption; cd.append(im); }
+    bd.append(catBadge(s), mk('h3', '', a.title), mk('p', '', a.body)); if (a.comment) { const c = mk('div', '', T('기자 논평 · ') + (a.reporter || '') + ' — ' + a.comment); c.className = 'cmt'; bd.append(c); }
+    const mt = mk('div', '', '🕓 ' + ii.date + (ii.extra ? ' · ' + L('호외', 'Extra') : '')); if (rest.find((x) => x.a === a)?.live) mt.textContent += ' · ' + L('온라인', 'Online'); mt.className = 'mt'; bd.append(mt); cd.append(bd); cards.append(cd);
+   }
+   sec.append(cards);
+  }
+  if (pages > 1) { // 게시판식 페이지 번호: ‹ 1 … 4 5 6 … 12 ›
+   const pg = mk('div'); pg.className = 'pager'; const go = (n) => { webPage = n; reWeb(); $('scroll').scrollTop = 0; };
+   const btn = (label, n, on, dis) => { const b = mk('button', '', label); if (on) b.className = 'on'; b.disabled = !!dis; if (!dis && !on) b.onclick = () => go(n); return b; };
+   pg.append(btn('‹', webPage - 1, false, webPage === 1));
+   const nums = new Set([1, pages, webPage - 2, webPage - 1, webPage, webPage + 1, webPage + 2].filter((n) => n >= 1 && n <= pages)); let last = 0;
+   for (const n of [...nums].sort((a, b) => a - b)) { if (n - last > 1) pg.append(mk('span', '', '…')); pg.append(btn(String(n), n, n === webPage)); last = n; }
+   pg.append(btn('›', webPage + 1, false, webPage === pages)); sec.append(pg);
+  }
+  const adq = (x) => { const d = mk('div'), im = mk('img'), c = mk('div'), tg = mk('span', '', L('광고', 'AD')); d.className = 'adq'; im.src = x.img; im.alt = ''; c.className = 'c'; c.append(mk('b', '', x.copy[0]), mk('span', '', x.copy[1])); tg.className = 'adtag'; d.append(im, c, tg); return d; };
+  const box = mk('div'), h4 = mk('h4'), ol = mk('ol'); box.className = 'box'; ol.className = 'rank'; h4.append(wic(10), document.createTextNode(L('많이 본 기사', 'Most read')));
+  const ranked = feedHome.slice(0, 8).map((x) => x.a.title); ranked.sort(() => r() - 0.5); for (const s of ranked.slice(0, 5)) ol.append(mk('li', '', s)); box.append(h4, ol);
+  const lb = mk('div'), lh = mk('h4'), ul = mk('ul'); lb.className = 'box live'; ul.style.cssText = 'list-style:none;margin:0;padding:0'; lh.append(wic(8), document.createTextNode(L('실시간 소식', 'Live news')));
+  for (const f of (liveData.facts || []).slice(0, 8)) { const lb2 = liveBusy[wp + '|' + f.key], rd = (f.readBy || []).includes(wp), li = mk('li', '', f.text), sm = mk('small', '', f.date + ' · ' + (lb2 === 1 ? L('기사 쓰는 중…', 'Writing…') : lb2 === 'fail' ? L('못 썼습니다. 다시 누르세요', 'Failed. Click again') : rd ? L('기사 있음', 'Story ready') : !isSub(wp) ? L('구독하면 기사를 볼 수 있음', 'Subscribe to read the story') : L('눌러서 기사 보기', 'Click to read the story'))); if (rd) li.append(mk('b', '', L('기사', 'Story'))); li.append(sm); li.onclick = () => openLive(f.key); ul.append(li); }
+  if ((liveData.facts || []).length) { lb.append(lh, ul); side.append(adq(ads.side[0]), lb, box, adq(ads.side[1])); } else side.append(adq(ads.side[0]), box, adq(ads.side[1]));
+  const wide = mk('div'), wi = mk('img'), wc = mk('div'), wt = mk('span', '', L('광고', 'AD')); wide.className = 'wide'; wi.src = ads.wide.img; wi.alt = ''; wc.className = 'c'; wc.append(mk('b', '', ads.wide.copy[0]), mk('span', '', ads.wide.copy[1])); wt.className = 'adtag'; wide.append(wi, wc, wt);
+  main.append(sec, side, wide); w.append(main);
+  w.append(mk('div', '', T(P.name) + ' · ' + T(P.briefsFact ? '기사와 한 줄 소식은 게임에 기록된 사실만 싣습니다.' : '기사는 게임에 기록된 사실만, 논평은 기자의 의견이며, 한 줄 소식은 지어낸 이야기입니다.'))); w.lastChild.className = 'foot';
+  sheet.append(w);
  }
  // 은하 위기 특집(2026-10-17): 위기 특별판으로 낸 호(issues)만 특별판 지면. 정기호·일반 호외는 위기 중이라도 평소 지면. 위기 이름은 호마다 저장된 것(labels)
  let crisis = { issues: [], labels: {} };
@@ -110,14 +499,15 @@
  const reCrisis = (c) => { if (!c) return; crisis = { issues: c.issues || [], labels: c.labels || {} }; const top = $('scroll').scrollTop; render(); $('scroll').scrollTop = top; };
  if (window.sllm.onCrisisState) window.sllm.onCrisisState(reCrisis);
  if (window.sllm.crisisState) window.sllm.crisisState().then(reCrisis, () => {});
- async function load() { try { list = await window.sllm.newsList(); } catch (e) { list = []; } pos = 0; render(); $('scroll').scrollTop = 0; }
- document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.paperClose(); else if (e.key === 'ArrowLeft') $('prev')?.click(); else if (e.key === 'ArrowRight') $('next')?.click(); });
+ async function load() { try { list = await window.sllm.newsList(); } catch (e) { list = []; } pos = 0; render(); $('scroll').scrollTop = 0; loadLive(); }
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!closeReader()) window.sllm.paperClose(); } else if (e.key === 'ArrowLeft') $('prev')?.click(); else if (e.key === 'ArrowRight') $('next')?.click(); });
  window.sllm.onGalNews((it) => { list.unshift(it); pos = 0; render(); });
  window.sllm.onPaperInit(load);
  document.addEventListener('sllm-language', () => { const top = $('scroll').scrollTop; render(); $('scroll').scrollTop = top; });
  window.sllm.onMediaChanged((rows) => {
    fonts = rows.map((r) => r.font || 'auto');
    for (const issue of list) { const row = rows[issue.paper ?? 0]; if (row && issue.paperInfo) issue.paperInfo = { ...issue.paperInfo, name: row.name }; }
+   if (liveData.papers) liveData.papers = liveData.papers.map((p, i) => (rows[i] && rows[i].name ? { ...p, name: rows[i].name } : p)); // 홈페이지 신문사 탭 이름
    const top = $('scroll').scrollTop; render(); $('scroll').scrollTop = top;
  });
  // A-22 2단계: 지면 모양. 자동이면 테마를 따른다(기계·물질·평등·홀로그램 테마는 디스플레이, 나머지는 종이). 이 PC에만 저장

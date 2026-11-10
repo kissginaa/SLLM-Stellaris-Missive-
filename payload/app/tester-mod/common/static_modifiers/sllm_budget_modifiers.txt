@@ -1,0 +1,203 @@
+# SLLM 예산 회의(2026-11-04). 이름 sllm_bud_<항목>_f(전액)·_h(삭감=절반)는 앱 src/budget.ts BUD_ITEMS 와 같아야 한다. 국가 범위, 기간은 360일(내각 회의 의제와 같다).
+
+sllm_bud_res_voidcraft_f = {
+	category_voidcraft_research_speed_mult = 0.15
+}
+
+sllm_bud_res_voidcraft_h = {
+	category_voidcraft_research_speed_mult = 0.08
+}
+
+sllm_bud_res_propulsion_f = {
+	category_propulsion_research_speed_mult = 0.15
+}
+
+sllm_bud_res_propulsion_h = {
+	category_propulsion_research_speed_mult = 0.08
+}
+
+sllm_bud_res_particles_f = {
+	category_particles_research_speed_mult = 0.15
+}
+
+sllm_bud_res_particles_h = {
+	category_particles_research_speed_mult = 0.08
+}
+
+sllm_bud_res_computing_f = {
+	category_computing_research_speed_mult = 0.15
+}
+
+sllm_bud_res_computing_h = {
+	category_computing_research_speed_mult = 0.08
+}
+
+sllm_bud_res_field_f = {
+	category_field_manipulation_research_speed_mult = 0.15
+}
+
+sllm_bud_res_field_h = {
+	category_field_manipulation_research_speed_mult = 0.08
+}
+
+sllm_bud_res_materials_f = {
+	category_materials_research_speed_mult = 0.15
+}
+
+sllm_bud_res_materials_h = {
+	category_materials_research_speed_mult = 0.08
+}
+
+sllm_bud_res_industry_f = {
+	category_industry_research_speed_mult = 0.15
+}
+
+sllm_bud_res_industry_h = {
+	category_industry_research_speed_mult = 0.08
+}
+
+sllm_bud_res_military_f = {
+	category_military_theory_research_speed_mult = 0.15
+}
+
+sllm_bud_res_military_h = {
+	category_military_theory_research_speed_mult = 0.08
+}
+
+sllm_bud_res_biology_f = {
+	category_biology_research_speed_mult = 0.15
+}
+
+sllm_bud_res_biology_h = {
+	category_biology_research_speed_mult = 0.08
+}
+
+sllm_bud_res_newworlds_f = {
+	category_new_worlds_research_speed_mult = 0.15
+}
+
+sllm_bud_res_newworlds_h = {
+	category_new_worlds_research_speed_mult = 0.08
+}
+
+sllm_bud_res_statecraft_f = {
+	category_statecraft_research_speed_mult = 0.15
+}
+
+sllm_bud_res_statecraft_h = {
+	category_statecraft_research_speed_mult = 0.08
+}
+
+sllm_bud_res_psionics_f = {
+	category_psionics_research_speed_mult = 0.15
+}
+
+sllm_bud_res_psionics_h = {
+	category_psionics_research_speed_mult = 0.08
+}
+
+sllm_bud_res_archaeo_f = {
+	category_archaeostudies_research_speed_mult = 0.15
+}
+
+sllm_bud_res_archaeo_h = {
+	category_archaeostudies_research_speed_mult = 0.08
+}
+
+sllm_bud_def_weapons_f = {
+	ship_weapon_damage = 0.1
+}
+
+sllm_bud_def_weapons_h = {
+	ship_weapon_damage = 0.05
+}
+
+sllm_bud_def_navalcap_f = {
+	country_naval_cap_add = 20
+}
+
+sllm_bud_def_navalcap_h = {
+	country_naval_cap_add = 10
+}
+
+sllm_bud_def_upkeep_f = {
+	ships_upkeep_mult = -0.15
+}
+
+sllm_bud_def_upkeep_h = {
+	ships_upkeep_mult = -0.08
+}
+
+sllm_bud_sta_weight_f = {
+	diplo_weight_mult = 0.15
+}
+
+sllm_bud_sta_weight_h = {
+	diplo_weight_mult = 0.08
+}
+
+sllm_bud_sta_decrypt_f = {
+	intel_decryption_add = 2
+}
+
+sllm_bud_sta_decrypt_h = {
+	intel_decryption_add = 1
+}
+
+sllm_bud_sta_influence_f = {
+	country_influence_produces_mult = 0.1
+}
+
+sllm_bud_sta_influence_h = {
+	country_influence_produces_mult = 0.05
+}
+
+sllm_bud_eco_build_f = {
+	planet_building_build_speed_mult = 0.2
+}
+
+sllm_bud_eco_build_h = {
+	planet_building_build_speed_mult = 0.1
+}
+
+sllm_bud_eco_upkeep_f = {
+	planet_buildings_upkeep_mult = -0.1   # planets_upkeep_mult 은 없는 수정자(error.log, 2026-11-08)
+	planet_districts_upkeep_mult = -0.1
+}
+
+sllm_bud_eco_upkeep_h = {
+	planet_buildings_upkeep_mult = -0.05   # planets_upkeep_mult 은 없는 수정자(error.log, 2026-11-08)
+	planet_districts_upkeep_mult = -0.05
+}
+
+sllm_bud_eco_minerals_f = {
+	planet_jobs_minerals_produces_mult = 0.1
+}
+
+sllm_bud_eco_minerals_h = {
+	planet_jobs_minerals_produces_mult = 0.05
+}
+
+sllm_bud_int_stability_f = {
+	planet_stability_add = 4
+}
+
+sllm_bud_int_stability_h = {
+	planet_stability_add = 2
+}
+
+sllm_bud_int_crime_f = {
+	planet_crime_add = -10
+}
+
+sllm_bud_int_crime_h = {
+	planet_crime_add = -5
+}
+
+sllm_bud_int_amenities_f = {
+	planet_amenities_add = 4
+}
+
+sllm_bud_int_amenities_h = {
+	planet_amenities_add = 2
+}

@@ -1,0 +1,57 @@
+[h1]🌌 SLLM — SteLLaris Missive[/h1]
+[b]Talk directly with the empires of your galaxy — and with the people of your own.[/b]
+
+SLLM is a companion app and connection mod that lets you talk with Stellaris empires and leaders through AI, and turns those conversations into records and real in-game actions. Conversations take place in the separate SLLM app that runs beside the game.
+[b]This mod does nothing on its own. Install the SLLM app as described in "How to install" below.[/b]
+
+[h2]📌 Notes[/h2]
+[list]
+[*]SLLM was made with AI assistance ("vibe coding"). The source is on GitHub.
+[*]It is free and has no paid features. AI usage is billed by the provider you choose (Player2 can be used for free).
+[*]It is an alpha: expect bugs, and please report them.
+[/list]
+
+[h2]✨ Features[/h2]
+[b]🌌 Diplomacy that leads to action[/b] — Empires speak from their personality, ethics, borders, claims and relations with you. Accepted offers become real game actions, confirmed by the game; if the game refuses, they say so.
+[b]🤝 Diplomatic deals[/b] — Bundle resources, borders, non-aggression, calls to arms, tribute peace, lend-lease and political marriages, with live persuasion odds. Broken promises are remembered.
+[b]💭 Empires that remember[/b] — Grudge, gratitude, fear and ambition build from real events and drive aid, coalitions and (optionally) revenge wars. Each empire keeps a chronicle, exportable as a book.
+[b]🏢 The ruler's Office[/b] — 1:1 calls with every leader. They remember what you told them, track your promises, feel how your words landed and gossip about it.
+[b]🏛️ Cabinet · Policies · Governors · Petitions[/b] — Discuss agendas with your ministers, declare policies voted on by factions, hear governors and answer citizen petitions on request.
+[b]🛂 Embassy · 👑 Subjects · ⚓ Fleet Command[/b] — War-risk and espionage reports, faction meddling, subject autonomy, hearings for admirals and generals.
+[b]🏛️ Galactic Community · 🎙️ Speeches · 🎤 Press[/b] — Debate real resolutions (equal turns for and against, or address one empire), speak to your people, answer reporters.
+[b]⚖️ Galactic Tribunal[/b] — Defend yourself against espionage accusations in a first-person courtroom, with or without a lawyer.
+[b]🏰 Court & House[/b] — Leaders plot (graft, coups, secession); investigate, arrest or pardon. Hereditary rulers head a house with a family tree.
+[b]👶 Children & family[/b] — Raise children in the nursery, choose their studies, then make them leaders or let them live civilian lives.
+[b]🌐 Internet · 📰 Newspaper · 📻 Radio[/b] — Browse three in-universe websites and post as the state or anonymously, read the galactic papers, and listen to a two-host radio show with call-ins.
+[b]🎭 Enclaves · Crises · Fallen Empires · Marauders[/b] — Each speaks in its own voice. Hire artist tours, lend collectibles, sign crisis pacts, bargain with marauders, earn the Great Khan's favor.
+[b]🤖 Machine & 🐝 Hive empires[/b] — Their own terminology, Office and reports.
+[b]👛 Outings[/b] — Go out into your capital at night: department store, pet shop, casino, tavern, black market, ethic landmarks — and watch out for paparazzi. A private vault and bedroom too.
+[b]🎮 Legend of Galaxy[/b] — Your empire's e-sports league: sponsor a club, raise legends, watch matches, the Galactic Worlds and Olympics.
+[b]🍽️ Social life[/b] — Leader banquets, social gatherings, dates, holidays, ceremonies, and chess with your leaders.
+[b]🎨 Customization · 🌐 Languages[/b] — Ethic-based themes, custom backgrounds, 299 portraits plus portraits from your mods. Korean and English, with language pack add-ons. Works alongside other mods.
+
+[h2]🚀 How to install[/h2]
+[b]1. Subscribe to this mod[/b] and enable it in your Paradox Launcher playset (only one SLLM mod). [b]Let Steam finish downloading it first[/b]: the app files come from this mod.
+
+[b]2. Install the SLLM app — pick one[/b]
+[list]
+[*][b]Installer:[/b] download [i]SLLM-Missive-Tester-Setup-…exe[/i] from the page below and compare its SHA-256 with the release notes ([i]Get-FileHash file.exe -Algorithm SHA256[/i]). Close the game and the app, run it, and check the Stellaris folder. Workshop subscribers should uncheck "Install local mod". Nothing else (such as Node.js) is needed.
+[*][b]Manual (no .exe):[/b] download [i]SLLM-Missive-Manual-…zip[/i] from the same page, extract it to an empty folder and follow [i]MANUAL_INSTALL_EN.md[/i]. Nothing is copied into your Stellaris folder.
+[/list]
+https://github.com/kissginaa/SLLM-Stellaris-Missive-/releases/tag/SLLM_app_alpha
+On first launch the app fills in the remaining files from this mod after verifying its signature and checksums. If the mod is still downloading, the app says so and lets you retry.
+
+[b]3. Connect an AI[/b] under "Settings → AI connection": [b]Player2[/b] (run it and sign in), [b]your own API key[/b] (OpenAI, Gemini, Vertex AI, Claude, OpenRouter, Groq, NanoGPT…), or [b]AI on your PC[/b] (Ollama, LM Studio). Use "Test response", then select it. With Gemini, "Gemini model fallback" switches models when one hits its free quota.
+
+[b]4. Start the game, then the app.[/b] Once a save has fully loaded, run the [b]SLLM Missive Tester[/b] shortcut (or start_app.bat). Or turn on "Start SLLM automatically when the game starts" in Settings.
+
+[h2]🔄 Updates[/h2]
+Install the app once. After that it updates with this mod: click [b]Update[/b] when asked. Chat history and settings are kept. Stay subscribed to keep receiving updates. Only a change to the game connection DLL needs a new installer from the download page above.
+
+[h2]🔧 Troubleshooting[/h2]
+Can't connect? Run the game and the app with the same permissions (not only Stellaris as administrator) and wait for the save to finish loading. "Can't find app files"? Check you are subscribed, wait for Steam to finish, then press "Check again". Still stuck? Post the error and a support bundle (from the app's settings) on Discord or GitHub.
+
+[h2]💬 Discord[/h2]
+For feedback, ideas and campaign stories:
+https://discord.gg/AHAafadwgd
+Found a security problem? Please don't post it publicly. DM the server owner (reply within a day) or see SECURITY.md on GitHub.

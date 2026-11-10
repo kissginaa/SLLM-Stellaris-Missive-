@@ -1,0 +1,302 @@
+# SLLM 외교 거래(다음 업데이트, 2026-10-26 — CK3·배너로드 참고). 앱: src/deals.ts · src/features/deals-app.ts. 설계: docs/DIPLO_DEALS_DESIGN_KO.md
+# 모두 플레이어 나라 범위에서 부른다. 같은 요청 번호는 한 번만 처리(sllm_dl_last). 결과는 로그 줄로만 알린다.
+# 읽기:   effect every_playable_country = { limit = { is_ai = no } sllm_deal_ctx = { REQ = 9 TID = 4 } }
+#         → SLLM:DEALX(상대 창고·월수입) 다음 SLLM:DEALCTX(우리 창고·월수입·신뢰·국력·경쟁·동맹·전쟁·전쟁 피로)
+# 적용:   … sllm_deal_apply = { REQ = 9 TID = 4 GEN = 0 GMI = 0 GFO = 0 GAL = 0 GCG = 0 TEN = 0 TMI = 0 TFO = 0 TAL = 0 TCG = 0 RIV = no JOIN = no WAIVE = no }
+#         G* = 우리가 한 번에 주는 양, T* = 상대가 한 번에 주는 양(에너지·광물·식량·합금·소비재), RIV = 상대가 경쟁 관계를 끝냄, JOIN = 상대가 우리 전쟁에 참전
+#         WAIVE = 서로 상대 영토에 건 영유권을 모두 지움(영유권 포기, 2026-11-05 — 10년 감시는 앱이 해마다 1월 DEALCTX 의 cu·ct 로)
+# 매달:   … sllm_deal_pay = { REQ = 9 TID = 4 PAYUS = yes RES = energy AMT = 50 }   PAYUS = yes 우리가 냄 / no 상대가 냄
+# 호감:   … sllm_deal_opinion = { REQ = 9 TID = 4 MOD = sllm_deal_broken }   (sllm_deal_broken -50 · sllm_deal_cta_refused -30, 상대가 우리를 보는 호감)
+# 참전:   … sllm_deal_join = { REQ = 9 TID = 4 }   우리가 그 제국 편으로 그 제국의 전쟁에 들어감(AI 의 참전 요청을 수락)
+# 동맹:   … sllm_deal_allywar = { REQ = 9 }   방위 조약·연방 상대가 방어 전쟁 중인데 우리가 그 전쟁에 없으면 SLLM:DEALAW 줄, 끝에 SLLM:DEALAWEND
+
+# 상대 찾기: event_target:sllm_dl_x, 찾으면 플레이어 변수 sllm_dl_ok = 1. 일반 AI 제국만.
+sllm_deal_find = {
+	set_variable = { which = sllm_dl_ok value = 0 }
+	random_country = {
+		limit = {
+			is_variable_set = sllm_idx
+			check_variable = { which = sllm_idx value = $TID$ }
+			sllm_is_empire = yes
+			is_ai = yes
+		}
+		save_event_target_as = sllm_dl_x
+		event_target:sllm_dl_p = { set_variable = { which = sllm_dl_ok value = 1 } }
+	}
+}
+
+# 지금 범위 나라의 창고(s)·월수입(i) → 변수 10개.
+sllm_deal_res_vars = {
+	export_resource_stockpile_to_variable = { resource = energy variable = sllm_dl_s_en }
+	export_resource_stockpile_to_variable = { resource = minerals variable = sllm_dl_s_mi }
+	export_resource_stockpile_to_variable = { resource = food variable = sllm_dl_s_fo }
+	export_resource_stockpile_to_variable = { resource = alloys variable = sllm_dl_s_al }
+	export_resource_stockpile_to_variable = { resource = consumer_goods variable = sllm_dl_s_cg }
+	export_resource_income_to_variable = { resource = energy variable = sllm_dl_i_en }
+	export_resource_income_to_variable = { resource = minerals variable = sllm_dl_i_mi }
+	export_resource_income_to_variable = { resource = food variable = sllm_dl_i_fo }
+	export_resource_income_to_variable = { resource = alloys variable = sllm_dl_i_al }
+	export_resource_income_to_variable = { resource = consumer_goods variable = sllm_dl_i_cg }
+	# 창고 최대치(2026-11-05, Empire Dashboard Feed 참고) — 일시금이 받는 쪽 창고에 다 들어가는지 앱이 본다
+	export_resource_maximum_to_variable = { resource = energy variable = sllm_dl_m_en }
+	export_resource_maximum_to_variable = { resource = minerals variable = sllm_dl_m_mi }
+	export_resource_maximum_to_variable = { resource = food variable = sllm_dl_m_fo }
+	export_resource_maximum_to_variable = { resource = alloys variable = sllm_dl_m_al }
+	export_resource_maximum_to_variable = { resource = consumer_goods variable = sllm_dl_m_cg }
+}
+sllm_deal_res_clear = {
+	clear_variable = sllm_dl_s_en clear_variable = sllm_dl_s_mi clear_variable = sllm_dl_s_fo clear_variable = sllm_dl_s_al clear_variable = sllm_dl_s_cg
+	clear_variable = sllm_dl_i_en clear_variable = sllm_dl_i_mi clear_variable = sllm_dl_i_fo clear_variable = sllm_dl_i_al clear_variable = sllm_dl_i_cg
+	clear_variable = sllm_dl_m_en clear_variable = sllm_dl_m_mi clear_variable = sllm_dl_m_fo clear_variable = sllm_dl_m_al clear_variable = sllm_dl_m_cg
+}
+
+# 전쟁 범위에서: 우리 진영(US = attacker|defender) 피로 → sllm_dl_eu, 상대 진영 → sllm_dl_et (0~10, 10분위)
+sllm_deal_exh = {
+	if = { limit = { $US$_war_exhaustion >= 0.1 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 1 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.2 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 2 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.3 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 3 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.4 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 4 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.5 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 5 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.6 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 6 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.7 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 7 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.8 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 8 } } }
+	if = { limit = { $US$_war_exhaustion >= 0.9 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 9 } } }
+	if = { limit = { $US$_war_exhaustion >= 1 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_eu value = 10 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.1 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 1 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.2 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 2 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.3 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 3 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.4 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 4 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.5 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 5 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.6 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 6 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.7 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 7 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.8 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 8 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 0.9 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 9 } } }
+	if = { limit = { $THEM$_war_exhaustion >= 1 } event_target:sllm_dl_p = { set_variable = { which = sllm_dl_et value = 10 } } }
+}
+
+sllm_deal_ctx = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	set_variable = { which = sllm_dl_tid value = $TID$ } # F-39: 로그에는 매개변수 대신 변수로(2026-10-27)
+	sllm_deal_find = { TID = $TID$ }
+	set_variable = { which = sllm_dl_tr value = 0 }
+	set_variable = { which = sllm_dl_pow value = -1 }
+	set_variable = { which = sllm_dl_rv value = 0 }
+	set_variable = { which = sllm_dl_al value = 0 }
+	set_variable = { which = sllm_dl_wr value = 0 }
+	set_variable = { which = sllm_dl_ow value = 0 }
+	set_variable = { which = sllm_dl_eu value = 0 }
+	set_variable = { which = sllm_dl_et value = 0 }
+	set_variable = { which = sllm_dl_cu value = 0 }
+	set_variable = { which = sllm_dl_ct value = 0 }
+	sllm_deal_res_vars = yes
+	if = {
+		limit = { check_variable = { which = sllm_dl_ok value = 1 } }
+		event_target:sllm_dl_x = {
+			sllm_deal_res_vars = yes
+			set_variable = { which = sllm_dl_req value = $REQ$ }
+			log = "SLLM:DEALX/;/req=\\[This.sllm_dl_req]/;/s=\\[This.sllm_dl_s_en],\\[This.sllm_dl_s_mi],\\[This.sllm_dl_s_fo],\\[This.sllm_dl_s_al],\\[This.sllm_dl_s_cg]/;/i=\\[This.sllm_dl_i_en],\\[This.sllm_dl_i_mi],\\[This.sllm_dl_i_fo],\\[This.sllm_dl_i_al],\\[This.sllm_dl_i_cg]/;/m=\\[This.sllm_dl_m_en],\\[This.sllm_dl_m_mi],\\[This.sllm_dl_m_fo],\\[This.sllm_dl_m_al],\\[This.sllm_dl_m_cg]"
+			sllm_deal_res_clear = yes
+		}
+		# 신뢰(상대가 우리를): 구간 0,10,30,60,90 → 0~4
+		if = { limit = { event_target:sllm_dl_x = { trust = { who = event_target:sllm_dl_p value >= 90 } } } set_variable = { which = sllm_dl_tr value = 4 } }
+		else_if = { limit = { event_target:sllm_dl_x = { trust = { who = event_target:sllm_dl_p value >= 60 } } } set_variable = { which = sllm_dl_tr value = 3 } }
+		else_if = { limit = { event_target:sllm_dl_x = { trust = { who = event_target:sllm_dl_p value >= 30 } } } set_variable = { which = sllm_dl_tr value = 2 } }
+		else_if = { limit = { event_target:sllm_dl_x = { trust = { who = event_target:sllm_dl_p value >= 10 } } } set_variable = { which = sllm_dl_tr value = 1 } }
+		# 우리 종합 국력이 상대에 비해: 4 압도 3 우세 2 대등 1 열세 0 한심
+		if = { limit = { relative_power = { who = event_target:sllm_dl_x category = all value = overwhelming } } set_variable = { which = sllm_dl_pow value = 4 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_dl_x category = all value = superior } } set_variable = { which = sllm_dl_pow value = 3 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_dl_x category = all value = equivalent } } set_variable = { which = sllm_dl_pow value = 2 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_dl_x category = all value = inferior } } set_variable = { which = sllm_dl_pow value = 1 } }
+		else = { set_variable = { which = sllm_dl_pow value = 0 } }
+		if = { limit = { event_target:sllm_dl_x = { is_rival = event_target:sllm_dl_p } } set_variable = { which = sllm_dl_rv value = 1 } }
+		if = { limit = { OR = { has_defensive_pact = event_target:sllm_dl_x is_in_federation_with = event_target:sllm_dl_x } } set_variable = { which = sllm_dl_al value = 1 } }
+		if = { limit = { is_at_war = yes } set_variable = { which = sllm_dl_ow value = 1 } }
+		# 영유권(2026-11-05): cu = 우리가 상대 땅에 건 것 있음, ct = 상대가 우리 땅에 건 것 있음
+		if = { limit = { has_claim = event_target:sllm_dl_x } set_variable = { which = sllm_dl_cu value = 1 } }
+		if = { limit = { event_target:sllm_dl_x = { has_claim = event_target:sllm_dl_p } } set_variable = { which = sllm_dl_ct value = 1 } }
+		if = {
+			limit = { is_at_war_with = event_target:sllm_dl_x }
+			set_variable = { which = sllm_dl_wr value = 1 }
+			random_war = {
+				limit = { is_war_participant = { who = event_target:sllm_dl_p side = attackers } is_war_participant = { who = event_target:sllm_dl_x side = defenders } }
+				sllm_deal_exh = { US = attacker THEM = defender }
+			}
+			random_war = {
+				limit = { is_war_participant = { who = event_target:sllm_dl_p side = defenders } is_war_participant = { who = event_target:sllm_dl_x side = attackers } }
+				sllm_deal_exh = { US = defender THEM = attacker }
+			}
+		}
+	}
+	log = "SLLM:DEALCTX/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/tid=\\[This.sllm_dl_tid]/;/ok=\\[This.sllm_dl_ok]/;/s=\\[This.sllm_dl_s_en],\\[This.sllm_dl_s_mi],\\[This.sllm_dl_s_fo],\\[This.sllm_dl_s_al],\\[This.sllm_dl_s_cg]/;/i=\\[This.sllm_dl_i_en],\\[This.sllm_dl_i_mi],\\[This.sllm_dl_i_fo],\\[This.sllm_dl_i_al],\\[This.sllm_dl_i_cg]/;/m=\\[This.sllm_dl_m_en],\\[This.sllm_dl_m_mi],\\[This.sllm_dl_m_fo],\\[This.sllm_dl_m_al],\\[This.sllm_dl_m_cg]/;/tr=\\[This.sllm_dl_tr]/;/pow=\\[This.sllm_dl_pow]/;/rv=\\[This.sllm_dl_rv]/;/al=\\[This.sllm_dl_al]/;/wr=\\[This.sllm_dl_wr]/;/ow=\\[This.sllm_dl_ow]/;/eu=\\[This.sllm_dl_eu]/;/et=\\[This.sllm_dl_et]/;/cu=\\[This.sllm_dl_cu]/;/ct=\\[This.sllm_dl_ct]"
+	sllm_deal_res_clear = yes
+	clear_variable = sllm_dl_cu clear_variable = sllm_dl_ct
+}
+
+# 한 번에 주고받기 + 경쟁 해제 + 참전. 국경 개방·종전은 앱이 기존 효과(sllm_probe_diplo·평화 중재)로 따로 건다.
+sllm_deal_apply = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_dl_last } } set_variable = { which = sllm_dl_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_dl_last value >= $REQ$ } }
+		log = "SLLM:DEAL/;/op=apply/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_dl_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_dl_last value = $REQ$ }
+		sllm_deal_find = { TID = $TID$ }
+		if = {
+			limit = { check_variable = { which = sllm_dl_ok value = 0 } }
+			log = "SLLM:DEAL/;/op=apply/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else_if = {
+			limit = {
+				OR = {
+					NOT = { resource_stockpile_compare = { resource = energy value >= $GEN$ } }
+					NOT = { resource_stockpile_compare = { resource = minerals value >= $GMI$ } }
+					NOT = { resource_stockpile_compare = { resource = food value >= $GFO$ } }
+					NOT = { resource_stockpile_compare = { resource = alloys value >= $GAL$ } }
+					NOT = { resource_stockpile_compare = { resource = consumer_goods value >= $GCG$ } }
+				}
+			}
+			log = "SLLM:DEAL/;/op=apply/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+		}
+		else_if = {
+			limit = {
+				event_target:sllm_dl_x = {
+					OR = {
+						NOT = { resource_stockpile_compare = { resource = energy value >= $TEN$ } }
+						NOT = { resource_stockpile_compare = { resource = minerals value >= $TMI$ } }
+						NOT = { resource_stockpile_compare = { resource = food value >= $TFO$ } }
+						NOT = { resource_stockpile_compare = { resource = alloys value >= $TAL$ } }
+						NOT = { resource_stockpile_compare = { resource = consumer_goods value >= $TCG$ } }
+					}
+				}
+			}
+			log = "SLLM:DEAL/;/op=apply/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=theirshort"
+		}
+		else = {
+			add_resource = { energy = -$GEN$ minerals = -$GMI$ food = -$GFO$ alloys = -$GAL$ consumer_goods = -$GCG$ }
+			add_resource = { energy = $TEN$ minerals = $TMI$ food = $TFO$ alloys = $TAL$ consumer_goods = $TCG$ }
+			event_target:sllm_dl_x = {
+				add_resource = { energy = $GEN$ minerals = $GMI$ food = $GFO$ alloys = $GAL$ consumer_goods = $GCG$ }
+				add_resource = { energy = -$TEN$ minerals = -$TMI$ food = -$TFO$ alloys = -$TAL$ consumer_goods = -$TCG$ }
+			}
+			if = { limit = { always = $RIV$ } event_target:sllm_dl_x = { end_rivalry = event_target:sllm_dl_p } }
+			if = { limit = { always = $JOIN$ } event_target:sllm_dl_x = { join_war = event_target:sllm_dl_p } }
+			if = {
+				limit = { always = $WAIVE$ }
+				every_system_within_border = { remove_claims = { who = event_target:sllm_dl_x num_of_claims = 20 } }
+				event_target:sllm_dl_x = { every_system_within_border = { remove_claims = { who = event_target:sllm_dl_p num_of_claims = 20 } } }
+			}
+			log = "SLLM:DEAL/;/op=apply/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+	}
+}
+
+# 매달 지급 한 건. 내는 쪽 창고가 모자라면 옮기지 않고 status=short(앱이 미납으로 센다).
+sllm_deal_pay = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_dl_last } } set_variable = { which = sllm_dl_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_dl_last value >= $REQ$ } }
+		log = "SLLM:DEAL/;/op=pay/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_dl_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_dl_last value = $REQ$ }
+		sllm_deal_find = { TID = $TID$ }
+		if = {
+			limit = { check_variable = { which = sllm_dl_ok value = 0 } }
+			log = "SLLM:DEAL/;/op=pay/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+		else_if = {
+			limit = { always = $PAYUS$ NOT = { resource_stockpile_compare = { resource = $RES$ value >= $AMT$ } } }
+			log = "SLLM:DEAL/;/op=pay/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+		}
+		else_if = {
+			limit = { NOT = { always = $PAYUS$ } event_target:sllm_dl_x = { NOT = { resource_stockpile_compare = { resource = $RES$ value >= $AMT$ } } } }
+			log = "SLLM:DEAL/;/op=pay/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=short"
+		}
+		else_if = {
+			limit = { always = $PAYUS$ }
+			add_resource = { $RES$ = -$AMT$ }
+			event_target:sllm_dl_x = { add_resource = { $RES$ = $AMT$ } }
+			log = "SLLM:DEAL/;/op=pay/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=paid"
+		}
+		else = {
+			add_resource = { $RES$ = $AMT$ }
+			event_target:sllm_dl_x = { add_resource = { $RES$ = -$AMT$ } }
+			log = "SLLM:DEAL/;/op=pay/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=paid"
+		}
+	}
+}
+
+# 상대가 우리를 보는 호감 수정자(약속 파기 -50, 참전 요청 거절 -30).
+sllm_deal_opinion = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_dl_last } } set_variable = { which = sllm_dl_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_dl_last value >= $REQ$ } }
+		log = "SLLM:DEAL/;/op=opinion/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_dl_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_dl_last value = $REQ$ }
+		sllm_deal_find = { TID = $TID$ }
+		if = {
+			limit = { check_variable = { which = sllm_dl_ok value = 1 } }
+			event_target:sllm_dl_x = { add_opinion_modifier = { modifier = $MOD$ who = event_target:sllm_dl_p } }
+			log = "SLLM:DEAL/;/op=opinion/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+		else = {
+			log = "SLLM:DEAL/;/op=opinion/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+	}
+}
+
+# AI 의 참전 요청을 수락: 우리가 그 제국 편으로 그 제국의 전쟁에 들어간다.
+sllm_deal_join = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_dl_last } } set_variable = { which = sllm_dl_last value = 0 } }
+	if = {
+		limit = { check_variable = { which = sllm_dl_last value >= $REQ$ } }
+		log = "SLLM:DEAL/;/op=join/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/last=\\[This.sllm_dl_last]/;/status=duplicate"
+	}
+	else = {
+		set_variable = { which = sllm_dl_last value = $REQ$ }
+		sllm_deal_find = { TID = $TID$ }
+		if = {
+			limit = { check_variable = { which = sllm_dl_ok value = 1 } event_target:sllm_dl_x = { is_at_war = yes } }
+			join_war = event_target:sllm_dl_x
+			log = "SLLM:DEAL/;/op=join/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=applied"
+		}
+		else = {
+			log = "SLLM:DEAL/;/op=join/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]/;/status=target"
+		}
+	}
+}
+
+# 방위 조약·연방 상대가 방어 전쟁 중인데 우리가 그 전쟁에 들어가 있지 않으면 한 줄씩(앱이 참전 요청으로 바꾼다).
+sllm_deal_allywar = {
+	save_event_target_as = sllm_dl_p
+	set_variable = { which = sllm_dl_req value = $REQ$ } # F-39(2026-10-27)
+	every_country = {
+		limit = {
+			is_variable_set = sllm_idx
+			sllm_is_empire = yes
+			is_ai = yes
+			OR = { has_defensive_pact = event_target:sllm_dl_p is_in_federation_with = event_target:sllm_dl_p }
+			any_war = {
+				is_war_participant = { who = prev side = defenders }
+				NOR = {
+					is_war_participant = { who = event_target:sllm_dl_p side = attackers }
+					is_war_participant = { who = event_target:sllm_dl_p side = defenders }
+				}
+			}
+		}
+		log = "SLLM:DEALAW/;/req=\\[Prev.sllm_dl_req]/;/idx=\\[This.sllm_idx]"
+	}
+	log = "SLLM:DEALAWEND/;/req=\\[This.sllm_dl_req]/;/sid=\\[This.sllm_save_id]"
+}

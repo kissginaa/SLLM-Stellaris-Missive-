@@ -1,7 +1,517 @@
 ﻿
-> stellaris-llm-companion@0.1.0-alpha.5.5 test
+> stellaris-llm-companion@0.1.0-alpha.12.21 test
 > tsx src/selftest.ts
 
+PASS quest-effects: catalog size 145 effects + 17 resources, 8 slots
+PASS quest-effects: effect ids unique
+PASS quest-effects: percent effects capped at 15% (user rule)
+PASS quest-effects: ranges sane
+PASS quest-effects: aliases and lookup
+PASS quest-effects: pct amount: 6, 0.06, -4
+PASS quest-effects: fractional num amount (trust 0.1 = 10 steps)
+PASS quest-effects: step amount and garbage
+PASS quest-effects: clamp to 15 steps and 1080 days, merge same id
+PASS quest-effects: clamp recorded
+PASS quest-effects: penalty default 360 days
+PASS quest-effects: governor cannot give fleet effect; unknown dropped
+PASS quest-effects: sector cap = 2/3
+PASS quest-effects: admiral must target a fleet
+PASS quest-effects: fleet target takes only fleet effects
+PASS quest-effects: minister limited to own groups
+PASS quest-effects: resource: 5 steps = 2 months, year 2260 caps x2
+PASS quest-effects: resource clamp; menace only when allowed
+PASS quest-effects: year factor
+PASS quest-effects: command scoped to save
+PASS quest-effects: modifier names and multiplier
+PASS quest-effects: planet loop, duplicate guard, no_target
+PASS quest-effects: braces balanced (planet)
+PASS quest-effects: country: country mods direct, planet mods on every colony
+PASS quest-effects: resource reward via income x months
+PASS quest-effects: braces balanced (country)
+PASS quest-effects: resource penalty capped by stockpile
+PASS quest-effects: fleet target via admiral
+PASS quest-effects: sector target via governor
+PASS quest-effects: bad args rejected
+PASS quest-effects: clear command
+PASS quest-effects: clear rejects unknown id
+PASS quest-effects: free slot
+PASS quest-effects: effect text ko/en
+PASS quest-effects: penalty text (flat)
+PASS quest-effects: cost effect good direction is negative
+PASS quest-effects: resource text
+PASS quest-effects: prompt menu filtered by target
+PASS quest-effects: prompt menu is English
+PASS quest-effects: reply parsing tolerant
+PASS mod-portraits: parse PDX binary mesh parts
+PASS mod-portraits: reject non-PDX file
+PASS mod-portraits: front card (smaller z) drawn over back card
+PASS mod-portraits: back card visible where front card is absent
+PASS mod-portraits: transparent outside model
+PASS mod-portraits: zFront flips draw order
+PASS mod-portraits: rotate around vertical axis keeps source coords
+PASS mod-portraits: Gigastructures blokkat shader takes colour from gradient
+PASS mod-portraits: bilinear sample
+PASS mod-portraits: enabled mods first, then other installed, archive-only skipped
+PASS mod-portraits: relative mod path resolved against user dir
+PASS mod-portraits: index collects portraits and groups from game and mods
+PASS mod-portraits: index reads pdxmesh meshsettings and entities
+PASS mod-portraits: group resolves to members
+PASS mod-portraits: selector picks texture per role
+PASS mod-portraits: shader kinds
+PASS mod-portraits: mod borrows vanilla mesh, body texture from meshsettings next to .gfx
+PASS mod-portraits: plan has per-role clothes
+PASS mod-portraits: missing role texture falls back to default outfit
+PASS mod-portraits: missing entity reported, not thrown
+PASS mod-portraits: render 240x270 PNG
+PASS mod-portraits: same outfit shares one picture, different outfit drawn separately
+PASS mod-portraits: write rendered files + library item
+PASS mod-portraits: mod library accepts png pictures
+PASS mod-portraits: vanilla library still WebP only
+PASS mod-portraits: file names stay inside folder
+PASS mod-portraits: vanilla-only portrait (no selectors) renders
+PASS marauder: numbers: raid 3000 ±15%, merc discount ≤15%
+PASS marauder: redirect cost clamps to ±15%
+PASS marauder: redirect cost rounds to 10
+PASS marauder: merc pct clamps to 0..15 (discount only)
+PASS marauder: threat: superior+ succeeds, equivalent = AI, lower fails
+PASS marauder: status parse (free missing = not free)
+PASS marauder: status parse free
+PASS marauder: status parse rejects junk, clamps power
+PASS marauder: status command
+PASS marauder: withdraw command
+PASS marauder: withdraw command refuses bad input
+PASS marauder: redirect command
+PASS marauder: redirect command refuses self target and bad cost
+PASS marauder: merc deal command 1..15
+PASS marauder: hire command (건의 ①)
+PASS marauder: hire cost: rival = redirect price, non-rival ×1.5 (사용자 확정)
+PASS marauder: merc check command
+PASS marauder: parse marauder_withdraw
+PASS marauder: parse marauder_redirect, pct clamped
+PASS marauder: redirect without target ignored
+PASS marauder: parse marauder_hire, pct clamped
+PASS marauder: hire without target ignored
+PASS marauder: merc_discount capped at 15 with note
+PASS marauder: negative discount ignored (never dearer)
+PASS marauder: target row parse
+PASS marauder: targets: raided removed, rival/weak first, unknown kept
+PASS marauder: targets: at most 8
+PASS marauder: target text
+PASS marauder: prompt: superior → must yield, redirect + merc listed
+PASS marauder: prompt: equivalent → AI decides; active deal blocks new discount
+PASS marauder: prompt: inferior → refuse; no targets → no redirect
+PASS marauder: prompt: no raid; all English
+PASS marauder: prompt: free clan recommends and can be hired
+PASS marauder: prompt: busy clan or active raid → no hire
+PASS marauder: system prompt uses marauder actions instead of generic list
+PASS marauder: mod braces balanced
+PASS marauder: mod effect defined: sllm_mrd_status
+PASS marauder: mod effect defined: sllm_mrd_withdraw
+PASS marauder: mod effect defined: sllm_mrd_redirect
+PASS marauder: mod effect defined: sllm_mrd_merc_deal
+PASS marauder: mod effect defined: sllm_mrd_merc_check
+PASS marauder: mod effect defined: sllm_mrd_hire
+PASS marauder: mod effect defined: sllm_mrd_find
+PASS marauder: mod effect defined: sllm_mrd_end_raid
+PASS marauder: mod effect defined: sllm_mrd_raid_flag
+PASS marauder: merc fleet trigger defined and used
+PASS marauder: all 9 vanilla merc fleets covered
+PASS marauder: merc refund uses vanilla hire prices
+PASS marauder: deal 1 year, vanilla cooldown, vanilla raid event
+PASS marauder: every paid/changing op is deduplicated by request number
+PASS marauder: status lists targets and clears its variables
+PASS marauder: prompt: redirect also lists non-rival 1.5x price
+PASS marauder: redirect and hire both re-check rival price
+PASS marauder: hire re-checks rival price in game
+PASS marauder: hire uses vanilla raid event and refuses busy clan
+PASS isc-quest: numbers: 3 at once, 1-3 years, opinion ±15 (steps 2/4)
+PASS isc-quest: giver = most relevant present ruler
+PASS isc-quest: busy giver skipped; tie → most turns
+PASS isc-quest: no giver when all busy
+PASS isc-quest: at most 3 active
+PASS isc-quest: one task per summit
+PASS isc-quest: prompt lists all 5 goal families
+PASS isc-quest: prompt: targets, months, effect menu
+PASS isc-quest: prompt English except the host topic
+PASS isc-quest: peace goal parsed, months clamped to 36
+PASS isc-quest: reward clamped to 15% (engine cap), penalty kept
+PASS isc-quest: peace with an empire already at war refused
+PASS isc-quest: war on the giver refused
+PASS isc-quest: unknown target refused
+PASS isc-quest: no reward → refused
+PASS isc-quest: unknown goal / junk refused
+PASS isc-quest: gift: resource key + steps clamped to 15
+PASS isc-quest: gift only tradeable resources
+PASS isc-quest: relation defaults to giver, diff/months clamped
+PASS isc-quest: income resource aliases
+PASS isc-quest: measure parse
+PASS isc-quest: relation target = base + 100 (difficulty 3)
+PASS isc-quest: income target = +5% (difficulty 1)
+PASS isc-quest: naval already above target → not offered
+PASS isc-quest: peace/war need a live target not at war
+PASS isc-quest: peace: war → fail, due → success
+PASS isc-quest: war: at war → success, due → fail
+PASS isc-quest: relation: reach → success, due → fail
+PASS isc-quest: vanished target → success (not the player's fault)
+PASS isc-quest: due and offer windows
+PASS isc-quest: goal text
+PASS isc-quest: stored fx re-plans the same
+PASS isc-quest: measure command: per target + summary
+PASS isc-quest: measure command refuses bad args
+PASS isc-quest: gift command: 6 months of income, engine cap, once per task
+PASS isc-quest: gift command refuses bad args
+PASS isc-quest: sanitize drops broken entries
+PASS isc-quest: chain names per goal (gift has none)
+PASS isc-quest: log numbers
+PASS isc-quest: months left
+PASS isc-quest: log slots 1..3, freed when done
+PASS isc-quest: log begin command
+PASS isc-quest: peace shows no numbers
+PASS isc-quest: log begin refuses slot 4 / gift
+PASS isc-quest: log tick/end command
+PASS isc-quest: every chain defined with KO/EN title+desc: 
+PASS isc-quest: localisation BOM header, no glyphs the game garbles
+PASS isc-quest: scripted effects: begin/tick/end + name targets
+PASS isc-quest: texts use the saved names and variables
+PASS frontier: command scoped to save and empire
+PASS frontier: uses the vanilla triggers checked in the game folder
+PASS frontier: reply lines
+PASS frontier: refuses bad args
+PASS frontier: parse: dedupe, drop junk, touching systems imply neighbour
+PASS frontier: missing empire → null; no rows → not neighbour
+PASS frontier: lines from the AI empire's point of view
+PASS frontier: non-neighbour line, English only, nothing when unknown
+PASS frontier: long lists trimmed
+PASS frontier: quest target tag
+PASS frontier: diplomacy prompt carries the lines
+PASS frontier: summit prompt carries the lines
+PASS frontier: reads claims, casus belli, trust, intel, common foes, subjects, envoys, galactic status (names checked in vanilla / 4.5.1 dump)
+PASS frontier: reply fields, braces balanced
+PASS frontier: parse diplomatic fields
+PASS frontier: claims and casus belli from the AI's side
+PASS frontier: common foes, trust, low intel warning, subjects, envoys, galactic status
+PASS frontier: unknown values stay silent
+PASS frontier: quest tag shows disputed claims
+PASS frontier: three console lines, each within the length already proven in game (policy measure ≈ 4,100)
+PASS frontier: khan successor: origin + vanilla flags, other successors, reply fields
+PASS frontier: diadochi line with sibling successors, cause of death not invented
+PASS frontier: player as successor described from the AI side
+PASS frontier: no khan line for ordinary empires
+PASS frontier: our-side facts (public)
+PASS frontier: secret facts only for the spy service
+PASS frontier: brief for condemnation speakers
+PASS frontier: war declaration gets the front
+PASS frontier: condemnation speaker line gets the relation
+PASS frontier: news front line
+PASS khan: numbers: opinion +50, alloys 6 months, favor +15%
+PASS khan: check: khan + clan flags + fought flags
+PASS khan: check: hire history, satrapy, khan opinion of us, reply both ways
+PASS khan: check: braces, length, bad args
+PASS khan: parse
+PASS khan: eligible: opinion ≥ 50, or hire history, or app deal
+PASS khan: never if we fought that clan
+PASS khan: bless: alloys 6 months clamped 50..1500, favor flag, once
+PASS khan: bless: late game year factor
+PASS khan: talk lines (English)
+PASS khan: prompt carries the line
+PASS khan: sanitize
+PASS khan: events defined, braces
+PASS khan: on_actions: both battle results + monthly
+PASS khan: battle record for clan/raiders/khan; favor only while the khan's satrapy
+PASS khan: favor = +15% basic resources
+PASS khan: localisation KO/EN
+PASS loc-fallback: merge keeps keys, one header, BOM, LF
+PASS loc-fallback: korean and english are not overwritten
+PASS loc-fallback: english files found
+PASS loc-fallback: fallback files up to date (run tools/gen-loc-fallback.py)
+PASS loc-fallback: fallback has every English key (6880)
+PASS deals: odds numbers
+PASS deals: trust / power / balance ranges
+PASS deals: resource values = vanilla market ratio
+PASS deals: diplomatic values
+PASS deals: tribute: 20% of income, 10 years, two misses
+PASS deals: penalties -50 / -30
+PASS deals: game number parse (K suffix)
+PASS deals: ctx parse
+PASS deals: ctx parse refuses missing empire
+PASS deals: sanitize drops unknown resources, bad years and junk
+PASS deals: giver
+PASS deals: resource value
+PASS deals: diplomatic values scale with year (×1/×2/×3)
+PASS deals: balance
+PASS deals: empty deal
+PASS deals: stockpile cap both sides
+PASS deals: one-time amount must fit the receiver storage (only when max is known)
+PASS deals: parse storage max (m=)
+PASS deals: monthly cap = 20% of payer income
+PASS deals: peace only at war
+PASS deals: call to arms needs our war, not with them
+PASS deals: rivalry / borders conditions
+PASS deals: non-aggression needs peace while at war
+PASS deals: duplicate item
+PASS deals: neutral deal ≈ 50%
+PASS deals: opinion ÷4, capped ±25
+PASS deals: lopsided demand drops the chance
+PASS deals: generous offer capped at +30
+PASS deals: hook +30, pestering -10 each
+PASS deals: ally call to arms +25
+PASS deals: peace weighs war exhaustion
+PASS deals: clamped to 5..95
+PASS deals: app dice
+PASS deals: worst part
+PASS deals: ctx command
+PASS deals: apply command
+PASS deals: pay command
+PASS deals: opinion command whitelist
+PASS deals: join / ally war commands
+PASS deals: item text
+PASS deals: prompt: decision fixed, reason, English
+PASS deals: prompt: accept + hook
+PASS deals: agreement from deal
+PASS deals: one-time deals need no tracking
+PASS deals: first miss is forgiven
+PASS deals: two misses in a row = we broke it
+PASS deals: paying resets the miss count
+PASS deals: non-aggression breach only by the promiser, within the term
+PASS deals: expired promises drop
+PASS deals: hooks only from confirmed secrets
+PASS deals: owed line reaches the prompt
+PASS deals: mod braces balanced
+PASS deals: mod effect defined: sllm_deal_find
+PASS deals: mod effect defined: sllm_deal_res_vars
+PASS deals: mod effect defined: sllm_deal_res_clear
+PASS deals: mod effect defined: sllm_deal_exh
+PASS deals: mod effect defined: sllm_deal_ctx
+PASS deals: mod effect defined: sllm_deal_apply
+PASS deals: mod effect defined: sllm_deal_pay
+PASS deals: mod effect defined: sllm_deal_opinion
+PASS deals: mod effect defined: sllm_deal_join
+PASS deals: mod effect defined: sllm_deal_allywar
+PASS deals: opinion modifier defined: sllm_deal_broken
+PASS deals: opinion modifier defined: sllm_deal_cta_refused
+PASS deals: opinion modifier defined: sllm_deal_hook_refused
+PASS deals: opinion modifier defined: sllm_deal_humiliated
+PASS deals: opinion modifier defined: sllm_deal_name_restored
+PASS deals: opinion modifier sizes
+PASS deals: every changing op is deduplicated by request number
+PASS deals: uses verified effects
+PASS deals: reply lines
+PASS deals: opinion names localised: korean
+PASS deals: opinion names localised: english
+PASS deals: monthly scan reports al= (braces balanced)
+PASS deals: deals monthly skips the ally-war query when al=0
+PASS deals: office loads deal board after embassy
+PASS deals: preload exposes dealList and dealOpen(tid)
+PASS deals: office deals app: icon after embassy, board in host, L() only
+PASS signals: transfer: set command
+PASS signals: transfer: rebel pair resource, unset command
+PASS signals: transfer: bad inputs refused
+PASS signals: transfer: resource codes 1..6 (mod sllm_mt<K>_r)
+PASS signals: transfer: MT line read
+PASS signals: transfer: MT line refuses bad shapes
+PASS signals: transfer: next group number
+PASS signals: transfer: no count in the month it was made, nor before it is registered
+PASS signals: transfer: a quiet month counts as paid, a short month does not, legacy items untouched
+PASS signals: transfer: done when every payment is made
+PASS signals: transfer mod: effects, change-only lines, no $params in log text
+PASS signals: transfer mod: 6 slots, pair resource, stock checked before paying (never goes negative)
+PASS signals: transfer mod: monthly only while slots exist (flag removed when empty)
+PASS signals: transfer app: log slot, both features subscribed
+PASS signals: deals app: register once, pay by console only when the mod has no room, unset on breach, recheck after load
+PASS signals: rebels app: aid registered once, unset when it ends
+PASS signals: vuln auto: command
+PASS signals: vuln auto mod: every 3 months, line only when it changes, near flags still refreshed
+PASS signals: vuln auto app: hand over once per save, read unsolicited lines, old way only as fallback
+PASS signals: reign signals mod: proxy target and levy owner marked
+PASS signals: reign signals mod: war end, fleet lost, lease over (a day later, cheap triggers)
+PASS signals: reign app: signals handled, console check only every January
+PASS signals: overlord app: signals handled (tid 0), console check only every January
+PASS signals: ally war: the monthly scan names the allies, no separate query
+PASS signals: alarm: rings by stored date without asking the game
+PASS signals: alarm: rescan every 12 months
+PASS signals: alarm app: reads after load / every 12 months / when opened, otherwise by date
+PASS signals: state: kept parts carried from last month, sent parts fresh
+PASS signals: state: nothing to carry (app just started) → month dropped, full report asked
+PASS signals: state: never carry across saves; kp 0 needs nothing
+PASS signals: state mod: change-only parts with kp bits, full every 12th scan or on request
+PASS signals: state: full report after load, and when the app has nothing to carry
+PASS signals: state mod: mood sums ride the protest planet loop (gestalt keeps its own), MOOD line after it
+FAIL signals: effects: nesting depth ≤ 4 (now 5 sllm_tn_add, 714 effects)
+PASS signals: save: which game lines ask for a re-read
+PASS signals: save: our ethics or authority changed (same save only)
+PASS signals: save: re-read after 12 game months
+PASS signals: save: held save is used until a signal (quiet 0, fresh 1, unknown empire 2, after read 2, same unknown again 2, older save keeps the mark true, newer clears true)
+PASS signals: save: another save (different save number) is always read
+PASS signals: save app: wired (gate in refresh, fresh readers, signal slot)
+PASS signals: crisis: resent once a year (app restarted while the game ran)
+PASS signals: transfer: check-only command (never creates a slot)
+PASS signals: transfer mod: CHECK = yes answers st 4 and writes nothing
+PASS signals: transfer apps: after load, a missing slot ends the payment instead of restarting it
+PASS signals: usage: command named by its first sllm effect
+PASS signals: usage: quiet month leaves no line
+PASS signals: usage: counts per month, then starts over
+PASS signals: usage: counted where commands go out and saves are read
+PASS signals: galaxy map: reads the newest save of the same game (the flag provider may hold an older one)
+PASS signals: transfer: owner 3 = war aid
+PASS signals: war aid app: paid by the game each month; the app pays only when no slot is free
+PASS signals: quest watch: command (slots 1..3, real chains only)
+PASS signals: quest watch: ISCQW line read
+PASS signals: quest watch mod: 3 slots x 18 goals, each one a real situation-log chain (54)
+PASS signals: quest app: measures only on a signal, at the deadline, or for old tasks
+PASS signals: mercenary refund: the mod checks monthly, the app sends nothing
+PASS signals: relationship chart: only ties the leader card would show (ruler, public, introduced, known conflicts) + known acquaintances
+PASS signals: relationship chart: rings around the chosen person; ties among the shown people are all drawn (outer ring too); an unconnected ruler stands apart with no line
+PASS signals: relationship board: no lines to people without a known tie; untied circles stand apart (all still shown)
+PASS signals: relationship board/chart: acquaintance lines between circles are bundled at each circle’s best-connected person (a click unbundles); chart lines bend around the centre; hover lights one person’s lines
+PASS signals: relationship chart: own files (not the corridor’s), opened from the leader card
+PASS save-mem: sectionLines cuts only that top-level block (CRLF)
+PASS save-mem: missing section → [], unterminated → to the end
+PASS save-mem: rulers still read from the cut sections
+PASS save-mem: country metadata and bios still read
+PASS save-mem: portrait info still read
+PASS save-mem: no whole-remainder split left in savereader
+PASS save-mem: readSaveFlags lets go of the cut sections
+PASS save-mem: flags reads saves in a worker (sync fallback for tests)
+PASS save-mem: one read at a time, stale results after reconfigure are dropped
+PASS save-mem: worker posts the result and does not load electron
+PASS save-mem: main redraws talk/contacts when a new save has been read
+PASS threads: image ops match the old main-thread results (flag, planet, mask)
+PASS threads: emblem op makes a PNG
+PASS threads: corrupted layer is reported, not thrown
+PASS threads: flags/emblems are made in the worker and redraw when ready
+PASS threads: governor planet art uses the worker
+PASS threads: office role icons use the worker
+PASS threads: mod portraits draw in a worker (nothing heavy left in the app thread)
+PASS threads: image worker does not keep the app alive and stops when idle
+PASS children: base chance 3%
+PASS children: depicted intimacy → 30% that year, once
+PASS children: roll: only the 30% spouse at 0.2, due in 9 months, mark cleared
+PASS children: 2 per spouse
+PASS children: total cap 8 per ruler
+PASS children: another ruler has their own cap
+PASS children: limit off: no caps
+PASS children: limit back on
+PASS children: not born before due
+PASS children: born on due date
+PASS children: first event at 1
+PASS children: answer adds score and tag
+PASS children: event at 4
+PASS children: unanswered for a year → missed
+PASS children: parent loss event first
+PASS children: second loss queued
+PASS children: teen at 14
+PASS children: at 18: crossroad waits for the player (2026-10-28)
+PASS children: crossroad: nothing more until decided
+PASS children: civ: jobs cover every wish with KO/EN names
+PASS children: civ: official game job names (4.x specialist)
+PASS children: civ: yearly cap and chance by count
+PASS children: civ: 75/20/5
+PASS children: civ: talks shift up to +10%p to good
+PASS children: civ: starred child quiet 5+ years goes first
+PASS children: civ: star weight x3
+PASS children: civ: 3+ templates per event kind
+PASS children: civ: templates filled in both languages
+PASS children: civ: wish fit
+PASS children: civ: birth wish follows a parent sometimes
+PASS children: civ: notify setting
+PASS children: civ: heir return line
+PASS children: 6 events: baby 1, child 3, teen 2
+PASS children: talks: infants cannot, children and teens can
+PASS children: child talk prompt is short and childlike
+PASS children: chosen study decides the career, otherwise upbringing score
+PASS children: talk summary: memory + wish tag only, no career leaning
+PASS children: plan: class + tag trait + class trait
+PASS children: adult command: parent species, fallback, clean name, age 18
+PASS children: species: mother first, then the other parent, then the main species
+PASS children: species side: about 60% mother (1201/2000)
+PASS children: species side male → father first
+PASS children: adult command: lid given, reply, once per child
+PASS children: heir command
+PASS children: name cleaned for game text
+PASS children: bad sid rejected
+PASS children: intimate field only in spouse talks
+PASS children: no content-level instruction in spouse prompt
+PASS children: adult command adds the ruler-child trait
+PASS children: family: parents (with deceased), full and half siblings
+PASS children: family: ruler sees all children, spouse sees theirs, stranger none
+PASS children: family prompt line
+PASS children: grief trait command
+PASS children: mod: family traits (+15% xp, grief) with KO/EN text
+PASS children: app: registration and preload
+PASS children: persona → children via hooks (no import cycle)
+PASS children: ui: nursery room, baby object → child list first, one nursery picture, office go
+PASS court: year chance 8%
+PASS court: year chance capped at 25%
+PASS court: unrest +5
+PASS court: ruler never plots
+PASS court: governor of unstable planet: secession
+PASS court: commander lv2+: power grab
+PASS court: foe → defection candidate
+PASS court: hereditary ruler child: succession
+PASS court: busy plotters skipped
+PASS court: start influence
+PASS court: plot faction: own support, else lowest approval
+PASS court: pick
+PASS court: step min 3 at influence 0
+PASS court: step max 6 at influence 100
+PASS court: hint at 30
+PASS court: discover 3%
+PASS court: discover 6% past 50
+PASS court: not 6% below 50
+PASS court: won at 100
+PASS court: found plots freeze
+PASS court: checks before discovery only
+PASS court: responses after discovery
+PASS court: bribe -30, expose -40 inf -20 prog
+PASS court: costs
+PASS court: backlash
+PASS court: exile defects 40%, appease relapse 30%/5y
+PASS court: plot names KO/EN
+PASS court: commands
+PASS court: commands reject bad input
+PASS court: 16 house traits with KO/EN
+PASS court: new house has 2 traits
+PASS court: inherit 70% each, new 20%
+PASS court: same house by surname or nursery child
+PASS court: renamed house: surname alone does not continue it
+PASS court: house name & prompt line
+PASS court: marriage +40 opinion, +10 odds, rival -20
+PASS court: who can marry
+PASS court: marriage errors
+PASS court: mod effects present
+PASS court: no $PARAM$ inside log strings (F-39)
+PASS court: modifier/opinion/trait localised in EN and KO
+PASS daymood: calm → peace
+PASS daymood: war
+PASS daymood: unrest by stability < 40 or protests
+PASS daymood: crisis outranks war
+PASS daymood: mourning outranks war
+PASS daymood: expired flash ignored
+PASS daymood: economy
+PASS daymood: approved numbers
+PASS daymood: heavier flash wins until it ends
+PASS daymood: tone from ethics bits
+PASS daymood: greeting/life/call text for every tag
+PASS daymood: ads per tone, weather lines name the planet
+PASS daymood: KO/EN pairs keep placeholders
+PASS daymood: militarist war greeting, no leftover placeholders
+PASS daymood: about 30% calls
+PASS daymood: call: host → caller → host
+PASS daymood: weather names our planet
+PASS daymood: stir
+PASS spy-lawyer: tiers: free 20% · 500/50 75% · 1000/100 95%
+PASS spy-lawyer: fee: first exhibit base, +25% energy for each more (3 → 150%), influence flat
+PASS spy-lawyer: can hire at the start of the hearing
+PASS spy-lawyer: each exhibit rolled at the chance (0.1/0.8/0.3 at 75% → win, lose, win)
+PASS spy-lawyer: tribunal: winner line + lawyer result (승소/패소)
+PASS spy-lawyer: lawyer lines: varied, every result line says 승소/패소 (KO/EN)
+PASS spy-lawyer: Korean particles follow the last syllable
+PASS spy-lawyer: cannot hire after the first statement
+PASS spy-lawyer: hiring late is rejected
+PASS spy-lawyer: fee command (both resources, short check, once)
+PASS spy-lawyer: free lawyer sends no fee command
+PASS spy-lawyer: verdict: named winner wins over the old flag
+PASS spy-lawyer: court prompt: reason first, named winner, consistency rule
 PASS summit: valid reply
 PASS summit: missing rejected
 PASS summit: foreign rejected
@@ -163,7 +673,7 @@ PASS fm: 첫 입장(발의·반대 가치관·같은 가치관·무관)
 PASS fm: 지지율 가중 통과
 PASS fm: 통치자 반대면 통과 안 됨
 PASS fm: 반대한 파벌만 승인도 하락, 제국 가치관 모르면 게임 의제 없이 버프만
-PASS fm: 가치관 의제 8개 모두 실제 키
+PASS fm: 가치관 의제 8개 + 가치관 밖 의제 모두 실제 키
 PASS fm: 군국주의 제국만 무력시위
 PASS fm: 유랑 제국은 유랑용 키
 PASS fm: 화면 안내
@@ -409,6 +919,13 @@ PASS speech: turns capped
 PASS speech: turns kept
 PASS speech: final prompt
 PASS speech: prompt carries crowd traits
+PASS war side: 모드가 보낸 편을 읽음(옛 모드는 없음)
+PASS war side: 방어 측 문장
+PASS war side: 편을 모르면 예전 문장 그대로
+PASS war side: 같은 전쟁은 편을 갈라 한 줄로
+PASS war side: 영어 기록도 편을 갈라 묶음
+PASS war side: 호외·정기호 모두 「방어 측을 선전포고한 쪽처럼 쓰지 말 것」
+PASS war side: 모드가 참전국마다 공격·방어 편을 보냄
 PASS F-01 war text starts with war name
 PASS F-01 war facts grouped per war
 PASS F-01 merged participants
@@ -475,25 +992,27 @@ PASS F-fix month 12
 PASS F-fix custom theme applies without curCustom error
 PASS F-fix custom theme uses passed colors
 PASS A-16 same seats and tally as council.html for 200 random councils 
-PASS A-16 79.9% refused
+PASS A-16 79.9% allowed (2026-11-04: 60% rule)
 PASS A-16 80% allowed
-PASS A-16 opposite direction refused
+PASS A-16 60%+ for passes
+PASS A-16 forced rejection needs 60% against (only 20% now, 2026-11-04)
 PASS A-16 other save refused
 PASS A-16 other agenda refused
-PASS A-16 persuasion shift lowers tally and refuses
+PASS A-16 persuasion shift drops for below 60% → force refused (2026-11-04)
 PASS A-16 debate for other save ignored
-PASS A-16 unreliable council refused
+PASS A-16 unreliable council also allowed (2026-10-29: no info lock)
 PASS A-16 dev fixed tally follows setting
+PASS A-16 70% against allows forced rejection (2026-11-04)
 PASS A-16 cleared state refused
 PASS A-16 demo council has no state
-PASS A-16 delta clamp/round, threshold 80
+PASS A-16 delta clamp/round, threshold 60 (2026-11-04)
 PASS A-00d name containing /;/ rejoined
 PASS A-00d name containing = kept
 PASS A-00d name with /;/ and = rejoined
 PASS A-00d positional ok/apply unchanged
 PASS A-00d first-field name rejoined
 PASS A-00d several names in one line
-PASS A-00d found mod log templates (1056)
+PASS A-00d found mod log templates (2837)
 PASS A-00d every mod log template parses into the same fields as before
 PASS A-17 beh parsed (36.000 → 36)
 PASS A-17 bits 4+32 → vassalize, trade
@@ -512,7 +1031,7 @@ PASS safety mod-compat: unknown ethic placeholder
 PASS safety mod-compat: text line format
 PASS safety mod-compat: basic country types allowed
 PASS safety mod-compat: pack can open a country type
-PASS safety mod-compat: actions need contact, invalid/unknown types closed
+PASS safety mod-compat: actions need contact, invalid rules closed, unknown types talk-only (alpha 8)
 PASS safety mod-compat: pack lore (trimmed name)
 PASS safety mod-compat: png flag inside pack folder
 PASS safety mod-compat: flag path escape / fake png / non-image rejected
@@ -532,17 +1051,17 @@ PASS safety env: Program Files fallbacks keep backslash (F-11)
 PASS safety env: libraries from libraryfolders.vdf, deduped
 PASS safety env: game candidates (env first, then libraries)
 PASS safety env: user dir from documents first
-FAIL safety env: only existing dir → that dir got="C:\\Users\\mingyu\\Documents\\Paradox Interactive\\Stellaris" want="C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-selftest-jmKw6f\\env-S2VyUT\\envuser"
-FAIL safety env: settings.txt beats a bare dir got="C:\\Users\\mingyu\\Documents\\Paradox Interactive\\Stellaris" want="C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-selftest-jmKw6f\\env-S2VyUT\\docs\\Paradox Interactive\\Stellaris"
+PASS safety env: only existing dir → that dir
+PASS safety env: settings.txt beats a bare dir
 PASS safety env: game.log beats settings.txt
 PASS safety env: save roots (env, user dirs, numeric cloud ids only)
 PASS safety env: workshop candidate path
 PASS safety env: default mod = first workshop candidate
 PASS safety env: SLLM_MOD_DIR wins when valid
-FAIL safety env: invalid SLLM_MOD_DIR → bundled tester-mod got="F:\\SteamLibrary\\steamapps\\workshop\\content\\281990\\3819625112" want="C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-tsc\\app\\tester-mod"
+PASS safety env: invalid SLLM_MOD_DIR → bundled tester-mod
 PASS safety env: isConnectionMod checks sllm_probe_effects.txt
 PASS safety env: resolveEnvironment honours prefs
-FAIL safety env: resolveEnvironment auto (SLLM_GAME_LOG, no game found) got=["C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-selftest-jmKw6f\\env-S2VyUT\\envuser","C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-selftest-jmKw6f\\env-S2VyUT\\envuser\\logs\\game.log",true,"F:\\SteamLibrary\\steamapps\\common\\Stellaris",true] want=["C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-selftest-jmKw6f\\env-S2VyUT\\envuser","C:\\Users\\mingyu\\AppData\\Local\\Temp\\sllm-selftest-jmKw6f\\env-S2VyUT\\envuser\\logs\\game.log",true,null,false]
+PASS safety env: resolveEnvironment auto (SLLM_GAME_LOG, no game found)
 PASS safety env: runtime user dir override
 PASS safety bridge: exit 2-7 without JSON are sure failures
 PASS safety bridge: other exits without JSON are uncertain
@@ -569,7 +1088,7 @@ PASS dev radio bypass works only in dev mode
 PASS dev radio bypass ignored outside dev mode (radioNow still blocked)
 PASS dev speech: truncated reply recovered through parseTurn/recoverTurn
 PASS dev F-12 delivery message cases
-PASS dev A-16 samples: 80% allowed, 79.9% refused
+PASS dev A-16 samples: 80% and 79.9% both allowed (2026-10-29)
 PASS dev A-17 behavior preview shows prompt lines
 PASS dev samples are well-formed and labelled
 PASS dev tools: every IPC handler is wrapped by the dev-mode guard
@@ -579,35 +1098,163 @@ PASS A-16 openCouncil records the same info as the window (after reliability)
 PASS A-16 closing the council window clears the state
 PASS A-16 councilDebate records persuasion (AI path and no-AI dev path)
 PASS A-00b addons-app.ts does not import main.ts
+PASS A-00b agents-app.ts does not import main.ts
 PASS A-00b ai-settings.ts does not import main.ts
+PASS A-00b ai-truth-app.ts does not import main.ts
+PASS A-00b alarm-app.ts does not import main.ts
+PASS A-00b app-update.ts does not import main.ts
 PASS A-00b archive-app.ts does not import main.ts
+PASS A-00b audit-app.ts does not import main.ts
+PASS A-00b backstory-app.ts does not import main.ts
 PASS A-00b banquet-app.ts does not import main.ts
+PASS A-00b bedroom-app.ts does not import main.ts
+PASS A-00b blackmarket-app.ts does not import main.ts
+PASS A-00b budget-app.ts does not import main.ts
+PASS A-00b captive-app.ts does not import main.ts
+PASS A-00b casino-app.ts does not import main.ts
+PASS A-00b ceremony-app.ts does not import main.ts
 PASS A-00b chat.ts does not import main.ts
+PASS A-00b chess-app.ts does not import main.ts
+PASS A-00b children-app.ts does not import main.ts
+PASS A-00b chronbook-app.ts does not import main.ts
 PASS A-00b chronicle-app.ts does not import main.ts
+PASS A-00b civic-app.ts does not import main.ts
+PASS A-00b civic-hooks.ts does not import main.ts
+PASS A-00b collectibles-app.ts does not import main.ts
+PASS A-00b colname-app.ts does not import main.ts
+PASS A-00b condemn-app.ts does not import main.ts
 PASS A-00b conversation-favors.ts does not import main.ts
 PASS A-00b council.ts does not import main.ts
+PASS A-00b court-app.ts does not import main.ts
+PASS A-00b crisis-app.ts does not import main.ts
+PASS A-00b crisis-pact-app.ts does not import main.ts
+PASS A-00b cyber-app.ts does not import main.ts
+PASS A-00b daymood-app.ts does not import main.ts
+PASS A-00b deals-app.ts does not import main.ts
+PASS A-00b debate-app.ts does not import main.ts
+PASS A-00b declare-app.ts does not import main.ts
 PASS A-00b dev-tools.ts does not import main.ts
+PASS A-00b deviancy-store.ts does not import main.ts
 PASS A-00b dinner-app.ts does not import main.ts
+PASS A-00b edict-store.ts does not import main.ts
 PASS A-00b effect-verifier.ts does not import main.ts
+PASS A-00b embassy-app.ts does not import main.ts
+PASS A-00b emergency-app.ts does not import main.ts
+PASS A-00b emotions-app.ts does not import main.ts
+PASS A-00b emp-app.ts does not import main.ts
+PASS A-00b enclave-app.ts does not import main.ts
 PASS A-00b environment.ts does not import main.ts
 PASS A-00b espionage-app.ts does not import main.ts
+PASS A-00b execution-app.ts does not import main.ts
 PASS A-00b faction-app.ts does not import main.ts
+PASS A-00b fallen-app.ts does not import main.ts
+PASS A-00b fbanquet-app.ts does not import main.ts
+PASS A-00b fleet-app.ts does not import main.ts
+PASS A-00b fleetname-app.ts does not import main.ts
+PASS A-00b fleetorder-app.ts does not import main.ts
+PASS A-00b fletters-app.ts does not import main.ts
+PASS A-00b frontier-app.ts does not import main.ts
+PASS A-00b galaxy-app.ts does not import main.ts
+PASS A-00b game-dll-app.ts does not import main.ts
 PASS A-00b gamestate-app.ts does not import main.ts
+PASS A-00b gc-app.ts does not import main.ts
+PASS A-00b gestalt-app.ts does not import main.ts
+PASS A-00b gestalt-report-app.ts does not import main.ts
+PASS A-00b gforum-app.ts does not import main.ts
 PASS A-00b gov.ts does not import main.ts
+PASS A-00b govpolicy-app.ts does not import main.ts
 PASS A-00b govreport.ts does not import main.ts
+PASS A-00b hoi-app.ts does not import main.ts
+PASS A-00b holiday-app.ts does not import main.ts
 PASS A-00b images.ts does not import main.ts
+PASS A-00b independence-app.ts does not import main.ts
+PASS A-00b infamy-app.ts does not import main.ts
+PASS A-00b internet-app.ts does not import main.ts
+PASS A-00b isc-app.ts does not import main.ts
+PASS A-00b isc-quest-app.ts does not import main.ts
+PASS A-00b khan-app.ts does not import main.ts
+PASS A-00b landmark-app.ts does not import main.ts
+PASS A-00b letters-app.ts does not import main.ts
+PASS A-00b lobby-app.ts does not import main.ts
+PASS A-00b log-app.ts does not import main.ts
+PASS A-00b lore-app.ts does not import main.ts
 PASS A-00b mail-app.ts does not import main.ts
+PASS A-00b marauder-app.ts does not import main.ts
 PASS A-00b media.ts does not import main.ts
 PASS A-00b mediation-app.ts does not import main.ts
+PASS A-00b memorial-app.ts does not import main.ts
+PASS A-00b memory-app.ts does not import main.ts
+PASS A-00b mood-app.ts does not import main.ts
+PASS A-00b mtransfer-hub.ts does not import main.ts
+PASS A-00b music-app.ts does not import main.ts
+PASS A-00b namegen-app.ts does not import main.ts
+PASS A-00b national-events-app.ts does not import main.ts
+PASS A-00b noconf-app.ts does not import main.ts
+PASS A-00b office-app.ts does not import main.ts
+PASS A-00b office-style-app.ts does not import main.ts
+PASS A-00b official-holidays-app.ts does not import main.ts
+PASS A-00b outing-app.ts does not import main.ts
+PASS A-00b overlord-pressure-app.ts does not import main.ts
+PASS A-00b paparazzi-app.ts does not import main.ts
+PASS A-00b parl-hooks.ts does not import main.ts
+PASS A-00b parliament-app.ts does not import main.ts
+PASS A-00b party-app.ts does not import main.ts
 PASS A-00b peace-app.ts does not import main.ts
+PASS A-00b people-app.ts does not import main.ts
+PASS A-00b persona-app.ts does not import main.ts
+PASS A-00b petition-app.ts does not import main.ts
+PASS A-00b petshop-app.ts does not import main.ts
+PASS A-00b policy-app.ts does not import main.ts
+PASS A-00b politics-app.ts does not import main.ts
 PASS A-00b portrait-lib-app.ts does not import main.ts
+PASS A-00b preftl-app.ts does not import main.ts
+PASS A-00b preftl-net-app.ts does not import main.ts
+PASS A-00b press-app.ts does not import main.ts
+PASS A-00b private-rooms-app.ts does not import main.ts
+PASS A-00b protests-app.ts does not import main.ts
 PASS A-00b radio-app.ts does not import main.ts
+PASS A-00b rebels-app.ts does not import main.ts
+PASS A-00b relations-app.ts does not import main.ts
+PASS A-00b rename-ledger.ts does not import main.ts
+PASS A-00b retired-app.ts does not import main.ts
+PASS A-00b romance-app.ts does not import main.ts
+PASS A-00b save-signal-app.ts does not import main.ts
+PASS A-00b scandal-app.ts does not import main.ts
+PASS A-00b scenario-app.ts does not import main.ts
+PASS A-00b scenario-audience-app.ts does not import main.ts
+PASS A-00b scenario-cnobles-app.ts does not import main.ts
+PASS A-00b scenario-dev-hooks.ts does not import main.ts
+PASS A-00b scenario-domains-app.ts does not import main.ts
+PASS A-00b scenario-games-app.ts does not import main.ts
+PASS A-00b scenario-health-app.ts does not import main.ts
+PASS A-00b scenario-intel-app.ts does not import main.ts
+PASS A-00b scenario-locks-app.ts does not import main.ts
+PASS A-00b scenario-map-app.ts does not import main.ts
+PASS A-00b scenario-nobles-app.ts does not import main.ts
+PASS A-00b scenario-trade-app.ts does not import main.ts
+PASS A-00b secretary-app.ts does not import main.ts
+PASS A-00b secretary-live.ts does not import main.ts
 PASS A-00b settings-ui.ts does not import main.ts
 PASS A-00b speech-app.ts does not import main.ts
+PASS A-00b stellachess-app.ts does not import main.ts
+PASS A-00b store-app.ts does not import main.ts
 PASS A-00b summit.ts does not import main.ts
 PASS A-00b support.ts does not import main.ts
+PASS A-00b systems-app.ts does not import main.ts
+PASS A-00b tavern-app.ts does not import main.ts
+PASS A-00b temper-app.ts does not import main.ts
+PASS A-00b tension-app.ts does not import main.ts
 PASS A-00b terminal.ts does not import main.ts
+PASS A-00b tts-app.ts does not import main.ts
+PASS A-00b twoparty-app.ts does not import main.ts
+PASS A-00b usage-app.ts does not import main.ts
+PASS A-00b vassal-admin-app.ts does not import main.ts
+PASS A-00b vassal-app.ts does not import main.ts
+PASS A-00b vassal-court-app.ts does not import main.ts
+PASS A-00b vassal-reign-app.ts does not import main.ts
+PASS A-00b vault-app.ts does not import main.ts
 PASS A-00b windows.ts does not import main.ts
+PASS A-00b workshop-app.ts does not import main.ts
 PASS A-00b feature imports have no cycle
 PASS A-00b step 6 modules exist (council, mail-app, terminal, chat)
 PASS F-36 safeSend skips destroyed window/webContents and swallows a late destroy
@@ -659,6 +1306,7 @@ PASS F-37 radio events braces balanced
 PASS F-39 sllm_probe_connection.txt logs req through a variable (req=$REQ$ prints req6$ in 4.5.2)
 PASS F-39 sllm_probe_terminal.txt logs req through a variable (req=$REQ$ prints req6$ in 4.5.2)
 PASS F-39 sllm_probe_galcom_force.txt logs req through a variable (req=$REQ$ prints req6$ in 4.5.2)
+PASS F-39 all mod logs: no $PARAM$ inside log strings (use a variable)
 PASS F-42 resume effect logs vote and none
 PASS F-42 resume runs on load and monthly
 PASS F-42 app ignores resume line for an agenda it already knows
@@ -800,8 +1448,8 @@ PASS 정체: 연락처 gest·플레이어 gest 를 읽는다
 PASS 정체: PROFILE gest
 PASS 정체: gest 없으면 일반
 PASS 정체: 모드가 CONTACT·PROFILE 에 gest 를 기록
-PASS 기계·군체: 파벌 회의는 열지 않는다
-PASS 말투: 일반은 추가 없음, 기계·군체는 전용 지시
+PASS 기계·군체: 내각 회의는 노드(평의원)와 열 수 있다(2026-10-19, 파벌 회의 대체)
+PASS 말투: 일반은 추가 없음, 기계·군체는 전용 지시(군체↔기계는 단일 의식끼리 한 줄 더, 알파 11)
 PASS 말투: 기계와 군체가 서로 다른 지시
 PASS 만찬: 정체에 따라 데이터 동기화·의식 공유
 PASS 만찬: 화면 이름 바꿈
@@ -971,11 +1619,3245 @@ PASS 표본 선물 영어 문구: 관계 소폭 상승
 PASS 표본 선물 영어 문구: 표본을 전달했습니다(게임 확인).
 PASS 표본 선물 영어 문구: 상대가 이미 가졌거나 받을 전시 자리가 없습니다.
 PASS 표본 선물 영어 문구: 전달 거부
+PASS 역요구: 보상은 희귀도 한 단계 위(최고 등급은 호의 +1)
+PASS 역요구: 만찬 호의 상한 5 안에서만
+PASS 역요구: 요구받지 않은 선물은 예전 보상 그대로
+PASS 역요구: 내가 가진 표본만 요구로 인정
+PASS 역요구 거절: 신뢰 -30
+PASS 역요구 거절: 물질주의(일반·광신)만 깎고 나머지는 손해 없음
+PASS 역요구 거절: 중복 방지·대상 없음
+PASS 역요구 거절: 표본은 건드리지 않음
+PASS 역요구 거절: 괄호 짝
+PASS 역요구 거절: 표에 없는 키 거부
+PASS 역요구: 요구할 수 있을 때 보유 표본을 프롬프트에 넣음
+PASS 역요구: 요구할 수 없을 때는 프롬프트에 없음
+PASS 역요구: 대답 대기 중에는 다시 요구하지 않음
+PASS 역요구: 만찬당 한 번, 세 번째 발언부터 마지막 회차 전까지
+PASS 역요구: 요구받은 표본을 주면 높은 보상·수락 기록
+PASS 역요구 거절: 보내기 전 기록, 자동 재전송 없음
+PASS 역요구: 요구 카드 [주기]/[거절]
+PASS 역요구 영어 문구: 지도자의 요구
+PASS 역요구 영어 문구: 주기
+PASS 역요구 영어 문구: 거절
+PASS 역요구 영어 문구: 요구 거절
+PASS 역요구 영어 문구: 신뢰 −30
+PASS 역요구 영어 문구: 손해 없음
+PASS 역요구 영어 문구: 신뢰 변화 확인 못함
+PASS 역요구 영어 문구: 거절하면 물질주의 지도자는 신뢰가 30 떨어집니다. 그 밖의 지도자는 손해가 없습니다.
+PASS 역요구 영어 문구: 지도자가 먼저 요구한 표본이라 보상이 한 단계 높아졌습니다.
+PASS 역요구 영어 문구: 요구를 거절했습니다. 이 지도자는 물질주의가 아니라 손해는 없습니다.
+PASS 후속 보도: 같은 전쟁·제국·행성 소식을 잇는다
+PASS 후속 보도: 상관없는 소식은 넣지 않는다
+PASS 후속 보도: 오래된 순
+PASS 후속 보도: 아직 방송하지 않은 소식은 배경으로 쓰지 않는다(새 소식으로 따로 방송)
+PASS 후속 보도: 전쟁·개시 같은 흔한 낱말만 겹치면 잇지 않는다
+PASS 후속 보도: 1년이 지난 소식은 잇지 않는다
+PASS 후속 보도: 최대 건수 제한
+PASS 후속 보도: 배경이 있으면 프롬프트에 넣고 이어서 보도하라고 지시
+PASS 후속 보도: 배경이 없거나 요약 재방송이면 넣지 않는다(AI 호출 수 그대로)
+PASS 라디오 연대기: 신문 연대기의 최근 기록을 채운다(세계 소식은 그대로, 사망 옛 줄·1년 지난 것·라디오 자신은 제외)
+PASS 라디오 연대기: 기록마다 고유 표식
+PASS 라디오 연대기: 같은 날 같은 문장은 중복으로 넣지 않는다
+PASS 라디오 연대기: 두 번 채워도 중복 없음(멱등)
+PASS 후속 보도: 방송 때 동기화·배경을 같은 호출에 넣음
+PASS 인터뷰: 주제 3개 읽기(코드 블록도)
+PASS 인터뷰: 주제 2개·중복 주제 거부
+PASS 인터뷰: 평가 읽기
+PASS 인터뷰: 평가 형식 거부
+PASS 인터뷰: 시작 상태
+PASS 인터뷰: 주제를 고르기 전에는 답할 수 없음
+PASS 인터뷰: 아무 주제나 먼저 고름(직접 선택)
+PASS 인터뷰: 진행 중 주제를 두고 다른 주제로 못 감
+PASS 인터뷰: 발언 횟수 제한 없음
+PASS 인터뷰: 답한 주제는 평가가 있어야 닫힘
+PASS 인터뷰: 호평이면 +3%
+PASS 인터뷰: 평가가 끝난 주제는 다시 못 엶
+PASS 인터뷰: 미지근해도 벌점 없음(+0%)
+PASS 인터뷰: 답하지 않고 넘기면 평가 없이 0%
+PASS 인터뷰: 세 주제 모두 닫힘
+PASS 인터뷰: 진행 중 주제가 있으면 먼저 평가
+PASS 인터뷰: 종료 시 남은 주제는 0%로 닫고 합산
+PASS 인터뷰: 최대 +9%
+PASS 인터뷰: 답변 길이
+PASS 인터뷰: 게임 명령(호평 2 = sllm_press_happy_2, 360일)
+PASS 인터뷰: 호평 0·범위 밖은 명령 없음
+PASS 인터뷰: 적용 확인 줄 대조
+PASS 인터뷰: 연대기 재료는 최근 것부터
+PASS 인터뷰: 버프 +3/+6/+9% (비율 값, 300% 아님)
+PASS 인터뷰: 시행령(연설과 같은 틀)
+PASS 인터뷰: 준비 로그·쿨다운 180일
+PASS 인터뷰: 이전 버프를 지우고 새로 검(쌓이지 않음)
+PASS 인터뷰: 로그 문자열에 $KEY$ 없음(F-39)
+PASS 인터뷰: 모드 괄호 짝
+PASS 인터뷰: korean 현지화 BOM·머리
+PASS 인터뷰: korean 현지화 키
+PASS 인터뷰: english 현지화 BOM·머리
+PASS 인터뷰: english 현지화 키
+PASS 버프 라이브러리: 행복도는 비율 값(0.02…, +200% 아님)
+PASS 인터뷰: 로그 자리·등록
+PASS 인터뷰: preload IPC
+PASS 인터뷰: 알림 버튼·트레이 메뉴
+PASS 인터뷰: 창 연결
+PASS 인터뷰: 영어 문구
+PASS 인터뷰: 알림 카드 종류
+PASS 인터뷰 영어: 언론사 인터뷰
+PASS 인터뷰 영어: 취재 // 언론사 인터뷰
+PASS 인터뷰 영어: 언론사 인터뷰 준비 완료
+PASS 인터뷰 영어: 기자들이 인터뷰를 기다리고 있습니다. 인터뷰를 시작하시겠습니까?
+PASS 인터뷰 영어: 인터뷰하기
+PASS 인터뷰 영어: 언론사 인터뷰 준비 시작
+PASS 인터뷰 영어: 언론사 인터뷰 마무리
+PASS 종속국: VASSAL 줄 모으기(번호 0·다른 묶음 제외)
+PASS 종속국: 처음 본 채널은 기록만
+PASS 종속국: 종주국·종속국 채널 생성
+PASS 종속국: 작은 변화는 서신 없음
+PASS 종속국: 충성도 급락 = 불만, 내 충성도 급등 = 종주국 치하
+PASS 종속국: 급등 = 감사, 내 충성도 급락 = 종주국 경고
+PASS 종속국: 관계가 끝나면 채널 닫고 기록
+PASS 종속국: 대답 대기 중 채널은 타이머 서신 제외, 종류
+PASS 종속국: 청원·요구는 request 필수
+PASS 종속국: 들어주면 감사·거절하면 서운함 수정자(1년)
+PASS 종속국: 이전 결정 대신·중복 방지·대상 없음
+PASS 종속국: 명령 괄호 짝
+PASS 종속국: 잘못된 인자 거부
+PASS 종속국: 월 충성도 ±1 수정자(바닐라 monthly_loyalty)
+PASS 종속국: 월간 상황에 VASSAL 줄(STATE_END 앞)
+PASS 종속국: 상황 수집 괄호 짝
+PASS 종속국: korean 현지화
+PASS 종속국: english 현지화
+PASS 종속국: 등록·로그 자리·월간 상황 연결
+PASS 종속국: preload IPC
+PASS 종속국: 아이콘 클릭·알림·(오버레이에서 빠지고 집무실에서 연다)
+PASS 종속국: 오버레이 대신 집무실 바탕화면 아이콘
+PASS 종속국: 창 연결·영어 문구
+PASS 종속국 영어: 종속국 통신 채널
+PASS 종속국 영어: 통신 // 종속국
+PASS 함대: 전투 줄 묶기
+PASS 함대: 다른 n 은 버림
+PASS 함대: 같은 날 같은 상대·결과는 한 번
+PASS 함대: 괴물·해적전 제외
+PASS 함대: 2건으로는 청문회 불가
+PASS 함대: 최근 3건만 기억
+PASS 함대: 기자회견은 정확히 4줄
+PASS 함대: 기자·제독 번갈아
+PASS 함대: 기자회견에는 플레이어 심문 없음
+PASS 함대: 4줄 뒤 평가 가능
+PASS 함대: 4줄 뒤 평가 가능
+PASS 함대: 4줄 뒤 평가 가능
+PASS 함대: 좋음 3건 = 추앙
+PASS 함대: 심문 3번 전에는 평가 불가
+PASS 함대: 심문 3번 전에는 평가 불가
+PASS 함대: 심문 3번 전에는 평가 불가
+PASS 함대: 전투마다 심문 3번까지
+PASS 함대: 좋음 2건 = 무난
+PASS 함대: 도중에 나가면 남은 건 나쁨 → 1건 이하 질책
+PASS 함대: 좋음 0건 = 질책
+PASS 함대: 평가 읽기
+PASS 함대: 추앙 = 특성 + 경험치 200, 12개월
+PASS 함대: 질책 = 특성만, 중복·대상 없음
+PASS 함대: 명령 괄호 짝
+PASS 함대: 잘못된 인자 거부
+PASS 함대: 전용 on_actions(이벤트만, effect 블록 없음)
+PASS 함대: 전투 기록·만료 이벤트
+PASS 함대: 이벤트 괄호 짝
+PASS 함대: 라디오 파일·이벤트와 분리
+PASS 함대: 특성 +5% / −5%·감봉, 무작위 획득 없음
+PASS 함대: 특성 괄호 짝
+PASS 함대: korean 현지화
+PASS 함대: english 현지화
+PASS 함대: 등록·로그 자리
+PASS 함대: preload IPC
+PASS 함대: 아이콘·알림·아이콘 줄 높이
+PASS 함대: 오버레이 아이콘·알림 카드
+PASS 함대: 창 연결·영어 문구
+PASS 함대 영어: 함대 사령부
+PASS 함대 영어: 보고 // 함대 사령부
+PASS 지상전: type=ground 읽기
+PASS 지상전: 같은 날 같은 상대라도 우주전·지상전은 따로
+PASS 지상전: 기록 문장
+PASS 지상전: 점령·부대 괴멸 on_actions
+PASS 지상전: 이벤트 2개
+PASS 지상전: 특성 지상군 ±5%
+PASS 책: 해별 장(연대 미상은 맨 뒤)
+PASS 책: 우리·은하·신문 나눔
+PASS 책: 라디오 제외·이스케이프
+PASS 책: 표지·차례·장·신문·인쇄 쪽나눔
+PASS 책: 영어판
+PASS 책: 라디오뿐이면 빈 책(null)
+PASS 책: 우리 기록 없으면 기본 제목
+PASS 책: 등록·IPC·PDF·시간선 필터
+PASS 책: 연대기 칸 버튼
+PASS 책 영어: 📖 책으로 내보내기
+PASS 책 영어: 연대기와 은하 뉴스를 해별 장으로 엮어 PDF 또는 HTML 로 저장합니다
+PASS 음성: 글자로 언어 판단
+PASS 음성: 지문·이모지·주소·강조 기호 생략
+PASS 음성: 목소리 하나면 높낮이로 화자 구분
+PASS 음성: 자연스러운 목소리 먼저, 화자마다 다른 목소리
+PASS 음성: 그 언어 목소리 없으면 null(안내 문구)
+PASS 음성: AI 화자별 목소리
+PASS 음성: AI 음성에만 라디오 필터
+PASS 음성: AI 음성은 개인 OpenAI 연결+키일 때만
+PASS 음성: 안 될 때 영어 안내
+PASS 음성: 요청 본문
+PASS 음성: 등록·IPC·키 가림
+PASS 음성: 라디오 창 버튼·끄면 멈춤·영어 문구
+PASS 음성: 설정 기억은 try/catch
+PASS 음성 영어: 방송을 음성으로 듣기
+PASS 음성 영어: 읽어 줄 목소리
+PASS 음성 영어: 윈도우 음성
+PASS 음성 영어: AI 음성(라디오 필터)
+PASS 연결 규격은 6
+PASS 게임 연결 게이트(CONNECTION_PROTOCOL)와 앱 규격 상수가 같음
+PASS 규격 6 은 맞음
+PASS 규격 5 는 모드가 낡음
+PASS 번호 없는 HELLO(0)도 낡음
+PASS NaN 은 낡음
+PASS 규격 7 은 앱이 낡음
+PASS 메인: HELLO 규격 비교·연결당 한 번 알림
+PASS 모드 HELLO 규격이 앱 상수와 같음
+PASS 장관 0명: 안내 문구로 거절(한/영)
+PASS 평의원 2명 미만: 소집·알람·회의 열기 모두 막음(한/영 안내)
+PASS 영어: 게임에 적용된 SLLM 모드가 이 앱
+PASS 영어: 이 앱이 게임에 적용된 SLLM 모드
+PASS 영어: 파벌이 없어 회의를 열 수 없습니다.
+PASS 영어: 파벌이 1개뿐이라 회의를 열 수 없습
+PASS 내정 회의 버튼 오류 문구 영어 변환
+PASS 위기: 묶음 중간
+PASS 위기: 묶음 끝에서 목록(모르는 종류 제외)
+PASS 위기: 다음 달은 새 묶음
+PASS 위기: 시작
+PASS 위기: 계속(변화 없음)
+PASS 위기: 라디오 긴급 편성 지시(지어내기 금지)
+PASS 위기: 위기 특보 사실·신문 특별판 지시
+PASS 위기: 특별판 호 표시(중복 없음·호마다 이름)
+PASS 위기: 종식
+PASS 위기: 끝나면 정규 편성
+PASS 위기: 영어 이름
+PASS 위기: 종류 6가지(하늘의 전쟁 포함, 알파 11)
+PASS 위기: 전용 on_actions(효과 블록 없음)
+PASS 위기: 감시 이벤트(괄호 짝·$ 없음)
+PASS 위기: 등록·로그 자리·IPC
+PASS 위기: 라디오 연결(지시·특보·표시)
+PASS 위기: 특별판만 위기 지시·특별판 표시
+PASS 위기: 정기호·일반 호외는 평소 그대로(특별판 표시 없음)
+PASS 위기: 특별판은 호외 연 상한과 별개
+PASS 위기: 나타날 때 특별판 한 번
+PASS 위기: 라디오 붉은 비상 테마
+PASS 위기: 신문 특별판 지면
+PASS 위기 영어: ⚠ 긴급 특별 방송
+PASS 위기 영어: 은하 위기 특별판
+PASS 위기 영어: 종말 위기
+PASS 위기 알림 카드 영어
+PASS AI 음성 오류 영어
+PASS 거울 연대기: 라디오에 이미 있는 사실(날짜가 며칠 달라도)은 다시 넣지 않음
+PASS 거울 연대기: 두 제국 연대기에 같은 날 같은 사실이 있어도 한 번만
+PASS 거울 연대기: 다른 제국의 같은 문장(다른 날)은 따로 남김
+PASS 거울 연대기: 같은 제국의 같은 문장이 며칠 차이로 이미 있으면 건너뜀
+PASS 방송 기록: 상한 3 → 가장 오래된 a 제거, 세이브별로 따로
+PASS 방송 기록: 파일에서 다시 읽어도 같음
+PASS 연대기 묶음: 항목 2개, 저장은 끝에 한 번
+PASS zip: 손상·잘린 파일은 null
+PASS zip: 22바이트보다 짧으면 null
+PASS zip: 중앙 디렉터리 위치가 파일 밖이면 null(예전에는 RangeError)
+PASS zip: 로컬 헤더 위치가 파일 밖이면 null(예전에는 RangeError)
+PASS 인터뷰 자료: 최근 것이 먼저(문자열 비교 오류 없음)
+PASS 만찬: 선물·표본·거절·대화 모두 하나의 잠금(anyBusy)으로 막음
+PASS 만찬 화면: 다른 요청 중에는 발언 버튼도 잠김
+PASS 같은 세이브 재로드: 수락 대기 제안·쌓인 호감 폐기
+PASS 세이브 전환·로그 재시작: 라디오 대기열 비움(두 곳)
+PASS 제안 수락: 다른 연결 세대의 제안은 거부
+PASS 게임 키보드 대화: 명령 실패를 화면에 알림
+PASS 라디오: 날짜가 그대로면 가상 일상 방송 생략, 지금 듣기는 예외
+PASS 라디오: 응답을 기다리는 동안 세이브가 바뀌면 버림
+PASS 라디오: 주기 타이머 겹침 방지
+PASS 함대 청문회: 창 닫기와 겹쳐도 두 번 적용 안 함, 보내기 전에 전투 기록 비움
+PASS 연설: 버프 명령은 보내기 전에 표시, 같은 연결 세대에서는 다시 보내지 않음(다시 불러오면 풀림)
+PASS 의회 강제 결정: 보내는 중·결과 미확인이면 앱에서도 거부
+PASS 만찬 초대: 받은 답장은 다시 쓰지 않음
+PASS 설정 창도 상태·환경 메시지를 받고 상태 줄을 보임
+PASS 총독 보고서: 다른 세이브의 행성 목록은 바로 버림
+PASS 신문: 같은 날짜는 한 번만 만듦
+PASS 종속국: 기록 저장 실패면 게임에 보내지 않음
+PASS 신문 저장: 임시 파일 후 교체
+PASS 세이브 읽기: 실패한 파일은 다시 풀지 않음, 폴더 탐색 1.5초 간격
+PASS 인터뷰 자료: 라디오 사본과 원본 중복 제거
+PASS 영어: 세이브를 다시 불러와 수락 대
+PASS 영어: 세이브를 다시 불러와 이 제안
+PASS 영어: 이 연설의 버프 명령은 이미 
+PASS 영어: 강제 결정을 이미 보내는 중입
+PASS 영어: 청문회가 이미 끝났습니다.
+PASS 영어: 기록을 저장하지 못해 게임에 
+PASS 영어: 키보드 대화 실패 문구 패턴
+PASS 게임 언어: settings.txt 에서 읽음
+PASS 게임 언어: 줄이 없으면 null
+PASS 자동: 게임 언어 우선(한국어 게임만 한국어), 모르면 시스템 언어, 직접 고른 언어는 그대로
+PASS 화면 언어: 자동(또는 고른 팩이 꺼졌을 때)만 게임 언어를 읽고 5초 기억
+PASS 설정: 자동 (게임 언어) 한/영
+PASS 팩 코드: 짧은 언어 코드만, ko·en 계열 금지
+PASS 저장된 선택: 팩 코드는 남기고 이상한 값은 자동
+PASS 판정: 게임 언어 → 팩, 시스템 언어 → 팩, 고른 팩이 없으면 자동, 한국어·직접 고른 것은 그대로
+PASS 기본 언어: 팩이면 영어로 대신
+PASS 모드 이름 번역 폴더
+PASS language: ko 코드 거부
+PASS language: 이름 필수
+PASS language: 항목 읽기(잘못된 system 은 버림, aiLanguage 기본 = 이름)
+PASS language: 애드온 밖 경로 거부
+PASS 패턴: ^…$·올바른 정규식만
+PASS 번역 표: 문자열만, 공백 정리
+PASS 팩 읽기: 파일 경로 strings(BOM 허용) + 바로 쓴 patterns
+PASS 팩 읽기: 파일 없음·문구 없음 경고
+PASS addon.json 에 language 항목
+PASS 메인 uiText: 팩 표(한국어·영어 열쇠) → 패턴 → 영어
+PASS 애드온 켜기·다시 읽기 → 모든 창 언어 다시 알림
+PASS languageView: 팩 목록·현재 팩·AI 언어
+PASS 언어 팩 뼈대 만들기
+PASS 한/영 고르기가 언어 팩을 앎: press-app
+PASS 한/영 고르기가 언어 팩을 앎: tts-app
+PASS 한/영 고르기가 언어 팩을 앎: fleet-app
+PASS 한/영 고르기가 언어 팩을 앎: vassal-app
+PASS 한/영 고르기가 언어 팩을 앎: crisis-app
+PASS 한/영 고르기가 언어 팩을 앎: media
+PASS 창 번역: 팩 표 우선·선택지 추가
+PASS 음성: 중국어·일본어 대본도 글자로 판단
+PASS 음성: 중국어 목소리 고르기
+PASS 설정: 뼈대 버튼·언어 칩 영어
+PASS 장면: 스타일·초상화 변형 불러옴
+PASS 장면: 청문회 중에는 장면 + 모드별 대본 + 목록 숨김
+PASS 장면: 브리핑실(속보 띠)·심문실(도장) 한/영
+PASS 장면 접기: 저장소 실패해도 동작
+PASS 장면 CSS: 연단·기자석·조명·서류철·도장·움직임 줄이기
+PASS 지휘관 초상화 = 플레이어 종족 계열
+PASS 공문실: 두 제국 깃발(게임 깃발, 우리 깃발 번호)
+PASS 공문실: 서신 = 종이 공문(종주국은 명령서) 한/영
+PASS 공문실: 결재란 = 승인/반려 버튼, 결정 뒤 도장
+PASS 공문실: 대화 = 전신문, 보내기 기능 그대로
+PASS 공문실 CSS
+PASS 내용 고르기: 1/4 은 연구 지원
+PASS 내용 고르기: 자원·양은 범위 안(상한)
+PASS 내용 고르기: 하한
+PASS 내용 고르기: 무작위 300번 모두 범위·칸 단위
+PASS 저장된 내용 검사
+PASS 기록용 한국어 한 줄
+PASS 종속국 청원 승인(자원): 부족하면 short, 아니면 우리 −·종속국 + 와 충성도
+PASS 부족할 때는 결정 표식도 남기지 않음(다시 결재 가능)
+PASS 종속국 청원 승인(연구): 우리 −5%·종속국 +5% 1년
+PASS 종속국 청원 반려: 자원 안 감, 충성도 −
+PASS 옛 서신(내용 없음): 예전처럼 충성도만
+PASS 종주국 요구 수락(자원): 종주국으로 보냄
+PASS 종주국 요구 수락(연구)
+PASS 종주국 요구 거절: 관계 −60
+PASS 범위 밖 내용은 명령을 만들지 않음
+PASS 정해진 내용이면 AI request 칸 없이도 서신 받음
+PASS 서신 기록: 내용·결재 대기
+PASS AI 에게 정해진 내용을 알려 줌
+PASS 앱: 내용 고르기·종주국 이행·부족하면 결재 대기로
+PASS 창: 내용·비용 안내 한/영
+PASS 모드: 연구 지원 수정자 ±5%
+PASS 모드: 종주국 관계 −60, 매달 5 회복
+PASS 모드 문구: english
+PASS 모드 문구: korean
+PASS 쌍: 글자 그대로
+PASS 쌍: 배열 이름표(영어 쪽에 한글이면 아님)
+PASS 쌍: 큰따옴표
+PASS 쌍: 열쇠 공백 정리
+PASS 쌍: 한글 없는 것은 건너뜀
+PASS 패턴: 식 모양이 달라도 영어 쪽 식이 한국어 쪽에 있으면
+PASS 패턴: ${…} → (.+?)·$n
+PASS 패턴: 실제로 바뀜
+PASS 패턴: 앞뒤 공백 정리(화면 번역과 같은 기준)
+PASS 패턴: 식이 붙어 있으면 만들지 않음
+PASS 패턴: 영어 쪽 식이 한국어에 없으면 만들지 않음
+PASS 뼈대: 배포된 ui·dist 에서 쌍을 모음
+PASS pick: 팩 표 → 팩 패턴 → 영어(메인·창)
+PASS 실제 코드: 쌍 150개 이상·패턴 30개 이상, 모두 올바른 정규식
+PASS 언어 팩 호환: 화면 문구를 language() === 'en' 으로 직접 고르지 않음(L/pick·카탈로그 사용, 자료 고르기는 i18n-data 표시)
+PASS 집무실: 연락처 순서(총독(수도 먼저)·제독·장군, 총독 없는 행성 제외)
+PASS 집무실: 인물 정보
+PASS 집무실: 행성 목록 전이면 빈 목록
+PASS 집무실: 최근 소식(우리 제국, 새것 먼저)
+PASS 집무실: 여는 창 목록(외교 단말기 포함)
+PASS 집무실: 등록·preload
+PASS 집무실: 허용된 창만 열기·총독 명단 읽기
+PASS 집무실: 오버레이 아이콘·테마·아이콘 줄 높이
+PASS 집무실: 바탕화면 아이콘·홀로그램·위기 색·움직임 줄이기·테마
+PASS 집무실: 언어 팩 호환(문구는 번역표 열쇠로만)
+PASS 집무실: 만든 문구 수
+PASS 집무실 영어: 우리 제국
+PASS 집무실 영어: 은하 위기
+PASS 집무실 영어: 평시
+PASS 집무실 영어: 게임 대기 중
+PASS 집무실 영어: 새 호
+PASS 집무실 영어: 총독 명단은 게임에서 행성 목록을 받아 와야
+PASS 집무실 영어: 총독 명단 불러오기
+PASS 집무실 영어: 불러오는 중…
+PASS 집무실 영어: 제국의 지도자 명단은 게임에서 한 달이 지나
+PASS 집무실 영어: 이 분류에는 아직 인물이 없습니다.
+PASS 집무실 영어: 함대 없음
+PASS 집무실 영어: 수도
+PASS 집무실 영어: 추앙
+PASS 집무실 영어: 질책
+PASS 집무실 영어: 평의회
+PASS 집무실 영어: 🖼 초상화 바꾸기
+PASS 집무실 영어: 🖼 초상화 넣기
+PASS 집무실 영어: 이 인물에게만 쓸 그림을 고릅니다. 이 세이
+PASS 집무실 영어: 기본 초상화로
+PASS 집무실 영어: 왼쪽에서 인물을 고르면 자세한 정보와 할 수
+PASS 집무실 영어: 평의회 위원
+PASS 집무실 영어: 수도 행성
+PASS 집무실 영어: 없음 (대기 중)
+PASS 집무실 영어: 없음
+PASS 집무실 영어: 통신 열기
+PASS 집무실 영어: 📜 인물 전기
+PASS 집무실 영어: 이 인물의 배경 이야기를 직접 적습니다. 대
+PASS 집무실 영어: 함대 사령부에서 보기
+PASS 집무실 영어: 최근 기억
+PASS 집무실 영어: 아직 따로 이야기를 나눈 적이 없습니다.
+PASS 집무실 영어: 관계
+PASS 집무실 영어: 아직 정해지지 않았습니다.
+PASS 집무실 영어: 아직 없습니다. 대화를 마치면 이곳에 남습니
+PASS 집무실 영어: 아직 없습니다. 대화 중에 털어놓은 약속·비
+PASS 집무실 영어: 지금 신뢰로는 이 비밀을 대화에 꺼내지 않습
+PASS 집무실 영어: 두려움
+PASS 집무실 영어: 원한
+PASS 집무실 영어: 통신을 연결하는 중…
+PASS 집무실 영어: 통신을 열지 못했습니다.
+PASS 집무실 영어: 기억해 둠
+PASS 집무실 영어: 지켜진 약속으로 기록
+PASS 집무실 영어: 대화를 기억으로 정리하는 중…
+PASS 집무실 영어: 기억에 남김
+PASS 집무실 영어: 아직 받은 편지가 없습니다.
+PASS 집무실 영어: 제국의 인물들이 승진하거나, 새 특성을 얻거
+PASS 집무실 영어: 봉투를 여는 중…
+PASS 집무실 영어: 편지 펼치기
+PASS 집무실 영어: 부탁
+PASS 집무실 영어: 들어주면: 신뢰 +6 · 특성 「지도자의 신
+PASS 집무실 영어: 에너지
+PASS 집무실 영어: 거절하면: 신뢰 −3
+PASS 집무실 영어: 들어주기
+PASS 집무실 영어: 거절하기
+PASS 집무실 영어: 들어주었습니다.
+PASS 집무실 영어: 거절했습니다.
+PASS 집무실 영어: 게임에 적용하는 중…
+PASS 집무실 영어: 적용하지 못했습니다.
+PASS 집무실 영어: 부관이 전해 온, 생전에 써 둔 편지입니다.
+PASS 집무실 영어: 답장
+PASS 집무실 영어: 직접 답장 쓰기 (한 번, 선택)
+PASS 집무실 영어: 답장 보내기
+PASS 집무실 영어: 답을 기다리는 중…
+PASS 집무실 영어: 해임되었거나 행방이 끊긴 인물입니다. 추모관
+PASS 집무실 영어: 아직 떠난 사람이 없습니다.
+PASS 집무실 영어: 아직 이곳에 이름을 올린 인물이 없습니다.
+PASS 집무실 영어: 세상을 떠난 인물은 비석과 함께 이곳에 이야
+PASS 집무실 영어: 비석을 고르면 그 사람의 이야기가 보입니다.
+PASS 집무실 영어: 비문을 새기는 중…
+PASS 집무실 영어: 비문 직접 새기기
+PASS 집무실 영어: 새기기
+PASS 집무실 영어: 이 인물이 기억하던 일
+PASS 집무실 영어(고정): 집무실
+PASS 집무실 영어(고정): 제국 안의 사람들
+PASS 집무실 영어(고정): 연락처
+PASS 집무실 영어(고정): 개인 서신
+PASS 집무실 영어(고정): 추모관
+PASS 집무실 영어(고정): 국정
+PASS 집무실 영어(고정): 우리 제국 최근 소식
+PASS 집무실 영어(고정): ‹ 바탕화면
+PASS 집무실 영어(고정): 아직 받은 편지가 없습니다.
+PASS 집무실 영어(고정): 모두
+PASS 집무실 영어(고정): 총독
+PASS 집무실 영어(고정): 제독
+PASS 집무실 영어(고정): 장군
+PASS 집무실 영어(고정): 집무실 나가기 (Esc)
+PASS 집무실: 붙일 자리 계산
+PASS 집무실: 너무 작으면 최소 크기
+PASS 집무실: 껍데기는 주사선·테두리·끌기 막기만(창 배경은 그대로)
+PASS 집무실: 연 창을 본문 자리에 붙이고 따라 움직임
+PASS 집무실: 자리 받기·돌아가기·집무실 닫으면 붙은 창도 닫음(단말기는 숨김)
+PASS 집무실: preload
+PASS 집무실: 본문 자리 알림·머리줄 돌아가기·평평한 화면(붙은 창과 어긋나지 않게)
+PASS 집무실: 창을 붙이면 화면을 투사기 위까지 늘리고 자리를 다시 알림
+PASS 오버레이: 집무실·신문·성간 라디오·설정만
+PASS 오버레이: 안 읽은 외교 서신 숫자는 집무실 아이콘에(개인 서신과 합침)
+PASS 단말기: 집무실 목록·본문 그라데이션까지 유리로
+PASS 단말기: 닫지 않고 숨기며 떼고(대화 보존) 덧입힌 CSS 지움
+PASS 단말기: 붙어 있는 동안 게임 창 따라가기·자리 저장·크기·흐려짐을 멈춤
+PASS 단말기: 바탕화면 아이콘 숫자·머리줄 이름
+PASS 화면 모드 읽기
+PASS 테두리 없음으로 고치기(다른 줄은 그대로, 이미 그 모드면 null)
+PASS 런처 설정(pdx_settings)도 같이
+PASS 창을 닫을 때 게임을 다시 앞으로·게임 시작 때 모드 안내
+PASS 설정 화면: 독점 전체화면 경고·고치기 단추
+PASS 영어 번역: 테두리 없는 전체화면으로 바꾸기
+PASS 영어 번역: 게임 화면 모드 안내
+PASS 영어 번역: 이미 테두리 없는 전체화면입니다.
+PASS 비서 보고: 에너지 적자 > 전쟁 피로 > 불만 파벌(최대 3)
+PASS 비서 보고: 위기가 맨 앞
+PASS 비서 보고: 기계 제국은 식량 적자 무시
+PASS 비서 후속: 해결됨/그대로(서신은 빼기)
+PASS 비서 카드: 25장 이상·열쇳말·영어 본문
+PASS 비서 카드: 한국어 질문 → 연방
+PASS 비서 카드: 영어 질문 → 에너지
+PASS 비서 카드: 맞는 게 없으면 0장, 보고 힌트는 넣음
+PASS 비서: 첫 통치자
+PASS 비서: 교체 → 선대 기록(관계 단계·떠남), 업무 신뢰 유지, 새 호감 0
+PASS 비서: 호감 단계·고백은 75 이상·연애 켜짐일 때만
+PASS 비서: 호감 변화(발언당 ±4)·연애 꺼짐이면 0
+PASS 비서: 한 대화에 호감 +8 까지
+PASS 비서 프롬프트: 설정·보고·후속·교체·카드
+PASS 비서 프롬프트: 정직한 조언·15세 수위·주입 무시
+PASS 비서 프롬프트: 연애 꺼짐이면 업무 관계만
+PASS 비서 고백 프롬프트: 수위
+PASS 비서: 호출 때 최신 경제 수치를 게임에 묻기(모드 변경 없음)·등록
+PASS 비서: preload
+PASS 비서 화면: 집무실 「비서 호출」 아이콘(장면은 JS 가 만든다)
+PASS 비서 화면: 언어 팩 호환·그림 없으면 실루엣
+PASS 비서 결혼: 종신 통치자 = 독재·제국
+PASS 비서 청혼: 연인·호감 90·종신·연애 켜짐
+PASS 비서: 배우자 단계
+PASS 비서: 배우자 통치자가 떠나면 기록에 배우자
+PASS 비서 프롬프트: 미망인
+PASS 비서 청혼 프롬프트: 수위
+PASS 비서 보고: 창고 구간으로 버티는 개월·급함
+PASS 비서: SECRETARY 줄 읽기
+PASS 비서: 모드에 정부 형태·창고 묻기(옛 모드면 한 번 실패 후 생략)
+PASS 비서 모드: 정부 형태·창고 구간 로그(요청 번호는 변수로 — 문자열 속 $REQ$ 는 req9$ 로 깨졌다)
+PASS 비서 화면: 청혼·배우자
+PASS 비서: 자세 키·행동지문 다듬기
+PASS 비서: 자세 목록
+PASS 비서 프롬프트: 행동지문·자세 JSON
+PASS 비서: 응답의 행동지문·자세를 대사와 함께 저장
+PASS 비서 장면: 홀로그램 내려감·물러가라로만 닫기·Esc 막음
+PASS 비서 장면: 행동지문·자세 그림 바꾸기·기동 빛
+PASS 비서: 영어 번역
+PASS 집무실: 집무실에서 열 때만 투명 창
+PASS 집무실: 유리 배경은 바탕·판 색만(글자 흐리지 않음)
+PASS 집무실: 신문은 디스플레이 지면이라 글자 뒤집기 없음(바탕만 비움)
+PASS 신문: 여는 곳으로 지면 고정·지면 단추 숨김
+PASS 신문: 오버레이=종이·집무실=디스플레이, 지면이 다르면 새 창
+PASS 오버레이: 신문 아이콘 복귀·설정은 톱니바퀴
+PASS 집무실 투명 창 옵션: gov
+PASS 집무실 투명 창 옵션: fleet-app
+PASS 집무실 투명 창 옵션: vassal-app
+PASS 집무실 투명 창 옵션: press-app
+PASS 집무실 투명 창 옵션: speech-app
+PASS 집무실 투명 창 옵션: media
+PASS 집무실: 새로 연 창만 유리, 이미 열린 창은 그대로(진행 중 청문회 보호)
+PASS 집무실: 붙은 창 뒤 홀로그램은 유리처럼 비움
+PASS 명단: 묶음 모으기(번호 없는 줄 제외·모르는 종류는 관료·레벨 상한)
+PASS 명단: 처음 보는 인물 추가
+PASS 명단: 같은 번호로 이름 바뀜 잇기·사라진 인물은 gone 표시(지우지 않음)
+PASS 명단: 빈 명단은 반영 안 함(읽기 실패로 모두 떠나지 않게)
+PASS 명단: 돌아오면 gone 지움
+PASS 명단: 돌아온 인물
+PASS 명단: 연락처 역할
+PASS 연락처: 명단이 있으면 모두(통치자·총독·제독·과학자·관료), 명단에 없는 총독도 남김
+PASS 연락처: 행성·레벨·평의회·함대·청문회 평가 잇기
+PASS 모드: 전용 on_actions(효과 블록 없음, 명단은 미룸·승급 때 특성)
+PASS 렉 줄이기(2026-10-24): 명단은 6일 뒤, 특성은 처음·승급·SLLM 특성 명령·1년마다
+PASS 렉 줄이기(2026-10-24): 1일엔 MONTH만, 연락처 3일 뒤·월간 상황 9일 뒤
+PASS 렉 줄이기: SLLM 이 특성을 바꾸면 다음 명단에서 특성을 바로 읽음
+PASS 모드: 명단 이벤트(함대 사령부와 같은 번호·괄호 짝·$ 없음)
+PASS 명단: 등록·로그 자리·집무실 연결
+PASS 연락처 화면: 통치자·과학자 탭, 역할 이름, 명단 안내
+PASS 개발자 로그: 매달 명단 줄은 쌓지 않음
+PASS 연락처 영어: 통치자
+PASS 연락처 영어: 과학자
+PASS 연락처 영어: 지휘관
+PASS 연락처 영어: 관료
+PASS 연락처 영어: 기술 수준
+PASS 연락처 영어: 직책
+PASS 연락처 영어: 평의회 위원
+PASS 연락처 영어: 평의회
+PASS 연락처 영어: 맡은 함대
+PASS 연락처 영어: 이 분류에는 아직 인물이 없습니다.
+PASS 아이콘: 어두운 원판은 투명, 밝은 그림만 남김(원래 투명은 투명)
+PASS 아이콘: 역할별 게임 파일
+PASS 아이콘: 하위 직업 큰 아이콘
+PASS 아이콘: 게임 폴더 모르면 없음(이름 첫 글자로)
+PASS 아이콘: 게임 폴더에서 읽어 집무실에 넘김
+PASS 아이콘: 테마 색으로 칠함·연구 중 과학자는 학자 아이콘
+PASS 맡은 함대: 없으면 없음 표시
+PASS 연락처 영어: 함대 없음
+PASS 연락처 영어: 없음 (대기 중)
+PASS 관계: 발언당 ±2, 한 대화 ±6 한도
+PASS 관계: 숫자 아니면 0, 음수도 한도
+PASS 관계: 단계 이름
+PASS 기억: 최근 12개·중복·빈 줄 제외
+PASS 청문회: 처음 본 값은 기준만
+PASS 청문회: 추앙 +8·기억
+PASS 청문회: 질책 −8
+PASS 청문회: 같은 횟수면 반영 안 함
+PASS 기술 수준: 처음은 기준만
+PASS 기술 수준: 오르면 신뢰 +2씩·기억
+PASS 대화 프롬프트: 인물·말투·관계·기억·먼저 꺼내기·지어내기 금지
+PASS 대화 프롬프트: 첫 답에서만 지난 이야기 먼저
+PASS 말투·요약 프롬프트
+PASS AI 답 JSON 꺼내기(끊겨도, 끊김 표시)
+PASS 끊긴 답은 마지막 완성 문장까지
+PASS 신문: 제호·브랜드 아이콘 코드가 주석에 묻히지 않음
+PASS 인물 답: 끊기면 한도 두 배로 다시, 그래도 끊기면 완성 문장까지
+PASS 통신: IPC 4개·등록
+PASS 통신: 신뢰는 앱 한도·끝나면 요약 기억·처음 말투·청문회 반영·키 가림
+PASS 통신 화면: 대화·입력·마치기·말투·기억·한글 입력 중 Enter 무시
+PASS 통신 영어: ‹ 연락처
+PASS 통신 영어: 대화 마치기
+PASS 통신 영어: 보내기
+PASS 통신 영어: 말투와 성격
+PASS 통신 영어: 기억하는 일
+PASS 통신 영어: 관계
+PASS 통신 영어: 충성
+PASS 통신 영어: 신뢰
+PASS 통신 영어: 호의
+PASS 통신 영어: 보통
+PASS 통신 영어: 냉담
+PASS 통신 영어: 적대
+PASS 통신 영어: 기억에 남김
+PASS 통신 영어: 할 말을 입력하세요 (Enter 보내기, Shift+Enter 줄바꿈)
+PASS temper: 한/영 낱말 판정(영어는 낱말 단위)
+PASS temper: 바닥선이 흘려들음을 이기고, 거친 낱말 없는 모욕은 불쾌로
+PASS temper: 위협은 대화 한도와 별개로 -8, 대담하면 두려움 대신 원한
+PASS temper: 성격(특성 이름 한/영)
+PASS temper: 한 말을 없던 일로 하려 하면 기억
+PASS temper: 원한은 1년마다 1씩 옅어짐
+PASS gossip: 위·옆(평의원·같은 직책)으로만, 통치자·본인 제외
+PASS gossip: 위협·모욕은 늘, 그 밖은 tell_others 일 때만
+PASS gossip: 한 달 뒤에 듣고 신뢰 반영
+PASS temper·gossip: 같은 답 JSON 의 felt·tell_others 와 앱 연결
+PASS receipt: 게임이 거부하면 상대가 그 자리에서 솔직하게(실패 때만 AI 한 번)
+PASS game-text: 특수 문장부호 접기·명령 깨는 글자 빼기·글자 단위 자르기
+PASS game-text: 자녀 지도자 이름·대화 지역화에 적용
+PASS council: 찬성 2·반대 2 고정, 팀 안은 가중치 비율·중복 없음, 플레이어 제외
+PASS council: 한 팀이 모자라면 기권 제국으로 채움
+PASS council: 팀당 발언 수 설정(1~4, 이상하면 2)
+PASS council: 직접 말하면 45%로 끼어듦(그중 일부는 두 나라), 본인·플레이어는 안 끼어듦 1092/214
+PASS council: 의원석을 누르면 그 제국에게 직접, AI 에게 직접 말한 상대를 알림
+PASS council: 강제 결정은 찬성·반대 60%부터(2026-11-04)·정보 잠금 없음·발언 횟수 한도 없음
+PASS council: 팀당 발언 수 설정 저장·화면
+PASS council: 기본값 찬반 2:2(한 번 옮김)·설정에서 옛 방식 선택 가능
+PASS ai-truth: 개발자 도구 버튼·읽기 전용 결과
+PASS facts: 한 번에 최대 3개
+PASS facts: 신뢰 50 미만이면 비밀은 프롬프트에 안 넣음
+PASS facts: 신뢰 50 이상이면 비밀도
+PASS facts: 같은 답 JSON 의 선택 칸 + 1년 지난 약속
+PASS facts: 신뢰가 낮으면 입이 무거움
+PASS facts: kept 로 약속 닫기
+PASS facts: 2년 넘게 안 지킨 약속은 한 번만 신뢰 -3
+PASS facts: 상한에서 가벼운 것부터 지움
+PASS facts: 앱·화면 연결(요약 실패 시 AI 없는 한 줄)
+PASS 특성: 읽은 달(tr=1)만·중복·이상한 키 제외
+PASS 특성: 읽지 않은 달에는 지난 특성 그대로
+PASS 특성: 다시 읽었는데 없으면 비움
+PASS 지역화 서식 걷기
+PASS 지역화: 이름·설명 뽑기
+PASS 이름 없으면 읽기 쉬운 키
+PASS 모드: 특성 검사 효과(바닐라 특성 전부·괄호·키 일치)
+PASS 모드: 3개월마다 특성 읽기·tr 표시
+PASS 말투 프롬프트: 특성·설명을 성격의 뿌리로
+PASS 대화 프롬프트: 특성이 말투에 묻어나게
+PASS 특성이 새로 들어오거나 바뀌면 말투 다시 정하기
+PASS 연락처: 게임 지역화로 특성 이름(복사 없음)
+PASS 화면: 상세 특성 줄·개발 로그에서 LTRAIT 묶음 숨김
+PASS 특성 영어
+PASS 날짜: 달 번호·사이 달 수
+PASS 감지: 처음 본 값은 기준만
+PASS 감지: 레벨업·새 특성(sllm_·subclass_ 제외)·전투
+PASS 감지: 후보 내용
+PASS 감지: 특성을 안 읽은 달은 그대로
+PASS 뽑기: 첫 번째는 기준 날짜만
+PASS 뽑기: 6개월 전에는 안 뽑음
+PASS 뽑기: 6개월마다 1통(적게)·계기 합치기·후보 비움
+PASS 뽑기: 1년 안에 또 보낸 인물은 빠짐·부탁 붙음(무작위)
+PASS 뽑기: 못 뽑힌 후보는 기억 한 줄(AI 없음)
+PASS 빈도 끄기: 보내지 않음
+PASS 안부: 2년 넘게 연락 없을 때만(대화한 인물은 빠짐)
+PASS 안 읽은 편지 5통 넘치면 오래된 것부터 접고 기억으로
+PASS 부탁 명령: 세이브·인물·특성·에너지 확인·중복 막기
+PASS 부탁 명령: 비용 없는 부탁
+PASS 부탁 명령: 잘못된 인자 거부
+PASS 편지 프롬프트: 계기·특성 설명·부탁·말투·관계·기억·지어내기 금지
+PASS 편지 프롬프트: 부탁 없을 때
+PASS 답장 프롬프트
+PASS 모드: 「지도자의 신임」 특성(경험치 +10%, 무작위 획득 없음)
+PASS 모드: korean 현지화(BOM)
+PASS 모드: english 현지화(BOM)
+PASS 모드: 특성 읽기에 SLLM 특성 포함
+PASS SLLM 특성 이름(한/영)
+PASS 서신: IPC·등록
+PASS 서신: 매달 명단 뒤·보내기 전에 기록·기본 적게·AI 호출은 열기·답장 두 곳뿐
+PASS 명단: 특성 줄 받기·부탁 결과 전달
+PASS 알림 카드 → 집무실 개인 서신
+PASS 오버레이 집무실 숫자·알림 카드 머리
+PASS 서신 화면: 목록·읽기·빈도·부탁·답장
+PASS 서신 영어: 편지 빈도
+PASS 서신 영어: 받지 않음
+PASS 서신 영어: 적게 (6개월에 1통)
+PASS 서신 영어: 보통 (6개월에 2통)
+PASS 서신 영어: 부탁 있음
+PASS 서신 영어: 휴가 요청
+PASS 서신 영어: 동료 추천
+PASS 서신 영어: 고향 행성 지원
+PASS 서신 영어: 봉투를 여는 중…
+PASS 서신 영어: 편지 펼치기
+PASS 서신 영어: 들어주기
+PASS 서신 영어: 거절하기
+PASS 서신 영어: 답장 보내기
+PASS 서신 영어: 직접 답장 쓰기 (한 번, 선택)
+PASS 서신 영어: 서신 // 집무실
+PASS 서신 영어: 들어주면: 신뢰 +6 · 특성 「지도자의 신임」(경험치 획득 +10%)
+PASS 서신 영어: 거절하면: 신뢰 −3
+PASS 서신 영어: 에너지
+PASS 서신 영어: 아직 받은 편지가 없습니다.
+PASS 사망: 같은 달·전 달 전투면 전사
+PASS 작별 편지 대상: 호의 이상 또는 대화·편지 한 번
+PASS 작별 편지: 관계 깊은 순으로 3통
+PASS 작별 편지 한 달 상한
+PASS 동료: 같은 평의회·같은 직책에서 이야기해 본 인물
+PASS 동료 기억 한 줄
+PASS 연대기: 추모 줄(신문이 빼는 머리말 아님 → 연감 부고 재료)
+PASS 비석: 남긴 일
+PASS 비문 프롬프트
+PASS 비문 다듬기
+PASS 작별 편지 프롬프트: 생전에 써 둔 편지·말투·특성
+PASS 작별 편지 프롬프트: 해임
+PASS 봉투 열기: 작별 편지는 작별 프롬프트로
+PASS 안 읽은 편지 상한: 작별 편지는 접지 않음
+PASS 모드: 사망·해임 숨은 이벤트(From = 지도자)
+PASS 모드: on_actions 는 이벤트만 부름
+PASS 추모관: IPC·등록
+PASS 추모관: 사망만 비석·해임/행방 불명은 떠난 사람들·연대기·AI 는 비문 한 곳
+PASS 명단: 사망·해임 신호 전달
+PASS 작별 편지: 바로 봉투·세상을 떠난 이에게는 답장 없음
+PASS 알림 카드 → 서신/추모관, 추모관 숫자
+PASS 추모관 화면: 명예의 전당·떠난 사람들·비문
+PASS 추모관 영어: 명예의 전당
+PASS 추모관 영어: 떠난 사람들
+PASS 추모관 영어: 해임
+PASS 추모관 영어: 행방 불명
+PASS 추모관 영어: 전사
+PASS 추모관 영어: 서거
+PASS 추모관 영어: 비문을 새기는 중…
+PASS 추모관 영어: 비문 직접 새기기
+PASS 추모관 영어: 새기기
+PASS 추모관 영어: 최고 기술 수준
+PASS 추모관 영어: 맡았던 행성
+PASS 추모관 영어: 지휘한 함대
+PASS 추모관 영어: 기록된 전투
+PASS 추모관 영어: 청문회에서 추앙받음
+PASS 추모관 영어: 받은 편지
+PASS 추모관 영어: 나눈 대화
+PASS 추모관 영어: 이 인물이 기억하던 일
+PASS 추모관 영어: 아직 떠난 사람이 없습니다.
+PASS 추모관 영어: 비석을 고르면 그 사람의 이야기가 보입니다.
+PASS 추모관 영어: 부관이 전해 온, 생전에 써 둔 편지입니다. 이름은 추모관에 남았습니다.
+PASS 추모관 영어: 세상을 떠난 인물은 비석과 함께 이곳에 이야기가 남습니다.
+PASS 난이도 폭 5/10/20%
+PASS 수입 조건: 같은 폭만큼 높게
+PASS 수입이 너무 적은 자원은 조건 안 됨
+PASS 수도 안정도 +5/+20
+PASS 예/아니오 조건은 쉬움에만·전쟁 중엔 평화 조건 없음
+PASS 연방은 가입돼 있을 때만
+PASS 관계 조건 ±25/50/100
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #0
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #1
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #2
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #3
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #4
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #5
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #6
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #7
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #8
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #9
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #10
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #11
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #12
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #13
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #14
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #15
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #16
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #17
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #18
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #19
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #20
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #21
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #22
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #23
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #24
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #25
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #26
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #27
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #28
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #29
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #30
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #31
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #32
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #33
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #34
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #35
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #36
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #37
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #38
+PASS 내부 어려움 뽑기: 내부 조건만·예/아니오 없음 #39
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #0
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #1
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #2
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #3
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #4
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #5
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #6
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #7
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #8
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #9
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #10
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #11
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #12
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #13
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #14
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #15
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #16
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #17
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #18
+PASS 외부 쉬움 뽑기: 지금 가능한 조건만 #19
+PASS 두 목표 조건은 겹치지 않음
+PASS 외부: 가능한 조건이 없으면 null
+PASS 2년 = 720일
+PASS 달성 기간(6개월) 안엔 판정 안 함
+PASS 달성 기간 표시
+PASS 유예 2개월 뒤 3개월째 목표 실패
+PASS 전쟁 → 평화 목표 경고(달성 기간 없음)
+PASS 조건 맞추면 유지 중
+PASS 2년 채우면 완수
+PASS 두 목표 모두 실패 → 붕괴
+PASS 대상 제국이 사라지면 2달 뒤 자동 달성
+PASS 같은 종류는 하나만
+PASS 다른 정책 버프와 겹치지 않음
+PASS 같은 버프 두 번 안 됨
+PASS 붕괴 뒤 1년 금지
+PASS 금지 기간 지나면 가능
+PASS 제목·선언문 확인
+PASS 버프: 내부/외부 묶음 나눔
+PASS 버프마다 1·2·3단계 수정자
+PASS 측정 명령: 4.5.2 확인 트리거만·수도 안정도는 행성 범위에서 로그
+PASS 내부 정책 측정엔 대상 관계 없음
+PASS 정책 명령: 잘못된 인자 거부
+PASS 정책 명령: 잘못된 인자 거부
+PASS 정책 명령: 잘못된 인자 거부
+PASS 정책 명령: 잘못된 인자 거부
+PASS 정책 명령: 잘못된 인자 거부
+PASS 선포: 같은 결정 한 번만·2년
+PASS 목표 실패 불이익: 내부 안정도·외부 관계·면제
+PASS 유산: 1단계 1년
+PASS 측정 읽기
+PASS AI 추천: 허용된 버프 3개까지
+PASS 모드: 불이익 수정자
+PASS 모드 로컬: english
+PASS 모드 로컬: korean
+PASS 정책: IPC·등록·세이브 바뀔 때 초기화
+PASS 정책: 월간 판정·인터뷰 발표·회의/통신 맥락
+PASS 집무실: 정책 아이콘·화면
+PASS 정책 화면: 마법사·언어 팩 규칙
+PASS 정책 기간: 1~3년(없거나 이상하면 2년)
+PASS 1년 정책은 1년 뒤 완수
+PASS 3년 정책은 2년에 끝나지 않음
+PASS 3년 선포 = 1080일
+PASS 3년 넘는 기간 거부
+PASS 정책 기간 고르기(선포·연장)
+PASS 인물 AI: 추론형 모델 답 잘림 대비 한도(편지 2400)·못 읽으면 두 배로 한 번 더(2026-10-18 실기)
+PASS 정책 영어(고정)
+PASS 칙령 묶음: 이득 2(버프)·대가 1(디버프 있는 것), 모두 버프 목록에 있음
+PASS 칙령 id 겹침 없음
+PASS 정부 발표 칸 = 주제 3개 옆 하나
+PASS 정부 발표 없이 만들면 예전 그대로
+PASS 정부 발표 호평은 행복도 호평 수에 안 들어감
+PASS 발표 안 하고 끝내면 건너뜀
+PASS 강 = 3단계·관계 −50
+PASS 기자 반응 나쁨 → 국내 이득만 한 단계 낮춤(대가는 그대로)
+PASS 약 + 반응 나쁨 → 두 번째 이득 빠짐
+PASS 집무실 정책과 같은 수정자는 빠짐
+PASS 반대 가치관 없는 묶음은 관계 변화 없음
+PASS 칙령 명령: 한 번만·이전 칙령 지움·기간·반대 가치관만 관계−·항의 대상 줄
+PASS 같은 수정자를 다시 쓰면 지웠다 다시 붙임(중복 지우기 없음)
+PASS 칙령 명령: 잘못된 인자 거부
+PASS 칙령 명령: 잘못된 인자 거부
+PASS 칙령 명령: 잘못된 인자 거부
+PASS 칙령 명령: 잘못된 인자 거부
+PASS 편집국 평가+분류 읽기
+PASS 모르는 분류·정책 없는 policy 는 칙령 없음, 강도 기본 중
+PASS 평가 프롬프트: 묶음 목록·정책·명령 무시
+PASS 연대기 줄(신문·라디오 다음 달 자료)
+PASS 모드: 항의 관계 수정자 3단계
+PASS 모드 로컬(칙령): english
+PASS 모드 로컬(칙령): korean
+PASS 앱: 확인 카드 전엔 적용 안 함·적용 확인·항의 서신·연대기, 기자 주제는 그대로 3개
+PASS 정책 ↔ 칙령 수정자 겹침 확인·IPC
+PASS 인터뷰 화면: 정부 발표 칸·확인 카드·언어 팩 규칙
+PASS elev: game admin, app normal
+PASS elev: token denied = elevated
+PASS elev: both normal
+PASS elev: both admin
+PASS elev: app admin, game normal is fine
+PASS elev: no game
+PASS elev: no output
+PASS elev: unknown stays unknown
+PASS elev: message has English catalog entry
+PASS elev: checked only on DLL attach failure
+PASS upd: newer signed bundle found
+PASS upd: only changed files
+PASS upd: file replaced
+PASS upd: old file backed up
+PASS upd: no temp left
+PASS upd: same version → nothing
+PASS upd: wrong key rejected
+PASS upd: partial Steam download waits
+PASS upd: DLL change → installer
+PASS upd: failure throws
+PASS upd: rollback restores
+PASS upd: rollback leaves no new file
+PASS upd: allowed paths
+PASS upd: unsafe paths rejected
+PASS upd: signed manifest with unsafe path rejected
+PASS upd: sha256File
+PASS upd: registered, pick() strings, relaunch
+PASS upd: only installed apps with a public key
+PASS upd: mod newer message English
+PASS upd: mod older message English
+PASS bs: empty at first
+PASS bs: saved
+PASS bs: persisted, cleaned, name trimmed
+PASS bs: empty text removes
+PASS bs: length capped
+PASS bs: bio block only when written
+PASS bs: persona creation sees bio
+PASS bs: talk prompt has bio
+PASS bs: letters (letter, farewell, reply) have bio
+PASS bs: saving bio re-creates speaking style
+PASS bs: governor chat has bio
+PASS bs: user empire backstory wins over game lore
+PASS bs: preload exposes 4 calls
+PASS bs: terminal has 제국 전기 button
+PASS bs: office contact has 인물 전기 button
+PASS bs: no direct language checks
+PASS bs: every backstory UI text has English (32)
+PASS win: saved size restored (21:9)
+PASS win: mostly off-screen → default
+PASS win: fits
+PASS win: grown to minimum
+PASS win: small but inside ok
+PASS win: nothing saved
+PASS win: broken data ignored
+PASS win: bounds persisted
+PASS paper: modes, saved size, unfold, desk/big IPC, new-issue hook
+PASS office: size remembered, new-issue flag
+PASS paper: preload
+PASS office: desk newspaper with 새 호 badge
+PASS paper: big button only in office, unfold effect, reduced motion
+PASS paper: rustle sound is quiet
+PASS paper: English for new texts
+PASS readall: letters marked read without AI, badge updated
+PASS readall: inbox marked read without AI
+PASS readall: preload
+PASS readall: buttons in office letters and terminal inbox
+PASS readall: English
+PASS me: ruler from roster, then profile
+PASS me: preload
+PASS me: terminal, governor, report, banquet use ruler name
+PASS me: summit log uses ruler name
+PASS me: no bare 나 label in index.html
+PASS me: no bare 나 label in gov.html
+PASS me: no bare 나 label in govreport.html
+PASS me: no bare 나 label in banquet-chat.js
+PASS gc: debate prompt no longer forces Korean
+PASS gc: English UI → English title
+PASS gc: Korean UI → Korean title
+PASS gc: missing Korean desc falls back to English
+PASS gc: council uses screen language
+PASS gc: no bare Korean messages to the screen
+PASS a8: unknown (mod) country types are talk-only; vanilla monsters/guardians blocked
+PASS a8: contacts carry talkOnly
+PASS a8: talk prompt forbids game actions
+PASS a8: chat drops any action for talk-only
+PASS a8: contact list shows 대화 전용
+PASS a8: English for contact labels
+PASS sev: events (no confession/proposal/wedding events)
+PASS sev: titles ko/en balcony
+PASS sev: narration ko/en balcony
+PASS sev: choice ko/en balcony
+PASS sev: choice ko/en balcony
+PASS sev: choice ko/en balcony
+PASS sev: narration ko/en balcony
+PASS sev: choice ko/en balcony
+PASS sev: choice ko/en balcony
+PASS sev: choice ko/en balcony
+PASS sev: narration ko/en balcony
+PASS sev: last beat ends without choices balcony
+PASS sev: has a CG beat balcony
+PASS sev: titles ko/en restaurant
+PASS sev: narration ko/en restaurant
+PASS sev: choice ko/en restaurant
+PASS sev: choice ko/en restaurant
+PASS sev: choice ko/en restaurant
+PASS sev: narration ko/en restaurant
+PASS sev: choice ko/en restaurant
+PASS sev: choice ko/en restaurant
+PASS sev: choice ko/en restaurant
+PASS sev: narration ko/en restaurant
+PASS sev: last beat ends without choices restaurant
+PASS sev: has a CG beat restaurant
+PASS sev: titles ko/en mourning
+PASS sev: narration ko/en mourning
+PASS sev: last beat ends without choices mourning
+PASS sev: has a CG beat mourning
+PASS sev: titles ko/en farewell
+PASS sev: narration ko/en farewell
+PASS sev: choice ko/en farewell
+PASS sev: choice ko/en farewell
+PASS sev: choice ko/en farewell
+PASS sev: narration ko/en farewell
+PASS sev: choice ko/en farewell
+PASS sev: choice ko/en farewell
+PASS sev: choice ko/en farewell
+PASS sev: narration ko/en farewell
+PASS sev: last beat ends without choices farewell
+PASS sev: has a CG beat farewell
+PASS sev: titles ko/en war_night
+PASS sev: narration ko/en war_night
+PASS sev: choice ko/en war_night
+PASS sev: choice ko/en war_night
+PASS sev: choice ko/en war_night
+PASS sev: narration ko/en war_night
+PASS sev: choice ko/en war_night
+PASS sev: choice ko/en war_night
+PASS sev: choice ko/en war_night
+PASS sev: narration ko/en war_night
+PASS sev: last beat ends without choices war_night
+PASS sev: has a CG beat war_night
+PASS sev: titles ko/en maintenance
+PASS sev: narration ko/en maintenance
+PASS sev: choice ko/en maintenance
+PASS sev: choice ko/en maintenance
+PASS sev: choice ko/en maintenance
+PASS sev: narration ko/en maintenance
+PASS sev: choice ko/en maintenance
+PASS sev: choice ko/en maintenance
+PASS sev: narration ko/en maintenance
+PASS sev: last beat ends without choices maintenance
+PASS sev: has a CG beat maintenance
+PASS sev: months
+PASS sev: months unreadable
+PASS date: locked below trust
+PASS date: open at trust stage
+PASS date: romance off uses work trust
+PASS date: 12-month cooldown
+PASS date: open again after a year
+PASS date: seen + CG unlocked for recollection
+PASS sit: nothing yet
+PASS sit: first meeting date recorded once
+PASS sit: no maintenance before 10 years
+PASS sit: maintenance after 120 months
+PASS sit: new war first
+PASS sit: same war only once
+PASS sit: maintenance resets the clock
+PASS sit: another new war
+PASS sev: clean lines
+PASS sev: truncated string → one line
+PASS sev: memory line
+PASS sev: prompt (beat, choice, poses; no empire facts on a date)
+PASS sev: war night sees war facts
+PASS sev: IPC (start/next, replay keeps affection)
+PASS sev: preload
+PASS sev: scene (bg, CG, recollection, finish, office badge)
+PASS sev: language-pack safe
+PASS sev: fallback backgrounds, no office desk over event scenes
+PASS sev2: days (30-day months)
+PASS sev2: add months
+PASS sev2: 3-month window
+PASS sev2: war first-seen date recorded monthly
+PASS sev2: no change while waiting
+PASS sev2: still pending within 3 months
+PASS sev2: gone after 3 months (even before the tick)
+PASS sev2: missed war marked seen
+PASS sev2: ended war cleaned up
+PASS sev2: maintenance due
+PASS sev2: maintenance still pending
+PASS sev2: maintenance window over
+PASS sev2: missed maintenance moves the clock to the due date
+PASS sev2: next maintenance 10 years after the missed one
+PASS sev2: mood tone from choices
+PASS sev2: recall keeps picked choices
+PASS sev2: afterglow active
+PASS sev2: afterglow only for that ruler
+PASS sev2: afterglow lasts about 3 months
+PASS sev2: afterglow 90 days
+PASS sev2: afterglow ends after 90 days
+PASS sev2: talk note (memory + mention + mood)
+PASS sev2: memory not forced every time
+PASS sev2: romance off = professional mood
+PASS sev2: nothing for other rulers
+PASS sev2: tick clears old afterglow
+PASS sev2: recall capped
+PASS sev2: note goes into everyday talk prompt
+PASS sev2: monthly tick from game state (no import cycle)
+PASS sev2: recall saved and used in talk
+PASS sev2: afterglow tag + shared moments list (ko/en)
+PASS sev3: restaurant date (bg + CG, once a year)
+PASS sev3: opens after the balcony (fond stage)
+PASS sev3: open at affection 45
+PASS sev3: romance off needs work trust 60
+PASS sev3: prompt (topic, no empire facts)
+PASS sev3: fallback background
+PASS sev3: events decline real work (reports/analysis), small talk about work is fine
+PASS life: month key
+PASS life: anniversaries this month
+PASS life: romance off = first meeting only
+PASS life: not this month
+PASS life: not before a year
+PASS life: anniversary note for the first words
+PASS life: celebrated once a year
+PASS life: again next year
+PASS nudge: anniversary always
+PASS nudge: close enough → note
+PASS nudge: chance
+PASS nudge: once per month
+PASS nudge: not when distant
+PASS nudge: personal note prompt
+PASS farewell: noted for a ruler she talked with
+PASS farewell: before a new war
+PASS farewell: 3-month window
+PASS farewell: prompt knows the predecessor and memories
+PASS farewell: once
+PASS farewell: skipped if they never talked
+PASS feel: worry / joy / relief
+PASS likes: block
+PASS likes: summary asks only for what the ruler said
+PASS likes: events know them too
+PASS say: direct speech prompt keeps the scene + personal-time rule
+PASS app: IPC secretaryEventSay
+PASS app: IPC secretaryNudge
+PASS app: IPC secretaryNudgeRead
+PASS app: IPC secretaryForgetLike
+PASS app: anniversary dates + celebrated on call
+PASS app: ruler change noticed monthly + leader-out signal
+PASS say: free talk in any scene until the history would start to be forgotten
+PASS ui: note / direct speech / likes (ko/en)
+PASS ui: note style, language-pack safe
+PASS talk: limit before the prompt starts forgetting
+PASS talk: whole history still in the prompt at the limit
+PASS death: noted once
+PASS death: waits until the new ruler takes office
+PASS death: forced state funeral first
+PASS death: no expiry for the forced funeral
+PASS death: silent single scene — rain, the memorial stone, rain instead of tears (사용자 최종 결정)
+PASS death: names the late ruler
+PASS death: names the late ruler (en)
+PASS death: prompt with the late ruler and memories
+PASS death: the drawer follows the funeral (3 months from then)
+PASS death: drawer window
+PASS death: funeral even for a stranger, drawer only if they talked
+PASS death: memory line
+PASS app: leader-out hooks shared with the memorial
+PASS app: death → funeral notice (ko/en)
+PASS app: re-election/retirement → notice only (waits a month if they vanished)
+PASS app: retire seen IPC (checks save/ruler/date, then the next queued retirement)
+PASS ui: forced funeral, private-office TV retirement scene, time-up (ko/en)
+PASS ui: styles
+PASS ui: event outfits (<pose>_<outfit>.png first, then normal)
+PASS office style: list ko/en
+PASS office style: fanatic first
+PASS office style: fanatic beats order
+PASS office style: xeno first among regular
+PASS office style: gestalt
+PASS office style: unknown → standard
+PASS office style: IPC registered
+PASS office style: auto from save ethics, per-save choice
+PASS office style: room + desk foreground share the background
+PASS office style: button + menu (ko/en), falls back when art is missing
+PASS office style: loaded in office, language-pack safe
+PASS indep: new record waits for contact
+PASS indep: rebels take more planets → still one record
+PASS indep: player itself is not mailed
+PASS indep: invalid (same as parent)
+PASS indep: stance toward the player
+PASS indep: wait up to 24 months for contact
+PASS indep: chronicle lines (child remembers its parent)
+PASS indep: declaration prompt (defiant toward the old ruler)
+PASS indep: grateful to the liberator
+PASS indep: clean text
+PASS indep: wired to the mod ORIGIN signal (no import cycle)
+PASS indep: one letter per new nation, chronicle, waits for contact
+PASS pet: topics ko/en, modifiers exist in the mod
+PASS pet: arrives with 2.25% each month
+PASS pet: 97.75% of months nothing
+PASS pet: at most 3 waiting
+PASS pet: unanswered for 12 months → expired
+PASS pet: troubled planet first
+PASS pet: one open petition per planet
+PASS pet: topic follows the planet
+PASS pet: petition prompt with real planet facts
+PASS pet: accept command (cost check, k-th colony, 2 years)
+PASS pet: decline command (small unrest, 1 year)
+PASS pet: bad args rejected
+PASS pet: wired (router slot, main, preload)
+PASS pet: monthly arrivals (not for gestalts), planet re-read before applying
+PASS pet: office icon + screen (ko/en, language-pack safe)
+PASS pet: loaded in the office
+PASS petfix: whole JSON
+PASS petfix: fenced JSON
+PASS petfix: cut before text (the real case) → no body
+PASS petfix: cut inside text → up to the last full sentence
+PASS petfix: escapes undone
+PASS petfix: plain text, first line title
+PASS petfix: body check
+PASS petfix: app retries once and repairs old saved items
+PASS cab: adopt asks with the in-room card, not the OS dialog
+PASS pet2: 2.25% a month, tasks are rare (10%)
+PASS pet2: build tasks ko/en with building keys
+PASS pet2: rewards (stability +5, happiness +5%, output +5%) exist in the mod
+PASS pet2: modifier names (en/ko, BOM)
+PASS pet2: crowded planet asks for housing
+PASS pet2: checked every 3 months and at the deadline
+PASS pet2: 2-year deadline
+PASS pet2: task petition prompt
+PASS pet2: count command (k-th colony, distinct building kinds)
+PASS pet2: reward command (no cost, 2 years)
+PASS pet2: accept → watch → reward / fail
+PASS pet2: screen (ko/en)
+PASS review: democracy votes, dictatorship none, imperial/oligarchy/corporate may force, unknown = force
+PASS review: rule texts ko/en
+PASS review: no factions → passes without review
+PASS review: militarists back fleet/army, pacifists oppose
+PASS review: support-weighted, abstain excluded → passed
+PASS review: rejected with reasons
+PASS review: disgruntled faction leans against
+PASS review: force command (approval down on opposing factions, 1 year)
+PASS review: mod modifier + names (en/ko, BOM)
+PASS review: enforced in the app (democracy blocks, force needs consent)
+PASS review: government type + factions from the monthly state (no import cycle)
+PASS review: screen (ko/en)
+PASS cab: position list (core first, unique, no ruler seats)
+PASS cab: post → department
+PASS cab: unknown post → guess by leader class
+PASS cab: titles ko/en
+PASS cab: roster reads cpos
+PASS cab: members = living councilors except the ruler, in post order
+PASS cab: each minister proposes a settable agenda from their department
+PASS cab: two buffs from the proposer's post pool
+PASS cab: buffs fixed per save/date (reopen shows the same)
+PASS cab: defense minister example (weapon damage +5%)
+PASS cab: same agenda → one joint proposal (no duplicate cards)
+PASS cab: joint proposal = one buff from each sponsor's post (still 2)
+PASS cab: joint proposal applies
+PASS cab: co-sponsor shares the trust gain
+PASS cab: co-sponsor starts in favour
+PASS cab: no settable agenda → department favourite (buffs only)
+PASS cab: apply command (agenda + 2 post buffs, no faction penalty)
+PASS cab: buffs only when the agenda cannot be set
+PASS cab: refuses buffs from another department
+PASS cab: adopted minister trust +5, opponent -2
+PASS cab: passed-over minister -1
+PASS cab: initial stance
+PASS cab: AI prompt has posts
+PASS cab: parse replies
+PASS cab: demo lines ko/en
+PASS cab: agenda names ko/en
+PASS cab: mod position probe matches the app list
+PASS cab: roster event logs cpos for every class
+PASS cab: modifiers + localisation (BOM)
+PASS cab: app uses the roster + persona memory hook (no import cycle)
+PASS cab: window ko/en, no faction vote
+PASS speech: prompt text stays Korean by default
+PASS speech: crowd outlook in English has no Hangul
+PASS speech: every stage has English
+PASS speech: type effects in English
+PASS speech: situation lines in English
+PASS espionage: speaker names shown in the UI language (stored values unchanged)
+PASS speech: outlook and venue labels localized
+PASS paragon: found by game name in either language, game markup stripped
+PASS paragon: ordinary leaders untouched
+PASS paragon: prompt block only for paragons
+PASS paragon: 20 paragons mapped (name, description, catch phrase keys)
+PASS paragon: persona + 1:1 talk use it; office people carry it
+PASS ag: available only when the mod says so (nomad key)
+PASS ag: ministers pick settable agendas (tradition agenda, then the always-available one)
+PASS ag: mod reports available agendas
+PASS ag: every new agenda has English name/effect
+PASS galcom: stage=none / resume lines produce no notice
+PASS ct: localized GetCountryType → key via ct; old mod unchanged
+PASS ct: voidworms / mining drones / localized vanilla / primitives never contactable
+PASS ct: enclaves talk-only, fallen empire full, unknown mod types talk-only
+PASS ct: mod sends the country type number
+PASS paper: empty issue on the office display uses display colours
+PASS sec: unknown ruler (ruler:?) never counts as a change
+PASS sec: no retire for the current ruler / placeholder / no name; old false entries cleaned
+PASS room: asg read from the mod
+PASS room: fleet/assignment → hologram, idle → in person
+PASS room: mod sends asg on every LEADER line
+PASS room: opens over the office window; office told when ready; cleared after adoption
+PASS room: office state carries the ready meeting (hook, no import cycle)
+PASS room: office alarm + desk tablet (ko/en, art slot)
+PASS room: first-person chamber frame (screen, holo/real seats, art slots, ko/en)
+PASS emb: faction lines (support 0..1 or %)
+PASS emb: not found → null
+PASS emb: low intel shows only public signs, counts hidden ones
+PASS emb: attack plan needs high intel, attitude medium
+PASS emb: more intel → sharper forecast (danger)
+PASS emb: at war
+PASS emb: allies with good relations are calm
+PASS emb: every sign ko/en
+PASS emb: factions always listed (by support)
+PASS emb: AI prompt in English, only visible signs
+PASS emb: parse cable
+PASS emb: incomplete cable rejected
+PASS emb: console command
+PASS emb: mod probe (intel, cb, profile, no $ in logs, braces)
+PASS emb: one end line either way + faction lines
+PASS emb: app wiring
+PASS emb: office screen ko/en
+PASS media: default persona in English
+PASS media: saving the shown default keeps it non-custom
+PASS ch: official shows rival/claim/opinion/attitude even with zero intel (embassy is enough)
+PASS ch: official never carries cb/fleet/plans
+PASS ch: secret carries cb/fleet/plans only
+PASS ch: embassy flag true / false / unknown
+PASS ch: official report needs an embassy (unknown profile does not lock it)
+PASS ch: secret report needs intel level 1+
+PASS ch: low intel → everything seen is unconfirmed rumor, and some stays unknown
+PASS ch: medium intel confirms cb/fleet but not plans
+PASS ch: plans first appear as rumor (high), fully confirmed at full intel
+PASS ch: rumors count half in the threat score
+PASS ch: war shows as war
+PASS ch: confidence text per level, ko/en
+PASS ch: embassy lists factions, spies know the support numbers
+PASS ch: default factionLines unchanged
+PASS ch: ambassador prompt carries only official facts
+PASS ch: spy briefing prompt marks rumors, English only, hides what is unknown
+PASS ch: confirmed facts are passed as confirmed
+PASS ch: app handlers + preload
+PASS ch: screen has two tabs, rumor tag and spy briefing, ko/en
+PASS chg: no previous report → no changes
+PASS chg: nothing changed → empty
+PASS chg: opinion crash is a big drop
+PASS chg: moderate drop
+PASS chg: big rise
+PASS chg: small wobble ignored
+PASS chg: drops are worse, rises are not
+PASS chg: attitude turns hostile
+PASS chg: attitude softens
+PASS chg: new claim
+PASS chg: truce ended
+PASS chg: truce → war is war, not just truce end
+PASS chg: treaty lost
+PASS chg: named us rival
+PASS chg: new casus belli (agents)
+PASS chg: no intel → secret changes not visible
+PASS chg: fleet grows relative to ours
+PASS chg: attack plan needs high intel
+PASS chg: attack plan hidden at medium intel
+PASS chg: every change has ko/en text
+PASS chg: casus belli belongs to the secret channel
+PASS amb: parsed from the first cable
+PASS amb: optional
+PASS amb: AI never invents the ambassador (name comes from game name lists, 2026-10-20)
+PASS amb: later cables keep the same ambassador
+PASS amb: prompt allows a recall/expulsion warning, English only
+PASS amb: cable gets the official changes since last report
+PASS amb: app stores previous snapshot (same-day refresh keeps baseline) and the first ambassador
+PASS amb: screen shows alert box, list badge and ambassador name, ko/en
+PASS spy-amb: AI never invents the officer
+PASS spy-amb: later briefings keep the same officer
+PASS spy-amb: persona parsed from briefing
+PASS spy-amb: old officers kept, new names never from AI
+PASS spy-amb: UI shows the case officer ko/en
+PASS mon: idx parsed
+PASS mon: bad lines rejected
+PASS mon: opinion clamped
+PASS mon: first point
+PASS mon: same date overwrites
+PASS mon: appended in order
+PASS mon: series capped at 60
+PASS mon: one point → no changes
+PASS mon: opinion fall + new claim are alerts
+PASS mon: both are worse, official channel
+PASS mon: reverse = good news
+PASS mon: casus belli is secret-channel
+PASS mon: war start
+PASS mon: ko/en text
+PASS mon: app records EMBMON per save and exposes series + monthly changes
+PASS mon: UI graph and alert ko/en
+PASS spy-icon: side list is titled Target empires on the espionage tab
+PASS spy-icon: desktop has its own Intelligence icon opening the spy tab (ko/en)
+PASS mon: mod probe present and called every two months
+PASS fe: country type
+PASS fe: kind from ethics or personality
+PASS fe: dormant = lesser beings to learn; xenophile protective; one-sided
+PASS fe: awakened = wrath, ants, reason for waking
+PASS fe: final line only when hanging up
+PASS fe: hang-up chance +20% per exchange
+PASS fe: answer chance bounds
+PASS fe: year key (no answer again that year)
+PASS fe: dormant prompt has no actions
+PASS fe: awakened keeps actions; normal empire untouched
+PASS fe: chat wiring (answer on connect, closed channel, hang-up)
+PASS vx: system messages → systemInstruction
+PASS vx: starts with user, assistant → model
+PASS vx: same roles merged
+PASS vx: generation config
+PASS vx: thoughts skipped, MAX_TOKENS → length
+PASS vx: preset
+PASS nanogpt: preset
+PASS sa: JSON parsed
+PASS sa: newlines stripped by pasting into one-line box still parse
+PASS sa: API keys and junk are not service accounts
+PASS sa: token address must be Google (key never goes elsewhere)
+PASS sa: jwt header
+PASS sa: jwt claims
+PASS sa: jwt signature verifies with the public key
+PASS sa: API-key URL unchanged
+PASS sa: project path, global
+PASS sa: location from address prefix
+PASS sa: address that already has a project is kept
+PASS 판정: 제국 정보 → 단말기 → 월간 상황, 가져오기 고리 없음
+PASS 판정: 월간 상황 연결
+PASS 내각(옛 파벌) 회의: 단일 의식이면 소집 안 함
+PASS 언론사 인터뷰: 단일 의식이면 열지 않음
+PASS 모드: 언론사 인터뷰 시행령은 단일 의식에게 안 보임
+PASS 시민 청원: 단일 의식이면 오지 않음(기존)
+PASS 집무실: 언론사 인터뷰·시민 청원 아이콘 숨김
+PASS 인물 말투 줄: 기계·군체·모름·일반
+PASS 말투·대화 프롬프트에 단일 의식 줄
+PASS 편지 프롬프트에 단일 의식 줄
+PASS 비문 프롬프트에 단일 의식 줄
+PASS 개인 서신: 단일 의식이면 개인적인 부탁 없음
+PASS 1:1 통신: 단일 의식 표시
+PASS music: 한 줄 경로와 객체 두 가지 모두 읽음
+PASS music: 바깥 경로·이상한 확장자·알 수 없는 항목은 버림
+PASS music: 버린 이유를 경고로 남김
+PASS music: 객체가 아니면 null
+PASS music: 가사 경로가 틀려도 곡은 살림
+PASS music: 가사 경고 한 개
+PASS music: addon.json 의 music 항목을 읽음
+PASS music: 없으면 null
+PASS creed: 본문 파일 한 줄만 써도 됨
+PASS creed: 본문과 낭독 음성을 함께
+PASS creed: 본문도 곡도 없으면 버림
+PASS creed: 이유 경고
+PASS creed: file 에 글 파일을 넣으면(음성 아님) 버림
+PASS creed 가 아닌 곡은 여전히 음성 파일이 필수
+PASS music: 곡마다 위쪽 애드온이 이김(없는 곡은 아래쪽이 채움)
+PASS music: 끈 애드온 제외
+PASS music: 모두 끄면 곡 없음
+PASS music: 폴더 모드·압축 모드·직접 넣은 애드온이 모두 목록에
+PASS music: 폴더 모드 곡은 file URL
+PASS music: 제목은 파일 이름에서, 가사는 글로 읽고 제어 문자는 제거
+PASS music: 없는 곡 파일은 경고
+PASS music: 압축 모드 곡은 앱 데이터 캐시에 풀어 둠
+PASS music: 24MB 넘는 곡은 건너뛰고 나머지는 읽음
+PASS music: 용량 경고
+PASS music: 국가는 폴더 팩, 군가는 (폴더 팩에 없어) 직접 넣은 팩
+PASS music: 순서를 바꾸면 위쪽 팩의 곡
+PASS music: 끈 팩은 곡이 빠짐
+PASS creed: 본문만 있는 팩은 url 없이 본문을 읽음
+PASS creed: 합친 결과에 복무신조가 들어감
+PASS music2: 음량은 0~1 로 맞추고 이상한 값은 기본값
+PASS music2: 세이브 번호는 폴더 이름으로 안전하게
+PASS music2: 곡 종류는 anthem·march 만
+PASS music2: 가사는 8000자까지, 제어 문자 제거
+PASS music2: 줄바꿈 정리
+PASS music2: 제목 공백 정리
+PASS music2: 저장 파일 검사(파일 없는 곡·알 수 없는 종류·이상한 세이브는 버림)
+PASS music2: 망가진 저장 파일은 빈 상태
+PASS music2: 직접 고른 파일이 팩보다 먼저
+PASS music2: 내 파일이 없어지면(복사본 삭제 등) 팩 곡으로
+PASS music2: 팩 곡 출처 표시, 아무것도 없으면 null
+PASS creed2: 본문만 있는 복무신조는 저장되고, 파일 없는 곡은 버려짐
+PASS creed2: 본문도 파일도 없는 복무신조는 버려짐
+PASS creed2: 본문만 있는 내 복무신조도 화면에 나감
+PASS creed2: 내 본문이 비면 팩의 것
+PASS creed2: 곡 종류에 creed 포함
+PASS music2: main 이 국가·군가를 등록
+PASS music2: preload·IPC 이름이 서로 맞음
+PASS music2: 애드온 곡을 앱이 가져다 씀
+PASS music2: 집무실에 화면 파일 연결
+PASS music2: 고른 곡은 형식·용량 검사 후 앱 폴더로 복사, 앱 폴더 안 파일만 재생
+PASS creed3: 가치관 비트 → 영어 이름(모르면 빈 목록)
+PASS creed3: 요청은 system+user
+PASS creed3: 실제 군대·기관 신조를 베끼지 말고 JSON 으로 답하게 함
+PASS creed3: 제국 이름·가치관·날짜가 들어가고 일반 제국이면 군체 문구 없음
+PASS creed3: 군체 의식이면 하나의 집단으로 말하게 함
+PASS creed3: JSON 답을 읽는다
+PASS creed3: 줄 배열·글머리표도 받아 정리
+PASS creed3: JSON 이 아니라 그냥 글이어도 받는다
+PASS creed3: 비었거나 너무 짧거나 깨졌으면 null
+PASS creed3: 본문은 1500자까지
+PASS creed3: 빈 글은 조각 없음
+PASS creed3: 짧은 글은 한 조각
+PASS creed3: 긴 글은 600자 한도 아래 조각으로 나눈다
+PASS creed3: 줄은 잘리지 않고 경계에서 나뉜다
+PASS creed3: 줄 하나가 너무 길어도 자른다
+PASS creed3: 조각은 최대 4개(요금 보호)
+PASS creed3: 음성 요청에 낭독 지시를 넣을 수 있음
+PASS creed3: 지시를 안 주면 기존 라디오 지시 그대로
+PASS creed: AI 녹음 생성 경로 제거
+PASS creed: 긴 잘린 JSON도 본문으로 저장하지 않음
+PASS creed3: 라디오 음성도 같은 합성 함수를 씀
+PASS p2: 이상한 항목(짧은 id·성별 모름·null)은 버림
+PASS p2: 배열이 아니면 빈 목록
+PASS p2: 글자로 언어 판단
+PASS p2: 앵커=여성1, 공동진행=여성2, 리포터=남성
+PASS p2: 일본어 글은 일본어 목소리
+PASS p2: 한국어는 목소리가 없어 미국 영어로 대신
+PASS p2: 목록이 없으면 null
+PASS p2: 여성이 없으면 있는 목소리로
+PASS p2: Player2 음성 요청(소리는 앱에서 내지 않고 데이터만)
+PASS p2: IPC·preload 연결, 목록은 잠시 기억
+PASS p2: 라디오 선택지·실패 시 윈도우 음성으로·영어 문구
+PASS p2: 화자→목소리 규칙을 바꿔 쓸 수 있음(기존 AI 음성은 그대로)
+PASS p2 영어: 선택지 문구
+PASS creed4: 설정이 없으면 혼자·남성·효과 없음
+PASS creed4: 인원은 4명까지
+PASS creed4: 인원이 이상하면 기본 3명
+PASS creed4: 합창은 최소 2명
+PASS creed4: 혼자면 1명
+PASS creed4: 모르는 값은 기본값
+PASS creed4: 기본은 혼자 낭독(비용 보호)
+PASS creed4: 줄마다 한 조각
+PASS creed4: 줄이 많으면 12조각으로 묶되 내용은 그대로
+PASS creed4: 남성·여성·혼성(남녀 번갈아) 고르기
+PASS creed4: 한쪽 성별이 없으면 있는 쪽으로, 둘 다 없으면 빈 목록
+PASS creed4: 합성 횟수(혼자 1 · 선창 1+7×3 · 단체 8×4)
+PASS creed4: OpenAI 남·여 목소리는 모두 허용 목록 안
+PASS creedfind: 복무신조가 있는 켜진 애드온만, 목록 순서대로
+PASS creedfind: 꺼진 애드온은 빼기
+PASS creedfind: 고른 것 > 맨 위, 고른 애드온이 꺼지면 맨 위로, 하나도 없으면 인식 안 함(null)
+PASS creedfind: 저장된 고르기 검사(이상한 종류·id 버림)
+PASS creedfind: 애드온 목록 함수
+PASS creedfind: IPC·화면 연결, 우선순위(내 커스텀 > 고른 애드온 > 맨 위)
+PASS ceremony: 설정이 없으면 기본값(어두움 0.62·불씨·저음 화음 켬·원근 끔·안내 켬)
+PASS ceremony: 어두움은 0.35~0.85, 이상한 값은 기본값
+PASS ceremony: 어두움 상한
+PASS ceremony: 줄 시각은 오름차순·600초 이내·40줄까지
+PASS ceremony: 게임 화면 전체를 덮는 창, 그림은 png·jpg·webp 48MB(4K) 까지
+PASS ceremony: 북 없이 저음 화음(줄마다 부풀기)·불씨·마지막 줄 강조·깃발
+PASS ceremony: 그림 3장(있는 것만, 없으면 빛줄기 배경)·원근 자막 선택
+PASS cue: 쉼 2개 찾음
+PASS cue: 첫 소리·각 쉼이 끝나는 시각이 줄 시작
+PASS cue: 줄 수보다 쉼이 모자라면 null(시간 비율로)
+PASS cue: 쉼이 남으면 긴 쉼부터 고름
+PASS cue: 빈 봉투·무음·틀린 간격·한 줄은 null
+PASS cue: 0.22초보다 짧은 끊김은 쉼이 아님
+PASS cue: 줄 수는 빈 줄 제외, 40줄까지
+PASS cue: 출처 값
+PASS cue: 복무신조만 줄 시각을 저장, 출처도 함께
+PASS decl: 본문은 줄 단위로 다듬음
+PASS decl: 24줄까지
+PASS decl: 빈 글
+PASS decl: 공격전이면 상대는 방어국
+PASS decl: 방어전이면 상대는 공격국
+PASS decl: 이름이 안 맞으면 가장 최근 전쟁
+PASS decl: 상황을 모르면 빈 값
+PASS decl: 제목(공격/방어, 한/영)
+PASS decl: AI 요청(베끼지 말 것·방어전 어조·상대·가치관)
+PASS decl: 공격전 어조
+PASS decl: AI 답 읽기(글머리표 제거)
+PASS decl: 짧거나 비면 null
+PASS decl: 저장 파일 검사(본문 없는 항목·이상한 음성 경로 버림)
+PASS decl: 세이브마다 최근 40개만
+PASS decl: 로그 자리 236
+PASS decl: 전쟁 시작 신호 → 알림(버튼)
+PASS decl: 알림 종류·버튼·카드 머리말(한/영)
+PASS decl: 등록·IPC 7개
+PASS decl: AI 음성 IPC와 화면 제거
+PASS warinfo: 코드 표의 모든 목표에 설명이 있음
+PASS warinfo: 코드 36개
+PASS warinfo: 줄 읽기
+PASS warinfo: 이름 없으면 null
+PASS warinfo: 모르는 코드는 빈 글, 관계·편은 기본값
+PASS warinfo: 명분 설명(한/영)
+PASS warinfo: 독립 전쟁은 관계를 먼저 말함
+PASS warinfo: 종주국의 종속국 침공
+PASS warinfo: 침략성(정복 2·독립 0·정화 3·총력전 +1·반격 0·모름 1)
+PASS warinfo: 선언문 AI 요청에 전쟁 원인이 들어감
+PASS warinfo: 선언문 기록에 명분 저장
+PASS warinfo: 모드가 전쟁 시작 때 WARINFO 를 보냄(명분은 using_war_goal)
+PASS warinfo: 모드 코드 1 = wg_conquest
+PASS warinfo: 모드 코드 2 = wg_humiliation
+PASS warinfo: 모드 코드 3 = wg_subjugation
+PASS warinfo: 모드 코드 4 = wg_tribute
+PASS warinfo: 모드 코드 5 = wg_independence
+PASS warinfo: 모드 코드 6 = wg_force_ideology
+PASS warinfo: 모드 코드 7 = wg_plunder
+PASS warinfo: 모드 코드 8 = wg_plunder_raid
+PASS warinfo: 모드 코드 9 = wg_cleansing
+PASS warinfo: 모드 코드 10 = wg_assimilation
+PASS warinfo: 모드 코드 11 = wg_absorption
+PASS warinfo: 모드 코드 12 = wg_colossus
+PASS warinfo: 모드 코드 14 = wg_counterattack
+PASS warinfo: 모드 코드 15 = wg_scion
+PASS warinfo: 모드 코드 16 = wg_hegemon
+PASS warinfo: 모드 코드 17 = wg_leave_hegemony
+PASS warinfo: 모드 코드 18 = wg_megacorp_subjugate
+PASS warinfo: 모드 코드 19 = wg_hostile_takeover
+PASS warinfo: 모드 코드 20 = wg_expel_corp
+PASS warinfo: 모드 코드 21 = wg_allegiance
+PASS warinfo: 모드 코드 22 = wg_payback_stop_atrocities
+PASS warinfo: 모드 코드 23 = wg_nomad_raid
+PASS warinfo: 모드 코드 24 = wg_expel_nomads
+PASS warinfo: 모드 코드 25 = wg_imperial_crusade
+PASS warinfo: 모드 코드 26 = wg_galactic_civil_war_loyalists
+PASS warinfo: 모드 코드 27 = wg_galactic_civil_war_rebels
+PASS warinfo: 모드 코드 28 = wg_restore_the_community
+PASS warinfo: 모드 코드 29 = wg_proxy_war
+PASS warinfo: 모드 코드 30 = wg_blaze
+PASS warinfo: 모드 코드 31 = wg_take_galatron
+PASS warinfo: 모드 코드 32 = wg_steal_galatron
+PASS warinfo: 모드 코드 33 = wg_sllm_humiliation
+PASS warinfo: 모드 코드 34 = wg_sllm_tribute
+PASS warinfo: 모드 코드 35 = wg_sllm_revenge
+PASS warinfo: 앱이 받아 선언문 창·AI 요청에 넣음
+PASS condemn: 평화주의 제국은 정복전을 규탄
+PASS condemn: 군국주의는 정복전에 우려 정도
+PASS condemn: 우리 종속국은 지지
+PASS condemn: 상대의 연방국은 규탄
+PASS condemn: 외계인 혐오는 남의 일에 침묵
+PASS condemn: 호감 높은 방위 협정국은 지지
+PASS condemn: 정화 전쟁은 호감이 좀 있어도 규탄
+PASS condemn: 동맹도 총력 정화전에는 지지하지 못함(침묵)
+PASS condemn: 우리가 방어 측이면 평화주의는 우리를 지지
+PASS condemn: 침략자의 종속국은 우리를 규탄
+PASS condemn: 우리가 독립 전쟁을 열면 평등주의는 지지
+PASS condemn: 권위주의는 종주국 편(우려)
+PASS condemn: 종주국이 종속국을 치면 권위주의는 침묵 쪽
+PASS condemn: 점수 경계
+PASS condemn: 공동체는 회원 평균(지지하는 종속국이 섞이면 우려로 내려감, 침략에 조금 더 엄격)
+PASS condemn: 평화주의 회원만이면 규탄
+PASS condemn: 회원 3개 미만이면 공동체 성명 없음
+PASS condemn: 화자는 최대 n명
+PASS condemn: 침묵은 빼고 점수 절댓값 순
+PASS condemn: 집계 합
+PASS condemn: 집계 한 줄(한/영)
+PASS condemn: AI 요청(입장은 규칙이 정해 주고 문장만 쓰게)
+PASS condemn: 답 읽기(이름 없는 항목 버림)
+PASS condemn: 깨진 답은 null
+PASS condemn: 호감 단계(규탄 cold small · 지지 warm small · 나머지 없음)
+PASS condemn: 우리가 공격국이면 fd·dd 는 상대 쪽
+PASS condemn: 우리가 방어국이면 fd 는 우리 쪽
+PASS condemn: idx 없으면 null
+PASS condemn: 저장 파일 검사
+PASS condemn: 호감 반영은 기본 켬
+PASS condemn: 로그 자리 235
+PASS condemn: 모드가 전쟁 시작 때 제국별 관계(WARVOICE)를 보냄
+PASS condemn: 등록·WARINFO 뒤 수집·선언문 뒤 판정
+PASS condemn: 2시간 뒤 자동 판정·화자 4명·알림·연대기·호감 적용(설정)·대화 기억용 조회
+PASS condemn: 선언문 창의 호감 반영 스위치(한/영)
+PASS opinion: 대사 전문 요청에 이 나라의 성명이 들어감
+PASS opinion: 성명이 없으면 넣지 않음(기존 보고 그대로)
+PASS opinion: 대사관 보고·상세에 성명 연결
+PASS opinion: 기록 목록 IPC·세계 소식(신문 재료)에 대표 성명까지
+PASS opinion: 집무실 화면 문구(한/영)·기록 불러오기
+PASS opinion: 화면 스타일
+PASS foreign: 줄 읽기(편은 공격국 기준)
+PASS foreign: 이름 없으면 null
+PASS foreign: 이상한 번호는 0
+PASS foreign: 우리 방위 협정국이 침공당하면 규탄 권고
+PASS foreign: 우리 종속국이 공격국이면 지지 권고
+PASS foreign: 관계없는 전쟁에 외계인 혐오는 침묵 권고
+PASS foreign: 알림은 침략성 2+ 이거나 우리와 관계 있는 전쟁만
+PASS foreign: 호감 단계 [공격국, 방어국]
+PASS foreign: 가장 최근 성명
+PASS foreign: 성명 없으면 null
+PASS foreign: 목록 없으면 null
+PASS foreign: 예전에 우리가 규탄했으면 -12, 지지했으면 +12(되갚음)
+PASS foreign: 반응 AI 요청에 기억이 들어감
+PASS foreign: 저장 검사(침묵·이름 없는 항목 버림)·알림 기본 켬
+PASS foreign: 모드가 남의 전쟁을 주 공격국에서 한 번만 보냄
+PASS foreign: 알림·연대기(양국 기억)·호감·되갚음 연결
+PASS foreign: 알림 카드 버튼·머리말(한/영)
+PASS foreign: IPC 4개(AI 초안 없음)
+PASS foreign: 성명 창(한/영)
+PASS foreign: 은하 여론 화면에 우리 성명·알림 스위치
+PASS mood: 안정도 60·승인도(가중) 60 → 60 만족
+PASS mood: 전쟁 피로(큰 쪽 0.5 → −10)·불안 행성 2/5(−6)
+PASS mood: 군체 의식은 파벌 없이 안정도만
+PASS mood: 옛 모드(MOOD 없음)는 승인도만
+PASS mood: 재료가 없으면 null
+PASS mood: 사건 조정은 ±15 까지
+PASS mood: 단계 경계
+PASS mood: 기록·반년 추이·같은 날짜는 덮어씀
+PASS mood: 반년 사이 12점 넘게 떨어지면 알림
+PASS mood: 같은 단계에서는 다시 알리지 않음(46 = 보통)
+PASS mood: 분노 단계 진입 알림
+PASS mood: 신문·라디오 프롬프트 한 줄
+PASS mood: 사건 조정은 1년에 걸쳐 사라짐
+PASS mood: 저장 파일 검사
+PASS mood: 월간 상황에서 MOOD 줄 읽기
+PASS mood: 모드가 STATE_END 앞에 MOOD 를 보냄
+PASS mood: 월간 상황 훅·등록·IPC(AI 호출 없음)
+PASS mood: 신문·라디오 프롬프트에 민심
+PASS mood: 집무실 머리말 칩·자세히(한/영)
+PASS debate: 침공전 — 군국주의 찬성·평화주의 반대
+PASS debate: 우리 규탄 성명 — 평화주의 찬성·군국주의 반대
+PASS debate: 군체·기계는 논평 없음
+PASS debate: 주고받는 대담이라 한쪽만 있으면 없음
+PASS debate: 모든 사건 종류에 찬반 성향
+PASS debate: 두 의원 성별은 서로 다르게·목소리 칸
+PASS debate: 무작위 이름(AI 가 못 지었을 때) Kaora Ovanis
+PASS debate: AI 요청(진행자·찬반 세 번씩·정해 준 이름·성별, 이름은 AI 가 짓지 않음)
+PASS debate: 대담 순서
+PASS debate: 응답 읽기
+PASS debate: 7줄이면 버림
+PASS debate: 순서가 어긋나면 버림
+PASS debate: JSON 아님
+PASS debate: 저장 검사(알림 기본 켬·20건·깨진 대본은 비움)
+PASS debate: 알림 → 들을 때 AI 한 번 → 라디오로 방송, 의원 이름은 게임 이름 표
+PASS debate: 라디오 전용(신문 재료·집무실 민심 칸에 없음)
+PASS debate: 선언문·우리 성명·공동체 규탄에서 부름
+PASS debate: 등록·IPC·알림 카드(한/영)
+PASS debate: 라디오 창 알림 줄·듣기·알림 끄기·대담 대본·의원 목소리(한/영)
+PASS name: 인물 이름이 있는 표만
+PASS name: 성별 목록·가중치·통치자 이름(regnal) 제외
+PASS name: 지역화 읽기
+PASS name: 지역화 없는 키는 버림·글자 그대로·색 코드 제거
+PASS name: 여성은 여성 목록
+PASS name: 이름+성 조합
+PASS name: 계열 → 기본 표(세이브에 이름 표가 없을 때)
+PASS name: 인구 비율대로 종족 뽑기
+PASS name: 1000명 중 파충류 700·인간 300(7:3 근처)
+PASS name: 표가 없으면 null(부른 쪽이 대신)
+PASS name: 세이브 이름 표·소수 종족까지 모든 종족 비율(pop)
+PASS name: 기자 이름을 주면 AI 가 짓지 않음
+PASS name: 게임·모드 이름 표 읽기, 기자·의원에 적용
+PASS scandal: SPYOP type 읽기(옛 모드는 없음)
+PASS scandal: 남이 우리에게 → 우리 정부 추문
+PASS scandal: 우리가 남에게 → 상대 추문(20% 개입 의혹)
+PASS scandal: 비방이 아니거나 취소·남의 일은 무시
+PASS scandal: 민심 조정(보도 −5 · 기자회견 해명 성공 +6/실패 −4 · 라디오 +3 · 무시 −2)
+PASS scandal: 호외 후보
+PASS scandal: 저장 검사
+PASS scandal: 모드가 비방 공작에 type=smear
+PASS scandal: 작전 → 연대기·호외·민심·라디오·찬반 논평
+PASS scandal: 등록·IPC·알림 카드(한/영)
+PASS scandal: 대응 창(한/영) — 성명은 플레이어가 직접(AI 초안 없음)
+PASS agent: 암호명 100가지(한/영)·위장
+PASS agent: 새 공작원(쓴 암호명은 피함)
+PASS agent: 근무 햇수·10년 베테랑
+PASS agent: 새 첩보망 부임·사라진 첩보망 1달째
+PASS agent: 두 달 연속 없으면 연락 두절
+PASS agent: 첩보망 0개 + 공작원 2명 이상이면 자료 누락으로 보고 세지 않음
+PASS agent: 보고서 신분 줄(영어·정해 준 이름)
+PASS agent: 공작원이 직접 보고서를 쓴다
+PASS agent: 저장 검사
+PASS agent: 월간 상황 → 부임(상대 종족 이름)·연락 두절 → 떠난 사람들
+PASS agent: 추모관·대사관 연결
+PASS agent: 대사관 화면 공작원 카드(한/영)
+PASS link: 추문 기자회견은 추문 한 주제(정부 발표 칸 없음)
+PASS link: 기존 인터뷰 규칙 그대로(고르기·끝내기)
+PASS link: 추문 기자회견은 준비 기간 없이 열리고 끝나면 민심으로(버프·칙령·준비 소모 없음)
+PASS link: 추문 → 인터뷰 · 개입 의혹 → 청문회
+PASS link: 실제 게임 청문회(개발자 모드 없이, 한 번에 하나)
+PASS link: 공작원 연락 두절 → 그 나라가 공작원 이름을 들어 해명 요구
+PASS link: 청문회 알림 카드(한/영)
+PASS link: 화면(한/영)
+PASS hpress: 설득 성공 → 관계 −100 만(국내 불이익 없음)
+PASS hpress: 설득 실패 → 관계 −100 + 생산 −9%
+PASS hpress: 게임 사건의 국내 기자회견은 인터뷰 화면으로, 진행 중 청문회 창을 닫아도 퇴장 아님
+PASS hpress: 긴급 기자회견 종류(추문/청문회)
+PASS hpress: 화면(한/영)
+PASS bribe: 크레딧 확인 후 1000 차감·응답
+PASS bribe: 잘못된 인자 거부
+PASS bribe: 매수된 기자·편집국 지시(영어)
+PASS bribe: 게임 확인 뒤 매수 → 기자 질문·편집국 평가에 반영
+PASS bribe: 화면(한/영)
+PASS expel: 전쟁·호감 −100 이하면 추방(대사관 있을 때만)
+PASS expel: 전쟁이 끝나고 호감 0 이상이면 재개
+PASS expel: 호외 후보
+PASS expel: 마지막 전문 요청(정해 준 이름)
+PASS dip: 외교관 위장이면 소문이 확인 정보로·신뢰도↑
+PASS dip: 위장 이름(한/영)
+PASS dip: 보고서 신분 줄
+PASS dip: 저장
+PASS expel: 감시 → 추방·재개·호외·마지막 전문·전문 막기
+PASS dip: 위장 바꾸기·보고 반영·발각 시 추방
+PASS expel/dip: 화면(한/영)
+PASS a9: 자산 36종(게임 용어 한/영)
+PASS a9: SPYASSET → 첩보망 자산(옛 모드 줄은 없음)
+PASS a9: 옛 모드는 협력자를 건드리지 않음
+PASS a9: 처음 맞출 때는 서신 거리 아님
+PASS a9: 새 자산 = 포섭
+PASS a9: 사라진 자산 = 이탈
+PASS a9: 처음 보는 세이브는 기준 날짜만
+PASS a9: 2년 전에는 안 뽑음
+PASS a9: 2년 뒤 — 쌓인 포섭 이야기 먼저(확률 무관)
+PASS a9: 서신 프롬프트(협력자 이름·이야기만)
+PASS a9: 서신 답 읽기
+PASS a9: 안 읽은 서신 한도
+PASS a9: 저장 검사(협력자·서신)
+PASS a9: 대화 기록 이어 붙이기
+PASS a9: 대사는 공식 정보만·게임 행동 없음
+PASS a9: 대사 답 다듬기
+PASS a9: 정기 보고는 해마다 한 번(처음은 기준만)
+PASS a9: 모드 — 첩보망마다 자산 줄(정의가 먼저, 괄호 짝)
+PASS a9: 협력자 맞추기·서신 알림·열 때 AI
+PASS a9: 대사와 대화·정기 보고·서신 열기 IPC
+PASS a9: preload
+PASS a9: 화면(한/영)
+PASS presentation: standalone creed controls removed
+PASS presentation: declaration text and march, never creed
+PASS presentation: publish directly opens declaration scene
+PASS presentation: own military fleets and player flag retained
+PASS national: 30-day month
+PASS national: reject invalid month
+PASS national: reject day 31
+PASS national: six months, save guard and annual deduplication
+PASS national: reject unsafe save id
+PASS holiday: no current_date trigger
+PASS holiday: braces balanced
+PASS holiday: pays once per year-month flag
+PASS holiday: cancel never charges
+PASS holiday: query never charges
+PASS holiday: reject unsafe save id
+PASS pair key is order-free
+PASS new pair defaults
+PASS same record both orders
+PASS due in Feb
+PASS not yet in Jan
+PASS already held this year
+PASS month change rules
+PASS retired 49% → accepted
+PASS retired 50% → declined
+PASS stored, no re-roll
+PASS active always accepts
+PASS base 60/30/10
+PASS shortage 50/40/10
+PASS shift limited to remaining good
+PASS roll boundaries
+PASS food 20 command, once per year
+PASS three good exchanges (dup id ignored), stage capped
+PASS third exchange itself does not qualify
+PASS 20% miss keeps friendship
+PASS still none after miss
+PASS next year 19% → mutual interest
+PASS no dating in the same event as interest
+PASS 50% miss
+PASS once per event per pair
+PASS next event 49% → dating
+PASS dating date stored
+PASS secretary excluded
+PASS foreign deferred
+PASS friction → rival step + minimal conflict
+PASS old conflict (talked) reconciled at 29%; today's new conflict not judged
+PASS resolved mark + tried mark
+PASS second call does nothing
+PASS already resolved → no change
+PASS all causes resolved → clear_pending
+PASS discontent state
+PASS A has open conflict (g2 friction) and no trait → 19% grants; C already has a trait, B pending clear, R no conflict
+PASS cause = remaining open conflict
+PASS judged flag blocks re-roll
+PASS A|B: c-old resolved, 3y dating, affection 90 → engaged; A|C friction does not block A|B
+PASS 2y+ dating, affection 90, no conflict, 19% → engaged
+PASS engaged + wedding in 1 year
+PASS dating < 2 years → no judgment
+PASS affection unknown → probability only (user decision 2026-10-23)
+PASS affection is not a condition at all (user decision 2026-10-24: probability only)
+PASS ruler-arranged meetings add +10%p each, capped at +30%p (user decision 2026-10-24)
+PASS arranged twice: 35% roll succeeds where 20% would not
+PASS closed
+PASS ruler absent recorded
+PASS ruler never in background exchanges
+PASS three pairs among A,B,C
+PASS summary array
+PASS second autoFinish returns same summary
+PASS max pairs respected
+PASS ruler-joined exchange shows in summary
+PASS add command by lid, once
+PASS remove command
+PASS bad args throw
+PASS reply parse
+PASS bad op
+PASS omitted contributor → conflict toward decider, not toward praised colleague
+PASS same recognition event not re-rolled
+PASS single contributor → nothing
+PASS non-exclusive → no conflict
+PASS exclusive → toward ruler; obstruction → toward chosen governor
+PASS card lists player-visible conflicts
+PASS mediation entry finds the pair conflict
+PASS hidden conflict not exposed
+PASS proposal threshold incl. 90, unknown affection blocked
+PASS costs
+PASS state refund
+PASS informal refund
+PASS short → stays engaged
+PASS still engaged
+PASS cancel before payment → no refund
+PASS paid → scheduled 1 year later
+PASS not due
+PASS due on the day
+PASS completed during war
+PASS done + wartime flag
+PASS finished wedding cannot be refunded
+PASS death during prep → 50% refund
+PASS no double refund
+PASS pay command all-or-nothing
+PASS refund command
+PASS date special
+PASS repeat decays
+PASS rude decreases
+PASS divorce ends current relation
+PASS no founding date → hold
+PASS 359 days
+PASS 360 days = 1 game year
+PASS date from founding
+PASS desc capped 160
+PASS missing title → null
+PASS not the holiday month
+PASS not owned
+PASS any day in the holiday month (user decision 2026-10-23)
+PASS once per year
+PASS upcoming order wraps to next year
+PASS visit command by colony order, once per year
+PASS democratic
+PASS imperial → autocratic
+PASS corporate → neutral (not forced)
+PASS anchor year Nov → due
+PASS odd year → none
+PASS Oct → not yet
+PASS next round
+PASS overdue at war → exempt
+PASS war state unknown → review, no penalty
+PASS peacetime skip warns
+PASS missed
+PASS fulfill once
+PASS penalty command once per round
+PASS state order
+PASS no due date → never auto-broken
+PASS past due → broken
+PASS petition without governor contribution → nothing (player merit)
+PASS contributed → support only; unknown before → from initial 50
+PASS same cause group: support not doubled, standing once
+PASS broken quietly → support down only
+PASS recognition → standing only
+PASS no support data → 미확인
+PASS standing shown
+PASS death
+PASS still listed = not departed
+PASS ex-ruler gone after ruler change → retired
+PASS plain disappearance → vanished (hold)
+PASS eligibility
+PASS age by game years
+PASS unknown age stays unknown
+PASS contact rules
+PASS no household → self
+PASS partner unknown to caller → self (no disclosure)
+PASS partner answers
+PASS unknown duty is not absence
+PASS allowlist
+PASS settle once
+PASS execution path incl. unknown → applied
+PASS late/foreign replies rejected
+PASS dropped participant returned
+PASS revision bumped
+PASS no repeat speaker
+PASS per-question cap 20, max 5 questions
+PASS low → none
+PASS target empire by sllm_idx, once per operation
+PASS confirm text ko/en
+PASS conflict < 2 years → no judgment
+PASS 20% miss keeps relation
+PASS once per year
+PASS next year 19% → proposal
+PASS 3-month cooling with cause set
+PASS pending inside cooling
+PASS cause resolved → withdrawn
+PASS still married
+PASS cooling over, unresolved → ended
+PASS relation ended, history kept
+PASS ruler's own marriage never auto-proposed
+PASS bad → 0%, 0 → 5%, linear to 20%
+PASS invite with 1-month reply deadline
+PASS same month not re-rolled
+PASS open invite blocks a new one
+PASS deadline day still open
+PASS expired after deadline
+PASS expired → 1 year wait
+PASS waiting period blocks
+PASS after wait → new invite
+PASS accept → visit in 3 months
+PASS accepted invite never expires
+PASS arrived on visit day
+PASS same ruler: nothing cancelled
+PASS ruler changed: former ruler's invite is cancelled once, no waiting period
+PASS arrived: grace month
+PASS arrived but never entered → cancelled after the grace month, 1-year wait
+PASS contact exchange once
+PASS finish → 3-year wait
+PASS good relation → grand at 79%
+PASS neutral → plain
+PASS big drop below bad → humiliating
+PASS deliberately rude host
+PASS decline → 1 year wait
+PASS scheduled invite needs reconfirm after ruler change
+PASS today − 13 months
+PASS colonized this month
+PASS no cage → unknown
+PASS 12 months old → eligible
+PASS 11 months → too young
+PASS leader age fields
+PASS missing fields stay undefined
+PASS lifespan − current age
+PASS immortal → no hint
+PASS execution: by lid, once, ruler guarded
+PASS ruler allowed only with explicit flag
+PASS braces balanced
+PASS braces balanced (ruler)
+PASS topic required
+PASS ruler not a participant
+PASS >8 seats paged, none dropped
+PASS topic → domain
+PASS named speaker
+PASS ruler is never generated
+PASS relevant councilor first
+PASS 1 + 1 supplement max
+PASS supplement is someone else
+PASS roll call each once
+PASS turn once per id
+PASS stale revision rejected
+PASS decision once
+PASS player closes
+PASS resume re-syncs council
+PASS history kept, revision bumped
+PASS resume context has decisions
+PASS secretary excluded
+PASS foreign excluded
+PASS ruler blocked (undecided)
+PASS unknown status blocks
+PASS current own leader ok
+PASS other needs text
+PASS confirm shows claim & privacy
+PASS no knowledge before applied
+PASS must be requested first
+PASS death log merges into case
+PASS applied
+PASS private: announced ignored, present knows, others death only
+PASS death only ≠ execution
+PASS spouse without evidence → oppose, grief
+PASS no re-judge at same knowledge
+PASS death-only person has no stance
+PASS AI context hides truth from death-only
+PASS later disclosure
+PASS disclosure once
+PASS loyal rival → support, relief
+PASS reaction stores basis only, no game effect
+PASS only exchanged contacts
+PASS successor ruler does not inherit
+PASS status checks
+PASS state asks detected
+PASS no data → no authority
+PASS foreign ruler
+PASS routing
+PASS boundary note ko
+PASS claims classified
+PASS never executed
+PASS real gifts only
+PASS other ruler no memories
+PASS fake memory dropped
+PASS letter once
+PASS late reply after ruler change dropped
+PASS reply once (no regen on reopen)
+PASS private letters not shared
+PASS 1 empire → bilateral
+PASS max 4 invitees
+PASS composition key ignores order/dupes
+PASS hostile more likely for peace topic
+PASS never 0% like banquets
+PASS instant results stored
+PASS 3 present → active
+PASS same composition within 1 month → resume
+PASS allowed after 1 month
+PASS only 1 accepted → too small
+PASS host (player) never generated
+PASS most relevant + 1
+PASS roll call each other empire once
+PASS turn dedupe by meeting/utterance/mode/speaker
+PASS ruler change flagged, not replaced; below min
+PASS no turns when too small
+PASS pack-internal paths only
+PASS valid appearance pack
+PASS scripts refused
+PASS escape refused
+PASS install once, not active
+PASS import does not activate
+PASS appearance slot (global)
+PASS lore waits without campaign
+PASS lore per campaign
+PASS no carry-over to other campaign
+PASS target not collected → pending
+PASS AI off item excluded even if relevant
+PASS empire book only when that empire is present
+PASS world + present empire
+PASS lore fenced, fake closing tag stripped
+PASS destroyed target → lost, not re-matched
+PASS late reply checks campaign/version
+PASS slot conflict listed, no auto choice
+PASS my copy keeps origin reference
+PASS diff shown before update
+PASS removed item → slot back to default
+PASS copy untouched by update
+PASS remove resets only that pack’s slots
+PASS other pack slot kept
+PASS copy dependency warned
+PASS export: allowed items only, internal paths, missing reported
+PASS no absolute paths in manifest
+PASS library with Stellaris only
+PASS workshop content dir
+PASS ordinary mod ignored
+PASS old zip item flagged
+PASS marker found, BOM ok, backslashes normalized
+PASS executable inside → invalid
+PASS broken json → invalid
+PASS new add-on notified
+PASS found ≠ installed
+PASS no repeat notice
+PASS user installs (copy)
+PASS steam update → update notice, installed copy unchanged
+PASS id clash with local pack not overwritten
+PASS ignore
+PASS ignored stays quiet
+PASS unsubscribed → gone notice
+PASS installed record kept
+PASS resubscribe restores installed + update
+PASS rescan when folder changed
+PASS notice ko
+PASS upload layout
+PASS index holds only open conflicts
+PASS index matches old scan
+PASS old judged years pruned
+PASS only current month roll record kept
+PASS mtimes of vanished items pruned
+PASS gestalt → no protests
+PASS faction too small on planet
+PASS long war → anti-war
+PASS evidence text from data
+PASS egalitarian rights movement in authoritarian empire
+PASS unknown citizenship → no invented discrimination
+PASS livelihood from planet data
+PASS regime opposite: rarer, stronger
+PASS protest starts
+PASS empire gap 12 months
+PASS next one after a year, other planet
+PASS max 2 active
+PASS promise default 1 year
+PASS war ended → both resolved, promise kept
+PASS planet cooldown 5 years
+PASS ignored 3 months → escalates once
+PASS ignored 6 months → fades
+PASS fading leaves ember
+PASS dispersal → command
+PASS dispersal adds ember
+PASS missed deadline → broken, ember +2
+PASS governor stance from faction support
+PASS advocacy → standing hint
+PASS same peace: celebration vs humiliation protest
+PASS same event once
+PASS AI context = evidence only
+PASS dispersal command once per protest, balanced
+PASS stability curve: 50→50%, 60→30%, 80+→none
+PASS stability 80 → never, even with rng 0
+PASS stable planet: same roll fails
+PASS unstable planet: same roll succeeds
+PASS event grievance feeds monthly roll
+PASS advocate: trust −5
+PASS trust once per protest
+PASS advocate: local support +10
+PASS hardline: trust +5, local support −5
+PASS category by country type
+PASS contacts done
+PASS cut contact leaves items (so every feature drops it) but stays in cut
+PASS restore puts it back
+PASS reset clears all lists
+PASS app: cut/restore per save, saved to its own file, blocked during a call, categories sent
+PASS preload API
+PASS ui: grouped list, two-click cut, restore section (ko/en pairs)
+PASS scan: planets in colony order, other batch ignored
+PASS scan: shares by pop size, housing/amenities ÷100, governor lid
+PASS scan: rights, bad code dropped
+PASS empire from state: ethics bits, war, governor faction, rights
+PASS month: war start remembered
+PASS month: long war → anti-war protest on pacifist planet, pacifist governor advocates
+PASS month: war end outcome from exhaustion and rights change detected
+PASS month: war ended → anti-war demand met
+PASS month: militarist planet keeps a grievance for a year
+PASS month: gestalt → nothing
+PASS delegate prompt: facts only, history, no ruler lines
+PASS mod: protest scan uses pop groups, no Root, balanced
+PASS mod: protest scan inside the monthly batch
+PASS mod: dispersal modifier +5 with ko/en localisation (BOM)
+PASS app: slot before monthly snapshot, registered, preload API
+PASS ui: office loads the protest panel
+PASS pg=0: no pops/shares from the game, stability still fresh
+PASS pg=0 with no earlier full scan → skip the month
+PASS full scan stores shares
+PASS pg=0 reuses last shares/pops, keeps fresh stability, drops vanished planets
+PASS app: month skipped until shares are known
+PASS mod: pop groups only when pg=1, pg in the line, temp variables cleared
+PASS mod: protest breakdown every 3 months, decided before the scan
+PASS mod: contacts every 3 months (HELLO monthly), load reads everything
+PASS mod: first contact refreshes contacts only when the player is involved; fleet.10 skips AI
+PASS mod: per-AI and per-leader temp variables cleared after logging (ids and cycles kept)
+PASS mod: balanced braces after lag changes
+PASS mod: balanced braces after lag changes
+PASS mod: balanced braces after lag changes
+PASS mod: balanced braces after lag changes
+PASS mod: balanced braces after lag changes
+PASS mod: balanced braces after lag changes
+PASS mod: balanced braces after lag changes
+PASS cabinet domains → emergency domains
+PASS emergency prompt: topic is the ruler’s claim, decisions, supplement mode, others, no ruler lines
+PASS emergency prompt: roll call without text
+PASS emergency store: broken dropped, reopened as closed
+PASS ui: emergency room uses the cabinet chamber and all meeting actions
+PASS app: office icon, preload API and registration
+PASS roster row parsed
+PASS roster: bad idx dropped, empty ruler = no ruler
+PASS topic kinds KO/EN
+PASS invitee from roster row
+PASS enemy more likely to come to a peace summit
+PASS convene with two acceptances
+PASS turn keeps the spoken line
+PASS summit prompt: war, topic as host words, others, history, no treaties
+PASS summit prompt: host words as user turn
+PASS ruler change marks the seat, never replaces
+PASS summit store: broken dropped, open → closed
+PASS mod: summit roster probe
+PASS app: slot, registration, preload, command
+PASS ui: summit room and office icon
+PASS advocate: local support +10, ruler trust -5
+PASS same protest counted once (support and trust)
+PASS hardline: support -5, trust +5 on the persona card
+PASS card info: standing unknown (not invented), Mars support, recent reasons
+PASS no record → unknown, not 0
+PASS store cleanup: clamp, drop bad values and records
+PASS app: protests feed the ledger, trust goes to persona, IPC exposed
+PASS ui: office person card shows political standing
+PASS january: not yet
+PASS february: gathering opens, everyone invited
+PASS same year: not reopened
+PASS next month: unattended gathering auto-finishes
+PASS absent ruler: only background pairs among guests (3 of 3 pairs)
+PASS next year opens again
+PASS scene prompt: outcome fixed by the app, AI only narrates
+PASS store cleanup
+PASS mod: discontent traits for all three classes
+PASS mod: korean trait names
+PASS mod: english trait names
+PASS app: slot, registration, preload
+PASS ui: office social gathering panel and relationship card
+PASS date result: best of each spot's final mood
+PASS any rude moment makes the date rude
+PASS affection steps (placeholder sizes), repeat decay
+PASS first date starts affection from 0
+PASS same date applied once
+PASS same places again → smaller gain
+PASS confess: affection 15 is too low
+PASS confess (2026-10-24): no date requirement, affection 30 → 50%, 100 → 100%
+PASS confess without any date
+PASS confess allowed: affection 75
+PASS confess blocked if they are seeing someone
+PASS turned down: affection unchanged
+PASS no re-confession within a year
+PASS accepted → dating
+PASS proposal needs affection 90
+PASS proposal at 90 is 60%: declined, wait a year
+PASS proposal accepted → engaged
+PASS date reply parsed
+PASS bad mood or text → no invented reply
+PASS date prompt: scene, history, content limit, JSON
+PASS polygamy (2026-10-24): other partners named only when present, light jealousy only
+PASS leader portrait keys (2026-10-24): per save, by leader id or by name
+PASS leader portrait: office card sets/clears it, current save only, used first in every scene, EN catalog
+PASS polygamy (2026-10-24): no one-partner blocks, rivals told, secretary jealousy stays light
+PASS store: open date on restart ends without a result
+PASS app: registration, preload, wedding pay/refund replies
+PASS ui: date map window and card buttons
+PASS one governor with two planets stays one person; unassigned planet listed
+PASS issues from confirmed data; unknown housing is not treated as a deficit
+PASS one request per governor, most urgent planet
+PASS open requests are not raised twice
+PASS promise observed only when the data shows it; development never auto-judged
+PASS autocratic rebuttal is cautious; unknown stays unknown
+PASS democratic rebuttal is open
+PASS governor (2026-10-24): small talk gets a short personal answer, planet data only when asked
+PASS authority codes → regime
+PASS anchor: first seen in December → next year
+PASS anchor never moves
+PASS store: in-progress round reopens as due, meetings closed
+PASS monthly snapshot carries the authority code
+PASS mod: authority in monthly scan, absence modifier and names
+PASS app and ui wiring
+PASS planet list carries colony age and designation (old mod: none)
+PASS founding recorded only where colony_age is known
+PASS founded = list date − colony_age months
+PASS founding date never moves
+PASS queue: only planets settled a year ago; unknown founding waits
+PASS Mars joins after its first year
+PASS holiday prompt: confirmed facts, no invented history
+PASS store cleanup
+PASS mod: planet probe sends colony age and designation
+PASS mod: visit modifier and names
+PASS app and ui wiring
+PASS leader age/lifespan/service/immortal from the roster (old mod: none)
+PASS term-ended ruler retires and is kept; others unconfirmed; long-gone people ignored
+PASS LEADEROUT fired upgrades the reason → reachable
+PASS death → memorial, no calls
+PASS a confirmed record stays even if the id reappears
+PASS retired call prompt: spouse scene, no later secrets, structured lines
+PASS partner lines refused when nobody lives with them
+PASS partner line allowed when cohabiting
+PASS store cleanup
+PASS mod: LEADER lines carry age, lifespan, service, immortal (all three classes)
+PASS app and ui wiring
+PASS one new invitation at a time
+PASS reply within a month; host ruler name kept
+PASS no second offer while one awaits a reply
+PASS bad relations never invite
+PASS unanswered invitation lapses after a month
+PASS empires at war with us do not invite
+PASS all empires together: no new invitation within a year of the last one
+PASS a year after the last new invitation, rolls resume
+PASS invitation letter: fixed text with host, deadline, three-month visit
+PASS banquet prompt: hospitality, no treaties, no secrets
+PASS store cleanup keeps valid invites and contacts
+PASS mod: real guest leaders, councilors first, at most 4
+PASS app and ui wiring
+PASS treaty and resource asks both get authority limits
+PASS letter prompt: no authority, real memory only, personal view, no romance
+PASS ruler letter as the user turn
+PASS store cleanup
+PASS app and ui wiring; dinners with exchanged contacts are never pruned
+PASS store: a preparation interrupted by restart is cancelled, never executed
+PASS command: applied is logged before the leader dies (reply precedes LEADEROUT), ruler blocked
+PASS memorial skips deaths owned by an execution case
+PASS app and ui wiring: card button, final confirmation checkbox
+PASS only data files are copied; unknown types skipped
+PASS executables and scripts are reported and block install
+PASS existing addon.json is the only format (images and lore books become comparable items)
+PASS invalid manifest is not offered
+PASS install adds the pack turned off; mods already enabled in game are skipped; the subscription folder is never written
+PASS app and settings ui wiring
+PASS duplicate ids, outside paths and non-text files are skipped; summary capped
+PASS English fence: reference only, game facts first
+PASS budget respected in stable order; fence tags inside text removed
+PASS no books, no fence
+PASS tool-like purposes never get lore
+PASS store cleanup
+PASS AI hook: lore is added to system prompts via the router
+PASS office library wiring
+PASS married: class trait only
+PASS widowed: two negative traits
+PASS widowed or separated: married trait removed
+PASS command: by sllm_lid, once per key, no_target reply
+PASS reply parse
+PASS both spouses marked married
+PASS death of one spouse: survivor found
+PASS marriage ends as bereavement; survivor widowed
+PASS the ruler's own marriage is not part of this rule
+PASS NPC engagement: no affection number → probability only (2 years dating, yearly 20%)
+PASS mod: 7 traits, +10% / −10% / −25%, ko and en names
+PASS localisation BOM headers
+PASS app and ui wiring: replies, deaths, divorces, arranged meetings
+PASS a good talk, but no romance before three good exchanges
+PASS same pair only once a year
+PASS the ruler arranges at most 3 a year
+PASS the ruler cannot be matched
+PASS after three good exchanges an arranged talk can spark mutual interest (hidden from the player)
+PASS last check year kept
+PASS listed by the game → alive
+PASS moved empire is followed; contacts from before tagging stay unknown
+PASS missing from the game → out of touch (once)
+PASS not reported twice
+PASS guest probe tags each guest once and reports the tag before the name
+PASS alive probe lists only tagged leaders
+PASS letters: no reply from or letter to someone out of touch; checked when sending
+PASS tiers: fondness → wistful, hidden love → jealous, lover/spouse → hurt, romance off → none
+PASS same event only once
+PASS wistful note: no hidden romance, no belittling
+PASS consumed after one conversation
+PASS stale news (over half a year) is let go
+PASS partner note (polygamy 2026-10-24): light jealousy only, no protest, status never changes from a line
+PASS romance → secretary event bus
+PASS only public events reach the secretary (no private dating)
+PASS secretary: per-ruler bond, first report only, consumed after success
+PASS secretary brief: up to two troubled planets, with the governor named
+PASS office: governor icon gone; new "Planetary governors" group with council, holidays, protests, petitions
+PASS planet holidays moved out of National Events into their own view
+PASS old governor chat and new-year governor call unwired; in-game decision hidden
+PASS secretary reads planet trouble from the latest planet list (2026-10-31: only when the ruler asks about planets)
+PASS secretary date prompt: android secretary identity, her affection
+PASS leader date prompt unchanged
+PASS romance app: sec key opens the map, result goes to the secretary bond once, not blocked by a leader partner (polygamy 2026-10-24)
+PASS secretary app: bridge (affection gate, memory note) and button state
+PASS secretary panel button → date map with the secretary sprite
+PASS chance: low stability applies more (95% → 15%), unknown = 50
+PASS everyone applied → the 8 neediest (lowest stability) are admitted
+PASS nobody applied → the single neediest is called
+PASS admitted list stays in need order
+PASS convene: only admitted governors attend and raise requests
+PASS council window: regime room art, 8 pads, speaker focus, weak signal
+PASS polygamy (2026-10-24): secretary lover/spouse never blocks leader dates, whatever her affection
+PASS council orbs sit on the outer side so they do not cover neighbouring name plates
+PASS reply ending mid-word counts as cut
+PASS token-limit marker counts as cut
+PASS complete sentence is not cut
+PASS keeps only finished sentences
+PASS drops the marker
+PASS emergency app retries a cut reply once
+PASS groups are fixed by event id (same layout when reopened)
+PASS ten guests → three circles of 3-4, everyone placed once
+PASS circles fill the art spots in order
+PASS crowds: at most six circles of five
+PASS a single guest still forms a circle
+PASS talk prompt: circle, addressee, modest year, history; no ruler lines
+PASS reply split by speaker; ruler line dropped
+PASS loose names and continuation lines
+PASS unnamed reply goes to the addressee
+PASS mood JSON parsed
+PASS bad mood JSON → neutral
+PASS mood tables: neutral = confirmed 60/30/10, poor shift once
+PASS mood rolls
+PASS app: no action cap, talk/leave IPC, judged once and only after the ruler spoke
+PASS closing the gathering settles open circles first
+PASS ui: hall window with AI art backgrounds, talk and leave
+PASS hall: every Korean string goes through ui(ko, en) or a [ko, en] pair
+PASS player2: answers that hit the token cap (finish=stop) count as cut
+PASS player2: retries once with a larger cap, then marks it cut
+PASS council penalty: reports applied only when the modifier really attached (old mod → missing)
+PASS secretary: private rooms drop state data and work talk
+PASS secretary events: a Go back button at any time
+PASS governors council: planet comparison as bar charts instead of a table
+PASS mediation: conflict brief uses the stored story when there is one
+PASS story prompt: no invented facts
+PASS mediation prompt: addressee, no ruler lines, working settlement counts (32)
+PASS verdict prompt requires both sides
+PASS verdict parse: only a real true counts
+PASS app+ui: find-out-why and mediate buttons on the contact card
+PASS discontent: never on the ruler
+PASS ruler engagement never auto-marries through the NPC wedding loop (26)
+PASS bereavement ends dating/engaged too and cancels the ruler wedding with refund (28·26)
+PASS wedding refund is retried when the game is back
+PASS wedding can be called off without a breakup (26)
+PASS polygamy (2026-10-24): no one-partner limit across secretary and leaders
+PASS contact card never leaks a private romance (33·39)
+PASS gathering month: fixed holiday item, month-only change, no collision (29)
+PASS missed month or app closed mid-gathering → background finish (38)
+PASS contactable retired people are invited (29: 50% acceptance)
+PASS governors council: fulfilment needs a governor line, allocation conflicts (36), no regular rounds or missed-round penalty (removed 2026-10-29)
+PASS petition done → player mood (17); executed leaders are not “missing” (06)
+PASS execution: a request cut off by a restart becomes outcome_unknown (06)
+PASS emergency: personal ties in prompts (31), ruler name snapshot per turn (01)
+PASS ISC cut-off guard; leader portrait on the date dialog (24)
+PASS proposal accepted → engaged, not spouse
+PASS no second proposal while engaged; prompt knows about the engagement
+PASS wedding prepare/hold/cancel accept the secretary and hand the result back to her store
+PASS secretary bridge: marry/disengage, wedding info in view
+PASS secretary screen: prepare/hold/cancel buttons and an Engaged badge
+PASS collectibles: 30 hand-picked items
+PASS collectibles: xura grade 1 count
+PASS collectibles: xura grade 2 count
+PASS collectibles: xura grade 3 count
+PASS collectibles: riggan grade 1 count
+PASS collectibles: riggan grade 2 count
+PASS collectibles: riggan grade 3 count
+PASS collectibles: muutagan grade 1 count
+PASS collectibles: muutagan grade 2 count
+PASS collectibles: muutagan grade 3 count
+PASS collectibles: unique ids
+PASS collectibles: unique ko names
+PASS collectibles: price within grade range
+PASS collectibles: known class
+PASS collectibles: each item has its own picture path
+PASS collectibles: every text is a ko/en pair
+PASS collectibles: language-pack skeleton collects every pair
+PASS appraisal: 3 categories x 4 rarities
+PASS appraisal: 3 ko/en templates each, both name the item
+PASS appraisal: ko/en use the same slots
+PASS appraisal: every game specimen gets a filled text without bracket particles
+PASS appraisal: same key, same text
+PASS appraisal: unknown key -> null
+PASS appraisal: josa follows final consonant, non-hangul kept
+PASS appraisal: collectible uses catalog grade
+PASS appraisal: loan bonus 3/5/8 and rarity mapping
+PASS enclave: contacts complete
+PASS enclave: sub 4 = Riggan
+PASS enclave: ct 11 = mercenary enclave, enclave category
+PASS enclave: sub only for enclaves, old mod without sub is fine
+PASS enclave: sub codes
+PASS enclave: mercenary enclave can be contacted (talk only)
+PASS enclave: monthly ENCLAVE line
+PASS enclave: bad cara bits ignored
+PASS enclave: mod sends sub from game flags and clears it
+PASS enclave: mod monthly ENCLAVE line uses flags/modifiers only
+PASS enclave: terminal shows ko/en sub-type names
+PASS voice: keys (marauders on hold, empires untouched)
+PASS voice: instructions are English
+PASS voice: normal empire gets no faction voice
+PASS voice: Muutagan lines from the game (fallen empire remnant, "discount", crystals)
+PASS voice: Riggan is discreet, no slaves
+PASS voice: mercenary enclave cites contract clause
+PASS voice: system prompt includes the faction voice
+PASS voice: not added for normal empires
+PASS enclave news: first month only sets the baseline
+PASS enclave news: festival start
+PASS enclave news: festival end
+PASS enclave news: festival outrage
+PASS enclave news: no change, no news
+PASS enclave news: only newly arrived caravan fleets
+PASS enclave news: festival can become an extra (below wars and crises)
+PASS enclave news: texts are ko/en pairs
+PASS enclave news: no AI call, old mod ignored, registered
+PASS shop: payment command checks once-only mark, balance and save
+PASS shop: bad save id rejected
+PASS shop: ten articles per merchant
+PASS shop: one of a kind, cannot buy twice
+PASS shop: sold out after purchase, placed in the first vitrine
+PASS shop: next free vitrine
+PASS shop: moving onto an occupied vitrine swaps
+PASS shop: 15 vitrines, can be stored
+PASS shop: sanitize drops unknown items
+PASS docs: numbers per issuer and year
+PASS docs: Riggan certificate (anonymity, no slaves, price)
+PASS docs: curator appraisal for a specimen
+PASS docs: unknown item -> null
+PASS docs: broken pledge gets the red stamp
+PASS docs: sanitize
+PASS docs: archive list title names the item
+PASS shop: own log slot
+PASS shop: screens wired (terminal shop, archive, showcase)
+PASS shop: no AI, paid via game, merchant must be reachable
+PASS loan: one year, item marked on loan
+PASS loan: one at a time
+PASS loan: due after a year
+PASS loan: returned, next loan possible
+PASS loan: bonus command once per loan
+PASS loan: sanitize keeps one open loan
+PASS loan: one unit modifier (+1% research) x 3/5/8
+PASS loan: korean localisation with BOM
+PASS loan: english localisation with BOM
+PASS loan: curator must be reachable, appraisal issued, loaned item cannot be moved
+PASS loan: terminal curator row has the loan button
+PASS tour: cost 250, 900 days (user decision)
+PASS tour: refuses during festival/tour, checks balance, once per request
+PASS tour: sanitize
+PASS tour: contract document
+PASS tour: festival x 1/4 effects
+PASS tour: korean localisation
+PASS tour: english localisation
+PASS tour: terminal button wired
+PASS emo: war while weaker builds grudge and fear
+PASS emo: a long war alone eventually makes a strong grudge (2-6 years)
+PASS emo: peacetime rivalry stays below strong
+PASS emo: fades 10% per quarter
+PASS emo: crisis front gratitude (capped at notable), invading during a crisis adds grudge
+PASS emo: crisis front probed (Cetana only after her war starts) and wired
+PASS emo: Cetana neutral until her war; then counts as a hostile crisis
+PASS emo: warm talks build gratitude; letter trigger fires once
+PASS emo: cooled feeling can fire again later
+PASS emo: cold talk adds grudge
+PASS emo: no line when nothing notable
+PASS emo: English prompt line, strongest first, only notable
+PASS emo: letter reason for each emotion
+PASS emo: sanitize
+PASS emo: mod sends war/rival/power per contact and clears
+PASS emo: wired (quarterly tick, letters only when mail on, talk hook, prompt, terminal chips)
+PASS acts: calm empire only clears
+PASS acts: grudge+fear -> threat, coalition, help; weaker -> wary
+PASS acts: gratitude -> aid and help
+PASS acts: war only when the setting is on (grudge 60 revenge, ambition opportunism)
+PASS acts: once per quarter per empire
+PASS acts: bad idx skipped, braces balanced
+PASS acts: long lists split into several console commands
+PASS acts: quarter number starts at 1 (unset game variable reads 0), help letter reason
+PASS acts: mod effects present and balanced
+PASS acts (2026-11-09): no galaxy-wide add_threat — grudge/fear only lower that AI's opinion (stacking, capped, decays)
+PASS acts: coalition modifier and wary opinion
+PASS acts: localisation korean
+PASS acts: localisation english
+PASS acts: wired (setting off by default, log handler, ko/en toggle)
+PASS unit: replace then add with variable multiplier (vanilla overlord_effects pattern)
+PASS unit: negative, permanent, rounded
+PASS unit: rejects bad input
+PASS unit: gratitude aid is a 5-year monthly agreement (25/month), one at a time
+PASS unit: aid localisation korean
+PASS unit: aid localisation english
+PASS map: strongest feeling only, strong >= 40
+PASS map: flags cleared then set each quarter
+PASS map: mode covers every flag, strong before weak, braces balanced
+PASS map: localisation korean
+PASS map: localisation english
+PASS marks: refreshed after the acts in the same quarter
+PASS marks: three invisible, unbuildable megastructures (aid, war, talk)
+PASS marks: clear then re-add in capital system by current state
+PASS marks: localisation korean (no symbols the game font may lack)
+PASS marks: localisation english (no symbols the game font may lack)
+PASS sys: latin name with word boundary
+PASS sys: no match inside longer words
+PASS sys: hangul name followed by a particle
+PASS sys: longest first, at most two per turn
+PASS sys: names shorter than 3 characters ignored
+PASS sys: empty input
+PASS sys: commands
+PASS sys: rejects bad input
+PASS sys: rescan when missing, a year old, rewound or empty
+PASS sys: sanitize table
+PASS sys: sanitize marks
+PASS sys: one year, two per turn
+PASS sys: mod numbers each star once, logs, marks by number
+PASS sys: localisation korean
+PASS sys: localisation english
+PASS sys: wired (chat hook, router, SYS lines kept off the UI)
+PASS pledge: user-confirmed numbers
+PASS pledge: deadline = promised + 2 years unless set; development has none
+PASS pledge: broken only after the deadline, never for record-only fields
+PASS pledge: promised -> broken is final
+PASS pledge: judgeable fields, loyalty 0-100
+PASS pledge: clauses from templates
+PASS pledge: English loyalty line
+PASS pledge: promise history line
+PASS pledge: rendered as a state record with a red BROKEN stamp
+PASS pledge: record-only stamp, sanitize keeps planet and status
+PASS pledge: wired (issue on promise, settle monthly, persona trust, loyalty chip)
+PASS showcase: geometry table present
+PASS showcase: 5 x 3 = 15 slots
+PASS showcase: slots inside the painting and not overlapping
+PASS sec-pledge: only pledge questions
+PASS sec-pledge: English list, most urgent first, record-only and broken shown
+PASS sec-pledge: empty list
+PASS sec-pledge: only in replies to a question, never in the summon briefing
+PASS crisis: mod type numbers 12-17
+PASS crisis: crises are contactable (talk only) in their own category; storms and ferals stay blocked
+PASS crisis: each crisis has an English voice and refuses deals
+PASS crisis: voices follow the game lines (Cetana benevolent, user 2026-10-25)
+PASS crisis: no line without a crisis
+PASS crisis: talk line for ordinary empires
+PASS crisis: empires speak of Cetana neutrally until her war, then as a crisis
+PASS crisis: wired (mod, prompt, terminal ko/en)
+PASS signals: every crisis has ko/en lines for begin, yearly and end
+PASS signals: stable per date, empty for unknown crisis
+PASS signals: Cetana stays benevolent
+PASS record: crisis record renders as a state record with an OVERCOME stamp
+PASS record: sanitize keeps crisis records
+PASS record: wired (signals at begin/yearly/end, record on end, shown under state records)
+PASS pact: numbers as confirmed
+PASS pact: only with ordinary empires, not at war, during a hostile crisis
+PASS pact: no duplicates, at most three
+PASS pact: betrayal removes the pact and the ally
+PASS pact: crisis end closes all and returns allies
+PASS pact: console commands
+PASS pact: bad numbers refused
+PASS pact: English prompt lines with leaning
+PASS pact: action parsed and described
+PASS pact: sanitize
+PASS pact: gratitude +3 per quarter (cap 30), betrayal grudge +40
+PASS pact: partners never get a war act
+PASS pact: allies named in the crisis record
+PASS pact: mod effects, modifiers and both localisations
+PASS pact: wiring
+PASS gestalt: emotions read as computed values or instincts
+PASS gestalt: letter reasons per kind
+PASS gestalt: civic voices from the game greetings
+PASS gestalt: civic voice only on the matching gestalt kind
+PASS gestalt: kinship between single consciousnesses
+PASS gestalt: Contingency signals for a machine player
+PASS gestalt: civic parsed from PROFILE
+PASS gestalt: wiring (mod, prompt, terminal ko/en, signals, letters)
+PASS gestalt: every secretary call, event, date and room is off
+PASS gestalt: office hides the secretary icon (kept in the DOM for the corridor anchor)
+PASS gestalt terms: ko-en pairs, registered for i18n and language packs, existing entries kept
+PASS gestalt terms: wired into the office and re-applied on language change
+PASS dialect: governors council (particles fit, idempotent, only for gestalt)
+PASS dialect: office sentences with particles fixed (을/이/으로)
+PASS dialect: speech window
+PASS dialect: i18n layer, windows, IPC wired
+PASS office: machine gets its own office, hive keeps the gestalt art
+PASS theme: auto follows our empire (machine/hive/main ethic), unknown → default
+PASS office: ko/en names
+PASS theme auto + office fallback wired (ko/en)
+PASS deviant: threshold 30
+PASS report: deviant first (worst first), planets, pledges, crisis, war, feelings; machine/hive voice
+PASS report: calm message and titles
+PASS deviant: collected per monthly batch, stale or broken lines dropped
+PASS council: a deviant node raises an order request (after shortages)
+PASS council: order pledge kept only when stability >= 50 and deviancy < 30
+PASS deviant/report wired (mod, router 77, council, IPC, office ko/en)
+PASS fallen: machine fallen empire recognised
+PASS fallen: caretaker voice, awakened War in Heaven pressure only when awakened
+PASS fallen: task/gift memory lines (at most three, active first)
+PASS fallen: awakening signals ko/en for every kind
+PASS War in Heaven: its own crisis kind, wording and signals, not a hostile crisis
+PASS fallen: mod probe, crisis line, contacts, prompt and awakening tracker wired
+PASS agents: born only where infiltration > 0 (or unknown power)
+PASS agents: infiltration dropped to 0 → quietly recalled (no memorial, no hearing, cover cleared)
+PASS agents: a vanished network still counts misses (lost after two months), not recall
+PASS agents: recalled status survives save/load
+PASS embassy: spy power → intel bucket
+PASS embassy: intel=0 from the game but network 74 → secret tab opens at level 3 (raw untouched, never lowered)
+PASS embassy: app always uses spy-boosted intel; mod intel trigger no longer targets an event_target (error.log "intel target ... is invalid")
+PASS embassy UI: agent card shows even when the secret report is locked
+PASS ui: every script in ui/*.js and inline <script> parses
+PASS mod/app: no sector→leader scope, dinner event has a picture, map-mark megastructure details localised, one officeGo IPC listener
+PASS court: judge sees only operation and accuser, not detected/attributed/facts
+PASS court: burden of proof on the accuser, reasonable doubt favours the player, winner field kept
+PASS court: opponent and evidence roles still see the full incident
+PASS court: spyCourtCase carries no game facts
+PASS pov: espionage.html loads tribunal-pov.js after the scene script, plus its CSS
+PASS pov: every element the stage borrows exists in espionage.html
+PASS pov: KO/EN text only through bi() (language-pack safe)
+PASS pov: art slots fall back to the existing tribunal art (new ChatGPT art drops in by file name)
+PASS pov: stage only during the face-to-face hearing, honours reduced motion, hides missing art
+PASS pov: window goes full screen only for the face-to-face hearing (press conference stays windowed)
+PASS pov: Esc/leave asks before forfeiting; board waits for the ruling before showing results
+PASS chess: move counts from the start (perft 1-3)
+PASS chess: fool's mate is checkmate, written Qh4#
+PASS chess: castling moves king and rook
+PASS chess: level and traits set depth, blunders and habits
+PASS chess: AI takes a free pawn when it does not blunder
+PASS chess: board story in plain words, no full move list
+PASS chess app: only in-person scenes with someone present; the record is dropped when the game ends
+PASS chess app: result is memory only (trust 0); talk goes through the normal persona rules
+PASS chess: IPC, preload and registration
+PASS chess window: KO/EN only through L(), asks on demand
+PASS vault: deposit checks stock, deficit, dedupes by cid
+PASS vault: withdraw returns energy to the treasury
+PASS vault: bad arguments refused
+PASS vault: deficit deposit can raise suspicion (rng low)
+PASS vault: the same reply is not counted twice
+PASS vault: surplus deposit never raises suspicion
+PASS vault: deficit deposit usually raises nothing (rng high)
+PASS vault: spend only what is there, winnings go back in
+PASS vault: withdraw to treasury, no suspicion
+PASS vault: suspicion fades after two quiet years
+PASS vault: suspicion raises the graft plot weight
+PASS vault: store cleanup
+PASS vault app: recorded before sending; court reads suspicion
+PASS vault: IPC, preload, router slot and registration
+PASS slots: the house keeps a small edge (RTP 90~100%)
+PASS slots: three of a kind, two nebulae, nothing
+PASS roulette: 35:1 straight, zero loses outside bets, 2:1 dozens/columns
+PASS stellar dice: big loses on triples, triple 30:1, total 4 pays 50:1
+PASS bets: invalid ones refused
+PASS blackjack: ace counts 1 or 11
+PASS blackjack: hit to 18 and stand; dealer 16 draws 9 and busts → win pays 2x
+PASS poker: hand categories from 7 cards (wheel straight too)
+PASS poker: two pair beats any one pair; aces beat kings
+PASS poker: chips are conserved across hands (no credits created or lost)
+PASS poker story: the companion sees only their own cards
+PASS casino app: stakes only from the vault, no game commands
+PASS casino app: others' cards hidden on screen; several companions, each talk uses the normal persona rules
+PASS casino: IPC, preload and registration
+PASS match: same seed → same match (replays are exact)
+PASS match: ends by core or at the cap (plus the final assault)
+PASS engine 2: Nebula Colossus; old matches replay on engine 1 (records keep eng)
+PASS engine 3: heroes level up during a match; engine 2 replays stay level-less
+PASS engine 4: weapon ultimates (KO/EN names per role) and recall-to-base; engine 3 replays have neither
+PASS engine 5: jungle camps feed the jungler; engine 4 replays have no camps
+PASS engine 6: upsets happen (strong team ~85%, not 97%); form only from engine 6
+PASS worlds/olympics: one stage revealed per month, international toto, bracket screens
+PASS match: a much stronger team usually wins
+PASS odds: favourite pays less, both above 1
+PASS weapons: 100, 20 per role
+PASS weapons: KO/EN names, modest modifiers (player skill matters more)
+PASS roster: 200 unique players, 20 legends (8 from the start), 40 per role
+PASS legends: signature weapon fits their role
+PASS legends: same stats in every save, signature weapon mastered
+PASS nicknames: 5,000+ unique combinations for ordinary players, legends keep their own
+PASS legends: clearly stronger than ordinary players
+PASS draft: 4 bans then 10 picks, 5 each
+PASS weapon draft: no weapon twice, each side fills all five roles
+PASS weapon draft: a banned weapon cannot be chosen again
+PASS team: each player carries a picked weapon
+PASS sponsor tiers: 1 requests, 2 + scouting, 3 + rename and draft
+PASS sponsor: higher tiers cost more; prize share stays small
+PASS league: 7 rounds, everyone once a round, all 28 pairs
+PASS standings: wins, losses, kill difference breaks ties
+PASS toto: more picks → bigger odds
+PASS olympics: weighted vote (the heavy voter backs itself)
+PASS olympics: 8-nation bracket gives gold, silver, bronze
+PASS club names: 1,000+ unique companies (KO/EN) + mascots, so few planets never repeat a name
+PASS counters: ring burst>hunter>push>tank>offense>defense>burst, balanced neutral
+PASS condition: 5 steps, optimist never below Normal, pessimist never above Good
+PASS traits: 18 with KO/EN, engine traits included
+PASS engine traits: Bloodlust + Ironskin team wins more than even
+PASS meta patch: 40 weapons at first, +6 on a release patch, winners nerfed, losers buffed
+PASS meta patch: balance-only patches add no weapons (new weapons every 5 years)
+PASS draft pool: only released, not globally banned weapons
+PASS sponsor missions: strong clubs get hard goals; KO/EN
+PASS gear: 4 slots × 4 grades, expired gear gives nothing
+PASS all-star rules: special rules reach the engine (half-health cores)
+PASS club logos: flag-style parts (40 emblems × 8 shapes × 6 patterns × 16 colors), KO/EN names
+PASS club logos: main sponsor can redesign the logo
+PASS real names: every player has a gender; legends name from their portrait species
+PASS legend program: only young high-potential prospects
+PASS legend program: OVR 85 plus a title or an Olympic medal
+PASS legend program: fostered players grow faster
+PASS legend program: automatic epithet skips ones already used
+PASS LoG app: money through the vault, game only via the nation-link modifiers (log-nation) and host-bid payments (log-host LOGPAY), no state-run club
+PASS host bid: lobby forecast, game payment command (short/duplicate), readiness → result, LOGPAY routed, screen wired
+PASS hosting council: speech persuasion adds to that nation's lobby, capped per nation
+PASS hosting council: debate hook feeds the bid, vote ballots stored, IPC wired
+PASS hosting council UI: host mode (no force, support-only), vote scene rounds, LoG panel buttons
+PASS LoG screen: stadium buttons (sponsor → sponsored club, watch), weapons not heroes
+PASS LoG: IPC, preload and registration
+PASS LoG app: real names from the game name lists; fostered player is never released
+PASS LoG app: club name = company + mascot (home planet shown separately)
+PASS club logos: assigned per club, shown in tables/match screen, main-sponsor editor, emblem art tinted
+PASS LoG app: patches, global bans, missions, gear, all-star wired to the screen
+PASS match screen: frames carry kills/deaths/respawn and hit effects
+PASS match screen: scoreboard, player cards, result screen with replay, map art slot
+PASS Worlds: format scales with the field (22 full / 12-21 Swiss / 6-11 round robin)
+PASS Worlds: every 3 years, members only (3 seeds each), worker thread, resumes after restart, Swiss/Bo5, watchable
+PASS outing: landmark follows the strongest ethic, player can pick another of ours, none for gestalt
+PASS outing: date needs a partner, stadium open alone, stale companion falls back to alone
+PASS outing: desk wallet opens the capital map (art or drawn city), park → date map, stadium → LoG, no game commands
+PASS casino screen: five games reachable from the outing map, art slots with drawn fallback, poker talk wired
+PASS store: VIP floors 40–43, 20 items each on 40/41/42, unique ids
+PASS store: VIP tiers, discounts, limited items, gift affection with taste and same-day repeat
+PASS store: outing → elevator (40–43 only), vault purchases, gifts to the partner, lounge talk, no game commands
+PASS petshop: 15 fish + 15 pets, daily rare pool, unique ids, tank 8 / pets 3
+PASS petshop: rare fixed per day and rotating, partner pick affection, name cleaning
+PASS petshop: outing → shop, vault purchases, limits, naming/rehoming, no AI and no game commands
+PASS child gifts: bond starts at 50, rises with gifts, caps at 100, reaching "close" eases one old hurt
+PASS child gifts: store → child picker → bond, shown in the nursery, warms the child talk
+PASS tavern: alone only, three disguises, four tables
+PASS tavern: suspicion grows with odd talk and mismatched tables, mood bands
+PASS tavern: fallback chatter for every table, LLM chatter cleaned or rejected
+PASS tavern: one LLM call per day for eavesdropping, talk on demand, exposure is story only (no game or mood effect)
+PASS black market: alone only, 16 wares, hidden floor price fixed per day
+PASS black market: haggling accepts at the floor, counters, gets insulted by lowballs, walks away
+PASS black market: raids certain when the patrol heat is full, possible from 60
+PASS black market: vault purchases, broker tips light court plot hints, no AI and no game commands
+PASS landmark: all eight ethic places open (none for gestalt), each with a figure and a drawn building
+PASS landmark: crowd score clamped to -2..+3
+PASS landmark: ritual and speech move public mood once a year at most, talk and speech use AI only on demand, no game commands
+PASS bedroom: 13 spots, store floors 40/42 + black market only, refs with #n fit by item kind
+PASS bedroom: one item one spot, gone items drop, frame pictures only images, tasteful scene
+PASS bedroom: key on the private-room desk opens it; no spending, only the comfort game command (2026-10-31); partner talk via sayInPerson only (secretary elsewhere)
+PASS log-nation: fever scales mood (0.4–1.2), spiritualist fever rises slower, decays
+PASS log-nation: militarist loves aggressive wins, pacifist prefers defensive
+PASS log-nation: home pride/gloom (pride wins), rivals after 3 meetings, letter tone by attitude
+PASS log-nation: template letters and sports pages fill names (no AI)
+PASS log-nation: game command only whitelisted mods, once per batch
+PASS log-nation: mod modifiers + English/Korean names
+PASS log-nation: wired into seasons, Worlds, Olympics, game replies and the Nation tab
+PASS log-nation: refusing a nation at war forfeits only those Worlds matches
+PASS log-nation: hot fever cools faster, broken saves repaired once, gestalt has no toto/sponsor/Worlds clubs, fresh batch numbers
+PASS paparazzi: 12 outing events, bribe by severity, no suing flattering stories, casino/speech thresholds
+PASS paparazzi: template stories (no AI), 30-day wait
+PASS paparazzi: foreign opinion only via mod modifiers, once per story
+PASS paparazzi: every outing place reports, bribe/ignore/sue, timeout publishes, no AI
+PASS fbanquet: no unconditional monthly readRoster
+PASS fbanquet: offline roster (cached/contacts), live check only on offer or dinner day
+PASS isc: cached roster exported
+PASS secapp: feature cards (unique ids, ko/en keywords)
+PASS secapp: LoG question picks the LoG card
+PASS secapp: hosting question picks the hosting card
+PASS secapp: matching records are added
+PASS secapp: unrelated question adds nothing (no extra tokens)
+PASS secapp: a failing source is skipped
+PASS secapp: secretary talk uses app cards and live records
+PASS secapp: LoG, vault, petitions, mood register their records
+PASS emergency: councilors stay on the topic
+PASS emergency: topic-related app records (e.g. LoG hosting) are given
+PASS bedroom: art-mode spots, furniture standing on its floor line, pets above furniture
+PASS bedroom app: room images and default bed
+PASS bedroom: safe object and bar button open the vault; Esc closes the vault first
+PASS vault ui: deposit/withdraw/resend/live update, ko/en via L
+PASS comfort: tiers at 3/6/10/15 kinds
+PASS comfort: kinds to next tier
+PASS comfort: one command swaps the tier modifier
+PASS comfort: bad args rejected
+PASS comfort: sent on purchase / entering the bedroom only (never monthly)
+PASS bedroom ui: no furniture placement, comfort panel instead
+PASS comfort: mod modifiers with KO/EN names
+PASS secretary: planet reports only when the ruler asks (planet words or one of our planet names)
+PASS save: top-level index finds blocks and values, not nested keys
+PASS save: parse block with lists
+PASS save: repeated keys become arrays
+PASS save: names resolve through game text (two-part names, adjective + noun)
+PASS save: reads game .yml text lines
+PASS save: countries (not creatures), player save id, names, ethics
+PASS save: only our leaders, ruler marked
+PASS save: our planets with colony numbers, governor, planet ID, mandate and seasoned flag
+PASS save: designation numbers match the mod; mandate flag order matches the app
+PASS save: summary read in the save worker; governor screen uses a fresh autosave first, game as fallback
+PASS cyber: log lines read, bad stage/result/sid dropped
+PASS cyber: chronicle lines for domestic boards (foreign IPs, censorship row) and world news (protest, repelled, lost)
+PASS cyber app: slot, ledger, office alert to espionage, status panel (bilingual)
+PASS cyber mod: AI smear/incident success starts the situation; approaches, end log, cooldown, modifiers
+PASS cyber loc: every key in Korean and English, fallbacks carry the English lines
+PASS trial: evidence from counter-op months, Cyber Command half, intel bonus, capped
+PASS trial: no evidence → almost certain loss; evidence names match where it came from
+PASS trial: defendant prompt knows whether the plaintiff has evidence
+PASS trial: answer read, lean clamped
+PASS trial: verdict command (fee, flags, convicted opinion)
+PASS trial: bad inputs refused; filing/verdict go to world news, a dismissal shames us at home
+PASS trial app/mod/loc: one hearing per campaign, situation reacts to the verdict (bilingual)
+PASS preftl net: Atomic Age up, our post needed, no hive minds, once a month; atomic = terminal, early space = web
+PASS preftl net: prompt follows age, awareness, crisis and sky-voice faith
+PASS preftl net: answer read, thin threads dropped
+PASS preftl net: template board when AI is off or fails
+PASS preftl net post: only in this month's session, 3 per session, default handles
+PASS preftl net post: locals reply, risk 0-2 judged by the AI (unreadable → 1)
+PASS preftl net post: atomic boards (few users) raise awareness every time; the public internet only against long odds (2%/5%)
+PASS preftl net app: registered, injected into the observation screen, terminal and web views (bilingual, no real trademarks)
+PASS vadmin: transfer/list commands (take = them → us, fee 25 + 50 per colony)
+PASS vadmin: bad inputs refused
+PASS vadmin: our ethics → assimilation pulls, one government step at a time
+PASS vadmin: tech aid = six months of our research, capped
+PASS vadmin: cooldowns, list lines, status text
+PASS deals: cede clause sanitized, valued by colonies, given by its side
+PASS vadmin app/ui: wired into the subjects window and the deal board (bilingual)
+PASS vadmin mod: effects, assimilation modifiers, loc (Korean/English + fallbacks)
+PASS alarm: catalog (flags + modifiers, Korean/English, unique keys)
+PASS alarm mod: generated scan matches the catalog; subject flags carry the subject number; bar effects
+PASS alarm: commands
+PASS alarm: bad inputs refused, lines read
+PASS alarm: 30-day months, 360-day years
+PASS alarm: merge — gone from the game = available again (save reloads stay right), app dates ring on their day
+PASS alarm: secretary facts
+PASS alarm app: wired (office icon beside the secretary, secretary brief, vassal admin reads game days)
+PASS alarm mod: situations, progress value, loc (Korean/English + fallbacks)
+PASS fleet orders: three new switches go to the game and the summary line
+PASS fleet orders: the LLM can switch them by words; unspoken ones are kept
+PASS fleet orders: prompt explains the switches and their current values
+PASS fleet orders: game report reads the switches back
+PASS fleet orders mod: target filter (fortress, home), pursuit within 3 jumps, report carries the switches
+PASS kin: sllm_kin_enslaved 정의 + 첩보 조건
+PASS kin: 영어 문구 sllm_kin_enslaved
+PASS kin: 한국어 문구 sllm_kin_enslaved
+PASS kin: sllm_kin_expelled 정의 + 첩보 조건
+PASS kin: 영어 문구 sllm_kin_expelled
+PASS kin: 한국어 문구 sllm_kin_expelled
+PASS kin: sllm_kin_purged 정의 + 첩보 조건
+PASS kin: 영어 문구 sllm_kin_purged
+PASS kin: 한국어 문구 sllm_kin_purged
+PASS kin: sllm_kin_stapled 정의 + 첩보 조건
+PASS kin: 영어 문구 sllm_kin_stapled
+PASS kin: 한국어 문구 sllm_kin_stapled
+PASS kin: 신경 절제는 경제 첩보 2단계
+PASS infamy: 호감 수정자 이름 그대로의 문구 키도 있음
+PASS waive: 화면 항목 받기
+PASS waive: 양쪽 약속
+PASS waive: 그들만 영유권을 걸었으면 −12
+PASS waive: 우리만 걸었으면 +12
+PASS waive: 전쟁 중이면 종전과 함께만
+PASS waive: 종전과 함께면 됨
+PASS waive: 게임 명령 칸
+PASS waive: DEALCTX cu 읽기
+PASS waive: 10년 약속
+PASS waive: 새로 건 쪽이 어긴 것
+PASS waive: 기한 뒤는 자유
+PASS waive: 기한 지나면 지움
+PASS waive: 진행 중이면 약속이 끝나지 않음
+PASS waive: 모드 읽기(cu·ct)·지우기(remove_claims)
+PASS so: 원자력 시대 전엔 없음
+PASS so: 주사위 실패면 대치 없음(다시 굴리지 않음)
+PASS so: 시작 긴장 50
+PASS so: 이미 굴렸으면 그대로
+PASS so: 광신 군국·외계인혐오는 일촉즉발 → 핵전쟁
+PASS so: 평화주의 + 해빙이면 평화적 종결
+PASS so: 우리 공(20 넘게 낮춤)일 때만 보상
+PASS so: 목소리 calm → 긴장(±20)
+PASS so: 완화 공작은 대치 중일 때만
+PASS so: 무력화는 일촉즉발일 때만
+PASS so: 무력화 실패는 W 24(인지도)
+PASS so: 결말 명령
+PASS so: 모드 결말 효과
+PASS so: 성향 칸 · 21~24 가 관측소 임무로 새지 않음
+PASS so: PFTL pe 읽기
+PASS vassal tabs: five tabs (bilingual), card helper, at-a-glance with to-do, tab kept, pane kept across pushes
+PASS vassal tabs: letters tab keeps the old functions; overlord channel gets its own tabs (letters · orders · status)
+PASS vassal tabs: every feature lives in a card of its tab
+PASS vassal tabs: cards refresh together after an action; pending requests light the tab and the to-do list
+PASS rebels: rebellion goes to asks (others) or ours (from us), once per country
+PASS rebels: rebels know when we sowed unrest in their old empire
+PASS rebels: sow cooldown 24 months, active for 3 years
+PASS rebels: odds
+PASS rebels: date helpers
+PASS rebels: AI sow chance with 36-month cooldown
+PASS rebels: commands validated
+PASS rebels: mod effects and triggers defined
+PASS rebels: no event_target names inside log text; own names only
+PASS rebels: near-only (border or one jump), cached as pair flags every 3 months
+PASS rebels: near flags refreshed before AI checks each month
+PASS rebels: modifiers defined
+PASS rebels: KO/EN localisation
+PASS rebels: wired (preload, main, slot, office)
+PASS rebels: UI bilingual, toasts open espionage
+PASS rebels: foe and planet lines collected by req
+PASS tension: stage thresholds 25/50/75/90/100
+PASS tension: off until a scenario turns it on
+PASS tension: monthly line records a point
+PASS tension: one point per month
+PASS tension: border friction noted
+PASS tension: stage change, first set silent
+PASS tension: war line
+PASS tension: prompt line
+PASS tension: command guards
+PASS tension: mod API begin/shift/add/query/end
+PASS tension: no variable-to-variable comparisons
+PASS tension: monthly pulse only when on, bar driven by script
+PASS tension: loc sllm_tension
+PASS tension: loc sllm_tn_stage_3
+PASS tension: loc sllm_tn.15.desc
+PASS tension: loc cb_sllm_tn_showdown
+PASS tension: loc wg_sllm_tn_showdown_accept
+PASS tension: loc sllm_tn_humbled
+PASS tension: wiring
+PASS tension: UI bilingual, hidden outside scenarios
+PASS duo: ruling/coalition → gov, main opposition → opp, others by ideals/approval, independents stay out
+PASS duo: a wing keeps its party
+PASS duo: seats and support per party
+PASS duo: poll adds to 100 and swing moves it
+PASS duo: low approval and scandals pull the governing party down, democracy ×1.5
+PASS duo: honeymoon up, fatigue and long war down
+PASS duo: votes to seats with a winner bonus
+PASS duo: seat moves spread over wings exactly, never below zero
+PASS duo: pledge report card
+PASS duo: pledge choices depend on the situation
+PASS duo: question time from real facts
+PASS duo: verdict parsing clamps
+PASS duo: debate opening bilingual
+PASS duo: party names
+PASS duo: dates
+PASS duo: wiring
+PASS duo: UI bilingual via L()
+PASS scenario: only known scenario lines
+PASS scenario: names, idx, seat
+PASS scenario: power and truce
+PASS scenario: world history filled, fits the chronicle
+PASS scenario: per-empire history is between that empire and the player
+PASS scenario: Alliance seat sees the wars with the Empire
+PASS scenario: prompt block
+PASS scenario: stored data cleaned
+PASS scenario: wiring
+PASS scenario: lines without an SLLM save id are ignored; chronicle only for the loaded save
+PASS scenario mod: report lines, no $PARAM$ inside log text
+PASS scenario: UI bilingual
+PASS tl: key parse (0 = unknown, no K-shortened values)
+PASS tl: loading the latest month continues the same timeline
+PASS tl: loading an earlier month forks a new branch
+PASS tl: loading the other timeline's last save goes back to it (same date — the date rule would miss this)
+PASS tl: unknown id falls back to the date rule
+PASS tl: persisted
+PASS tl: mod rolls monthly, logs on MONTH/LOADED, own names
+PASS tl: wired to LOADED and MONTH
+PASS budget: naval capacity parse (old mod → none)
+PASS budget: defense asks for capacity when nearly full
+PASS budget: capacity in meeting prompt
+PASS budget: mod exports max naval capacity
+PASS deals: mod exports storage max on DEALX and DEALCTX
+PASS planets: free jobs / unemployed / flat stability parsed (old mod → none)
+PASS planets: facts mention unemployment and open jobs
+PASS planets: unemployment is a governor-report trouble
+PASS reverse: orders — 1-year gap, per-type cooldown, fleet minimum, chance
+PASS reverse: forced seizure after 2 tithe refusals in 10 years; alignment every 5 years
+PASS reverse: game commands flip us/overlord (player = sllm_vr_t)
+PASS reverse: bad inputs refused
+PASS reverse: order texts and letter situations
+PASS reverse mod: defy/minder/AI claim effects, AI war-goal weight, modifiers + loc
+PASS reverse app/ui: monthly orders, answers, lapse = refusal, overlord channel tabs (bilingual)
+PASS levy: odds (a bit easier than a proxy war), roll
+PASS tithe: acceptance chance by loyalty/autonomy
+PASS levy/tithe: game commands
+PASS levy/tithe: bad inputs refused
+PASS levy/tithe: lines, texts, heat
+PASS levy/tithe mod: list, lease, check, transfer (last fleet kept, verified)
+PASS levy/tithe mod: modifiers + loc (+ fallbacks)
+PASS levy/tithe app/ui: wired in the War tab (bilingual)
+PASS reign: install/leaders commands (their person or ours, fees differ)
+PASS reign: bad inputs refused
+PASS reign: meddling heat by loyalty (loyal half/180d, disloyal 1.25x/540d), tiers 2/5/9
+PASS reign: heat cools 1 per 6 months; text
+PASS reign: meddle command (tier 0 = remove)
+PASS reign: proxy odds by loyalty/autonomy/war, roll, war-funds request
+PASS reign: proxy commands and letter situations
+PASS reign: alignment codes → text
+PASS reign: prize commands
+PASS reign: lines read, status text, cooldowns
+PASS reign mod: effects (install, proxy, meddle, align, prize, war outcomes)
+PASS reign mod: policy/right codes match the app table
+PASS reign mod: casus belli, war goals, modifiers, loc (Korean/English + fallbacks)
+PASS reign app/ui: wired into the subjects window (bilingual), other meddling actions feed the heat
+PASS preftl obs: 궤도 함대 훑기 대신 관측소 범위만 씀
+PASS preftl obs: 관측 상태·행동 둘 다 관측소 주인으로 우리 것인지 판단
+PASS preftl obs: 주인이 우리가 아닐 때만 「다른 나라 관측소」
+PASS preftl obs: 임무 바꾸기는 우리 관측소 함대에서
+PASS gdll: 앱에 새 DLL 이 없으면 아무것도 안 함
+PASS gdll: 우리 표식이 맞는 것만 바꾸고 남의 DLL 은 그대로(같은 폴더는 한 번)
+PASS gdll: 바꾼 내용
+PASS gdll: .owner 도 새 해시
+PASS gdll: 남의 DLL 그대로
+PASS gdll: 임시·백업 파일 정리
+PASS gdll: 이미 같으면 그대로
+PASS gdll: 예전 앱이 막는 파일은 예전 위치 그대로(새 DLL 은 native/bridge 로만) — 예전 앱도 앱 업데이트로 받게
+PASS gdll: 새 위치는 앱 업데이트 묶음에 들어갈 수 있음
+PASS gdll: 등록됨 · 게임이 꺼져 있을 때만 바꿈
+PASS firstinstall: 창작마당 묶음이 설치기보다 낮은 버전이어도 채움(too_old 로 막지 않음)
+PASS firstinstall: 묶음이 여럿이면 가장 높은 버전
+PASS firstinstall: 묶음이 없으면 missing
+PASS firstinstall: 버전 때문에 막는 안내 문구·판정이 남아 있지 않음
+PASS portrait-why: DX10(BC7 등) 형식과 크기
+PASS portrait-why: DXT5
+PASS portrait-why: 압축 없는 RGB
+PASS portrait-why: 파일 없음
+PASS portrait-why: portrait.mods 로그에 키별 실패 이유(읽지 못한 텍스처 + DDS 형식)
+PASS vte: textureFile(대문자)·Portraits(대문자)도 읽음 — 예전엔 no_entity 로 실패
+PASS vte: 불투명 영역만 골라냄
+PASS vte: 2D 초상화를 그림
+PASS cabinet room: every window.sllm call it makes exists in preload (facState/onFacState were renamed away)
+PASS galactic forum: no holo glow, opaque board
+PASS gforum: thread prompt lists flagged posters with their stance
+PASS gforum: thread read — unknown posters and empty posts dropped, >>replies mapped to post numbers
+PASS gforum: too-short or broken answers make no thread
+PASS gforum: official reply draws reactions that quote it
+PASS gforum: xenophobe citizens rarely post and are openly hostile when they do
+PASS gforum: off-topic threads with an AI-chosen everyday subject, recent subjects avoided
+PASS gforum app: world news feed, monthly cap, fourth internet tab with flags (bilingual)
+PASS rename: foreign capital renamed by empire ID, old name logged first
+PASS rename: subject system and our own capital use their own scopes
+PASS rename: bad target / empty name / save rejected
+PASS rename: only unreturned names we took can be returned; renaming twice keeps the first name
+PASS deals: rename (them gives) and restore (we give) clauses sanitised
+PASS deals: pride makes a capital rename harder than a system rename; returning a name helps
+PASS deals: one name clause per place; unknown restore explained
+PASS deals: rename shown in both languages and to the AI as a humiliation
+PASS action: AI rename demand parsed, name cleaned, shown as a treaty of shame
+PASS rename mod: humiliation and restoration opinion modifiers with KO/EN names
+PASS rename deals: clause applied, opinion, ledger and UI wired
+PASS rename: vassal edict (+15 autonomy) and wartime AI demand wired
+PASS fleetname: first space victory against an empire → admiral proposal
+PASS fleetname: losses, monsters/pirates and ground battles do not count
+PASS fleetname: once per fleet, at most one proposal every 3 years
+PASS fleetname: command renames the fleet its admiral commands, reports when not found
+PASS fleetname: bad admiral / save / empty name rejected
+PASS fleetname: admiral answer read as 3 names (old name dropped)
+PASS fleetname: admiral prompt in English with the battle facts
+PASS fleetname app: no alert, shown in the cabinet meeting list, bilingual naming panel
+PASS colname: planet_names parsed per list (generic + class lists, empty lists dropped)
+PASS colname: 3 distinct candidates from the species name list, names already in use skipped
+PASS colname: no name lists → no candidates (no AI fallback here)
+PASS colname: command renames our planet by ID with the name-list key
+PASS colname: free-text name cleaned of quotes, brackets and game markup
+PASS colname: bad planet / save / key / empty text rejected
+PASS colname: settlers' answer read as 3 names (old name and duplicates dropped)
+PASS colname: settlers prompt in English, gestalt empires speak as the collective
+PASS colname mod: player-colonised planets only (on_colonized), planet ID shared with governor mandates, name last on the line
+PASS colname app: IPC + router slot wired, office alert opens the bilingual naming screen
+PASS govpol: 8 default mandates, numbered 1..8, bilingual
+PASS govpol: recommendations follow the designation
+PASS govpol: governor temper is fixed per name and all three occur
+PASS govpol: command clears old flags, sets mandate + temper, logs GOVPOL
+PASS govpol: mandate buff + temper buff + 1-year timer on hand-over; withdraw/changing clears buffs and seasoning
+PASS govpol: withdraw only clears; steady temper has no flag
+PASS govpol mod: in-game governor portrait window on handover and when seasoned (KO/EN text)
+PASS govpol: unity/trade mandates prepared in the mod (flags, buffs, list numbers 9/10, KO/EN) but not offered until their build lists exist
+PASS govpol: bad planet id / save / mandate rejected
+PASS govpol: governor lines in both languages, no leftover placeholders
+PASS govpol: planet list reads planet ID and mandate (old mod: none)
+PASS govpol mod (2026-11-03 direct build): old automation category emptied, treasury gate kept
+PASS govpol mod: monthly tick builds by mandate, recalled planets still finish
+PASS govpol mod: generated projects (game costs/times resolved, no @vars or $params) start, verify and refund
+PASS govpol mod: planet list logs planet ID and mandate number in the app order
+PASS govpol mod: small mandate buffs (+15% build, +3% output), temper and seasoned modifiers match the app
+PASS govpol mod: after a year the governor becomes seasoned (player only, cheap monthly flag check)
+PASS govpol mod: category name in English and Korean
+PASS govpol app: IPC + router slot wired, office governor group opens the bilingual screen
+PASS party: scenes are seeded, everyone has a spot, guests move between scenes
+PASS party: pairs banter in both languages, incidents fit the scene
+PASS party: sometimes a group of 3-4 gathers (own spot, not the incident spot), all of them mingle
+PASS party polish: more incidents (3-person too, all pairs mingle), icons, scene lighting
+PASS party photo: ruler in the middle, two rows, flash, saved as a picture once, album opens it
+PASS photo album: in the personal journal, party photos as files, click to enlarge
+PASS journal 다꾸: photos pasted as [[📷:id]], never split across pages, shown taped in, described in words for the secretary
+PASS party: pairs who mingled
+PASS party: 180-day cooldown
+PASS party: unity always, battle bonus only in war/crisis
+PASS party: guest groups
+PASS party app: IPC wired, talk = in-person AI, trust note, relation exchanges, PARTYFX routed
+PASS party UI: bilingual screen, opened from the private room
+PASS party foreign: goodwill opinion on each guest empire once
+PASS party foreign: at most 2 foreign guests
+PASS party foreign: friends from dinners (no rulers, no gone, not at war), own talk, ledger accepts f: pids, 🌐 in picker
+PASS party foreign: casual off-the-record prompt, no treaties
+PASS party tone (2026-11-04): guests talk off duty, react to the moment, no briefings - both our leaders and foreign friends
+PASS stellachess: new run — 5-slot shop of cost-1 ships at fleet size 2
+PASS stellachess: three of a ship combine into one ★2
+PASS stellachess: move reserve → board
+PASS stellachess: synergies count distinct ships (duplicates do not stack)
+PASS stellachess: same seed = same battle (replayable)
+PASS stellachess: bosses every 5 rounds
+PASS stellachess: payout by last boss beaten (half if defeated)
+PASS stellachess trial: 30 rounds, 6 bosses, 3 lives
+PASS stellachess bosses: order Khan → Horror → Drake → Unbidden → Cetana → Lag; Horror and Drake fight alone, the rest bring their own ships
+PASS stellachess bosses: round 20 is the Unbidden (언비든) or the Prethoryn Scourge, fixed per run
+PASS stellachess bosses: the Lag avatar freezes our ships
+PASS stellachess bosses: the Ether Drake breath hits an area
+PASS stellachess trial: a loss costs exactly one life
+PASS stellachess trial: wins add score
+PASS stellachess chaos: seeded twist per round, ×1.5 payout, none in normal mode
+PASS stellachess hard mode: own payout table (×5 at the end), normal back to ×4, score ×2
+PASS stellachess hard mode: regular foes ×1.5 hull/shields/armor (bosses ×2.5), damage ×1.25
+PASS stellachess hard mode: Great Khan ×2, other bosses ×2.5, shown on screen
+PASS stellachess: won regular rounds drop a component ~20% of the time (got 0.21), never on item/boss rounds
+PASS stellachess: no retreat before beating a boss
+PASS stellachess: explosives ignore shields
+PASS stellachess species: 10 species × 5 ships (one per cost), boss-only hulls stay out of the shop
+PASS stellachess species: shop only sells species ships
+PASS stellachess traits: 2 Molluscoid summon a Shroud Avatar in the back row
+PASS stellachess traits: Lithoid damage reduction
+PASS stellachess traits: Humanoid sponsor — components add hull
+PASS stellachess traits: Machine charge discharges around the target
+PASS stellachess traits: Fungoid gathers spores after combat
+PASS stellachess traits: Plantoid ships grow every 3 rounds
+PASS stellachess traits: Arthropoid reflects damage to the attacker
+PASS stellachess traits: Mammalian vengeance armed
+PASS stellachess weapons: 9 weapon classes, each on 4+ ships, every species mixes 3+ weapons
+PASS stellachess weapons: 2 Railguns pierce armor and snipe
+PASS stellachess weapons: 4 Lances open with ×5 and execute
+PASS stellachess roles: 6 Pickets cut all damage taken by 10%
+PASS stellachess items: 8 components, every pair (incl. doubles) makes exactly one of 36 items
+PASS stellachess items: a component given to a ship holding one combines into a finished item
+PASS stellachess items: finished items keep both components' bonuses
+PASS stellachess items: Taunt Beacon draws the first enemy fire
+PASS stellachess items: Escape Pods bring the ship back once
+PASS stellachess UI: drag items onto ships, drag ships to move or sell, item icons from ui/stellachess/items
+PASS stellachess battle: ships move, missiles travel, beams are instant
+PASS stellachess battle: deterministic replay
+PASS stellachess app: IPC wired, buy-in/payout via vault, no game command or AI
+PASS stellachess UI: casino lobby tile, own script, bilingual
+PASS empire nature: authority, multi-line civics, origin and founding species traits by sllm_idx
+PASS empire nature: one-line civics and traits blocks
+PASS empire nature: names come from the game localisation
+PASS our empire block: empty without info, includes player backstory and game facts
+PASS diplomacy prompt: both empires' civics/traits are passed
+PASS leaders/faction prompts get our empire; civic/trait names are read from localisation
+PASS office: "Our empire backstory" button with KO/EN text
+PASS HELLO handler records the save id (app started after the save was loaded)
+PASS vx: model suggestions without listing
 PASS session pinned across retry
+PASS sa: answer text
+PASS sa: token exchange first
+PASS sa: jwt-bearer grant body
+PASS sa: generateContent on project path
+PASS sa: Bearer token, no API key header
+PASS sa: token cached for the next call
+PASS sa: key hint has English
 PASS safety bridge: empty/NUL/oversized command rejected before any file is written
+PASS vx: answer text
+PASS vx: URL without key
+PASS vx: key in x-goog-api-key header
+PASS vx: thinking refused → retry without it and more tokens
+PASS vx: provider labels have English
 PASS safety bridge: requests run one at a time in order
 PASS safety keyboard: DLL path by default, input hook ends on failure, clipboard untouched
 PASS router switches after idle, no fallback
+PASS mod-portraits: portrait job (main thread): draws, records failures, groups, progress
+PASS mod-portraits: portrait job skips keys already drawn unless redraw
 PASS watcher skips old, joins split line
 PASS watcher handles truncation
 PASS F-41 replay restores max req/last without feature delivery
@@ -1035,6 +4917,11 @@ PASS p2 chat auto-login
 PASS p2 joules
 PASS health sends game attribution
 PASS local chat sends game attribution
+PASS p2 fallback: localhost → 127.0.0.1
+PASS p2 fallback: 이미 IP 면 없음
+PASS p2 fallback: localhost 가 거부되면 127.0.0.1 로 연결
+PASS p2 fallback: 된 주소를 계속 씀
+PASS p2 fallback: 실패 문구에 원인 코드·안내
 PASS compose basic
 PASS compose double final moves
 PASS compose double vowel
@@ -1046,7 +4933,19 @@ PASS open kb effect
 PASS parse KBP line
 PASS mail country parse
 PASS news empty number
-PASS news text
+PASS news text: war_end 는 승패를 단정하지 않는다(백지평화에도 불림)
+PASS news: 번역 키가 그대로 온 나라(NAME_…)의 사건은 버린다(호외에 키가 나온 문제)
+PASS news: 해적 나라 키도 버린다
+PASS news: 보통 이름의 멸망 사건은 그대로 받는다
+PASS news text: 현상 유지
+PASS war_sq is a major world event
+PASS news war_sq: 순서가 바뀌어 와도 같은 사건
+PASS news planet: 점령·할양 문장
+PASS news planet: 이름 키는 버림
+PASS planet·war_won are major world events
+PASS galnews: 같은 두 나라의 행성 점령은 한 줄로
+PASS radio war_end: 패자·승자로 단정하지 않는다
+PASS radio war_sq parsed · 양쪽에서 와도 같은 사건
 PASS parse pick filters unknown and duplicates
 PASS parse pick garbage
 PASS plan not yet
@@ -1060,6 +4959,7 @@ PASS transcript format
 PASS transcript fallback
 PASS transcript trims old lines
 PASS game line
+PASS game line: 창 손잡이(hwnd)
 PASS game not running
 PASS game line garbage
 PASS dock right beside icon
@@ -1134,7 +5034,8 @@ PASS capital flag
 PASS 주민 수: 정확한 값(pn)이 있으면 그것을 쓴다(300 으로 잘리지 않는다)
 PASS 주민 수: pn 이 없으면 단계 값은 '이상' 표시
 PASS 주민 수: 총독 프롬프트에 정확한 수 / 이상 구분
-PASS 주민 수: 모드가 정확한 수(num_pops)를 로그로 보낸다
+PASS 주민 수: 모드가 정확한 수(4.x pop_amount)를 로그로 보낸다
+PASS 주민 수: 옛 모드가 0 을 보내도 단계 값이 있으면 0 으로 보이지 않는다
 PASS unread values are null
 PASS facts
 PASS facts empty
@@ -1235,6 +5136,6 @@ PASS 총독: 잘림 표시 → 끊김
 PASS 총독: 닫히지 않은 JSON → 끊김
 PASS 총독: 완결 JSON → 정상
 PASS 총독: 평문 → 정상
-합계: PASS 1229 · FAIL 4
+합계: PASS 5133 · FAIL 1
 SOME FAILED
 

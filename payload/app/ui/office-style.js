@@ -7,13 +7,14 @@
   const $ = (id) => document.getElementById(id);
   const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; };
   let st = null, applied = '', req = 0;
+  const FALLBACK = { machine: 'gestalt' }; // 기계 지성 집무실 그림이 오기 전에는 단일 의식(군체) 집무실 그림(알파 11)
   function apply(key) {
     if (!key || key === applied) return; applied = key; const my = ++req;
     document.body.dataset.office = key;
     if (key === 'standard') { document.body.style.removeProperty('--office-bg'); return; }
     const src = 'assets/rooms/office-' + key + '.png', im = new Image();
     im.onload = () => { if (my === req) document.body.style.setProperty('--office-bg', "url('" + src + "')"); };
-    im.onerror = () => { if (my === req) document.body.style.removeProperty('--office-bg'); }; // 그림이 아직 없으면 기본 집무실
+    im.onerror = () => { if (my !== req) return; if (FALLBACK[key]) { const f = 'assets/rooms/office-' + FALLBACK[key] + '.png', i2 = new Image(); i2.onload = () => { if (my === req) document.body.style.setProperty('--office-bg', "url('" + f + "')"); }; i2.onerror = () => { if (my === req) document.body.style.removeProperty('--office-bg'); }; i2.src = f; return; } document.body.style.removeProperty('--office-bg'); }; // 그림이 아직 없으면 비슷한 집무실(기계 → 군체), 그것도 없으면 기본
     im.src = src;
   }
   function applyEmblem(state) {

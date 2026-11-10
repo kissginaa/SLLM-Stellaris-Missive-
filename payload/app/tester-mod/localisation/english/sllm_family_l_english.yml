@@ -1,0 +1,9 @@
+﻿l_english:
+ sllm_trait_ruler_child:0 "Ruler's Child"
+ sllm_trait_ruler_child_desc:0 "Born to the ruler and raised in the palace nursery. Leader experience gain +15%."
+ sllm_trait_family_grief_commander:0 "Family Grief (Commander)"
+ sllm_trait_family_grief_commander_desc:0 "Mourning a lost child or parent. Damage of the commanded fleet and armies -10%. Fades after three years."
+ sllm_trait_family_grief_official:0 "Family Grief (Official)"
+ sllm_trait_family_grief_official_desc:0 "Mourning a lost child or parent. Job output on the governed planet -10%. Fades after three years."
+ sllm_trait_family_grief_scientist:0 "Family Grief (Scientist)"
+ sllm_trait_family_grief_scientist_desc:0 "Mourning a lost child or parent. Survey and anomaly speed -10%; research speed -10% while on the council. Fades after three years."

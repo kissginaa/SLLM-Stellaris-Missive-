@@ -1,0 +1,4 @@
+# SLLM 종속국 통치(2026-11-04) — 감독관이 머무는 종속국. monthly_loyalty 는 바닐라 종속 수정자와 같은 키.
+sllm_vc_overseer = {
+	monthly_loyalty = 1.5
+}

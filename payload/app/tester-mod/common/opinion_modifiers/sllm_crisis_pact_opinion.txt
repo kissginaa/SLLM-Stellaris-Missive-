@@ -1,0 +1,5 @@
+# SLLM 공동 대응 협약(알파 11, 2026-10-25): 서로의 호감 +30(사용자 확정). 협약이 끝나면 앱이 지운다.
+sllm_opinion_crisis_pact = {
+	opinion = { base = 30 }
+	unique = yes
+}

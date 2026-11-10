@@ -1,0 +1,149 @@
+# SLLM 악명·전쟁범죄(2026-11-04). 효과: common/scripted_effects/sllm_infamy.txt.
+# sllm_inf.1 매달(나라): 전쟁이 없으면 악명 −0.5 · sllm_inf.2 해마다(나라): 숙청 중이면 +3, 호감 다시 맞추기(새로 교신한 나라)
+# sllm_inf.3 해마다(플레이어): 악명 목록을 앱에 · sllm_inf.4 앱 요청(root = 플레이어)
+# sllm_inf.10 주민이 폭격으로 죽을 때(on_pop_bombed_to_death, 식민지 범위, from = 폭격한 나라): 무차별 +1 · 아마겟돈 +2 (행성마다 30일에 한 번)
+# sllm_inf.11 식민지가 폭격으로 말살될 때(on_colony_destroyed_by_bombardment, from = 폭격한 나라): +10
+# 폭격·말살한 함대가 플레이어 것이면 그 제독에게 전범 표식(sllm_wc_mark). sllm_inf.5 숨은 악명 폭로(해마다) · sllm_inf.6 은폐 공작(앱 요청)
+namespace = sllm_inf
+
+country_event = {
+	id = sllm_inf.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_variable_set = sllm_inf check_variable = { which = sllm_inf value > 0 } }
+	immediate = {
+		if = {
+			limit = { is_at_war = no }
+			subtract_variable = { which = sllm_inf value = 0.5 }
+			if = { limit = { check_variable = { which = sllm_inf value < 0 } } set_variable = { which = sllm_inf value = 0 } }
+			sllm_inf_refresh = yes
+		}
+	}
+}
+
+country_event = {
+	id = sllm_inf.2
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { sllm_is_empire = yes is_homicidal = no }
+	immediate = {
+		if = {
+			limit = { any_owned_species = { has_citizenship_type = { type = citizenship_purge country = prev } } }
+			sllm_inf_add = { AMT = 3 }
+			sllm_inf_crime_country = { K = 4 }
+		}
+		if = { limit = { is_variable_set = sllm_inf_tier check_variable = { which = sllm_inf_tier value > 0 } } sllm_inf_opinions = yes }
+	}
+}
+
+country_event = {
+	id = sllm_inf.3
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no is_variable_set = sllm_save_id }
+	immediate = {
+		set_variable = { which = sllm_inf_req value = 0 }
+		sllm_inf_list = yes
+	}
+}
+
+country_event = {
+	id = sllm_inf.4
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = { sllm_inf_list = yes }
+}
+
+carrier_event = {
+	id = sllm_inf.10
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = from
+		from = { sllm_is_empire = yes is_homicidal = no }
+		exists = owner
+		owner = { sllm_is_empire = yes NOT = { is_same_value = root.from } }
+		OR = {
+			has_orbital_bombardment_stance = indiscriminate
+			has_orbital_bombardment_stance = armageddon
+		}
+		planet = { NOT = { has_planet_flag = sllm_inf_bombed } }
+	}
+	immediate = {
+		if = {
+			limit = { has_orbital_bombardment_stance = armageddon }
+			from = { sllm_inf_add = { AMT = 2 } }
+			planet = { set_timed_planet_flag = { flag = sllm_inf_bombed days = 30 } sllm_inf_crime_planet = { K = 2 } sllm_wc_mark = yes }
+		}
+		else = {
+			from = { sllm_inf_add = { AMT = 1 } }
+			planet = { set_timed_planet_flag = { flag = sllm_inf_bombed days = 30 } sllm_inf_crime_planet = { K = 1 } sllm_wc_mark = yes }
+		}
+	}
+}
+
+carrier_event = {
+	id = sllm_inf.11
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = from
+		from = { sllm_is_empire = yes is_homicidal = no }
+	}
+	immediate = {
+		from = { sllm_inf_add = { AMT = 10 } }
+		planet = { sllm_inf_crime_planet = { K = 3 } sllm_wc_mark = yes }
+	}
+}
+
+# 3단계(2026-11-04): 숨은 악명이 드러날지(해마다, 플레이어만 쌓임). 10% + 숨은 악명 10/25/40 이상이면 +10/+15/+20. 안 드러나면 증거가 흐려져 0.85배.
+country_event = {
+	id = sllm_inf.5
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_variable_set = sllm_inf_hid check_variable = { which = sllm_inf_hid value > 0.5 } }
+	immediate = {
+		random_list = {
+			10 = {
+				modifier = { add = 10 check_variable = { which = sllm_inf_hid value >= 10 } }
+				modifier = { add = 15 check_variable = { which = sllm_inf_hid value >= 25 } }
+				modifier = { add = 20 check_variable = { which = sllm_inf_hid value >= 40 } }
+				sllm_inf_expose = yes
+			}
+			90 = {
+				multiply_variable = { which = sllm_inf_hid value = 0.85 }
+			}
+		}
+	}
+}
+
+# 3단계: 은폐 공작(앱 요청, root = 플레이어). 영향력 75·에너지 300, 2년에 한 번. 공개 악명 최대 15를 숨은 악명으로 옮긴다.
+# 결과 st: 1 됨 · 2 자원 부족 · 3 아직 때가 아님 · 4 옮길 악명 없음
+country_event = {
+	id = sllm_inf.6
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		set_variable = { which = sllm_inf_st value = 0 }
+		set_variable = { which = sllm_inf_mv value = 0 }
+		if = { limit = { NOT = { is_variable_set = sllm_inf } } set_variable = { which = sllm_inf value = 0 } }
+		if = { limit = { NOT = { is_variable_set = sllm_inf_hid } } set_variable = { which = sllm_inf_hid value = 0 } }
+		if = { limit = { has_country_flag = sllm_inf_cover_cd } set_variable = { which = sllm_inf_st value = 3 } }
+		else_if = { limit = { check_variable = { which = sllm_inf value < 1 } } set_variable = { which = sllm_inf_st value = 4 } }
+		else_if = {
+			limit = { OR = { NOT = { resource_stockpile_compare = { resource = influence value >= 75 } } NOT = { resource_stockpile_compare = { resource = energy value >= 300 } } } }
+			set_variable = { which = sllm_inf_st value = 2 }
+		}
+		else = {
+			add_resource = { influence = -75 energy = -300 }
+			set_variable = { which = sllm_inf_mv value = sllm_inf }
+			if = { limit = { check_variable = { which = sllm_inf_mv value > 15 } } set_variable = { which = sllm_inf_mv value = 15 } }
+			subtract_variable = { which = sllm_inf value = sllm_inf_mv }
+			change_variable = { which = sllm_inf_hid value = sllm_inf_mv }
+			set_timed_country_flag = { flag = sllm_inf_cover_cd days = 720 }
+			sllm_inf_refresh = yes
+			set_variable = { which = sllm_inf_st value = 1 }
+		}
+		log = "SLLM:INFCOVER/;/sid=\\[This.sllm_save_id]/;/req=\\[This.sllm_inf_req]/;/st=\\[This.sllm_inf_st]/;/mv=\\[This.sllm_inf_mv]/;/inf=\\[This.sllm_inf]/;/hid=\\[This.sllm_inf_hid]"
+	}
+}

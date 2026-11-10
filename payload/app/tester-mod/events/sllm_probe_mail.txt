@@ -18,7 +18,7 @@ country_event = {
 		every_country = {
 			limit = {
 				is_ai = yes
-				is_country_type = default
+				sllm_is_empire = yes
 				has_communications = event_target:sllm_mail_player
 			}
 			sllm_mail_profile = yes
@@ -32,9 +32,17 @@ country_event = {
 	id = sllm_mail.10
 	hide_window = yes
 	is_triggered_only = yes
-	trigger = { is_country_type = default }
+	trigger = { sllm_is_empire = yes }
 	immediate = {
-		log = "SLLM:NEWS/;/kind=war/;/date=\\[GetDate]/;/a=\\[Root.sllm_idx]/;/aname=\\[Root.GetName]/;/war=\\[From.GetName]"
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		# 2026-11-09 테스터 신고: 몰락 제국이 먼저 선전포고했는데 신문엔 우리가 먼저 한 것처럼 나왔다 → 공격 측(선전포고한 쪽)인지 방어 측인지 함께 보낸다.
+		if = {
+			limit = { From = { any_attacker = { is_same_value = root } } }
+			log = "SLLM:NEWS/;/kind=war/;/side=att/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/war=\\[From.GetName]"
+		}
+		else = {
+			log = "SLLM:NEWS/;/kind=war/;/side=def/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/war=\\[From.GetName]"
+		}
 	}
 }
 
@@ -43,9 +51,11 @@ country_event = {
 	id = sllm_mail.11
 	hide_window = yes
 	is_triggered_only = yes
-	trigger = { is_country_type = default }
+	trigger = { sllm_is_empire = yes }
 	immediate = {
-		log = "SLLM:NEWS/;/kind=war_end/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=war_end/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 
@@ -54,11 +64,12 @@ country_event = {
 	id = sllm_mail.12
 	hide_window = yes
 	is_triggered_only = yes
-	trigger = { is_country_type = default }
+	trigger = { sllm_is_empire = yes }
 	immediate = {
 		# Also fires at game start before the country has an index (error.log "Unknown property sllm_idx", 2026-10-19). Log only when indexed.
 		if = { limit = { is_variable_set = sllm_idx }
-			log = "SLLM:NEWS/;/kind=ruler/;/date=\\[GetDate]/;/a=\\[Root.sllm_idx]/;/aname=\\[Root.GetName]/;/ruler=\\[Root.GetRulerName]"
+			Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+			log = "SLLM:NEWS/;/kind=ruler/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/ruler=\\[Root.GetRulerName]"
 		}
 	}
 }
@@ -69,7 +80,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=fed_join/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=fed_join/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 country_event = {
@@ -77,7 +90,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=fed_leave/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=fed_leave/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 
@@ -87,7 +102,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=pact_com/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=pact_com/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 country_event = {
@@ -95,7 +112,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=pact_def/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=pact_def/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 
@@ -105,7 +124,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=ally_join/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=ally_join/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 country_event = {
@@ -113,7 +134,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=ally_leave/;/date=\\[GetDate]/;/a=\\[From.sllm_idx]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_idx]/;/bname=\\[Root.GetName]"
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=ally_leave/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[Root.sllm_nix]/;/bname=\\[Root.GetName]"
 	}
 }
 
@@ -123,7 +146,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=destroyed/;/date=\\[GetDate]/;/a=\\[Root.sllm_idx]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_idx]/;/bname=\\[From.GetName]"
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=destroyed/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_nix]/;/bname=\\[From.GetName]"
 	}
 }
 
@@ -133,7 +158,9 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=subject/;/date=\\[GetDate]/;/a=\\[Root.sllm_idx]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_idx]/;/bname=\\[From.GetName]"
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=subject/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_nix]/;/bname=\\[From.GetName]"
 	}
 }
 
@@ -147,10 +174,88 @@ country_event = {
 	hide_window = yes
 	is_triggered_only = yes
 	immediate = {
-		log = "SLLM:NEWS/;/kind=war_sq/;/date=\\[GetDate]/;/a=\\[Root.sllm_idx]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_idx]/;/bname=\\[From.GetName]"
+		Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+		log = "SLLM:NEWS/;/kind=war_sq/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_nix]/;/bname=\\[From.GetName]"
 		if = {
 			limit = { OR = { is_ai = no from = { is_ai = no } } }
 			log = "SLLM:EVT/;/kind=war_sq/;/date=\\[GetDate]/;/a=\\[Root.GetName]/;/b=\\[From.GetName]"
+		}
+	}
+}
+
+# 2026-10-28 (X4 참고: AI 제국끼리의 전쟁·영토 소식을 신문에). 매달 훑지 않고 게임 훅이 불릴 때만 한 줄.
+# 우리와 관계없는 먼 제국 소식은 줄인다: 플레이어가 둘 중 한쪽과 통신할 때만(또는 플레이어가 당사자일 때) 남긴다.
+# A planet changes owner (on_colony_transfer, vanilla 4.x 00_on_actions.txt: This = colony, From = new owner, FromFrom = previous owner).
+# Fired for conquest and for peace-deal cessions and trades alike; via=war when the two were at war at that moment.
+planet_event = {
+	id = sllm_mail.22
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = from
+		exists = fromfrom
+		from = { sllm_is_empire = yes }
+		fromfrom = { sllm_is_empire = yes }
+	}
+	immediate = {
+		from = { save_event_target_as = sllm_pl_new }
+		fromfrom = { save_event_target_as = sllm_pl_old }
+		if = {
+			limit = {
+				NOT = { event_target:sllm_pl_new = { is_same_value = event_target:sllm_pl_old } }
+				any_playable_country = {
+					is_ai = no
+					OR = {
+						is_same_value = event_target:sllm_pl_new
+						is_same_value = event_target:sllm_pl_old
+						has_communications = event_target:sllm_pl_new
+						has_communications = event_target:sllm_pl_old
+					}
+				}
+			}
+			if = {
+				limit = { event_target:sllm_pl_new = { is_at_war_with = event_target:sllm_pl_old } }
+				From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+				FromFrom = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+				log = "SLLM:NEWS/;/kind=planet/;/via=war/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[FromFrom.sllm_nix]/;/bname=\\[FromFrom.GetName]/;/planet=\\[This.GetName]"
+			}
+			else = {
+				From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+				FromFrom = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+				log = "SLLM:NEWS/;/kind=planet/;/via=deal/;/date=\\[GetDate]/;/a=\\[From.sllm_nix]/;/aname=\\[From.GetName]/;/b=\\[FromFrom.sllm_nix]/;/bname=\\[FromFrom.GetName]/;/planet=\\[This.GetName]"
+			}
+		}
+	}
+}
+
+# A war is won (on_war_won: Root = winner war leader, From = loser war leader, FromFrom = war). Gives the winner that on_war_ended alone does not.
+country_event = {
+	id = sllm_mail.23
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		sllm_is_empire = yes
+		exists = from
+		from = { sllm_is_empire = yes }
+	}
+	immediate = {
+		from = { save_event_target_as = sllm_ww_loser }
+		if = {
+			limit = {
+				any_playable_country = {
+					is_ai = no
+					OR = {
+						is_same_value = root
+						is_same_value = event_target:sllm_ww_loser
+						has_communications = root
+						has_communications = event_target:sllm_ww_loser
+					}
+				}
+			}
+			Root = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+			From = { if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_nix value = sllm_idx } } else = { set_variable = { which = sllm_nix value = -1 } } }   # 번호 없는 나라(반란군·수비대) — error.log Unknown property(2026-11-08)
+			log = "SLLM:NEWS/;/kind=war_won/;/date=\\[GetDate]/;/a=\\[Root.sllm_nix]/;/aname=\\[Root.GetName]/;/b=\\[From.sllm_nix]/;/bname=\\[From.GetName]/;/war=\\[FromFrom.GetName]"
 		}
 	}
 }

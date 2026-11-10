@@ -1,0 +1,4 @@
+# SLLM 약탈자 흥정 — 용병 할인 정산(2026-11-09) 매달 맥박(4.5: events 만). 흥정 표식이 없으면 이벤트 trigger 에서 바로 끝난다.
+on_monthly_pulse_country = {
+	events = { sllm_mrd.1 }
+}

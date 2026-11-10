@@ -1,0 +1,10 @@
+﻿l_english:
+ opinion_sllm_cap_ransomed:0 "Ransomed Our Captured Admiral"
+ opinion_sllm_cap_released:0 "Freely Released Our Captured Admiral"
+ opinion_sllm_cap_turned:0 "Turned Our Captured Admiral"
+ opinion_sllm_cap_executed:0 "Executed Our Captured Admiral"
+ # 2026-11-05: 게임은 호감 수정자 이름 그대로를 문구 키로 쓴다(opinion_ 붙은 키는 안 읽힘) — 같은 문구를 이름 키로도
+ sllm_cap_ransomed:0 "Ransomed Our Captured Admiral"
+ sllm_cap_released:0 "Freely Released Our Captured Admiral"
+ sllm_cap_turned:0 "Turned Our Captured Admiral"
+ sllm_cap_executed:0 "Executed Our Captured Admiral"

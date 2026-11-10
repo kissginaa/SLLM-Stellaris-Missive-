@@ -1,0 +1,19 @@
+# SLLM - 인터넷 인플루언서 행성 홍보 협업(2026-10-28 집 PC). 앱(src/internet.ts promoCommand)이 의뢰를 받으면 그 행성 scope 에 720일 붙인다.
+# 사용자 확정: 의뢰 즉시 에너지 50 + 소비재 100, 2년 동안 그 행성으로 오는 이주 끌림 상승. 인플루언서 팔로워 규모(30만 미만 / 30만~45만 / 45만 이상)로 세 단계.
+# 2026-10-29 집 PC error.log: planet_resettlement_unemployed_destination_mult 는 지금 게임(4.x)에 없는 수정자(Invalid modifier)라 효과가 없었다.
+# 게임 script_documentation/modifiers.log 에 있는 planet_resettlement_unemployed_destination_mult(실업자 재정착 목적지 끌림)로 바꿈.
+sllm_net_promo_1 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_resettlement_unemployed_destination_mult = 0.10
+}
+sllm_net_promo_2 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_resettlement_unemployed_destination_mult = 0.17
+}
+sllm_net_promo_3 = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 1
+	planet_resettlement_unemployed_destination_mult = 0.25
+}

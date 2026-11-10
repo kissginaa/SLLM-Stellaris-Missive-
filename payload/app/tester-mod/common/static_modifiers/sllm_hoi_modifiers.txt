@@ -1,0 +1,87 @@
+# SLLM 파벌 지원·공작(2026-10-28 하츠 참고). 앱: src/hoi.ts. 그 나라(국가 범위)에 붙인다: 시작 +15%(720일), 2년째 +10% 더(360일). 수도에는 안정도 -5(720일).
+# 수정자 이름은 4.x 현지화(modifiers_1_l_english.yml mod_pop_ethic_<이념>_attraction_mult)에서 확인했다.
+sllm_fsup_militarist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_militarist_attraction_mult = 0.15
+}
+sllm_fsup_more_militarist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_militarist_attraction_mult = 0.10
+}
+sllm_fsup_pacifist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_pacifist_attraction_mult = 0.15
+}
+sllm_fsup_more_pacifist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_pacifist_attraction_mult = 0.10
+}
+sllm_fsup_authoritarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_authoritarian_attraction_mult = 0.15
+}
+sllm_fsup_more_authoritarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_authoritarian_attraction_mult = 0.10
+}
+sllm_fsup_egalitarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_egalitarian_attraction_mult = 0.15
+}
+sllm_fsup_more_egalitarian = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_egalitarian_attraction_mult = 0.10
+}
+sllm_fsup_xenophile = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophile_attraction_mult = 0.15
+}
+sllm_fsup_more_xenophile = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophile_attraction_mult = 0.10
+}
+sllm_fsup_xenophobe = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophobe_attraction_mult = 0.15
+}
+sllm_fsup_more_xenophobe = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_xenophobe_attraction_mult = 0.10
+}
+sllm_fsup_materialist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_materialist_attraction_mult = 0.15
+}
+sllm_fsup_more_materialist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_materialist_attraction_mult = 0.10
+}
+sllm_fsup_spiritualist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_spiritualist_attraction_mult = 0.15
+}
+sllm_fsup_more_spiritualist = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	pop_ethic_spiritualist_attraction_mult = 0.10
+}
+sllm_fsup_unrest = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -5
+}

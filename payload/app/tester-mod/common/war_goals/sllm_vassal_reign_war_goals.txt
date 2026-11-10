@@ -1,0 +1,25 @@
+# SLLM 종속국 통치권(2026-11-05) — 위 전쟁명분과 짝. This = 공격국, From = 방어국.
+# 대리전: 종속국이 이기면 영향력 +50, 진 나라는 굴욕(5년). 영토는 바뀌지 않는다.
+wg_sllm_vr_proxy = {
+	casus_belli = cb_sllm_vr_proxy
+	surrender_acceptance = -25
+	potential = { always = yes }
+	possible = { always = yes }
+	on_accept = {
+		hidden_effect = { sllm_vr_proxy_won = yes }
+	}
+}
+# 종속국 쟁탈: 이기면 표식 붙은 종속국이 우리 종속국이 되고, 그 나라 종족에서 새 통치자가 선다(괴뢰 통치자 수정자 5년).
+wg_sllm_vr_prize = {
+	casus_belli = cb_sllm_vr_prize
+	surrender_acceptance = -25
+	ai_weight = { weight = 100 } # 역방향(2026-11-05): AI 이웃이 우리 종속국을 노릴 때 이 목표를 쓴다
+	potential = { always = yes }
+	possible = {
+		from = { any_subject = { has_country_flag = sllm_vr_prize } }
+	}
+	on_accept = {
+		custom_tooltip = wg_sllm_vr_prize_accept
+		hidden_effect = { sllm_vr_prize_won = yes }
+	}
+}

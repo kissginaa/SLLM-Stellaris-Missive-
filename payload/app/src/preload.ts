@@ -1,13 +1,17 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
+const officeGoCbs: Array<(view: string) => void> = [];
 
 contextBridge.exposeInMainWorld('sllm', {
   devEspionage: (mode: string, tid?: number) => ipcRenderer.invoke('devEspionage', mode, tid),
+  devSecretaryAff: (v: number) => ipcRenderer.invoke('devSecretaryAff', v), // 개발자 시험: 비서 호감 정하기
   espionageState: () => ipcRenderer.invoke('espionageState'),
   espionageAction: (action: string, text: string) => ipcRenderer.invoke('espionageAction', action, text),
   espionageClose: () => ipcRenderer.invoke('espionageClose'),
   onEspionageState: (cb: (s: unknown) => void) => ipcRenderer.on('espionageState', (_e,s) => cb(s)),
   contactsList: () => ipcRenderer.invoke('contactsList'),
   contactsRefresh: () => ipcRenderer.invoke('contactsRefresh'),
+  contactCut: (a: { sid: string; idx: number }) => ipcRenderer.invoke('contactCut', a), // 통신 단절(2026-10-24)
+  contactRestore: (a: { sid: string; idx: number }) => ipcRenderer.invoke('contactRestore', a),
   contactDial: (a: { sid: string; idx: number }) => ipcRenderer.invoke('contactDial', a),
   onContacts: (cb: (s: any) => void) => ipcRenderer.on('contacts', (_e, s) => cb(s)),
   chat: (text: string) => ipcRenderer.invoke('chat', text),
@@ -34,6 +38,10 @@ contextBridge.exposeInMainWorld('sllm', {
   getImageState: () => ipcRenderer.invoke('getImageState'),
   getPortraitLibrary: () => ipcRenderer.invoke('getPortraitLibrary'),
   applyLibraryPortrait: (t: unknown, id: unknown, role: unknown) => ipcRenderer.invoke('applyLibraryPortrait', t, id, role),
+  getModPortraitState: () => ipcRenderer.invoke('getModPortraitState'),
+  drawModPortraits: (redraw?: boolean) => ipcRenderer.invoke('drawModPortraits', !!redraw),
+  setModPortraitsAuto: (on: boolean) => ipcRenderer.invoke('setModPortraitsAuto', !!on),
+  onPortraitLibraryChanged: (cb: (p: unknown) => void) => { ipcRenderer.on('portraitLibraryChanged', (_e, p) => cb(p)); },
   pickImage: (t: unknown) => ipcRenderer.invoke('pickImage', t),
   dropImage: (t: unknown, file: unknown) => ipcRenderer.invoke('dropImage', t, webUtils.getPathForFile(file as File)),
   clearImage: (t: unknown) => ipcRenderer.invoke('clearImage', t),
@@ -60,6 +68,10 @@ contextBridge.exposeInMainWorld('sllm', {
   govMemList: (a: unknown) => ipcRenderer.invoke('govMemList', a),
   flagFor: (idx: number) => ipcRenderer.invoke('flagFor', idx),
   newsList: () => ipcRenderer.invoke('newsList'),
+  newsSection: (id: number, tab: string, paper?: number) => ipcRenderer.invoke('newsSection', id, tab, paper), // 홈페이지 분야 탭 기사(2026-11-10)
+  newsLive: () => ipcRenderer.invoke('newsLive'), // 홈페이지 실시간 소식: 연대기 줄 + 이미 쓴 기사
+  newsSubscribe: (paper: number, on: boolean, only?: boolean) => ipcRenderer.invoke('newsSubscribe', paper, on, only), // 신문 구독·해지(무료, = 설정의 신문사 켜기)
+  newsLiveWrite: (key: string, paper?: number) => ipcRenderer.invoke('newsLiveWrite', key, paper), // 누른 소식 하나를 기사로
   onGalNews: (cb: (i: any) => void) => ipcRenderer.on('galnews', (_e, i) => cb(i)),
   gossipList: () => ipcRenderer.invoke('gossipList'),
   onGossip: (cb: (g: any) => void) => ipcRenderer.on('gossip', (_e, g) => cb(g)),
@@ -110,7 +122,9 @@ contextBridge.exposeInMainWorld('sllm', {
   secretaryEvent: (id: string, replay?: boolean) => ipcRenderer.invoke('secretaryEvent', id, replay === true),
   secretaryEventNext: (choice?: number) => ipcRenderer.invoke('secretaryEventNext', choice),
   secretaryEventSay: (text: string) => ipcRenderer.invoke('secretaryEventSay', text),
+  secretaryEventLeave: () => ipcRenderer.invoke('secretaryEventLeave'), // 이벤트 도중 돌아가기(2026-10-24)
   officeStyle: () => ipcRenderer.invoke('officeStyle'),
+  autoTheme: () => ipcRenderer.invoke('autoTheme'), // 색 테마 「자동」(알파 11)
   petitionState: () => ipcRenderer.invoke('petitionState'),
   petitionFetch: () => ipcRenderer.invoke('petitionFetch'),
   petitionDecide: (id: number, accept: boolean) => ipcRenderer.invoke('petitionDecide', id, accept),
@@ -122,6 +136,10 @@ contextBridge.exposeInMainWorld('sllm', {
   embassyReport: (idx: number) => ipcRenderer.invoke('embassyReport', idx),
   embassySpyReport: (idx: number) => ipcRenderer.invoke('embassySpyReport', idx), // 첩보 보고(알파 9)
   moodState: () => ipcRenderer.invoke('moodState'), // 민심(2026-10-20 알파 10)
+  protestsState: () => ipcRenderer.invoke('protestsState'), // 시위(2026-10-23 초안)
+  protestAct: (id: string, kind: string, text?: string) => ipcRenderer.invoke('protestAct', id, kind, text),
+  protestTalk: (id: string, text: string) => ipcRenderer.invoke('protestTalk', id, text),
+  onProtestsUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('protestsUpdate', (_e, v) => fn(v)),
   radioDebates: () => ipcRenderer.invoke('radioDebates'), // 라디오 찬반 논평(2026-10-20)
   scandalState: () => ipcRenderer.invoke('scandalState'), // 비방 공작 추문 대응(2026-10-20)
   scandalRespond: (r: string, text: string) => ipcRenderer.invoke('scandalRespond', r, text),
@@ -130,6 +148,40 @@ contextBridge.exposeInMainWorld('sllm', {
   radioDebateAlarm: (on: boolean) => ipcRenderer.invoke('radioDebateAlarm', on),
   onRadioDebates: (cb: (v: unknown) => void) => ipcRenderer.on('radioDebates', (_e, v) => cb(v)),
   onMoodUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('moodUpdate', (_e, v) => fn(v)),
+  civicState: () => ipcRenderer.invoke('civicState'), // 시민 정치: 여론조사·특별사면(2026-11-03)
+  civicAmnesty: (tier: string, political: boolean) => ipcRenderer.invoke('civicAmnesty', tier, political),
+  onCivicUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('civicUpdate', (_e, v) => fn(v)),
+  preftlState: () => ipcRenderer.invoke('preftlState'), // 원시문명 관측(2026-11-03)
+  auditState: () => ipcRenderer.invoke('auditState'), // 국정감사(2026-11-03)
+  auditStart: () => ipcRenderer.invoke('auditStart'),
+  auditAnswer: (i: number, text: string) => ipcRenderer.invoke('auditAnswer', i, text),
+  auditRefuse: () => ipcRenderer.invoke('auditRefuse'),
+  onAuditUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('auditUpdate', (_e, v) => fn(v)),
+  noconfState: () => ipcRenderer.invoke('noconfState'), // 불신임(2026-11-03)
+  noconfDefend: (text: string) => ipcRenderer.invoke('noconfDefend', text),
+  noconfDissolve: () => ipcRenderer.invoke('noconfDissolve'),
+  onNoconfUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('noconfUpdate', (_e, v) => fn(v)),
+  lobbyState: () => ipcRenderer.invoke('lobbyState'), // 로비(2026-11-03)
+  lobbyAnswer: (a: string) => ipcRenderer.invoke('lobbyAnswer', a),
+  onLobbyUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('lobbyUpdate', (_e, v) => fn(v)),
+  parliamentState: () => ipcRenderer.invoke('parliamentState'), // 여당·야당(2026-11-03)
+  parliamentAct: (what: string, key: string) => ipcRenderer.invoke('parliamentAct', what, key),
+  parliamentTalk: (text: string, end: boolean) => ipcRenderer.invoke('parliamentTalk', text, end),
+  onParliamentUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('parliamentUpdate', (_e, v) => fn(v)),
+  duoState: () => ipcRenderer.invoke('duoState'), // 양당 정치(2026-11-06)
+  duoPledge: (ids: string[]) => ipcRenderer.invoke('duoPledge', ids),
+  duoAnswer: (text: string) => ipcRenderer.invoke('duoAnswer', text),
+  duoDebate: (text: string) => ipcRenderer.invoke('duoDebate', text),
+  onDuoUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('duoUpdate', (_e, v) => fn(v)),
+  preftlOpen: () => ipcRenderer.invoke('preftlOpen'),
+  peopleRefresh: () => ipcRenderer.invoke('peopleRefresh'), // 집무실 연락처를 열 때 명단 한 번(2026-11-03)
+  preftlScan: () => ipcRenderer.invoke('preftlScan'),
+  preftlReport: (id: number, llm: boolean) => ipcRenderer.invoke('preftlReport', id, llm),
+  preftlVoiceSay: (id: number, text: string) => ipcRenderer.invoke('preftlVoiceSay', id, text), // 하늘의 목소리(2026-11-03)
+  preftlVoiceEnd: (id: number) => ipcRenderer.invoke('preftlVoiceEnd', id),
+  preftlAct: (id: number, key: string) => ipcRenderer.invoke('preftlAct', id, key), // 원시문명 개입(2026-11-03)
+  preftlIntercept: (id: number, llm: boolean) => ipcRenderer.invoke('preftlIntercept', id, llm), // 감청 방송(2026-11-03)
+  onPreftlUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('preftlUpdate', (_e, v) => fn(v)),
   musicState: () => ipcRenderer.invoke('musicState'), // 국가·군가(2026-10-20)
   musicPick: (kind: string) => ipcRenderer.invoke('musicPick', kind),
   musicClear: (kind: string) => ipcRenderer.invoke('musicClear', kind),
@@ -167,13 +219,15 @@ contextBridge.exposeInMainWorld('sllm', {
   musicAddonPick: (kind: string, addonId: string) => ipcRenderer.invoke('musicAddonPick', kind, addonId),
   officeStyleSet: (key: string) => ipcRenderer.invoke('officeStyleSet', key),
   secretaryNudge: () => ipcRenderer.invoke('secretaryNudge'),
+  playerGestalt: () => ipcRenderer.invoke('playerGestalt'), // 단일 의식 말투(알파 11): machine · hive · gestalt · ''
+  gestaltReport: () => ipcRenderer.invoke('gestaltReport'), // 동기화 로그·공명 보고(알파 11)
   secretaryNudgeRead: () => ipcRenderer.invoke('secretaryNudgeRead'),
   secretaryRetireSeen: (sid: string, key: string, date: string) => ipcRenderer.invoke('secretaryRetireSeen', sid, key, date),
   secretaryForgetLike: (i: number) => ipcRenderer.invoke('secretaryForgetLike', i),
   backstoryEmpire: (name: string, idx?: number) => ipcRenderer.invoke('backstoryEmpire', { name, idx }),
-  backstoryEmpireSet: (name: string, text: string) => ipcRenderer.invoke('backstoryEmpireSet', { name, text }),
+  backstoryEmpireSet: (name: string, text: string, card?: { voice?: string; secret?: string }) => ipcRenderer.invoke('backstoryEmpireSet', { name, text, card }),
   backstoryPerson: (key: string) => ipcRenderer.invoke('backstoryPerson', key),
-  backstoryPersonSet: (key: string, text: string) => ipcRenderer.invoke('backstoryPersonSet', key, text),
+  backstoryPersonSet: (key: string, text: string, card?: { voice?: string; secret?: string }) => ipcRenderer.invoke('backstoryPersonSet', key, text, card),
   personaOpen: (key: string) => ipcRenderer.invoke('personaOpen', key),
   personaSay: (key: string, text: string) => ipcRenderer.invoke('personaSay', key, text),
   personaEnd: (key: string) => ipcRenderer.invoke('personaEnd', key),
@@ -181,7 +235,8 @@ contextBridge.exposeInMainWorld('sllm', {
   officeBack: () => ipcRenderer.invoke('officeBack'),
   onOfficeDocked: (cb: (app: string | null) => void) => ipcRenderer.on('officeDocked', (_e, a) => cb(a)),
   onOfficeState: (cb: (s: any) => void) => ipcRenderer.on('officeState', (_e, s) => cb(s)),
-  onOfficeGo: (cb: (view: string) => void) => ipcRenderer.on('officeGo', (_e, v) => cb(v)),
+  // 집무실 화면 모듈마다 하나씩 등록한다(12개 이상) → IPC 듣개는 하나만 두고 안에서 나눠 준다(2026-10-27 테스터 로그 MaxListenersExceededWarning).
+  onOfficeGo: (cb: (view: string) => void) => { officeGoCbs.push(cb); if (officeGoCbs.length === 1) ipcRenderer.on('officeGo', (_e, v) => { for (const f of officeGoCbs) { try { f(v); } catch (err) { console.error(err); } } }); },
   // 정책 퀘스트(집무실 정책 칸, 2026-10-18)
   policyState: () => ipcRenderer.invoke('policyState'),
   onPolicyState: (cb: (v: unknown) => void) => ipcRenderer.on('policyState', (_e, v) => cb(v)),
@@ -190,7 +245,9 @@ contextBridge.exposeInMainWorld('sllm', {
   policyReroll: (i: number) => ipcRenderer.invoke('policyReroll', i),
   policyCancelDraft: () => ipcRenderer.invoke('policyCancelDraft'),
   policyEnact: (title: string, body: string, years?: number, force?: boolean) => ipcRenderer.invoke('policyEnact', title, body, years, force === true),
+  policyFilibuster: (what: 'wait' | 'ram') => ipcRenderer.invoke('policyFilibuster', what), // 필리버스터에 답하기(2026-11-03)
   policyReview: () => ipcRenderer.invoke('policyReview'),
+  policyReferendum: (title: string) => ipcRenderer.invoke('policyReferendum', title), // 국민투표(2026-11-03)
   policyRepeal: (id: string) => ipcRenderer.invoke('policyRepeal', id),
   policyFinish: (id: string, how: 'legacy' | 'extend', years?: number) => ipcRenderer.invoke('policyFinish', id, how, years),
   lettersList: () => ipcRenderer.invoke('lettersList'),
@@ -215,11 +272,117 @@ contextBridge.exposeInMainWorld('sllm', {
   fleetJudge: () => ipcRenderer.invoke('fleetJudge'),
   fleetHearingClose: () => ipcRenderer.invoke('fleetHearingClose'),
   onFleetState: (cb: (s: any) => void) => ipcRenderer.on('fleetState', (_e, s) => cb(s)),
+  galaxyMap: (force?: boolean) => ipcRenderer.invoke('galaxyMap', force === true), // 작전지휘실 은하 지도(2026-11-05)
+  warroomOpen: () => ipcRenderer.invoke('warroomOpen'), // 작전지휘실 창 열기(화면 전체)
+  warroomClose: () => ipcRenderer.invoke('warroomClose'),
+  warroomLive: () => ipcRenderer.invoke('warroomLive'), // 작전지휘실 2단계: 지금 게임의 우리 군 함대(번호·위치)
+  warroomOrder: (fid: number, act: string, sys: number) => ipcRenderer.invoke('warroomOrder', fid, act, sys), // 함대 명령(move·home·hold)
+  warroomCouncil: (ask: string) => ipcRenderer.invoke('warroomCouncil', ask), // 장관·제독 작전 회의(LLM 1번)
+  warroomPlan: (id: string) => ipcRenderer.invoke('warroomPlan', id), // 작전안 승인 → 함대 명령
+  warroomXfAsk: (idx: number, ask: string) => ipcRenderer.invoke('warroomXfAsk', idx, ask), // 연합 원정군 요청(AI 가 꺼진 별도 세력, 2026-11-05)
+  warroomXfEnd: (idx: number) => ipcRenderer.invoke('warroomXfEnd', idx), // 연합 원정군 돌려보내기
+  warroomOpinion: (fid: number, act: string, sys: number) => ipcRenderer.invoke('warroomOpinion', fid, act, sys), // 명령에 대한 지휘관 의견(찬성·우려·반대, LLM 1번)
+  warroomPropose: (force?: boolean) => ipcRenderer.invoke('warroomPropose', force === true), // 장관·유능한 제독의 작전 건의(게임 달마다 한 번, force = 바로)
+  infamyState: () => ipcRenderer.invoke('infamyState'), // 악명·전쟁범죄(2026-11-04)
+  infamyRefresh: () => ipcRenderer.invoke('infamyRefresh'),
+  infamyCover: () => ipcRenderer.invoke('infamyCover'), // 은폐 공작(3단계)
+  infamyAnswer: (id: number, a: 'hand' | 'trial' | 'refuse') => ipcRenderer.invoke('infamyAnswer', id, a), // 전범 인도 요구에 답하기(3단계)
+  onInfamyUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('infamyUpdate', (_e, v) => fn(v)),
+  captiveState: () => ipcRenderer.invoke('captiveState'), // 사로잡은 적 제독(2026-11-04)
+  captiveSay: (slot: number, text: string) => ipcRenderer.invoke('captiveSay', slot, text),
+  captiveAct: (slot: number, act: 'ransom' | 'interrogate' | 'recruit' | 'execute' | 'release' | 'secret') => ipcRenderer.invoke('captiveAct', slot, act),
+  onCaptiveUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('captiveUpdate', (_e, v) => fn(v)),
+  foState: () => ipcRenderer.invoke('foState'), // 자동 작전(2026-11-04)
+  foRefresh: () => ipcRenderer.invoke('foRefresh'),
+  foSwitch: (on: boolean) => ipcRenderer.invoke('foSwitch', on === true),
+  foFleet: (fid: number, manual: boolean) => ipcRenderer.invoke('foFleet', fid, manual === true),
+  onFoUpdate: (cb: (s: any) => void) => ipcRenderer.on('foUpdate', (_e, s) => cb(s)),
+  foOrders: (text: string) => ipcRenderer.invoke('foOrders', text), // 작전 지시(LLM, 2026-11-04)
+  foReport: (id: string) => ipcRenderer.invoke('foReport', id),
+  foTalk: (lid: number, text: string) => ipcRenderer.invoke('foTalk', lid, text),
+  foTalkEnd: (lid: number) => ipcRenderer.invoke('foTalkEnd', lid),
+  foAllyAsk: (idx: number, ask: string) => ipcRenderer.invoke('foAllyAsk', idx, ask), // 합동 작전(2026-11-04)
+  foAllyReturn: (idx: number) => ipcRenderer.invoke('foAllyReturn', idx),
+  foLend: (fid: number, idx: number) => ipcRenderer.invoke('foLend', fid, idx),
+  budgetState: () => ipcRenderer.invoke('budgetState'), // 예산 회의(2026-11-04)
+  budgetConvene: () => ipcRenderer.invoke('budgetConvene'),
+  budgetDecide: (lid: number, choice: 'full' | 'half' | 'no') => ipcRenderer.invoke('budgetDecide', lid, choice),
+  budgetConfirm: () => ipcRenderer.invoke('budgetConfirm'),
+  budgetCancel: (domain: string) => ipcRenderer.invoke('budgetCancel', domain),
+  budgetDirective: (lid: number, text: string) => ipcRenderer.invoke('budgetDirective', lid, text),
+  onBudgetUpdate: (cb: (s: any) => void) => ipcRenderer.on('budgetUpdate', (_e, s) => cb(s)),
+  preftlNetState: () => ipcRenderer.invoke('preftlNetState'), // 원시문명 인터넷 염탐(2026-11-04)
+  preftlNetTap: (id: number) => ipcRenderer.invoke('preftlNetTap', id),
+  preftlNetPost: (a: { id: number; thread: number; title?: string; text: string; handle?: string }) => ipcRenderer.invoke('preftlNetPost', a),
+  alarmState: () => ipcRenderer.invoke('alarmState'), // 일정표(2026-11-04)
+  alarmScan: () => ipcRenderer.invoke('alarmScan'),
+  alarmMute: (key: string, off: boolean) => ipcRenderer.invoke('alarmMute', key, off),
+  vaState: (idx: number) => ipcRenderer.invoke('vaState', idx), // 종속국 행정(2026-11-04)
+  vaSystems: (idx: number) => ipcRenderer.invoke('vaSystems', idx),
+  vaTransfer: (a: { idx: number; n: number; dir: 'take' | 'give'; name: string; col: number; vname: string }) => ipcRenderer.invoke('vaTransfer', a),
+  vaTech: (a: { idx: number; vname: string }) => ipcRenderer.invoke('vaTech', a),
+  vaAssim: (a: { idx: number; on: boolean; vname: string }) => ipcRenderer.invoke('vaAssim', a),
+  vrState: (idx: number) => ipcRenderer.invoke('vrState', idx), // 종속국 통치권(2026-11-05)
+  vrLeaders: (idx: number) => ipcRenderer.invoke('vrLeaders', idx),
+  vrInstall: (a: { idx: number; n: number; side: 't' | 'me'; name: string; vname: string }) => ipcRenderer.invoke('vrInstall', a),
+  vrTargets: (idx: number) => ipcRenderer.invoke('vrTargets', idx),
+  vrProxy: (a: { idx: number; n: number; name: string; vname: string }) => ipcRenderer.invoke('vrProxy', a),
+  vrProxyAnswer: (a: { idx: number; pay: boolean }) => ipcRenderer.invoke('vrProxyAnswer', a),
+  vrPrizes: () => ipcRenderer.invoke('vrPrizes'),
+  tnState: () => ipcRenderer.invoke('tnState'), // 대립 긴장도(시나리오 전용, 2026-11-05)
+  scnState: () => ipcRenderer.invoke('scnState'), // 시나리오 알아보기(2026-11-05)
+  scnMap: (force?: boolean) => ipcRenderer.invoke('scnMap', force === true), // 시나리오 은하 지도: 섹터·총독(2026-11-06)
+  scnMapOpen: () => ipcRenderer.invoke('scnMapOpen'),
+  scnMapClose: () => ipcRenderer.invoke('scnMapClose'),
+  scnNobles: () => ipcRenderer.invoke('scnNobles'), // 귀족 연감: 충성도·친밀도·인연(시나리오 전용, 2026-11-06 — 플레이어가 아는 만큼만)
+  scnLocks: () => ipcRenderer.invoke('scnLocks'), // 시나리오 잠금: 숨길 아이콘·국내 정치 선택(2026-11-06)
+  scnPolitics: (on: boolean) => ipcRenderer.invoke('scnPolitics', on === true), // 시나리오 시작 때 한 번: 국내 정치 켜기(기본 아니오)
+  scnGames: () => ipcRenderer.invoke('scnGames'), // 화합 대회(올림픽·월즈 초청, 시나리오 전용, 2026-11-06)
+  scnGamesInvite: (kind: string) => ipcRenderer.invoke('scnGamesInvite', String(kind)),
+  scnTrade: () => ipcRenderer.invoke('scnTrade'), // 회랑 무역로: 관세·단속·관세 수입(시나리오 전용, 2026-11-06)
+  scnTradeSet: (req: { side?: string; lv?: number; crack?: boolean }) => ipcRenderer.invoke('scnTradeSet', req),
+  scnIntel: () => ipcRenderer.invoke('scnIntel'), // 회랑 정보국: 공작원·정보망·정찰 작전(시나리오 전용, 2026-11-07)
+  scnIntelAct: (req: { a: string; agent?: number; target?: number | null; n?: number; kind?: string }) => ipcRenderer.invoke('scnIntelAct', req),
+  scnIntelOpen: () => ipcRenderer.invoke('scnIntelOpen'), // 첩보 지도(은하 지도 창을 첩보 모드로)
+  scnDomainAct: (req: { a: string; sys?: number; to?: number; x?: number; y?: number }) => ipcRenderer.invoke('scnDomainAct', req), // 귀족 영역다툼: 군주 하사·중재(시나리오 전용, 2026-11-07)
+  scnCn: () => ipcRenderer.invoke('scnCn'), // 회랑의 귀족: 정복지·우리 귀족(시나리오 전용, 회랑 자리, 2026-11-08)
+  scnCnAct: (req: { a: string; key?: number; lid?: number; tr?: number[]; prev?: boolean }) => ipcRenderer.invoke('scnCnAct', req), // 회랑의 귀족: 괴뢰국·귀족 앉히기·직할령·물리기
+  scnDomainFront: (sys: number) => ipcRenderer.invoke('scnDomainFront', Number(sys)), // 성계 쟁탈 현황판(시나리오 전용, 2026-11-07)
+  scnDev: (req: { a: string; side?: string; coalition?: boolean }) => ipcRenderer.invoke('scnDev', req), // 시나리오 전용 개발자 도구: 무작위 귀족 반란·연례 판단(개발자 모드, 2026-11-07)
+  auMenu: (t: { id: number }) => ipcRenderer.invoke('auMenu', t), // 만찬 차림표(접견 장소 식당, 2026-11-08)
+  auOpen: (t: { kind: string; id?: number; side?: string; venue?: string; dish?: string }) => ipcRenderer.invoke('auOpen', t), // 접견실: 귀족·군주와 1:1 비밀회담(시나리오 전용, 2026-11-06)
+  auState: () => ipcRenderer.invoke('auState'),
+  auSay: (text: string) => ipcRenderer.invoke('auSay', String(text)),
+  auClose: () => ipcRenderer.invoke('auClose'),
+  onAuRefresh: (cb: () => void) => { ipcRenderer.on('auRefresh', () => cb()); },
+  rbState: () => ipcRenderer.invoke('rbState'), // 반란과 공작(2026-11-05)
+  rbAidAnswer: (a: unknown) => ipcRenderer.invoke('rbAidAnswer', a),
+  rbAidStop: (a: unknown) => ipcRenderer.invoke('rbAidStop', a),
+  rbSow: (a: unknown) => ipcRenderer.invoke('rbSow', a),
+  voState: () => ipcRenderer.invoke('voState'), // 역방향: 종주국 명령(2026-11-05)
+  voAnswer: (a: { id: string; accept: boolean }) => ipcRenderer.invoke('voAnswer', a),
+  vrFleets: (idx: number) => ipcRenderer.invoke('vrFleets', idx), // 함대 징발·헌납(2026-11-05)
+  vrLevy: (a: { idx: number; n: number; name: string; vname: string }) => ipcRenderer.invoke('vrLevy', a),
+  vrTithe: (a: { idx: number; n: number; name: string; vname: string; cnt: number }) => ipcRenderer.invoke('vrTithe', a),
+  vrTitheForce: (a: { idx: number; force: boolean }) => ipcRenderer.invoke('vrTitheForce', a),
+  vrPrize: (a: { n: number; name: string; ov: string; idx: number }) => ipcRenderer.invoke('vrPrize', a),
+  cyberState: () => ipcRenderer.invoke('cyberState'), // 해외발 여론 공작(2026-11-04)
+  cyberTrialStart: () => ipcRenderer.invoke('cyberTrialStart'), // 역제소: 은하재판소(2026-11-04)
+  cyberTrialSay: (text: string) => ipcRenderer.invoke('cyberTrialSay', text),
+  cyberTrialVerdict: () => ipcRenderer.invoke('cyberTrialVerdict'),
+  temperState: () => ipcRenderer.invoke('temperState'), // 외교 노선(2026-11-04)
+  temperRefresh: () => ipcRenderer.invoke('temperRefresh'),
+  temperOp: (idx: number, dir: 1 | 2) => ipcRenderer.invoke('temperOp', idx, dir),
+  onTemperUpdate: (cb: (s: any) => void) => ipcRenderer.on('temperUpdate', (_e, s) => cb(s)),
   vassalState: () => ipcRenderer.invoke('vassalState'),
   vassalClose: () => ipcRenderer.invoke('vassalClose'),
   vassalRead: (key: string) => ipcRenderer.invoke('vassalRead', key),
   vassalSay: (key: string, text: string) => ipcRenderer.invoke('vassalSay', key, text),
   vassalDecide: (key: string, id: string, accept: boolean) => ipcRenderer.invoke('vassalDecide', key, id, accept),
+  vassalRename: (key: string, what: string, name: string) => ipcRenderer.invoke('vassalRename', key, what, name), // 종속국 개명 칙령(2026-11-04)
+  vcState: () => ipcRenderer.invoke('vcState'), // 종속국 통치(2026-11-04)
+  vcRelief: (idx: number, choice: 'full' | 'half' | 'no') => ipcRenderer.invoke('vcRelief', idx, choice),
+  vcOverseer: (idx: number, lid: number) => ipcRenderer.invoke('vcOverseer', idx, lid),
   onVassalState: (cb: (s: any) => void) => ipcRenderer.on('vassalState', (_e, s) => cb(s)),
   pressState: () => ipcRenderer.invoke('pressState'),
   pressBegin: () => ipcRenderer.invoke('pressBegin'),
@@ -284,6 +447,7 @@ contextBridge.exposeInMainWorld('sllm', {
   devCouncilCheck: () => ipcRenderer.invoke('devCouncilCheck'),
   devDeliveryText: () => ipcRenderer.invoke('devDeliveryText'),
   devBehaviorPreview: () => ipcRenderer.invoke('devBehaviorPreview'),
+  devAiTruth: () => ipcRenderer.invoke('devAiTruth'), // AI 제국 실제 상태(2026-10-29)
   devClearTest: () => ipcRenderer.invoke('devClearTest'),
   devSummitTest: () => ipcRenderer.invoke('devSummitTest'),
   devSummitReal: () => ipcRenderer.invoke('devSummitReal'),
@@ -339,12 +503,333 @@ contextBridge.exposeInMainWorld('sllm', {
   addonsLanguageTemplate: () => ipcRenderer.invoke('addonsLanguageTemplate'),
   facOpen: () => ipcRenderer.invoke('facOpen'),
   devFacDemo: (ai = false) => ipcRenderer.invoke('devFacDemo', ai),
-  facState: () => ipcRenderer.invoke('facState'),
+  facState: () => ipcRenderer.invoke('facState'), // 내각 회의실(cabinet-room.html)이 부르는 이름 — 이름이 ffoState 로 바뀌어 회의실이 비어 보이던 버그(2026-11-04 고침)
+  ffoState: () => ipcRenderer.invoke('facState'),
   facPick: (fid: number) => ipcRenderer.invoke('facPick', fid),
   facSay: (r: { text: string; to?: number | null }) => ipcRenderer.invoke('facSay', r),
   facApply: () => ipcRenderer.invoke('facApply'), // 내각 회의 채택(2026-10-19, 강제 통과 없음)
   facClose: () => ipcRenderer.invoke('facClose'),
-  onFacState: (cb: (s: any) => void) => ipcRenderer.on('facState', (_e, s) => cb(s)),
+  emOpen: () => ipcRenderer.invoke('emOpen'), // 긴급회의(2026-10-23 초안)
+  emState: () => ipcRenderer.invoke('emState'),
+  emPage: (p: number) => ipcRenderer.invoke('emPage', p),
+  emConvene: (topic: string) => ipcRenderer.invoke('emConvene', topic),
+  emResume: (id: string) => ipcRenderer.invoke('emResume', id),
+  emSay: (r: { text: string; to?: number | null; supplement?: boolean; rollCall?: boolean }) => ipcRenderer.invoke('emSay', r),
+  emDecide: (r: { text: string; kind: 'decision' | 'promise' }) => ipcRenderer.invoke('emDecide', r),
+  emEnd: () => ipcRenderer.invoke('emEnd'),
+  emClose: () => ipcRenderer.invoke('emClose'),
+  onEmState: (cb: (s: any) => void) => ipcRenderer.on('emState', (_e, s) => cb(s)),
+  standingInfo: (key: string, planet?: string) => ipcRenderer.invoke('standingInfo', key, planet), // 정치적 지위 장부(2026-10-23 초안)
+  socialState: () => ipcRenderer.invoke('socialState'), // 인물 관계·사교회(2026-10-23 초안)
+  socialAttend: (yes: boolean) => ipcRenderer.invoke('socialAttend', yes),
+  socialSetMonth: (month: number) => ipcRenderer.invoke('socialSetMonth', month), // 사교회 개최 월(국가기념일 화면 고정 항목)
+  socialHallOpen: () => ipcRenderer.invoke('socialHallOpen'), // 사교회 연회장(실제 대화, 2026-10-23)
+  socialHallClose: () => ipcRenderer.invoke('socialHallClose'),
+  socialTalk: (spot: string, text: string, to?: string) => ipcRenderer.invoke('socialTalk', spot, text, to ?? ''),
+  socialLeave: (spot: string) => ipcRenderer.invoke('socialLeave', spot),
+  socialIntro: (a: string, b: string) => ipcRenderer.invoke('socialIntro', a, b),
+  socialFinish: () => ipcRenderer.invoke('socialFinish'),
+  relConflictStory: (id: string) => ipcRenderer.invoke('relConflictStory', id), // 갈등 사연(34)·두 사람 중재(32·33)
+  relMediateState: (id: string) => ipcRenderer.invoke('relMediateState', id),
+  relMediateSay: (id: string, text: string, to?: string) => ipcRenderer.invoke('relMediateSay', id, text, to ?? ''),
+  relMediateClose: (id: string) => ipcRenderer.invoke('relMediateClose', id),
+  relationsInfo: (key: string) => ipcRenderer.invoke('relationsInfo', key),
+  relGraph: () => ipcRenderer.invoke('relGraph'), // 인물 관계도(2026-11-09, ui/office-relgraph.js)
+  relArrange: (a: string, b: string) => ipcRenderer.invoke('relArrange', a, b), // 만남 주선(2026-10-23)
+  onSocialUpdate: (cb: (s: any) => void) => ipcRenderer.on('socialUpdate', (_e, s) => cb(s)),
+  romanceInfo: (key: string) => ipcRenderer.invoke('romanceInfo', key), // 통치자 연애·결혼식(2026-10-23 초안)
+  romanceConfess: (key: string) => ipcRenderer.invoke('romanceConfess', key),
+  romancePropose: (key: string) => ipcRenderer.invoke('romancePropose', key),
+  weddingCancel: (key: string) => ipcRenderer.invoke('weddingCancel', key), // 약혼·준비 취소(이별 아님)
+  romanceBreakup: (key: string) => ipcRenderer.invoke('romanceBreakup', key),
+  weddingPrepare: (key: string, scale: 'state' | 'informal') => ipcRenderer.invoke('weddingPrepare', key, scale),
+  weddingHold: (key: string) => ipcRenderer.invoke('weddingHold', key),
+  dateOpen: (key: string) => ipcRenderer.invoke('dateOpen', key),
+  dateState: () => ipcRenderer.invoke('dateState'),
+  dateGo: (spot: string) => ipcRenderer.invoke('dateGo', spot),
+  dateSay: (text: string) => ipcRenderer.invoke('dateSay', text),
+  dateEnd: () => ipcRenderer.invoke('dateEnd'),
+  dateClose: () => ipcRenderer.invoke('dateClose'),
+  onDateState: (cb: (s: any) => void) => ipcRenderer.on('dateState', (_e, s) => cb(s)),
+  casinoState: () => ipcRenderer.invoke('casinoState'), // 우주 카지노(2026-10-30, 시스템만 — 화면은 외출 → 카지노 정거장)
+  casinoOpen: () => ipcRenderer.invoke('casinoOpen'), // 카지노 창(2026-10-30, 외출 → 카지노 정거장)
+  casinoClose: () => ipcRenderer.invoke('casinoClose'),
+  partyState: () => ipcRenderer.invoke('partyState'), // 관저 파티(2026-11-03, 개인실)
+  partyOpen: (theme?: string) => ipcRenderer.invoke('partyOpen', theme),
+  partyClose: () => ipcRenderer.invoke('partyClose'),
+  partyStart: (keys: string[]) => ipcRenderer.invoke('partyStart', keys),
+  partyNext: () => ipcRenderer.invoke('partyNext'),
+  partyTalk: (a: { key: string; text: string }) => ipcRenderer.invoke('partyTalk', a),
+  partyFinish: () => ipcRenderer.invoke('partyFinish'),
+  partyLeave: () => ipcRenderer.invoke('partyLeave'),
+  partySnap: (r: { x: number; y: number; width: number; height: number }) => ipcRenderer.invoke('partySnap', r), // 단체 사진 저장(2026-11-03)
+  partyPhoto: (n: number) => ipcRenderer.invoke('partyPhoto', n),
+  partyAlbum: () => ipcRenderer.invoke('partyAlbum'), // 개인 일지 「사진첩」(2026-11-03)
+  govPolState: (o?: { live?: boolean }) => ipcRenderer.invoke('govPolState', o), // 총독에게 행성 맡기기(2026-11-03)
+  govPolSet: (a: { idx: number; policy: string | null }) => ipcRenderer.invoke('govPolSet', a),
+  govQuotaSet: (a: { idx: number; on: boolean }) => ipcRenderer.invoke('govQuotaSet', a), // 행성 할당량(2026-11-05)
+  empState: () => ipcRenderer.invoke('empState'), // 비상대권(2026-11-05)
+  empSet: (act: 'up' | 'down' | 'release' | 'hold') => ipcRenderer.invoke('empSet', act),
+  colNameState: () => ipcRenderer.invoke('colNameState'), // 신규 식민지 이름 짓기(2026-11-04)
+  colNameNotify: (on: boolean) => ipcRenderer.invoke('colNameNotify', on),
+  colNameAsk: (idx: number) => ipcRenderer.invoke('colNameAsk', idx),
+  colNamePick: (a: { idx: number; key?: string; text?: string; keep?: boolean }) => ipcRenderer.invoke('colNamePick', a),
+  fleetNameState: () => ipcRenderer.invoke('fleetNameState'), // 함대 명명 건(내각 회의실, 2026-11-04)
+  fleetNameAsk: (id: string, again?: boolean) => ipcRenderer.invoke('fleetNameAsk', id, again),
+  fleetNamePick: (a: { id: string; name?: string; reject?: boolean }) => ipcRenderer.invoke('fleetNamePick', a),
+  onPartyUpdate: (fn: (v: unknown) => void) => { ipcRenderer.on('partyUpdate', (_e, v) => fn(v)); },
+  scState: () => ipcRenderer.invoke('scState'), // 스텔라체스(카지노 함대 오토배틀러, 2026-10-31)
+  scStart: (buyIn: number, chaos?: boolean, hard?: boolean) => ipcRenderer.invoke('scStart', buyIn, chaos, hard),
+  scAct: (a: Record<string, unknown>) => ipcRenderer.invoke('scAct', a),
+  scFight: () => ipcRenderer.invoke('scFight'),
+  scRetreat: () => ipcRenderer.invoke('scRetreat'),
+  scForfeit: () => ipcRenderer.invoke('scForfeit'),
+  scClear: () => ipcRenderer.invoke('scClear'),
+  casinoSlots: (bet: number) => ipcRenderer.invoke('casinoSlots', bet),
+  casinoRoulette: (bets: unknown[]) => ipcRenderer.invoke('casinoRoulette', bets),
+  casinoDice: (bets: unknown[]) => ipcRenderer.invoke('casinoDice', bets),
+  casinoBjDeal: (bet: number) => ipcRenderer.invoke('casinoBjDeal', bet),
+  casinoBjAct: (act: 'hit' | 'stand' | 'double') => ipcRenderer.invoke('casinoBjAct', act),
+  casinoPokerSit: (a: { buyIn: number; companions?: string[] }) => ipcRenderer.invoke('casinoPokerSit', a), // 데려갈 지도자 여러 명(최대 5)
+  casinoPokerAct: (act: 'fold' | 'check' | 'call' | 'raise') => ipcRenderer.invoke('casinoPokerAct', act),
+  casinoPokerNext: () => ipcRenderer.invoke('casinoPokerNext'),
+  casinoPokerLeave: () => ipcRenderer.invoke('casinoPokerLeave'),
+  casinoPokerAsk: (text: string, to?: string) => ipcRenderer.invoke('casinoPokerAsk', text, to),
+  onCasinoUpdate: (cb: (s: any) => void) => ipcRenderer.on('casinoUpdate', (_e, s) => cb(s)),
+  storeOpen: () => ipcRenderer.invoke('storeOpen'), // 백화점(2026-10-30, 외출 → 백화점)
+  storeState: () => ipcRenderer.invoke('storeState'),
+  storeClose: () => ipcRenderer.invoke('storeClose'),
+  storeBlocked: () => ipcRenderer.invoke('storeBlocked'),
+  storeBuy: (id: string) => ipcRenderer.invoke('storeBuy', id),
+  storeGift: (id: string) => ipcRenderer.invoke('storeGift', id),
+  storeLoungeSay: (text: string) => ipcRenderer.invoke('storeLoungeSay', text),
+  storeGiftChild: (id: string, childId: string) => ipcRenderer.invoke('storeGiftChild', id, childId), // 자식에게 선물(2026-10-30)
+  onStoreState: (cb: (s: unknown) => void) => { ipcRenderer.on('storeState', (_e, s) => cb(s)); },
+  petshopOpen: () => ipcRenderer.invoke('petshopOpen'), // 펫샵(2026-10-30, 외출 → 펫샵)
+  petshopState: () => ipcRenderer.invoke('petshopState'),
+  petshopClose: () => ipcRenderer.invoke('petshopClose'),
+  petshopBuy: (id: string, name: string) => ipcRenderer.invoke('petshopBuy', id, name),
+  petshopTouch: (id: string) => ipcRenderer.invoke('petshopTouch', id),
+  petshopRename: (uid: string, name: string) => ipcRenderer.invoke('petshopRename', uid, name),
+  petshopRehome: (uid: string) => ipcRenderer.invoke('petshopRehome', uid),
+  onPetshopState: (cb: (s: unknown) => void) => { ipcRenderer.on('petshopState', (_e, s) => cb(s)); },
+  bedroomOpen: (theme: string) => ipcRenderer.invoke('bedroomOpen', theme), // 통치자 침실(2026-10-30, 개인실 책상 위 열쇠)
+  bedroomState: () => ipcRenderer.invoke('bedroomState'),
+  bedroomClose: () => ipcRenderer.invoke('bedroomClose'),
+  bedroomPlace: (slot: string, ref: string) => ipcRenderer.invoke('bedroomPlace', slot, ref),
+  bedroomFrame: (slot: string) => ipcRenderer.invoke('bedroomFrame', slot),
+  bedroomTouch: (uid: string) => ipcRenderer.invoke('bedroomTouch', uid),
+  bedroomInvite: (key: string) => ipcRenderer.invoke('bedroomInvite', key),
+  bedroomSay: (text: string) => ipcRenderer.invoke('bedroomSay', text),
+  onBedroomState: (cb: (s: unknown) => void) => { ipcRenderer.on('bedroomState', (_e, s) => cb(s)); },
+  paparazziOpen: () => ipcRenderer.invoke('paparazziOpen'), // 파파라치(2026-10-31)
+  paparazziState: () => ipcRenderer.invoke('paparazziState'),
+  paparazziClose: () => ipcRenderer.invoke('paparazziClose'),
+  paparazziDecide: (id: string, choice: string) => ipcRenderer.invoke('paparazziDecide', id, choice),
+  onPaparazziState: (cb: (s: unknown) => void) => { ipcRenderer.on('paparazziState', (_e, s) => cb(s)); },
+  tavernOpen: () => ipcRenderer.invoke('tavernOpen'), // 뒷골목 선술집(2026-10-30, 외출 → 선술집)
+  tavernState: () => ipcRenderer.invoke('tavernState'),
+  tavernClose: () => ipcRenderer.invoke('tavernClose'),
+  tavernEnter: (id: string) => ipcRenderer.invoke('tavernEnter', id),
+  tavernListen: (key: string) => ipcRenderer.invoke('tavernListen', key),
+  tavernRound: (key: string) => ipcRenderer.invoke('tavernRound', key),
+  tavernSit: (key: string) => ipcRenderer.invoke('tavernSit', key),
+  tavernSay: (text: string) => ipcRenderer.invoke('tavernSay', text),
+  onTavernState: (cb: (s: unknown) => void) => { ipcRenderer.on('tavernState', (_e, s) => cb(s)); },
+  blackmarketOpen: () => ipcRenderer.invoke('blackmarketOpen'), // 암시장 골목(2026-10-30, 외출 → 암시장)
+  blackmarketState: () => ipcRenderer.invoke('blackmarketState'),
+  blackmarketClose: () => ipcRenderer.invoke('blackmarketClose'),
+  blackmarketOffer: (id: string, price: number) => ipcRenderer.invoke('blackmarketOffer', id, price),
+  blackmarketTip: () => ipcRenderer.invoke('blackmarketTip'),
+  blackmarketAppraise: (uid: string) => ipcRenderer.invoke('blackmarketAppraise', uid),
+  onBlackmarketState: (cb: (s: unknown) => void) => { ipcRenderer.on('blackmarketState', (_e, s) => cb(s)); },
+  landmarkState: () => ipcRenderer.invoke('landmarkState'), // 성향별 특별한 곳(2026-10-30, 외출 → 랜드마크)
+  landmarkClose: () => ipcRenderer.invoke('landmarkClose'),
+  landmarkRitual: () => ipcRenderer.invoke('landmarkRitual'),
+  landmarkSay: (text: string) => ipcRenderer.invoke('landmarkSay', text),
+  landmarkAddress: (text: string) => ipcRenderer.invoke('landmarkAddress', text),
+  onLandmarkState: (cb: (s: unknown) => void) => { ipcRenderer.on('landmarkState', (_e, s) => cb(s)); },
+  outingOpen: () => ipcRenderer.invoke('outingOpen'), // 외출(2026-10-30): 책상 위 지갑 → 수도 지도
+  outingState: () => ipcRenderer.invoke('outingState'),
+  outingClose: () => ipcRenderer.invoke('outingClose'),
+  outingEthic: (k: string | null) => ipcRenderer.invoke('outingEthic', k),
+  outingCompanion: (c: { kind: string; key?: string }) => ipcRenderer.invoke('outingCompanion', c),
+  outingGo: (id: string) => ipcRenderer.invoke('outingGo', id),
+  onOutingState: (cb: (s: unknown) => void) => { ipcRenderer.on('outingState', (_e, s) => cb(s)); },
+  logOpen: () => ipcRenderer.invoke('logOpen'), // 레전드 오브 갤럭시(2026-10-30, 우주 경기장 — 나중에 외출 → 우주 경기장에서 염, 구단은 후원 방식)
+  logState: () => ipcRenderer.invoke('logState'),
+  logClose: () => ipcRenderer.invoke('logClose'),
+  logSponsor: (a: { team: string; tier: 1 | 2 | 3 }) => ipcRenderer.invoke('logSponsor', a), // 구단 후원(등급 1~3, 후원금은 금고에서)
+  logSponsorCancel: () => ipcRenderer.invoke('logSponsorCancel'),
+  logSponsorName: (a: { label?: string; name?: string }) => ipcRenderer.invoke('logSponsorName', a),
+  logSponsorRequest: (a: { strat?: { aggr: number; obj: number } | null; focus?: string | null; practice?: Record<string, string> }) => ipcRenderer.invoke('logSponsorRequest', a),
+  logScout: (pid: string) => ipcRenderer.invoke('logScout', pid),
+  logFoster: (pid: string | null) => ipcRenderer.invoke('logFoster', pid), // 레전드 양성(육성 선수 지정·그만두기)
+  logPortrait: (a: { pid: string; src: string }) => ipcRenderer.invoke('logPortrait', a),
+  logGear: (a: { slot: string; grade: number }) => ipcRenderer.invoke('logGear', a), // 장비 후원
+  logLogo: (a: { e: number; s: number; p: number; c: number } | null) => ipcRenderer.invoke('logLogo', a), // 로고 꾸미기(메인 스폰서)
+  logDraftStart: () => ipcRenderer.invoke('logDraftStart'),
+  logDraftMove: (a: { weapon: string; role?: string }) => ipcRenderer.invoke('logDraftMove', a),
+  logDraftCancel: () => ipcRenderer.invoke('logDraftCancel'),
+  logPlayMine: (a?: { now?: boolean }) => ipcRenderer.invoke('logPlayMine', a ?? {}),
+  logWatch: (a: { round?: number; match?: number; olympic?: number; allstar?: boolean; worlds?: string }) => ipcRenderer.invoke('logWatch', a),
+  logSpeed: (n: number) => ipcRenderer.invoke('logSpeed', n),
+  logStopWatch: () => ipcRenderer.invoke('logStopWatch'),
+  logToto: (a: { picks: Array<{ round: number; match: number; side: 0 | 1 }>; stake: number }) => ipcRenderer.invoke('logToto', a),
+  logTotoIntl: (a: { kind: 'w' | 'o'; picks: Array<{ i: number; side: 0 | 1 }>; stake: number }) => ipcRenderer.invoke('logTotoIntl', a),
+  logHostCouncil: (a: { ev: 'oly' | 'worlds'; mode: 'debate' | 'vote' }) => ipcRenderer.invoke('logHostCouncil', a), // 은하 공동체 회의에서 개최지 선정(연설·투표 장면, 2026-10-31)
+  logHostLobby: (a: { ev: 'oly' | 'worlds'; voter: number; kind: 'gift' | 'envoy' | 'bribe' }) => ipcRenderer.invoke('logHostLobby', a), // 국제 대회 유치(2026-10-31)
+  logHostPlanet: (a: { ev: 'oly' | 'worlds'; planet: string }) => ipcRenderer.invoke('logHostPlanet', a),
+  logHostPrep: (a: { ev: 'oly' | 'worlds'; project: string }) => ipcRenderer.invoke('logHostPrep', a),
+  logCeremony: (a: { ev: 'oly' | 'worlds'; choice: 'unity' | 'glory' | 'rivalry' }) => ipcRenderer.invoke('logCeremony', a),
+  logOlyBid: () => ipcRenderer.invoke('logOlyBid'),
+  logOlyTeam: (a: Record<string, string>) => ipcRenderer.invoke('logOlyTeam', a),
+  logWarPolicy: (v: string) => ipcRenderer.invoke('logWarPolicy', v), // LoG ↔ 나라 연동(2026-10-31)
+  logWorldsBid: () => ipcRenderer.invoke('logWorldsBid'),
+  logScandal: (v: string) => ipcRenderer.invoke('logScandal', v),
+  logTransfer: (v: string) => ipcRenderer.invoke('logTransfer', v),
+  logInvite: (pid: string) => ipcRenderer.invoke('logInvite', pid),
+  onLogState: (cb: (s: any) => void) => ipcRenderer.on('logState', (_e, s) => cb(s)),
+  onLogFrame: (cb: (s: any) => void) => ipcRenderer.on('logFrame', (_e, s) => cb(s)),
+  vaultState: () => ipcRenderer.invoke('vaultState'), // 통치자 개인 금고(2026-10-30, 화면은 침실)
+  vaultDeposit: (amount: number) => ipcRenderer.invoke('vaultDeposit', amount),
+  vaultWithdraw: (amount: number) => ipcRenderer.invoke('vaultWithdraw', amount),
+  vaultRetry: () => ipcRenderer.invoke('vaultRetry'),
+  onVaultUpdate: (cb: (s: any) => void) => ipcRenderer.on('vaultUpdate', (_e, s) => cb(s)),
+  chessSeats: (scene: string) => ipcRenderer.invoke('chessSeats', scene), // 지도자와 체스(2026-10-30): 직접 만나는 자리(사교회·만찬)에서만
+  chessStart: (a: { scene: string; seat: string; color?: 'w' | 'b' | 'random' }) => ipcRenderer.invoke('chessStart', a),
+  chessState: () => ipcRenderer.invoke('chessState'),
+  chessMove: (a: { from: number; to: number; promo?: string }) => ipcRenderer.invoke('chessMove', a),
+  chessAsk: (text: string) => ipcRenderer.invoke('chessAsk', text),
+  chessResign: () => ipcRenderer.invoke('chessResign'),
+  chessClose: () => ipcRenderer.invoke('chessClose'),
+  onChessState: (cb: (s: any) => void) => ipcRenderer.on('chessState', (_e, s) => cb(s)),
+  gcOpen: () => ipcRenderer.invoke('gcOpen'), // 행성총독회의(2026-10-23 초안)
+  gcState: () => ipcRenderer.invoke('gcState'),
+  gcPlanets: () => ipcRenderer.invoke('gcPlanets'),
+  gcConvene: (a: { kind: 'regular' | 'emergency'; topic: string }) => ipcRenderer.invoke('gcConvene', a),
+  gcSay: (a: { text: string; to?: string; supplement?: boolean; rollCall?: boolean }) => ipcRenderer.invoke('gcSay', a),
+  gcDecide: (id: string, choice: string) => ipcRenderer.invoke('gcDecide', id, choice),
+  gcEnd: () => ipcRenderer.invoke('gcEnd'),
+  gcSkip: () => ipcRenderer.invoke('gcSkip'),
+  gcClose: () => ipcRenderer.invoke('gcClose'),
+  onGcState: (cb: (s: any) => void) => ipcRenderer.on('gcState', (_e, s) => cb(s)),
+  holidaysState: () => ipcRenderer.invoke('holidaysState'), // 행성 고유 기념일(2026-10-23 초안)
+  holidayVisit: (planet: string) => ipcRenderer.invoke('holidayVisit', planet),
+  holidaysRefresh: () => ipcRenderer.invoke('holidaysRefresh'),
+  onHolidaysUpdate: (cb: (s: any) => void) => ipcRenderer.on('holidaysUpdate', (_e, s) => cb(s)),
+  retiredState: () => ipcRenderer.invoke('retiredState'), // 은퇴 인물(2026-10-23 초안)
+  retiredKeep: (pid: string, on: boolean) => ipcRenderer.invoke('retiredKeep', pid, on),
+  retiredKeepState: (pid: string) => ipcRenderer.invoke('retiredKeepState', pid),
+  retiredTalk: (pid: string, text: string) => ipcRenderer.invoke('retiredTalk', pid, text),
+  onRetiredUpdate: (cb: (s: any) => void) => ipcRenderer.on('retiredUpdate', (_e, s) => cb(s)),
+  fbInvites: () => ipcRenderer.invoke('fbInvites'), // 타국 주최 만찬(2026-10-23 초안)
+  fbReply: (id: string, yes: boolean) => ipcRenderer.invoke('fbReply', id, yes),
+  fbEnter: (id: string) => ipcRenderer.invoke('fbEnter', id),
+  fbHall: () => ipcRenderer.invoke('fbHall'),
+  fbSay: (text: string, to: string) => ipcRenderer.invoke('fbSay', text, to),
+  fbIntroduce: (pid: string) => ipcRenderer.invoke('fbIntroduce', pid),
+  fbExchange: (pid: string) => ipcRenderer.invoke('fbExchange', pid),
+  fbFinish: () => ipcRenderer.invoke('fbFinish'),
+  fbClose: () => ipcRenderer.invoke('fbClose'),
+  onFbHall: (cb: (s: any) => void) => ipcRenderer.on('fbHall', (_e, s) => cb(s)),
+  onFbInvites: (cb: (s: any) => void) => ipcRenderer.on('fbInvitesUpdate', (_e, s) => cb(s)),
+  flState: () => ipcRenderer.invoke('flState'), // 타국 지인 서신(2026-10-23 초안)
+  flSend: (pid: string, topic: string, text: string) => ipcRenderer.invoke('flSend', pid, topic, text),
+  onFlUpdate: (cb: (s: any) => void) => ipcRenderer.on('flUpdate', (_e, s) => cb(s)),
+  execCheck: (key: string) => ipcRenderer.invoke('execCheck', key), // 처형(2026-10-23 초안)
+  execState: () => ipcRenderer.invoke('execState'),
+  execPrepare: (a: { key: string; reason: string; note: string; publicity: 'public' | 'private' }) => ipcRenderer.invoke('execPrepare', a),
+  execCancel: (id: string) => ipcRenderer.invoke('execCancel', id),
+  execRun: (id: string) => ipcRenderer.invoke('execRun', id),
+  onExecUpdate: (cb: (s: any) => void) => ipcRenderer.on('execUpdate', (_e, s) => cb(s)),
+  wsState: () => ipcRenderer.invoke('wsState'), // 창작마당 애드온 자동 감지(2026-10-23 초안)
+  wsScan: () => ipcRenderer.invoke('wsScan'),
+  wsInstall: (itemId: string) => ipcRenderer.invoke('wsInstall', itemId),
+  wsIgnore: (itemId: string) => ipcRenderer.invoke('wsIgnore', itemId),
+  colShop: (m: string) => ipcRenderer.invoke('colShop', m), // 상인 수집품·골동품 진열장·국가 문서함(알파 11, 2026-10-25)
+  colBuy: (id: string) => ipcRenderer.invoke('colBuy', id),
+  colShowcase: () => ipcRenderer.invoke('colShowcase'),
+  colPlace: (id: string, slot: number | null) => ipcRenderer.invoke('colPlace', id, slot),
+  onColUpdate: (cb: () => void) => ipcRenderer.on('colUpdate', () => cb()),
+  docsList: () => ipcRenderer.invoke('docsList'),
+  docsOpen: (id: string) => ipcRenderer.invoke('docsOpen', id),
+  onDocsUpdate: (cb: () => void) => ipcRenderer.on('docsUpdate', () => cb()),
+  loanState: (rescan?: boolean) => ipcRenderer.invoke('loanState', !!rescan), // 큐레이터 대여(알파 11, 2026-10-25)
+  loanStart: (kind: 'col' | 'spec', ref: string) => ipcRenderer.invoke('loanStart', kind, ref),
+  onLoanUpdate: (cb: () => void) => ipcRenderer.on('loanUpdate', () => cb()),
+  tourState: () => ipcRenderer.invoke('tourState'), // 예술가 극단 순회 공연(알파 11, 2026-10-25)
+  tourRequest: () => ipcRenderer.invoke('tourRequest'),
+  // 인터넷(2026-10-28, ui/office-internet.js): 트윙클·DS인사이드·레드시프트
+  internetState: () => ipcRenderer.invoke('internetState'),
+  gforumState: () => ipcRenderer.invoke('gforumState'), // 갤럭틱 포럼(/int/, 2026-11-04)
+  gforumRefresh: (force?: boolean) => ipcRenderer.invoke('gforumRefresh', force),
+  gforumReply: (a: { id: string; text: string; official?: boolean; to?: number | null }) => ipcRenderer.invoke('gforumReply', a),
+  internetOpen: (site: string) => ipcRenderer.invoke('internetOpen', site),
+  internetRefresh: (site: string) => ipcRenderer.invoke('internetRefresh', site),
+  internetPost: (site: string, id: string) => ipcRenderer.invoke('internetPost', site, id),
+  internetWrite: (site: string, acct: string, title: string, body: string, ama?: boolean) => ipcRenderer.invoke('internetWrite', site, acct, title, body, ama === true),
+  internetReply: (site: string, id: string, acct: string, text: string, to: number) => ipcRenderer.invoke('internetReply', site, id, acct, text, to),
+  internetNick: (site: string, nick: string) => ipcRenderer.invoke('internetNick', site, nick),
+  internetFollow: (who: string, on: boolean) => ipcRenderer.invoke('internetFollow', who, on),
+  internetInfluencer: (id: string, patch: unknown) => ipcRenderer.invoke('internetInfluencer', id, patch),
+  internetPromo: (inf: string, planet: string) => ipcRenderer.invoke('internetPromo', inf, planet),
+  // 외교 거래(2026-10-26, ui/deal-ui.js)
+  childList: () => ipcRenderer.invoke('childList'),
+  childAnswer: (id: string, choice: number) => ipcRenderer.invoke('childAnswer', id, choice),
+  childRename: (id: string, name: string) => ipcRenderer.invoke('childRename', id, name),
+  childStudy: (id: string, axis: string) => ipcRenderer.invoke('childStudy', id, axis), // 어떤 공부를 시키겠습니까?(2026-10-27)
+  childHeir: (id: string) => ipcRenderer.invoke('childHeir', id),
+  childTalkOpen: (id: string) => ipcRenderer.invoke('childTalkOpen', id),
+  childTalkSay: (id: string, text: string) => ipcRenderer.invoke('childTalkSay', id, text),
+  childTalkEnd: (id: string) => ipcRenderer.invoke('childTalkEnd', id),
+  childCross: (id: string, choice: 'leader' | 'civ', arg: string) => ipcRenderer.invoke('childCross', id, choice, arg), // 성인 갈림길(2026-10-28)
+  childRecall: (id: string, cls: string) => ipcRenderer.invoke('childRecall', id, cls), // 민간인 자녀를 지도자로 불러들이기
+  childStar: (id: string) => ipcRenderer.invoke('childStar', id), // 관심 자녀 별표
+  dealAid: (res: string, amt: number, years: number) => ipcRenderer.invoke('dealAid', res, amt, years), // 물자 지원(2026-10-28)
+  dealCtaAid: (tid: number) => ipcRenderer.invoke('dealCtaAid', tid), // 참전 요청에 물자 지원으로 답하기
+  aidStart: (tid: number, res: string, amt: number, years: number) => ipcRenderer.invoke('aidStart', tid, res, amt, years), // 물자 지원(대상 지정, 2026-10-28)
+  aidStop: (id: string) => ipcRenderer.invoke('aidStop', id),
+  fsupStart: (idx: number, eth: string, faction: string) => ipcRenderer.invoke('fsupStart', idx, eth, faction), // 파벌 공작
+  autoRights: (idx: number, yes: boolean) => ipcRenderer.invoke('autoRights', idx, yes), // 종속국 권리 확대 요구에 답하기
+  // 정치(2026-10-28): 집무실 「궁정」(음모·수감자·가문·가계도), 외교 거래판 「정략결혼」
+  courtView: () => ipcRenderer.invoke('courtView'),
+  courtTree: () => ipcRenderer.invoke('courtTree'),
+  courtAct: (id: string, act: string) => ipcRenderer.invoke('courtAct', id, act),
+  courtFree: (pid: string) => ipcRenderer.invoke('courtFree', pid),
+  courtRename: (id: string, name: string) => ipcRenderer.invoke('courtRename', id, name),
+  onCourtUpdate: (fn: (v: unknown) => void) => ipcRenderer.on('courtUpdate', (_e, v) => fn(v)),
+  devCourtPlot: () => ipcRenderer.invoke('devCourtPlot'), // 개발자 시험: 음모 하나 바로 꾸미기(낌새까지)
+  dealMarryOdds: (cid: string, dowry: number) => ipcRenderer.invoke('dealMarryOdds', cid, dowry),
+  dealMarry: (cid: string, dowry: number, sendLeader: boolean) => ipcRenderer.invoke('dealMarry', cid, dowry, sendLeader),
+  familyInfo: (key: string) => ipcRenderer.invoke('familyInfo', key), // 인물 카드 「가족」 칸(2026-10-27)
+  devChildMake: () => ipcRenderer.invoke('devChildMake'), // 개발자 시험: 아이 바로 태어나기
+  devChildAge: (years: number) => ipcRenderer.invoke('devChildAge', years), // 개발자 시험: 아이 n년 키우기
+  devChildCivYear: () => ipcRenderer.invoke('devChildCivYear'), // 개발자 시험: 민간인 자녀 삶 사건 한 해
+  dealList: () => ipcRenderer.invoke('dealList'),
+  dealOpen: (tid?: number) => ipcRenderer.invoke('dealOpen', tid),
+  dealPreview: (items: unknown, useHook: boolean) => ipcRenderer.invoke('dealPreview', items, useHook),
+  dealPropose: (items: unknown, useHook: boolean) => ipcRenderer.invoke('dealPropose', items, useHook),
+  dealCancel: (id: string) => ipcRenderer.invoke('dealCancel', id),
+  dealCta: (tid: number, accept: boolean) => ipcRenderer.invoke('dealCta', tid, accept),
+  emotionsState: () => ipcRenderer.invoke('emotionsState'), // 감정 기억 4종(알파 11, 2026-10-25)
+  loreState: () => ipcRenderer.invoke('loreState'), // 세계관 팩 서재(2026-10-23 초안)
+  loreOpen: (ref: string) => ipcRenderer.invoke('loreOpen', ref),
+  loreSetAi: (ref: string, on: boolean) => ipcRenderer.invoke('loreSetAi', ref, on),
+  onLoreUpdate: (cb: (s: any) => void) => ipcRenderer.on('loreUpdate', (_e, s) => cb(s)),
+  iscOpen: () => ipcRenderer.invoke('iscOpen'), // 성간제국통신임시회의(2026-10-23 초안)
+  iscState: () => ipcRenderer.invoke('iscState'),
+  iscRoster: () => ipcRenderer.invoke('iscRoster'),
+  iscConvene: (r: { topic: string; invited: number[] }) => ipcRenderer.invoke('iscConvene', r),
+  iscResume: (id: string) => ipcRenderer.invoke('iscResume', id),
+  iscSay: (r: { text: string; to?: number; supplement?: boolean; rollCall?: boolean }) => ipcRenderer.invoke('iscSay', r),
+  iscEnd: () => ipcRenderer.invoke('iscEnd'),
+  iscQuestAccept: (id: string) => ipcRenderer.invoke('iscQuestAccept', id), // 회의 과제(2026-10-26)
+  iscQuestDecline: (id: string) => ipcRenderer.invoke('iscQuestDecline', id),
+  iscClose: () => ipcRenderer.invoke('iscClose'),
+  onIscState: (cb: (s: any) => void) => ipcRenderer.on('iscState', (_e, s) => cb(s)),
+  onFacState: (cb: (s: any) => void) => ipcRenderer.on('facState', (_e, s) => cb(s)), // 같은 버그(2026-11-04)
+  onFfoState: (cb: (s: any) => void) => ipcRenderer.on('facState', (_e, s) => cb(s)),
   onSummitState: (cb: (s: any) => void) => ipcRenderer.on('summitState', (_e, s) => cb(s)),
   devEffects: () => ipcRenderer.invoke('devEffects'),
   effectVerifyState: () => ipcRenderer.invoke('effectVerifyState'),

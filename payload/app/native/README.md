@@ -1,8 +1,16 @@
 # SLLM 콘솔 없는 게임 연결 (실험)
 
-검증 대상: Stellaris Cygnus 4.5.2 (9776), Steam build 25664273, Windows x64.
-실행 파일 SHA-256: 400DF27C82DDC845AA9DCE79BD468D81F18F060D299CD263E3AFA93AEF4F7A83.
+검증 대상: Stellaris Cygnus 4.5.3, Windows x64 (2026-11-04 게임 업데이트에 맞춰 주소 다시 찾음).
+이전 대상: 4.5.2 (9776) — run 0xeba020 · 배열 vtable 0x22fe5b0 · 결과 해제 0x160ff0.
+4.5.3 찾는 법: .data 의 콘솔 명령 표에서 "run" 항목의 처리 함수, 콘솔 실행 함수(Unknown command 문자열 근처)가
+인자 배열을 만들 때 쓰는 vtable, 같은 함수 끝에서 결과를 치우는 함수.
+실행 파일 SHA-256: 2F0FC2A91CCEC9F77D390A5D198195927158C22444216A03596A23007FB3EAFB.
 다른 실행 파일에서는 내부 함수를 호출하기 전에 거부합니다.
+
+DLL 위치(2026-11-04부터): 새 DLL 은 native/bridge/command-bridge.dll 이다. 설치판 앱은 게임이 꺼져 있을 때
+게임 폴더의 sllm-tester-command-bridge.dll 을 이것으로 바꾼다(.owner 해시가 맞을 때만, src/game-dll.ts).
+native/command-bridge.dll 은 4.5.2용 그대로 고정한다 — 예전 앱은 이 파일이 바뀌면 앱 업데이트를 막고 설치기를 요구하기 때문.
+게임 패치 때는 native/bridge/ 의 DLL 과 src/command-bridge.c 만 고친다.
 
 앱이 요청마다 새 INI 파일을 게임 사용자 폴더에 만든 뒤 bridge-client.exe를 실행합니다.
 클라이언트는 현재 게임의 프로세스와 창 스레드를 매번 찾습니다. 임시 메시지 후크를

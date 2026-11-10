@@ -1,0 +1,31 @@
+# SLLM 자동 작전(2026-11-04) — 매달 한 번. 플레이어 국가이고 앱에서 켰을 때(sllm_fo_on)만 돈다. 규칙은 common/scripted_effects/sllm_fleetorder.txt.
+# sllm_fo.2: 함대를 빌려준 나라(sllm_fo_lending, AI·플레이어 모두)마다 잃은 함대·반환을 점검한다(sllm_fleetorder_ally.txt).
+namespace = sllm_fo
+
+country_event = {
+	id = sllm_fo.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		has_country_flag = sllm_fo_on
+	}
+	immediate = {
+		sllm_fo_monthly = yes
+		sllm_fo_op_tick = { N = 1 }   # 겹침 한도(2026-11-08): sllm_fo_monthly 밖에서
+		sllm_fo_op_tick = { N = 2 }
+		sllm_fo_op_tick = { N = 3 }
+	}
+}
+
+country_event = {
+	id = sllm_fo.2
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_country_flag = sllm_fo_lending
+	}
+	immediate = {
+		sllm_fo_lend_tick = yes
+	}
+}

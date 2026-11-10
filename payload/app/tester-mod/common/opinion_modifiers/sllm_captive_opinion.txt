@@ -1,0 +1,17 @@
+# SLLM 사로잡은 적 제독(2026-11-04) — 그 제독의 원래 나라가 우리를 보는 눈.
+sllm_cap_ransomed = {
+	opinion = { base = 15 }
+	decay = { base = 1 }
+}
+sllm_cap_released = {
+	opinion = { base = 40 }
+	decay = { base = 1 }
+}
+sllm_cap_turned = {
+	opinion = { base = -50 }
+	decay = { base = 1 }
+}
+sllm_cap_executed = {
+	opinion = { base = -100 }
+	decay = { base = 1 }
+}

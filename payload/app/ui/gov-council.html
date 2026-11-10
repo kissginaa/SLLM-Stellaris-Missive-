@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Governors' Council</title>
+<!-- 행성총독회의(13, 2026-10-23 집 PC 초안). 앱: src/features/gc-app.ts · 규칙: src/governor-council.ts.
+     총독은 홀로그램으로 참석한다. 요구는 행성 자료로 앱이 만들고, 플레이어가 우선 지원·조건부·다른 행성 우선·추가 자료·보류 중에서 정한다(약속은 앱 기록).
+     문구는 ui(한, 영)만(언어 팩 호환). 인물·행성 이름은 data-i18n-skip. -->
+<style>
+ :root{--bg:#06121a;--panel:#0b2230;--text:#dcecf0;--dim:#7fa3ad;--hi:#7fe0c4;--hi-text:#04161d;--gold:#e8c872;--line:color-mix(in srgb,#7fe0c4 34%,transparent);--line2:color-mix(in srgb,#7fe0c4 15%,transparent);--bad:#e0705f;--good:#6fd7a8;--warn:#e0a85f;--holo:#8ff0d0;
+  --btnbg:linear-gradient(#10394a,#0b2a38);--cardbg:linear-gradient(160deg,#0d2a38,#081a24);--inputbg:#04121a;--mono:"D2Coding","Cascadia Mono",Consolas,"Malgun Gothic",monospace}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ input,textarea,button{font:inherit;color:var(--text);border:1px solid var(--line);background:transparent;outline:none;border-radius:0}
+ button{cursor:pointer;background:var(--btnbg);padding:5px 11px;white-space:nowrap} button:hover:not(:disabled){background:var(--hi);color:var(--hi-text);border-color:var(--hi)} button:disabled{opacity:.4;cursor:not-allowed} button.go{border-color:var(--hi);color:var(--hi)} button.warn{border-color:var(--warn);color:var(--warn)}
+ input,textarea{background:var(--inputbg);padding:6px 9px} textarea{resize:none}
+ #room{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 100%,color-mix(in srgb,var(--holo) 14%,transparent),transparent 70%),radial-gradient(ellipse 90% 60% at 50% 25%,#0b2a30,transparent 70%),var(--bg)}
+ #room::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,color-mix(in srgb,var(--holo) 4%,transparent) 3px 4px);pointer-events:none}
+ #top{position:absolute;left:0;right:0;top:0;height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;-webkit-app-region:drag;z-index:30;background:linear-gradient(#000a,#0000)}
+ #top .t{font:600 12px var(--mono);letter-spacing:.16em;color:var(--hi)} #top .sp{flex:1} #empire{color:var(--dim)} .chip{border:1px solid var(--line);padding:0 8px;font-size:11.5px;color:var(--gold)}
+ #x{-webkit-app-region:no-drag;background:none;border-color:transparent;color:var(--dim);width:30px;padding:2px}
+ /* 총독 홀로그램 줄 */
+ #holos{position:absolute;left:12px;right:calc(28% + 12px);top:48px;height:30%;display:flex;gap:10px;align-items:flex-end;overflow-x:auto;overflow-y:hidden;padding:0 6px 22px;z-index:5}
+ .holo{position:relative;flex:0 0 150px;cursor:pointer;display:flex;flex-direction:column;align-items:center;--c:var(--holo)}
+ .holo .pt{position:relative;width:100%;height:calc(30vh - 110px);min-height:90px;border:1px solid color-mix(in srgb,var(--c) 70%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,transparent),color-mix(in srgb,var(--c) 4%,transparent));box-shadow:0 0 18px color-mix(in srgb,var(--c) 28%,transparent);overflow:hidden;clip-path:polygon(8% 0,92% 0,100% 6%,100% 100%,0 100%,0 6%)}
+ .holo .pt img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;opacity:.82;mix-blend-mode:screen;filter:saturate(.55) contrast(1.1)}
+ .holo .pt .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 40px var(--mono);color:var(--c);opacity:.6}
+ .holo .pt::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--c) 10%,transparent) 2px 3px);pointer-events:none}
+ .holo .beam{position:absolute;left:12%;right:12%;bottom:-18px;height:30px;background:radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--c) 55%,transparent),transparent 70%)}
+ .holo .plate{margin-top:5px;width:100%;text-align:center;padding:3px 5px;background:color-mix(in srgb,var(--bg) 85%,transparent);border:1px solid var(--line2);border-top:3px solid var(--c)}
+ .holo .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .holo .em{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .holo.to .pt{border-color:var(--hi);box-shadow:0 0 0 2px var(--hi),0 0 26px var(--hi)} .holo.talk{--c:var(--gold)}
+ /* 가운데 판 */
+ #screen{position:absolute;left:12px;right:calc(28% + 12px);top:calc(48px + 30% + 6px);bottom:164px;z-index:8;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 85%,transparent);display:flex;flex-direction:column;min-height:120px}
+ #screen .over{display:flex;justify-content:space-between;padding:4px 10px;font:10.5px var(--mono);letter-spacing:.14em;color:var(--dim);border-bottom:1px solid var(--line2)}
+ #scrBody{flex:1;overflow:auto;padding:10px 14px}
+ .k{font:600 11px var(--mono);letter-spacing:.14em;color:var(--hi);margin:6px 0 4px} .topic{font-size:15px;font-weight:700} .note{font-size:11.5px;color:var(--dim)}
+ .req{border:1px solid var(--line2);border-left:3px solid var(--warn);padding:6px 9px;margin:5px 0;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+ .req.promised{border-left-color:var(--good)} .req.deferred{border-left-color:var(--dim)} .req.observed_fulfilled{border-left-color:var(--gold)}
+ .req .ttl b{color:var(--hi)} .req .ev{grid-column:1/-1;font-size:11px;color:var(--dim)} .req .acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end} .req .acts button{padding:2px 7px;font-size:11.5px}
+ .st{font-size:11px;border:1px solid var(--line2);padding:0 6px;margin-left:6px}
+ .gb{margin:6px 0 10px} .gb-h{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;display:flex;justify-content:space-between;gap:6px} .gb-h small{font-weight:400;color:var(--dim);font-size:10.5px}
+ .gb-row{display:grid;grid-template-columns:minmax(0,34%) 1fr auto;gap:6px;align-items:center;font-size:11.5px;padding:1px 0} .gb-row:hover{background:color-mix(in srgb,var(--hi) 8%,transparent)}
+ .gb-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .gb-v{font-variant-numeric:tabular-nums;color:var(--text);min-width:3.6em;text-align:right} .gb-v.bad{color:var(--bad)}
+ .gb-track{position:relative;height:9px;background:color-mix(in srgb,var(--hi) 7%,transparent)} .gb-track.div::before{content:'';position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--dim)}
+ .gb-track i{position:absolute;top:0;bottom:0;background:var(--hi);border-radius:0 3px 3px 0} .gb-track i.bad{background:var(--bad)} .gb-track.div i.bad{border-radius:3px 0 0 3px}
+ table{border-collapse:collapse;width:100%;font-size:12px;margin-top:4px} th,td{border-bottom:1px solid var(--line2);padding:3px 6px;text-align:right} th:nth-child(-n+2),td:nth-child(-n+2){text-align:left} th{color:var(--dim);font-weight:400} td.bad{color:var(--bad)}
+ .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px} #topic{width:100%;height:52px}
+ .gl2{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:5px;margin-top:4px} .gl2 div{border:1px solid var(--line2);padding:4px 8px;font-size:12px} .gl2 b{display:block}
+ .banner{border:1px solid var(--gold);background:color-mix(in srgb,var(--gold) 10%,transparent);padding:8px 10px;margin-bottom:8px}
+ /* 기록·조작 */
+ #log{position:absolute;right:12px;top:48px;bottom:164px;width:calc(28% - 12px);min-width:240px;overflow:auto;z-index:8;padding:8px 10px;border:1px solid var(--line2);background:color-mix(in srgb,var(--bg) 80%,transparent)}
+ #log .ln{margin:0 0 7px;padding-left:8px;border-left:3px solid var(--holo);font-size:12.5px} #log .ln.host{border-left-color:var(--gold)} #log .who{display:block;font-weight:700;font-size:11.5px;color:var(--dim)} #log .md{margin-left:6px;font:10px var(--mono);color:var(--hi)}
+ #hud{position:absolute;left:12px;right:12px;bottom:12px;height:140px;z-index:20;display:flex;gap:12px}
+ #mid{flex:1;display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--line);background:var(--cardbg)}
+ #toRow,#modeRow{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--dim)} #toWho{color:var(--hi)} #modeRow label{display:flex;gap:5px;align-items:center;cursor:pointer}
+ .prompt{display:flex;gap:6px} #q{flex:1} #status{min-height:18px;font-size:12px;color:var(--warn)}
+ #acts{display:flex;flex-direction:column;gap:6px;width:200px} #acts button{flex:1}
+ /* 회의 중: 체제별 회의실 그림(16:9) 위 홀로그램 발판 8자리(2026-10-23, 그림 = GPT, 좌표 = 그림의 실제 발판 중심) */
+ #stage{display:none;position:absolute;left:12px;right:calc(28% + 12px);top:48px;bottom:164px;z-index:6;align-items:center;justify-content:center}
+ body.meet #stage{display:flex} body.meet #holos{display:none}
+ #st16{position:relative;width:min(100%,calc((100vh - 212px) * 16 / 9));aspect-ratio:16/9;container-type:size;background:#05090c center/cover no-repeat;border:1px solid var(--line2);overflow:hidden}
+ #st16::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,transparent 55%,#000a);pointer-events:none}
+ #stInfo{position:absolute;left:1.2cqw;top:1.2cqw;z-index:60;font:600 max(10px,.85cqw) var(--mono);letter-spacing:.12em;color:var(--gold);background:#000a;padding:.3cqw .8cqw}
+ .seat{position:absolute;transform:translate(-50%,-100%) scale(var(--s));transform-origin:50% 100%;width:10cqw;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:filter .3s}
+ .seat .beam2{position:absolute;bottom:0;width:8.2cqw;height:15cqw;background:linear-gradient(0deg,color-mix(in srgb,var(--holo) 22%,transparent),transparent);clip-path:polygon(10% 100%,90% 100%,72% 0,28% 0);pointer-events:none}
+ .seat .fig{position:relative;width:9.6cqw;height:13.4cqw;-webkit-mask:radial-gradient(ellipse 58% 70% at 50% 42%,#000 55%,transparent 78%);mask:radial-gradient(ellipse 58% 70% at 50% 42%,#000 55%,transparent 78%)}
+ .seat .fig img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;filter:grayscale(1) sepia(1) hue-rotate(130deg) saturate(2.2) brightness(1.15);opacity:.8}
+ .seat .fig .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 4cqw var(--mono);color:var(--holo);opacity:.7}
+ .seat .fig::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,color-mix(in srgb,var(--holo) 22%,transparent) 0 2px,transparent 2px 4px)}
+ .seat .orb{position:absolute;top:.6cqw;left:auto;right:-1.9cqw;width:3.4cqw;height:3.4cqw;border-radius:50%;overflow:hidden;background:var(--tex) 0 50%/6.8cqw 3.8cqw repeat-x;animation:spin 14s linear infinite;box-shadow:0 0 .8cqw var(--atm)}
+ .seat .orb::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 32% 30%,#fff5,transparent 40%),radial-gradient(circle at 70% 65%,transparent 40%,#0009 80%)}
+ .seat .ring{position:absolute;top:.25cqw;left:auto;right:-2.25cqw;width:4.1cqw;height:4.1cqw;pointer-events:none}
+ @keyframes spin{to{background-position-x:-6.8cqw}}
+ .seat.ol .orb{right:auto;left:-1.9cqw} .seat.ol .ring{right:auto;left:-2.25cqw} /* 왼쪽 자리는 구체를 바깥(왼쪽)으로 — 옆 자리 이름표와 겹치지 않게 */
+ .seat .plate2{position:absolute;top:100%;margin-top:.5cqw;padding:.15cqw .7cqw;border:1px solid color-mix(in srgb,var(--holo) 45%,transparent);background:#04161dd9;font-size:max(10px,.85cqw);white-space:nowrap;text-align:center}
+ .seat .plate2 small{display:block;color:var(--dim);font-size:max(9px,.7cqw)}
+ .seat.dim .fig,.seat.dim .beam2{filter:brightness(.6) saturate(.6);opacity:.8}
+ .seat.talk{filter:drop-shadow(0 0 1.2cqw var(--holo))} .seat.talk .fig img{opacity:1}
+ .seat.to .plate2{border-color:var(--gold);color:var(--gold)}
+ .seat.weak .fig{animation:glitch 2.6s steps(1) infinite}
+ @keyframes glitch{0%,91%{transform:none;opacity:1}92%{transform:translateX(.3cqw);opacity:.4}94%{transform:translateX(-.25cqw) skewX(6deg);opacity:.8}96%{opacity:.2}98%{transform:none;opacity:1}}
+ #sub{position:absolute;left:18%;right:18%;bottom:2.5%;z-index:70;padding:.8cqw 1.2cqw;background:#04161de6;border:1px solid var(--line);font-size:max(12px,1cqw);max-height:13%;overflow:auto}
+ #sub b{color:var(--hi);margin-right:.6cqw} #sub:empty{display:none}
+ #tabs{display:none;position:absolute;right:12px;top:48px;width:calc(28% - 12px);min-width:240px;height:30px;z-index:9;gap:4px} body.meet #tabs{display:flex} #tabs button{flex:1} #tabs button.on{border-color:var(--hi);color:var(--hi)}
+ body.meet #screen{left:auto;right:12px;top:82px;width:calc(28% - 12px);min-width:240px} body.meet #log{top:82px}
+ body.meet.tab-agenda #log{display:none} body.meet .req{grid-template-columns:1fr} body.meet .req .acts{justify-content:flex-start} body.meet.tab-log #screen{display:none}
+ @media (prefers-reduced-motion:reduce){.seat .orb,.seat.weak .fig{animation:none}}
+ body.idle #holos,body.idle #log{display:none} body.idle #screen{top:48px;right:12px}
+ @media (max-width:1000px){#log{display:none}#holos,#screen{right:12px}}
+.loyal{font-size:11px;opacity:.85;margin-left:4px;padding:0 5px;border:1px solid currentColor;border-radius:3px}.loyal.low{color:#e88}.loyal.high{color:#8d8}
+</style>
+<script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+</head><body>
+<div id="room"><div id="holos"></div><div id="stage"><div id="st16"><div id="stInfo"></div><div id="sub" aria-live="polite"></div></div></div><div id="tabs"><button type="button" id="tAg"></button><button type="button" id="tLg"></button></div><section id="screen" aria-live="polite"><div class="over"><span id="scrT"></span><span id="scrDate" data-i18n-skip></span></div><div id="scrBody"></div></section></div>
+<div id="log" aria-live="polite"></div>
+<div id="top"><span class="t" id="ttl"></span><span class="chip" id="regime"></span><span class="sp"></span><span id="empire" data-i18n-skip></span><button id="x" type="button">✕</button></div>
+<div id="hud"><div id="mid">
+ <div id="toRow"><span id="toCap"></span><b id="toWho" data-i18n-skip></b><button id="toAll" type="button" hidden></button></div>
+ <div id="modeRow"><label><input type="checkbox" id="supp"><span id="suppL"></span></label><button id="roll" type="button"></button></div>
+ <div class="prompt"><input id="q" autocomplete="off"><button id="send" type="button" class="go"></button></div>
+ <div id="status" role="status"></div></div>
+ <div id="acts"><button id="end" type="button"></button><button id="back" type="button"></button></div></div>
+<script>
+ const $ = (id) => document.getElementById(id);
+ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+ const ui = (ko, en) => window.SLLMI18n?.pick ? window.SLLMI18n.pick(ko, en) : ko;
+ let S = null, to = '', busy = false, IMG = { images: {}, defaults: {} }, draft = '', tab = 'agenda';
+ // 체제별 회의실 그림과 발판 중심(가로·세로 %, 크기). 좌표는 GPT 그림의 실제 발판을 재서 맞춤(2026-10-23). 과두정은 원탁.
+ const ROOM = {
+  neutral: ['gc-room-neutral-v1.jpg', [[11,84.5,1],[17,62.2,.82],[29,48.3,.68],[42,42.6,.6],[58,42.6,.6],[71,48.3,.68],[83,62.2,.82],[89,84.5,1]], [0,7,1,6,2,5,3,4]],
+  democratic: ['gc-room-democratic-v1.jpg', [[8,70.7,.95],[24.5,61.9,.82],[41,56.1,.74],[59,56.1,.74],[75.5,61.9,.82],[92,70.7,.95],[34,44.2,.6],[66,44.2,.6]], [0,5,1,4,2,3,6,7]],
+  autocratic: ['gc-room-autocratic-v1.jpg', [[14,78.9,.92],[32,78.9,.92],[50,78.9,.92],[68,78.9,.92],[86,78.9,.92],[23.5,54.3,.7],[50,47.1,.62],[76.5,54.3,.7]], [2,1,3,0,4,6,5,7]],
+ };
+ ROOM.oligarchic = ROOM.neutral;
+ // 행성 종류(planets.ts PC 번호) → 구체 색 [바탕, 무늬, 대기]
+ const PCOL = { 1: ['#b9864a','#7a4a24','#ffb070'], 2: ['#a8963c','#6a7a2a','#e8d070'], 3: ['#2a6fc0','#5fae4a','#6fb7ff'], 4: ['#2a8a5a','#4ac07a','#8ff0b0'], 5: ['#1a4f9a','#3a8ad0','#6fb7ff'], 6: ['#a9c8d8','#e9f3f7','#bfe6ff'], 7: ['#7a8a8a','#c0d0d0','#d0e8f0'], 8: ['#5a5048','#8a7a6a','#b0a090'], 9: ['#4a5a3a','#8a8a4a','#c0d080'], 10: ['#8a3a20','#d0703a','#ff9a60'], 11: ['#5a7a2a','#a0c040','#c0ff60'], 12: ['#b08a5a','#e0c090','#ffe0b0'], 14: ['#4a4a5a','#8a8aa0','#a0c0ff'], 18: ['#6a3a4a','#a05a6a','#ff9ab0'], 19: ['#c0704a','#e0a060','#ffc080'], 20: ['#3a9a6a','#7ad08a','#a0ffc0'], 21: ['#7a8a6a','#c0c8a0','#e0f0d0'] };
+ const tex = (c1, c2, seed) => `url("data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='88' height='50'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.06 0.09' numOctaves='4' seed='${seed}' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.2 0 0 0 -0.55'/></filter><rect width='88' height='50' fill='${c1}'/><rect width='88' height='50' fill='${c2}' filter='url(#n)'/></svg>`)}")`;
+ const pic = (k, seed) => (k && window.SLLMVariant && SLLMVariant.pick(IMG.images, ['delegate:' + k, 'class:' + k], seed, IMG.defaults[k])) || null;
+ const open = () => !!(S && S.meeting);
+ const CHOICES = [['priority', '우선 지원', 'Priority support'], ['conditional', '조건부 지원', 'Conditional support'], ['other', '다른 행성 우선', 'Another planet first'], ['more_info', '추가 자료 요청', 'Ask for more data'], ['hold', '보류', 'Hold']];
+ const MD = { rebuttal: ['반론', 'rebuttal'], roll_call: ['입장', 'position'] };
+ function statics() {
+  $('ttl').textContent = ui('행성총독회의', "GOVERNORS' COUNCIL"); $('scrT').textContent = ui('총독 홀로그램 회의 · 행성 현안', 'GOVERNOR HOLO-LINK · PLANET ISSUES');
+  $('toCap').textContent = ui('발언 대상', 'Speaking to'); $('toAll').textContent = ui('전체에게', 'To everyone');
+  $('suppL').textContent = ui('다른 총독의 반론 받기', 'Let another governor rebut'); $('roll').textContent = ui('모든 총독 입장 듣기', 'Hear every governor');
+  $('q').placeholder = ui('총독들에게 발언…', 'Address the governors…'); $('send').textContent = ui('발언', 'Speak');
+  $('end').textContent = ui('회의 마치기', 'Close the council'); $('tAg').textContent = ui('안건', 'Agenda'); $('tLg').textContent = ui('회의 기록', 'Transcript'); $('back').textContent = ui('‹ 집무실로 돌아가기', '‹ Back to the office'); $('x').title = ui('닫기 (Esc)', 'Close (Esc)');
+ }
+ async function call(p) { if (busy) return; busy = true; render(); try { const r = await p; $('status').textContent = r && !r.ok ? r.error || '' : ''; if (r && r.state) S = r.state; return r; } catch (e) { $('status').textContent = String(e); } finally { busy = false; render(); } }
+ // 공유 비교 그래프(2026-10-24 사용자 요청: 표가 보기 불편 → 그래프). 지표마다 작은 막대 그래프 하나(행성을 나쁜 순으로), 막대 끝에 값. 마우스를 올리면 자세한 값.
+ // 안정도·인구 = 0부터 한 방향, 주거·편의시설 = 0을 가운데 둔 양방향(모자라면 붉게). 자료 없는 행성은 「—」(0으로 보지 않음).
+ const fmt = (x) => (Math.round(x * 10) / 10).toLocaleString();
+ function barChart(title, key, opt) {
+  const rows = S.planets.filter((p) => p[key] !== null && p[key] !== undefined && Number.isFinite(Number(p[key]))).map((p) => ({ p, v: Number(p[key]) }));
+  const none = S.planets.length - rows.length;
+  rows.sort((a, b) => opt.desc ? b.v - a.v : a.v - b.v);
+  const shown = rows.slice(0, 10), more = rows.length - shown.length;
+  const span = opt.div ? Math.max(1, ...rows.map((r) => Math.abs(r.v))) : (opt.max || Math.max(1, ...rows.map((r) => r.v)));
+  const line = (r) => {
+   const bad = opt.bad(r.v), w = Math.min(100, Math.abs(r.v) / span * (opt.div ? 50 : 100));
+   const left = opt.div ? (r.v < 0 ? 50 - w : 50) : 0;
+   return `<div class="gb-row" title="${esc(r.p.name)} · ${esc(title)} ${esc(fmt(r.v))}"><span class="gb-nm" data-i18n-skip>${esc(r.p.name)}${r.p.capital ? ' ★' : ''}</span><span class="gb-track${opt.div ? ' div' : ''}"><i class="${bad ? 'bad' : ''}" style="left:${left}%;width:${Math.max(w, r.v === 0 ? 0 : 1.5)}%"></i></span><span class="gb-v${bad ? ' bad' : ''}">${esc(fmt(r.v))}${bad ? ' ⚠' : ''}</span></div>`;
+  };
+  return `<div class="gb"><div class="gb-h">${esc(title)}<small>${esc(opt.hint)}</small></div>${shown.length ? shown.map(line).join('') : `<div class="note">${ui('자료 없음', 'No data')}</div>`}${more > 0 ? `<div class="note">${ui(`외 ${more}개 행성`, `+${more} more planets`)}</div>` : ''}${none > 0 ? `<div class="note">${ui(`자료 없는 행성 ${none}개(—)`, `${none} planet(s) without data (—)`)}</div>` : ''}</div>`;
+ }
+ function planetTable() {
+  if (!S.planets.length) return `<div class="note">${ui('행성 자료가 아직 없습니다.', 'No planet data yet.')}</div>`;
+  return barChart(ui('안정도', 'Stability'), 'stability', { max: 100, bad: (x) => x < 40, hint: ui('낮은 순 · 40 미만 ⚠', 'lowest first · below 40 ⚠') })
+   + barChart(ui('주거 여유', 'Free housing'), 'housing', { div: true, bad: (x) => x < 0, hint: ui('모자란 순 · 0 아래 = 부족', 'tightest first · below 0 = shortage') })
+   + barChart(ui('편의시설 여유', 'Free amenities'), 'amenities', { div: true, bad: (x) => x < 0, hint: ui('모자란 순 · 0 아래 = 부족', 'tightest first · below 0 = shortage') })
+   + barChart(ui('인구', 'Pops'), 'pops', { desc: true, bad: () => false, hint: ui('많은 순', 'largest first') });
+ }
+ function drawScreen() {
+  const b = $('scrBody'); $('scrDate').textContent = S.date || '';
+  if (open()) {
+   const m = S.meeting;
+   b.innerHTML = `<div class="k">${m.kind === 'regular' ? ui(`${m.year}년 정기회의`, `${m.year} REGULAR COUNCIL`) : ui('긴급 소집', 'EMERGENCY SESSION')}</div>${m.topic ? `<div class="topic" data-i18n-skip>${esc(m.topic)}</div>` : ''}
+    <div class="note">${esc(S.regimeStyle)}</div>
+    <div class="k">${ui('총독들의 요구', 'GOVERNORS\' REQUESTS')}</div>${S.requests.length ? S.requests.map((r) => `<div class="req ${r.state}"><div class="ttl"><b data-i18n-skip>${esc(r.planet)}</b> · ${esc(r.field)} <span class="note" data-i18n-skip>— ${esc(r.by)}</span><span class="st">${esc(r.stateName)}</span></div>
+     <div class="acts">${['raised', 'discussed', 'deferred'].includes(r.state) ? CHOICES.map(([c, k, e]) => `<button type="button" data-r="${esc(r.id)}" data-c="${c}">${ui(k, e)}</button>`).join('') : ''}</div><div class="ev" data-i18n-skip>${esc(r.evidence.join(' · '))}</div></div>`).join('') : `<div class="note">${ui('지금 올라온 요구가 없습니다.', 'No requests on the table.')}</div>`}
+    <div class="note">${ui('약속은 앱의 기록입니다. 게임에서 직접 짓거나 지원하면, 다음 달 자료로 이루어졌는지 확인해 총독의 정치적 지위에 반영합니다.', 'Promises are app records. Build or support it in the game yourself; next month the data is checked and the governor\'s standing updated.')}</div>
+    <div class="k">${ui('행성 비교 그래프', 'PLANET COMPARISON')}</div>${planetTable()}`;
+   for (const el of b.querySelectorAll('.req button')) el.onclick = () => call(window.sllm.gcDecide(el.dataset.r, el.dataset.c));
+   return;
+  }
+  const due = S.due && (S.due.state === 'due' || S.due.state === 'in_progress');
+  b.innerHTML = `${due ? `<div class="banner"><b>${ui(`${S.due.year}년 정기 총독회의 기간입니다 (11월)`, `The ${S.due.year} regular governors' council is due (November)`)}</b><div class="row"><button type="button" class="go" id="reg">${ui('정기회의 열기', 'Hold the regular council')}</button><button type="button" class="warn" id="skip">${ui('이번 회차 건너뛰기', 'Skip this round')}</button>
+   <span class="note">${S.atWar === null ? '' : S.atWar ? ui('지금 전쟁 중이라 건너뛰어도 불이익이 없습니다.', 'You are at war, so skipping carries no penalty.') : ui('평시에 건너뛰면 1년 동안 모든 행성 안정도가 내려갑니다.', 'Skipping in peacetime lowers stability on every planet for a year.')}</span></div></div>`
+   : `<div class="note">${S.nextYear ? ui(`다음 정기회의: ${S.nextYear}년 11월 (2년마다)`, `Next regular council: November ${S.nextYear} (every two years)`) : ''}</div>`}
+   <div class="k">${ui('긴급 소집', 'EMERGENCY SESSION')}</div>
+   <textarea id="topic" data-i18n-skip placeholder="${esc(ui('의제(비워도 됩니다) — 예: 북부 행성 주거난', 'Agenda (optional) — e.g. housing shortage on the northern worlds'))}">${esc(draft)}</textarea>
+   <div class="row"><button type="button" class="go" id="emg">${ui('긴급 소집', 'Convene now')}</button><button type="button" id="pl">${ui('행성 자료 새로 고침', 'Refresh planet data')}</button><span class="note">${S.gameRunning ? ui('소집하면 게임에서 행성 자료를 새로 받아 옵니다.', 'Convening fetches fresh planet data from the game.') : ui('게임이 켜져 있어야 소집할 수 있습니다.', 'The game must be running to convene.')}</span></div>
+   <div class="k">${ui('참석할 총독', 'GOVERNORS')}</div>${S.governors.length ? `<div class="gl2">${S.governors.map((g) => `<div><b data-i18n-skip>${esc(g.name)}</b><span data-i18n-skip>${esc(g.planets.join(', '))}</span>${g.issue ? ` · ${esc(g.issue)}` : ''}${typeof g.loyal === 'number' ? ` <span class="loyal${g.loyal < 40 ? ' low' : g.loyal >= 70 ? ' high' : ''}" title="${esc(ui('총독회의에서 한 약속을 지키면 오르고 어기면 크게 떨어집니다.', 'Rises when you keep council promises, falls sharply when you break them.'))}">${esc(ui('충성', 'Loyalty'))} ${g.loyal}</span>` : ''}</div>`).join('')}</div>` : `<div class="note">${ui('행성 자료를 불러오면 총독 명단이 보입니다.', 'Load planet data to see the governors.')}</div>`}
+   ${S.unassigned.length ? `<div class="note">${ui('총독 미배정', 'No governor')}: <span data-i18n-skip>${esc(S.unassigned.join(', '))}</span></div>` : ''}
+   ${S.requests.length ? `<div class="k">${ui('지난 회의의 요구', 'REQUESTS FROM PAST COUNCILS')}</div>${S.requests.map((r) => `<div class="note"><span data-i18n-skip>${esc(r.planet)} · ${esc(r.by)}</span> — ${esc(r.field)} <span class="st">${esc(r.stateName)}</span></div>`).join('')}` : ''}`;
+  $('topic').oninput = (e) => { draft = e.target.value; };
+  $('emg').onclick = () => call(window.sllm.gcConvene({ kind: 'emergency', topic: draft })).then((r) => { if (r && r.ok) draft = ''; });
+  $('pl').onclick = () => call(window.sllm.gcPlanets());
+  if ($('reg')) $('reg').onclick = () => call(window.sllm.gcConvene({ kind: 'regular', topic: draft }));
+  if ($('skip')) $('skip').onclick = () => { if (S.atWar || window.confirm(ui('평시에 정기회의를 건너뛰면 1년 동안 모든 행성의 안정도가 내려갑니다. 건너뜁니까?', 'Skipping the regular council in peacetime lowers stability on every planet for a year. Skip anyway?'))) call(window.sllm.gcSkip()); };
+ }
+ function drawHolos() {
+  const gs = open() ? S.governors.filter((g) => g.present) : [];
+  $('holos').innerHTML = gs.map((g) => { const img = pic(S.playerCls, g.name); return `<div class="holo${to === g.name ? ' to' : ''}" role="button" tabindex="0" data-n="${esc(g.name)}"><div class="pt">${img ? `<img src="${esc(img)}" alt="">` : `<div class="gl">${esc([...g.name][0] || '?')}</div>`}</div><div class="beam"></div><div class="plate"><div class="nm" data-i18n-skip>${esc(g.name)}</div><div class="em" data-i18n-skip>${esc(g.planets.join(', '))}</div></div></div>`; }).join('');
+  for (const el of $('holos').querySelectorAll('.holo')) { const f = () => { if (!open()) return; to = to === el.dataset.n ? '' : el.dataset.n; render(); }; el.onclick = f; el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } }; }
+ }
+ function drawStage() {
+  const box = $('st16'); if (!open()) return;
+  const R = ROOM[S.regime] || ROOM.neutral; box.style.backgroundImage = `url("assets/rooms/${R[0]}")`;
+  box.querySelectorAll('.seat').forEach((e) => e.remove());
+  const m = S.meeting, gs = S.governors.filter((g) => g.present).sort((a, c) => (a.stab ?? 50) - (c.stab ?? 50)).slice(0, R[1].length);
+  $('stInfo').textContent = ui(`승인된 총독 ${gs.length}명 · 신청 ${m.applied}명 / 전체 ${m.total}명`, `${gs.length} governors admitted · ${m.applied} applied of ${m.total}`);
+  const last = [...m.turns].reverse().find((t) => !t.ruler), talking = S.busy ? '' : last ? last.who : '';
+  gs.forEach((g, i) => {
+   const [x, y, sc] = R[1][R[2][i]], d = document.createElement('div'), stab = g.stab, col = stab === null ? '#7fa3ad' : stab < 30 ? '#ff6a5a' : stab < 50 ? '#ffc35a' : '#5fd4e4';
+   d.className = 'seat' + (talking === g.name ? ' talk' : talking ? ' dim' : '') + (to === g.name ? ' to' : '') + ((S.atWar || (stab !== null && stab < 30)) ? ' weak' : '') + (x < 50 ? ' ol' : '');
+   d.style.left = x + '%'; d.style.top = y + '%'; d.style.setProperty('--s', sc); d.style.zIndex = String(Math.round(y)); d.dataset.n = g.name; d.setAttribute('role', 'button'); d.tabIndex = 0;
+   const img = pic(S.playerCls, g.name), C = 2 * Math.PI * 28, [c1, c2, atm] = PCOL[g.pc] || PCOL[3];
+   d.innerHTML = `<div class="beam2"></div><div class="fig">${img ? `<img src="${esc(img)}" alt="">` : `<div class="gl">${esc([...g.name][0] || '?')}</div>`}</div><div class="orb"></div><svg class="ring" viewBox="0 0 62 62"><circle cx="31" cy="31" r="28" fill="none" stroke="#ffffff22" stroke-width="3"/>${stab === null ? '' : `<circle cx="31" cy="31" r="28" fill="none" stroke="${col}" stroke-width="3" stroke-dasharray="${C * Math.max(0, Math.min(100, stab)) / 100} ${C}" transform="rotate(-90 31 31)"/>`}</svg><div class="plate2"><span data-i18n-skip>${esc(g.name)}</span><small data-i18n-skip>${esc(g.seatPlanet || g.planets[0] || '')}${stab === null ? '' : ' · ' + ui('안정도', 'Stability') + ' ' + Math.round(stab)}</small></div>`;
+   const o = d.querySelector('.orb'); o.style.setProperty('--tex', tex(c1, c2, (g.lid || i) % 97 + 1)); o.style.setProperty('--atm', atm);
+   const f = () => { to = to === g.name ? '' : g.name; render(); }; d.onclick = f; d.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } };
+   box.append(d);
+  });
+  const sub = $('sub'); sub.innerHTML = S.busy ? `<b>${esc(ui('총독들이 말을 고르는 중…', 'The governors are choosing their words…'))}</b>` : last ? `<b data-i18n-skip>${esc(last.who)}</b><span data-i18n-skip>${esc(last.text)}</span>` : `<span>${esc(ui('총독을 눌러 말을 걸거나, 아래에서 전체에게 발언하세요.', 'Click a governor to address them, or speak to everyone below.'))}</span>`;
+ }
+ function drawLog() {
+  const lg = $('log'), atEnd = lg.scrollTop + lg.clientHeight >= lg.scrollHeight - 8;
+  lg.innerHTML = (S.meeting ? S.meeting.turns : []).map((t) => `<div class="ln ${t.ruler ? 'host' : ''}"><span class="who" data-i18n-skip>${esc(t.who)}${t.to ? ' → ' + esc(t.to) : ''}</span><span data-i18n-skip>${esc(t.text)}</span>${MD[t.mode] ? `<span class="md">${ui(...MD[t.mode])}</span>` : ''}</div>`).join('');
+  if (atEnd) lg.scrollTop = lg.scrollHeight;
+ }
+ function render(st) {
+  if (st) S = st; if (!S || !S.sid) return;
+  document.body.classList.toggle('idle', !open()); document.body.classList.toggle('meet', open()); document.body.classList.toggle('tab-agenda', tab === 'agenda'); document.body.classList.toggle('tab-log', tab === 'log');
+  $('tAg').classList.toggle('on', tab === 'agenda'); $('tLg').classList.toggle('on', tab === 'log');
+  $('empire').textContent = S.empire || ''; $('regime').textContent = S.regimeName || '';
+  if (to && !(S.governors || []).some((g) => g.name === to)) to = '';
+  $('toWho').textContent = to || ui('전체', 'Everyone'); $('toAll').hidden = !to;
+  drawHolos(); drawScreen(); drawLog(); drawStage();
+  const off = !open() || busy || S.busy; $('send').disabled = off; $('q').disabled = !open(); $('roll').disabled = off; $('supp').disabled = !open() || !!to; $('end').disabled = !open() || busy;
+ }
+ $('toAll').onclick = () => { to = ''; render(); };
+ $('tAg').onclick = () => { tab = 'agenda'; render(); }; $('tLg').onclick = () => { tab = 'log'; render(); };
+ async function send(roll) {
+  const text = $('q').value.trim(); if ((!text && !roll) || busy || !open()) return; $('q').value = '';
+  const r = await call(window.sllm.gcSay({ text, to, supplement: $('supp').checked, rollCall: !!roll })); if (r && !r.ok && text) $('q').value = text; $('q').focus();
+ }
+ $('send').onclick = () => send(false); $('roll').onclick = () => send(true);
+ $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) send(false); });
+ $('end').onclick = () => call(window.sllm.gcEnd()).then(() => { to = ''; $('status').textContent = ui('회의를 마쳤습니다. 요구와 약속은 기록에 남습니다.', 'The council is closed. Requests and promises are kept on record.'); });
+ $('back').onclick = $('x').onclick = () => window.sllm.gcClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.gcClose(); });
+ statics(); document.addEventListener('sllm-language', () => { statics(); if (S) render(); });
+ window.sllm.onGcState((st) => { if (!busy) render(st); else if (st) S = st; });
+ window.sllm.onTheme && window.sllm.onTheme((t) => window.applyTheme && applyTheme(t.theme, t.custom));
+ window.sllm.getImageState().then((st) => { IMG = st || IMG; }, () => {}).then(() => window.sllm.gcState()).then((st) => { if (st) render(st); });
+</script>
+<script src="gestalt-terms.js"></script></body></html>

@@ -1,0 +1,37 @@
+# SLLM 비상 정지 칙령(2026-11-04) — 앱을 열지 않고 게임 안에서 SLLM 자동화를 멈춘다.
+# 비용 없음 · 칙령 한도를 쓰지 않음(edict_cap_usage = 0) · 즉시 실행(length = 0). 누르면 게임이 「칙령 만료」 알림을 한 번 띄운다.
+# 화면 파일(interface/)은 건드리지 않는다(인터페이스 모드와 충돌 없음). 형식 참고: Dungeon Master 모드(3801419429).
+sllm_edict_halt_fleetorder = {
+	icon = "GFX_edict_type_time"
+	edict_cap_usage = 0
+	length = 0
+	resources = {
+		category = edicts
+		cost = { }
+	}
+	potential = {
+		is_ai = no
+		has_country_flag = sllm_fo_on
+	}
+	effect = {
+		hidden_effect = { sllm_tmp_halt_fleetorder = yes }
+	}
+	ai_weight = { weight = 0 }
+}
+sllm_edict_halt_budget = {
+	icon = "GFX_edict_type_time"
+	edict_cap_usage = 0
+	length = 0
+	resources = {
+		category = edicts
+		cost = { }
+	}
+	potential = {
+		is_ai = no
+		has_country_flag = sllm_bud_any
+	}
+	effect = {
+		hidden_effect = { sllm_tmp_halt_budget = yes }
+	}
+	ai_weight = { weight = 0 }
+}

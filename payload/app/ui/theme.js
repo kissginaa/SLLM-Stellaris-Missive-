@@ -67,8 +67,16 @@ html[data-theme=pacifist] #card,html[data-theme=hive] #card{border-radius:12px}
 `;
 function themeFx() { if (typeof document.getElementById !== 'function' || typeof document.createElement !== 'function' || document.getElementById('themefx')) return; const s = document.createElement('style'); s.id = 'themefx'; s.textContent = THEME_FX; (document.head || document.documentElement).appendChild(s); }
 const CUSTOM_MAP = { bg: '--bg', panel: '--panel', text: '--text', hi: '--hi', gold: '--gold' };
+// 「자동 · 우리 제국에 맞춤」(알파 11): 앱에 우리 제국 가치관(기계·군체 포함)에 맞는 테마를 묻는다. 세이브가 바뀌어도 따라가게 가끔 다시 묻는다.
+let autoPick = 'stellaris', autoLast = null, autoTimer = null;
+async function refreshAutoTheme() {
+  if (!autoLast || typeof window === 'undefined' || !window.sllm || !window.sllm.autoTheme) return;
+  let t = null; try { t = await window.sllm.autoTheme(); } catch (e) { return; }
+  if (t && THEMES[t] && t !== autoPick) { autoPick = t; if (autoLast) applyTheme('auto', autoLast.custom); }
+}
 function applyTheme(name, custom) {
-  
+  if (name === 'auto') { autoLast = { custom }; if (!autoTimer && typeof setInterval === 'function') { autoTimer = setInterval(refreshAutoTheme, 30000); if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('focus', refreshAutoTheme); } refreshAutoTheme(); name = autoPick; }
+  else autoLast = null;
   const root = document.documentElement.style;
   themeFx(); if (document.documentElement.dataset) document.documentElement.dataset.theme = THEMES[name] || name === 'custom' ? name : 'stellaris';
   root.colorScheme = name === 'starfield' ? 'light' : 'dark';

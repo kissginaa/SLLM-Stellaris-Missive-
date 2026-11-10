@@ -18,7 +18,7 @@ export function classifyDelivery(exitCode: number | string | null | undefined, d
   if (delivery) {
     if (delivery.state === 3) {
       if (delivery.result === 0 && delivery.gameStatus === 1) return { kind: 'ok', message: '', safeToRemove: true }; // exit 11(훅 해제 실패)이어도 명령은 실행됐다
-      if (delivery.result === 2) return fail('현재 게임 버전은 DLL 연결이 지원하지 않습니다. 연결 파일을 업데이트해 주세요.');
+      if (delivery.result === 2) return fail(L('현재 게임 버전은 DLL 연결이 지원하지 않습니다. 앱이 새 연결 파일을 갖고 있으면 게임을 끌 때 자동으로 바꿉니다. 게임을 껐다 켜도 같으면 앱 업데이트를 기다려 주세요.', 'This game version is not supported by the DLL connection. If the app has a newer connection file it swaps it in when you close the game. If it still fails after restarting the game, please wait for an app update.'));
       if (delivery.result === 1) return fail('연결 대상 게임 창이 바뀌어 요청을 실행하지 않았습니다. 다시 시도해 주세요.');
       if (delivery.result === 3) return fail('게임이 요청 파일을 읽지 못했습니다. 게임 사용자 폴더 경로를 확인해 주세요.');
       if (delivery.result === 0 && delivery.gameStatus !== 1) return { kind: 'uncertain', message: L('게임이 요청을 받았지만 실행 결과를 알려 주지 않았습니다. 자동 재시도하지 않았으니 게임 결과를 확인해 주세요.', 'The game received the request but did not report the result. It was not retried automatically, so please check the result in the game.'), safeToRemove: true };
@@ -103,7 +103,7 @@ export function bridgeDllCandidates(gamePathFile: string, detected: string[]): {
 }
 function findBridgeDll(native: string): string {
   const gamePathFile = path.join(__dirname, '..', 'game-install-path.txt');
-  if (!fs.existsSync(gamePathFile)) return path.join(native, 'command-bridge.dll');
+  if (!fs.existsSync(gamePathFile)) { const next = path.join(native, 'bridge', 'command-bridge.dll'); return fs.existsSync(next) ? next : path.join(native, 'command-bridge.dll'); } // 개발 폴더: 새 위치(native/bridge, 2026-11-04 게임 4.5.3) 먼저
   const { fromFile, candidates } = bridgeDllCandidates(gamePathFile, gameCandidates());
   const hit = candidates.find((p) => fs.existsSync(p));
   if (hit) { if (!fromFile || path.dirname(hit) !== path.normalize(fromFile)) logDiagnostic('warn', 'bridge.dll_fallback', { fromFile, used: hit }); return hit; }

@@ -18,11 +18,11 @@
     const wrap = h('div', 'pet-main'); root.append(wrap);
     if (!S || !S.sid) { wrap.append(h('p', 'pet-empty', L('세이브를 불러오면 행성 주민들의 청원이 이곳에 옵니다.', 'Load a save and petitions from your planets will arrive here.'))); return; }
     if (err) wrap.append(h('div', 'pet-err', err));
-    if (S.pending > 0) {
-      const box = h('div', 'pet-new'); box.append(h('b', '', L(`봉인된 청원서 ${S.pending}통`, `${S.pending} sealed petition(s)`)), h('span', '', L('열면 그 행성의 지금 사정을 게임에서 읽어 옵니다(게임이 켜져 있어야 함).', 'Opening one reads that planet\'s current state from the game (the game must be running).')));
-      const b = btn('pet-btn', busy ? L('여는 중…', 'Opening…') : L('청원서 열기', 'Open petition'), () => run(() => window.sllm.petitionFetch())); b.disabled = busy; box.append(b); wrap.append(box);
+    { // 2026-10-31: 저절로 오지 않음 — 누를 때 한 통(답하지 않은 청원 최대 S.max 통)
+      const box = h('div', 'pet-new'), can = S.canFetch !== false; box.append(h('b', '', L('시민 청원 받기', 'Receive a petition')), h('span', '', can ? L('사정이 어려운 행성의 주민들이 청원서를 올립니다. 그 행성의 지금 사정을 게임에서 읽어 옵니다(게임이 켜져 있어야 함).', 'Citizens of a struggling planet send you a petition, based on that planet\'s current state in the game (the game must be running).') : L(`답하지 않은 청원이 ${S.max || 3}통 있습니다. 먼저 답해 주세요.`, `You have ${S.max || 3} unanswered petitions. Answer them first.`)));
+      const b = btn('pet-btn', busy ? L('받는 중…', 'Receiving…') : L('시민 청원 받기', 'Receive a petition'), () => run(() => window.sllm.petitionFetch())); b.disabled = busy || !can; box.append(b); wrap.append(box);
     }
-    if (!S.open.length && !S.pending && !(S.working || []).length) wrap.append(h('p', 'pet-empty', L('지금 기다리는 청원이 없습니다. 때때로 행성 주민들이 청원서를 올립니다.', 'No petitions are waiting. Citizens send petitions from time to time.')));
+    if (!S.open.length && !(S.working || []).length) wrap.append(h('p', 'pet-empty', L('지금 기다리는 청원이 없습니다. 위의 「시민 청원 받기」를 누르면 한 통이 옵니다.', 'No petitions are waiting. Press "Receive a petition" above to get one.')));
     for (const p of S.open) {
       const c = h('article', 'pet-card');
       const hd = h('div', 'pet-hd'); hd.append(h('span', 'pet-planet', p.planet), h('span', 'pet-topic', p.topic), h('span', 'pet-date', p.date)); c.append(hd);
@@ -74,7 +74,7 @@
   }
   document.addEventListener('DOMContentLoaded', () => {
     build(); load(); setInterval(load, 60000);
-    if (window.sllm.onOfficeGo) window.sllm.onOfficeGo((v) => { if (v === 'petition') { show('petition'); load(); } }); // 알림 → 집무실 → 바로 청원
+    if (window.sllm.onOfficeGo) window.sllm.onOfficeGo((v) => { if (v === 'petition') { show('petition'); load(); } }); // 건설 과제 완수 알림 → 집무실 → 바로 청원
     document.addEventListener('sllm-language', () => { const b = $('petCall'); if (b) b.querySelector('span').textContent = L('시민 청원', 'Petitions'); draw(); });
   });
   window.SLLMPetition = { load };

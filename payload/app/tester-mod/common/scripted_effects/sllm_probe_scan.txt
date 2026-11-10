@@ -95,6 +95,18 @@ sllm_probe_spy_assets = {
 sllm_probe_state_scan = {
 	if = { limit = { NOT = { is_variable_set = sllm_st_n } } set_variable = { which = sllm_st_n value = 0 } }
 	change_variable = { which = sllm_st_n value = 1 }
+	# 2026-11-09(회랑 방식 「바뀐 것만」): 의제·성향(COUNCILAG)·엔클레이브·파벌·종속국·민심 줄은 바뀐 달에만 보낸다.
+	#   안 보낸 묶음은 STATE_END 의 kp 비트(1 COUNCILAG · 2 ENCLAVE · 4 FACTION · 8 VASSAL · 16 MOOD)로 알리고, 앱이 지난번 값을 이어 쓴다(src/gamestate.ts).
+	#   세이브를 불러온 달(sllm_probe.101) · 앱이 청한 달(sllm_st_full) · 12번째마다는 전부 보낸다(sllm_st_fl = 1).
+	set_variable = { which = sllm_st_kp value = 0 }
+	set_variable = { which = sllm_st_fl value = 0 }
+	if = {
+		limit = { OR = { is_variable_set = sllm_st_full NOT = { is_variable_set = sllm_st_fm } check_variable = { which = sllm_st_fm value >= 12 } } }
+		set_variable = { which = sllm_st_fl value = 1 }
+		set_variable = { which = sllm_st_fm value = 0 }
+		clear_variable = sllm_st_full
+	}
+	change_variable = { which = sllm_st_fm value = 1 }
 	log = "SLLM:STATE_BEGIN/;/sid=\\[This.sllm_save_id]/;/n=\\[This.sllm_st_n]/;/date=\\[GetDate]"
 	# 전쟁(평화 중재·연설): 우리 편, 양측 피로도(0..1), 주 공격국·주 방어국
 	every_war = {
@@ -119,6 +131,13 @@ sllm_probe_state_scan = {
 	if = { limit = { has_agenda_selected = no } set_variable = { which = sllm_st_ag value = 1 } }
 	set_variable = { which = sllm_st_gest value = 0 }
 	if = { limit = { has_ethic = ethic_gestalt_consciousness } set_variable = { which = sllm_st_gest value = 1 } }
+	# 통치 체제(2026-10-23 행성총독회의 발언 환경): 1 민주 2 과두 3 독재 4 제정 5 기업 0 그 밖(군체·기계·모드 체제)
+	set_variable = { which = sllm_st_auth value = 0 }
+	if = { limit = { has_authority = auth_democratic } set_variable = { which = sllm_st_auth value = 1 } }
+	else_if = { limit = { has_authority = auth_oligarchic } set_variable = { which = sllm_st_auth value = 2 } }
+	else_if = { limit = { has_authority = auth_dictatorial } set_variable = { which = sllm_st_auth value = 3 } }
+	else_if = { limit = { has_authority = auth_imperial } set_variable = { which = sllm_st_auth value = 4 } }
+	else_if = { limit = { has_authority = auth_corporate } set_variable = { which = sllm_st_auth value = 5 } }
 	# 플레이어 외계인 성향(파벌 대표 종족 구성): 0 없음 / 1 보통 / 2 광적
 	set_variable = { which = sllm_st_xph value = 0 }
 	if = { limit = { has_ethic = ethic_fanatic_xenophile } set_variable = { which = sllm_st_xph value = 2 } }
@@ -158,7 +177,46 @@ sllm_probe_state_scan = {
 	if = { limit = { has_paragon_dlc = yes host_has_dlc = Federations is_homicidal = no has_tradition = tr_politics_adopt } change_variable = { which = sllm_st_agv value = 65536 } } # agenda_pioneer_politics
 	if = { limit = { has_paragon_dlc = yes OR = { host_has_dlc = "Apocalypse" has_overlord_dlc = yes } has_tradition = tr_unyielding_adopt } change_variable = { which = sllm_st_agv value = 131072 } } # agenda_impenetrable_border
 	if = { limit = { has_paragon_dlc = yes has_nemesis = yes has_tradition = tr_subterfuge_adopt } change_variable = { which = sllm_st_agv value = 262144 } } # agenda_uncover_secrets
-	log = "SLLM:COUNCILAG/;/free=\\[This.sllm_st_ag]/;/gest=\\[This.sllm_st_gest]/;/xph=\\[This.sllm_st_xph]/;/xpb=\\[This.sllm_st_xpb]/;/eth=\\[This.sllm_st_eth]/;/agv=\\[This.sllm_st_agv]/;/n=\\[This.sllm_st_n]"
+	# 동맹 방어 전쟁(외교 거래 참전 요청, 2026-10-27 최적화): 방위 조약·연방 상대가 방어 전쟁 중인데 우리가 안 끼었으면 al=1.
+	# 앱은 al=1 인 달에만 sllm_deal_allywar(어느 동맹인지)를 따로 묻는다 — 예전에는 매달 무조건 물었다. 조건은 sllm_deals.txt sllm_deal_allywar 와 같다.
+	save_event_target_as = sllm_st_p
+	set_variable = { which = sllm_st_al value = 0 }
+	if = {
+		limit = {
+			any_country = {
+				is_variable_set = sllm_idx sllm_is_empire = yes is_ai = yes
+				OR = { has_defensive_pact = event_target:sllm_st_p is_in_federation_with = event_target:sllm_st_p }
+				any_war = {
+					is_war_participant = { who = prev side = defenders }
+					NOR = { is_war_participant = { who = event_target:sllm_st_p side = attackers } is_war_participant = { who = event_target:sllm_st_p side = defenders } }
+				}
+			}
+		}
+		set_variable = { which = sllm_st_al value = 1 }
+		# 2026-11-09(회랑 방식): 어느 동맹인지도 여기서 같이 보낸다(STALLY) — 앱이 따로 sllm_deal_allywar 를 묻지 않게. 조건은 위와 같다.
+		every_country = {
+			limit = {
+				is_variable_set = sllm_idx sllm_is_empire = yes is_ai = yes
+				OR = { has_defensive_pact = event_target:sllm_st_p is_in_federation_with = event_target:sllm_st_p }
+				any_war = {
+					is_war_participant = { who = prev side = defenders }
+					NOR = { is_war_participant = { who = event_target:sllm_st_p side = attackers } is_war_participant = { who = event_target:sllm_st_p side = defenders } }
+				}
+			}
+			log = "SLLM:STALLY/;/idx=\\[This.sllm_idx]/;/n=\\[Prev.sllm_st_n]"
+		}
+	}
+	set_variable = { which = sllm_st_ch value = 0 }
+	sllm_st_cmp = { V = sllm_st_ag L = sllm_stl_ag } sllm_st_cmp = { V = sllm_st_gest L = sllm_stl_gest } sllm_st_cmp = { V = sllm_st_eth L = sllm_stl_eth } sllm_st_cmp = { V = sllm_st_agv L = sllm_stl_agv }
+	sllm_st_cmp = { V = sllm_st_auth L = sllm_stl_auth } sllm_st_cmp = { V = sllm_st_xph L = sllm_stl_xph } sllm_st_cmp = { V = sllm_st_xpb L = sllm_stl_xpb } sllm_st_cmp = { V = sllm_st_al L = sllm_stl_al }
+	if = {
+		limit = { OR = { check_variable = { which = sllm_st_ch value = 1 } check_variable = { which = sllm_st_fl value = 1 } } }
+		log = "SLLM:COUNCILAG/;/free=\\[This.sllm_st_ag]/;/gest=\\[This.sllm_st_gest]/;/xph=\\[This.sllm_st_xph]/;/xpb=\\[This.sllm_st_xpb]/;/eth=\\[This.sllm_st_eth]/;/agv=\\[This.sllm_st_agv]/;/auth=\\[This.sllm_st_auth]/;/al=\\[This.sllm_st_al]/;/n=\\[This.sllm_st_n]"
+	}
+	else = { change_variable = { which = sllm_st_kp value = 1 } }
+	# 파벌(2026-11-09): 먼저 지지율·승인도가 지난번 보낸 값에서 0.02 넘게 움직인 파벌이 있나(또는 파벌 수가 바뀌었나) 보고, 그럴 때만 전부 보낸다.
+	set_variable = { which = sllm_st_ch value = 0 }
+	set_variable = { which = sllm_st_fc value = 0 }
 	every_pop_faction = {
 		# 파벌마다 한 번 고정 번호를 준다(회의 결과를 그 파벌에 걸 때 쓴다).
 		if = {
@@ -171,17 +229,38 @@ sllm_probe_state_scan = {
 		}
 		export_trigger_value_to_variable = { trigger = support variable = sllm_f_sup }
 		export_trigger_value_to_variable = { trigger = faction_approval variable = sllm_f_app }
-		set_variable = { which = sllm_f_eth value = 0 }
-		if = { limit = { has_ethic = ethic_militarist } set_variable = { which = sllm_f_eth value = 1 } }
-		else_if = { limit = { has_ethic = ethic_pacifist } set_variable = { which = sllm_f_eth value = 2 } }
-		else_if = { limit = { has_ethic = ethic_authoritarian } set_variable = { which = sllm_f_eth value = 3 } }
-		else_if = { limit = { has_ethic = ethic_egalitarian } set_variable = { which = sllm_f_eth value = 4 } }
-		else_if = { limit = { has_ethic = ethic_xenophile } set_variable = { which = sllm_f_eth value = 5 } }
-		else_if = { limit = { has_ethic = ethic_xenophobe } set_variable = { which = sllm_f_eth value = 6 } }
-		else_if = { limit = { has_ethic = ethic_materialist } set_variable = { which = sllm_f_eth value = 7 } }
-		else_if = { limit = { has_ethic = ethic_spiritualist } set_variable = { which = sllm_f_eth value = 8 } }
-		log = "SLLM:FACTION/;/fid=\\[This.sllm_f_id]/;/name=\\[This.GetName]/;/eth=\\[This.sllm_f_eth]/;/sup=\\[This.sllm_f_sup]/;/app=\\[This.sllm_f_app]/;/n=\\[Prev.sllm_st_n]"
+		prev = { change_variable = { which = sllm_st_fc value = 1 } }
+		if = {
+			limit = { OR = { NOT = { is_variable_set = sllm_f_ls } NOT = { is_variable_set = sllm_f_la } } }
+			prev = { set_variable = { which = sllm_st_ch value = 1 } }
+		}
+		else = {
+			set_variable = { which = sllm_f_d value = sllm_f_sup } subtract_variable = { which = sllm_f_d value = sllm_f_ls }
+			if = { limit = { OR = { check_variable = { which = sllm_f_d value > 0.02 } check_variable = { which = sllm_f_d value < -0.02 } } } prev = { set_variable = { which = sllm_st_ch value = 1 } } }
+			set_variable = { which = sllm_f_d value = sllm_f_app } subtract_variable = { which = sllm_f_d value = sllm_f_la }
+			if = { limit = { OR = { check_variable = { which = sllm_f_d value > 0.02 } check_variable = { which = sllm_f_d value < -0.02 } } } prev = { set_variable = { which = sllm_st_ch value = 1 } } }
+			clear_variable = sllm_f_d
+		}
 	}
+	sllm_st_cmp = { V = sllm_st_fc L = sllm_stl_fc }
+	if = {
+		limit = { OR = { check_variable = { which = sllm_st_ch value = 1 } check_variable = { which = sllm_st_fl value = 1 } } }
+		every_pop_faction = {
+			set_variable = { which = sllm_f_eth value = 0 }
+			if = { limit = { has_ethic = ethic_militarist } set_variable = { which = sllm_f_eth value = 1 } }
+			else_if = { limit = { has_ethic = ethic_pacifist } set_variable = { which = sllm_f_eth value = 2 } }
+			else_if = { limit = { has_ethic = ethic_authoritarian } set_variable = { which = sllm_f_eth value = 3 } }
+			else_if = { limit = { has_ethic = ethic_egalitarian } set_variable = { which = sllm_f_eth value = 4 } }
+			else_if = { limit = { has_ethic = ethic_xenophile } set_variable = { which = sllm_f_eth value = 5 } }
+			else_if = { limit = { has_ethic = ethic_xenophobe } set_variable = { which = sllm_f_eth value = 6 } }
+			else_if = { limit = { has_ethic = ethic_materialist } set_variable = { which = sllm_f_eth value = 7 } }
+			else_if = { limit = { has_ethic = ethic_spiritualist } set_variable = { which = sllm_f_eth value = 8 } }
+			set_variable = { which = sllm_f_ls value = sllm_f_sup }
+			set_variable = { which = sllm_f_la value = sllm_f_app }
+			log = "SLLM:FACTION/;/fid=\\[This.sllm_f_id]/;/name=\\[This.GetName]/;/eth=\\[This.sllm_f_eth]/;/sup=\\[This.sllm_f_sup]/;/app=\\[This.sllm_f_app]/;/n=\\[Prev.sllm_st_n]"
+		}
+	}
+	else = { change_variable = { which = sllm_st_kp value = 4 } }
 	# 우리 첩보망(첩보): 대상 제국, 침투 수준
 	every_spynetwork = {
 		limit = { is_owned_by = prev }
@@ -201,11 +280,32 @@ sllm_probe_state_scan = {
 		limit = { any_subject = { NOT = { is_variable_set = sllm_idx } } }
 		sllm_probe_assign_idx = yes
 	}
+	# 2026-11-09: 충성도가 지난번 보낸 값에서 1 넘게 움직였거나 종속국 수가 바뀐 달에만 전부 보낸다.
+	set_variable = { which = sllm_st_ch value = 0 }
+	set_variable = { which = sllm_st_vc value = 0 }
 	every_subject = {
 		export_trigger_value_to_variable = { trigger = has_loyalty variable = sllm_vs_loy }
-		set_variable = { which = sllm_vs_n value = prev.sllm_st_n }
-		log = "SLLM:VASSAL/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/loyalty=\\[This.sllm_vs_loy]/;/n=\\[This.sllm_vs_n]"
+		prev = { change_variable = { which = sllm_st_vc value = 1 } }
+		if = {
+			limit = { NOT = { is_variable_set = sllm_vs_ll } }
+			prev = { set_variable = { which = sllm_st_ch value = 1 } }
+		}
+		else = {
+			set_variable = { which = sllm_vs_d value = sllm_vs_loy } subtract_variable = { which = sllm_vs_d value = sllm_vs_ll }
+			if = { limit = { OR = { check_variable = { which = sllm_vs_d value >= 1 } check_variable = { which = sllm_vs_d value <= -1 } } } prev = { set_variable = { which = sllm_st_ch value = 1 } } }
+			clear_variable = sllm_vs_d
+		}
 	}
+	sllm_st_cmp = { V = sllm_st_vc L = sllm_stl_vc }
+	if = {
+		limit = { OR = { check_variable = { which = sllm_st_ch value = 1 } check_variable = { which = sllm_st_fl value = 1 } } }
+		every_subject = {
+			set_variable = { which = sllm_vs_n value = prev.sllm_st_n }
+			set_variable = { which = sllm_vs_ll value = sllm_vs_loy }
+			log = "SLLM:VASSAL/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/loyalty=\\[This.sllm_vs_loy]/;/n=\\[This.sllm_vs_n]"
+		}
+	}
+	else = { change_variable = { which = sllm_st_kp value = 8 } }
 	# 대사관 감시(2026-10-20 알파 9 시험): 두 달에 한 번, 대사관이 있는 나라마다 SLLM:EMBMON 한 줄(sllm_probe_embmon.txt). 처음 한 번은 바로 기록한다(기준값).
 	if = { limit = { NOT = { is_variable_set = sllm_em_tick } } set_variable = { which = sllm_em_tick value = 1 } }
 	change_variable = { which = sllm_em_tick value = 1 }
@@ -215,15 +315,70 @@ sllm_probe_state_scan = {
 		sllm_probe_embmon = yes
 	}
 	# 민심(알파 10, 2026-10-20): 사람이 사는 행성의 안정도 합·수, 불안(안정도 25 미만) 행성 수, 공격·방어 전쟁 피로도 합. 점수 계산은 앱(src/mood.ts).
+	# 2026-11-09: 군체·기계가 아니면 행성 합은 시위 자료(sllm_probe_protest_scan)가 같은 행성 반복문에서 같이 센다(행성을 두 번 돌지 않게). 줄은 아래 STATE_END 앞에서, 바뀐 달에만.
 	set_variable = { which = sllm_md_sum value = 0 } set_variable = { which = sllm_md_n value = 0 } set_variable = { which = sllm_md_low value = 0 }
-	every_owned_planet = {
-		limit = { is_colony = yes }
-		export_trigger_value_to_variable = { trigger = planet_stability variable = sllm_md_st }
-		prev = { change_variable = { which = sllm_md_sum value = prev.sllm_md_st } change_variable = { which = sllm_md_n value = 1 } }
-		if = { limit = { planet_stability < 25 } prev = { change_variable = { which = sllm_md_low value = 1 } } }
+	if = {
+		limit = { is_gestalt = yes }
+		every_owned_planet = {
+			limit = { is_colony = yes }
+			export_trigger_value_to_variable = { trigger = planet_stability variable = sllm_md_st }
+			prev = { change_variable = { which = sllm_md_sum value = prev.sllm_md_st } change_variable = { which = sllm_md_n value = 1 } }
+			if = { limit = { planet_stability < 25 } prev = { change_variable = { which = sllm_md_low value = 1 } } }
+			clear_variable = sllm_md_st # 변수 줄이기(2026-10-24)
+		}
 	}
+	# 엔클레이브·캐러밴 상황(2026-10-25 알파 11): 나라 수정자·깃발 검사만(반복문 없음). fest 세계의 축제 중 · outrage 축제 소동 · cara 캐러밴 선단이 국경에 들어온 지 540일 안(1·2·3번 선단 = 1·2·4 비트)
+	set_variable = { which = sllm_en_f value = 0 } set_variable = { which = sllm_en_o value = 0 } set_variable = { which = sllm_en_c value = 0 }
+	if = { limit = { has_modifier = enclave_artist_festival } set_variable = { which = sllm_en_f value = 1 } }
+	if = { limit = { has_modifier = enclave_artist_festival_outrage } set_variable = { which = sllm_en_o value = 1 } }
+	if = { limit = { has_country_flag = recent_cara_1010 } change_variable = { which = sllm_en_c value = 1 } }
+	if = { limit = { has_country_flag = recent_cara_2010 } change_variable = { which = sllm_en_c value = 2 } }
+	if = { limit = { has_country_flag = recent_cara_3010 } change_variable = { which = sllm_en_c value = 4 } }
+	set_variable = { which = sllm_st_ch value = 0 }
+	sllm_st_cmp = { V = sllm_en_f L = sllm_stl_enf } sllm_st_cmp = { V = sllm_en_o L = sllm_stl_eno } sllm_st_cmp = { V = sllm_en_c L = sllm_stl_enc }
+	if = {
+		limit = { OR = { check_variable = { which = sllm_st_ch value = 1 } check_variable = { which = sllm_st_fl value = 1 } } }
+		log = "SLLM:ENCLAVE/;/n=\\[This.sllm_st_n]/;/fest=\\[This.sllm_en_f]/;/outrage=\\[This.sllm_en_o]/;/cara=\\[This.sllm_en_c]"
+	}
+	else = { change_variable = { which = sllm_st_kp value = 2 } }
+	clear_variable = sllm_en_f clear_variable = sllm_en_o clear_variable = sllm_en_c
+	# 시위 시스템 자료(2026-10-23): 행성별 시민 성향·생활 여건·총독 파벌, 종족 시민권(scripted_effects/sllm_probe_protest.txt)
+	# 렉 줄이기(2026-10-24): 행성마다 인구 집단을 다 도는 성향별 인구(sllm_pq_pg = 1)는 3달에 한 번만. 다른 달은 안정도·주거 등만 보내고 pg=0 — 앱이 지난 성향 비율을 다시 쓴다.
+	if = { limit = { NOT = { is_variable_set = sllm_pq_m } } set_variable = { which = sllm_pq_m value = 3 } }
+	set_variable = { which = sllm_pq_pg value = 0 }
+	if = { limit = { check_variable = { which = sllm_pq_m value >= 3 } } set_variable = { which = sllm_pq_pg value = 1 } set_variable = { which = sllm_pq_m value = 1 } }
+	else = { change_variable = { which = sllm_pq_m value = 1 } }
+	sllm_probe_protest_scan = yes # (군체가 아니면) 민심 행성 합도 여기서 같이 센다
 	export_trigger_value_to_variable = { trigger = off_war_exhaustion_sum variable = sllm_md_ox }
 	export_trigger_value_to_variable = { trigger = def_war_exhaustion_sum variable = sllm_md_dx }
-	log = "SLLM:MOOD/;/n=\\[This.sllm_st_n]/;/sum=\\[This.sllm_md_sum]/;/cnt=\\[This.sllm_md_n]/;/low=\\[This.sllm_md_low]/;/ox=\\[This.sllm_md_ox]/;/dx=\\[This.sllm_md_dx]"
-	log = "SLLM:STATE_END/;/sid=\\[This.sllm_save_id]/;/n=\\[This.sllm_st_n]"
+	# 민심 줄은 행성 수·불안 행성 수가 바뀌었거나, 평균 안정도가 1 넘게(합이 행성 수만큼) 움직였거나, 피로도가 0.02 넘게 움직인 달에만(2026-11-09)
+	set_variable = { which = sllm_st_ch value = 0 }
+	sllm_st_cmp = { V = sllm_md_n L = sllm_stl_mdn } sllm_st_cmp = { V = sllm_md_low L = sllm_stl_mdlow }
+	if = {
+		limit = { NOR = { is_variable_set = sllm_stl_mdsum is_variable_set = sllm_stl_mdox } }
+		set_variable = { which = sllm_st_ch value = 1 }
+	}
+	else = {
+		set_variable = { which = sllm_md_d value = sllm_md_sum } subtract_variable = { which = sllm_md_d value = sllm_stl_mdsum }
+		set_variable = { which = sllm_md_d2 value = 0 } subtract_variable = { which = sllm_md_d2 value = sllm_md_d }
+		if = { limit = { OR = { check_variable = { which = sllm_md_d value > sllm_md_n } check_variable = { which = sllm_md_d2 value > sllm_md_n } } } set_variable = { which = sllm_st_ch value = 1 } }
+		set_variable = { which = sllm_md_d value = sllm_md_ox } subtract_variable = { which = sllm_md_d value = sllm_stl_mdox }
+		if = { limit = { OR = { check_variable = { which = sllm_md_d value > 0.02 } check_variable = { which = sllm_md_d value < -0.02 } } } set_variable = { which = sllm_st_ch value = 1 } }
+		set_variable = { which = sllm_md_d value = sllm_md_dx } subtract_variable = { which = sllm_md_d value = sllm_stl_mddx }
+		if = { limit = { OR = { check_variable = { which = sllm_md_d value > 0.02 } check_variable = { which = sllm_md_d value < -0.02 } } } set_variable = { which = sllm_st_ch value = 1 } }
+		clear_variable = sllm_md_d clear_variable = sllm_md_d2
+	}
+	if = {
+		limit = { OR = { check_variable = { which = sllm_st_ch value = 1 } check_variable = { which = sllm_st_fl value = 1 } } }
+		set_variable = { which = sllm_stl_mdsum value = sllm_md_sum } set_variable = { which = sllm_stl_mdox value = sllm_md_ox } set_variable = { which = sllm_stl_mddx value = sllm_md_dx }
+		log = "SLLM:MOOD/;/n=\\[This.sllm_st_n]/;/sum=\\[This.sllm_md_sum]/;/cnt=\\[This.sllm_md_n]/;/low=\\[This.sllm_md_low]/;/ox=\\[This.sllm_md_ox]/;/dx=\\[This.sllm_md_dx]"
+	}
+	else = { change_variable = { which = sllm_st_kp value = 16 } }
+	log = "SLLM:STATE_END/;/sid=\\[This.sllm_save_id]/;/n=\\[This.sllm_st_n]/;/kp=\\[This.sllm_st_kp]"
+}
+
+# 바뀜 확인(2026-11-09): 변수 $V$ 가 지난번 보낸 값($L$)과 다르면 sllm_st_ch = 1. $L$ 은 늘 새 값으로 바꾼다(같은 값끼리만 비교하는 묶음용). 이 범위 = 플레이어.
+sllm_st_cmp = {
+	if = { limit = { OR = { NOT = { is_variable_set = $L$ } NOT = { check_variable = { which = $L$ value = $V$ } } } } set_variable = { which = sllm_st_ch value = 1 } }
+	set_variable = { which = $L$ value = $V$ }
 }

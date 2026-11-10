@@ -3,16 +3,37 @@
 .corridor-emblems{position:absolute;inset:0;pointer-events:none}
 .corridor-emblem{position:absolute;display:block;background:linear-gradient(90deg,#80612e,#efce81 20%,#a47d40 45%,#f2d590 65%,#8e6833);mask:var(--emblem) center/contain no-repeat;-webkit-mask:var(--emblem) center/contain no-repeat;opacity:.82;mix-blend-mode:screen}
 [data-style=xenophobe] .corridor-emblem{background:linear-gradient(90deg,#687076,#e5dfcf 26%,#9a9690 49%,#eee8d9 70%,#77716a)}
-.corridor-door{position:absolute;background:none;border:0;padding:0;cursor:pointer;color:#f9e6c3;font:inherit;z-index:2}
-.corridor-door::before{content:'';position:absolute;inset:0;background:#ffdc8f22;clip-path:var(--shape);opacity:0;transition:opacity .15s}
-.corridor-door:hover::before,.corridor-door:focus-visible::before{opacity:1}
-.corridor-door:focus-visible{outline:2px solid #eac989;outline-offset:2px}
-.corridor-door span{position:absolute;left:50%;top:65%;transform:translate(-50%,-50%);padding:9px 12px;background:#111b23ed;border:1px solid #c4a66f;white-space:nowrap;opacity:0;pointer-events:none;font-size:clamp(10px,1.1vw,16px)}
-.corridor-door:hover span,.corridor-door:focus-visible span{opacity:1}
-.door-0{left:3.7%;top:17%;width:9.3%;height:70%;--shape:polygon(0 0,100% 12%,100% 94%,0 100%)}
-.door-1{left:23%;top:36%;width:3.8%;height:38%;--shape:polygon(0 0,100% 7%,100% 98%,0 100%)}
-.door-2{left:43.6%;top:27%;width:12.8%;height:42%;--shape:inset(0)}
-.door-3{left:73.2%;top:36%;width:3.8%;height:38%;--shape:polygon(0 7%,100% 0,100% 100%,0 98%)}
-.door-4{left:87%;top:17%;width:9.3%;height:70%;--shape:polygon(0 12%,100% 0,100% 100%,0 94%)}
-[data-style=spiritualist] .door-2{top:32%;height:37%}
-@media(prefers-reduced-motion:reduce){.corridor-door::before{transition:none}}
+/* Doors are invisible hit areas over the painted doors — never a panel over the art (2026-10-22).
+   Hover/focus works like a desktop icon: the door itself lights up (a brighter copy of the painting cut to the
+   door shape) with a theme-coloured glow along its outline, and its name floats as glowing text. */
+.corridor-door{position:absolute;left:calc(var(--x)*1%);top:calc(var(--y)*1%);width:calc(var(--w)*1%);height:calc(var(--h)*1%);
+ background:none;border:0;padding:0;margin:0;border-radius:0;box-shadow:none;cursor:pointer;color:inherit;font:inherit;z-index:2;-webkit-tap-highlight-color:transparent}
+.corridor-door:focus-visible{outline:none}
+.corridor-glow{position:absolute;inset:0;display:block;pointer-events:none;opacity:0;transition:opacity .22s;
+ filter:drop-shadow(0 0 2px var(--hi,#5fd4e4)) drop-shadow(0 0 10px color-mix(in srgb,var(--hi,#5fd4e4) 70%,transparent)) drop-shadow(0 0 22px color-mix(in srgb,var(--hi,#5fd4e4) 35%,transparent))}
+.corridor-cut{position:absolute;inset:0;display:block;overflow:hidden;clip-path:polygon(var(--clip))}
+.corridor-cut img{position:absolute;max-width:none;width:calc(100% * 100 / var(--w));height:calc(100% * 100 / var(--h));left:calc(-100% * var(--x) / var(--w));top:calc(-100% * var(--y) / var(--h));
+ filter:brightness(1.45) saturate(1.15) contrast(1.05)}
+.corridor-door:hover .corridor-glow,.corridor-door:focus-visible .corridor-glow{opacity:1}
+/* Name: glowing text only, like the labels under the office desktop icons. */
+.corridor-door span{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%) translateY(6px);display:flex;flex-direction:column;align-items:center;gap:0;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;
+ color:#fff;font-size:clamp(12px,1.25vw,19px);font-weight:700;letter-spacing:.06em;
+ text-shadow:0 0 4px var(--hi,#5fd4e4),0 0 12px var(--hi,#5fd4e4),0 0 26px color-mix(in srgb,var(--hi,#5fd4e4) 70%,transparent),0 2px 3px #000c}
+.corridor-door span b{font-weight:700}
+.corridor-door span small{font-size:.62em;font-weight:400;letter-spacing:.24em;color:color-mix(in srgb,var(--hi,#5fd4e4) 55%,#fff)}
+.corridor-door:hover span,.corridor-door:focus-visible span{opacity:1;transform:translate(-50%,-50%)}
+/* Walking in: the scene leans toward the chosen door and its light opens, then the room loads. */
+.corridor-scene.corridor-entering{transition:transform .32s cubic-bezier(.5,0,.8,.4),filter .32s ease-in;transform:scale(1.12);filter:brightness(1.35)}
+.corridor-scene.corridor-entering .corridor-door.is-opening .corridor-glow{opacity:1}
+.corridor-scene.corridor-entering .corridor-door.is-opening .corridor-cut img{filter:brightness(2.4)}
+.corridor-scene.corridor-entering .corridor-door span{opacity:0}
+/* Door rectangles (percent of the scene) and their outline inside the rectangle (percent of the door). */
+.door-0{--x:3.7;--y:17;--w:9.3;--h:70;--clip:0 0,100% 12%,100% 94%,0 100%}
+.door-1{--x:23;--y:36;--w:3.8;--h:38;--clip:0 0,100% 7%,100% 98%,0 100%}
+.door-2{--x:43.6;--y:27;--w:12.8;--h:42;--clip:0 0,100% 0,100% 100%,0 100%}
+.door-3{--x:73.2;--y:36;--w:3.8;--h:38;--clip:0 7%,100% 0,100% 100%,0 98%}
+.door-4{--x:87;--y:17;--w:9.3;--h:70;--clip:0 12%,100% 0,100% 100%,0 94%}
+/* Narrow side doors: keep the name inside the scene. */
+.door-0 span{left:125%}.door-4 span{left:-25%}.door-1 span{left:170%}.door-3 span{left:-70%}
+[data-style=spiritualist] .door-2{--y:32;--h:37}
+@media(prefers-reduced-motion:reduce){.corridor-glow,.corridor-door span{transition:none}.corridor-scene.corridor-entering{transition:none;transform:none;filter:none}}

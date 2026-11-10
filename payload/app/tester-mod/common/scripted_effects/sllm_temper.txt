@@ -1,0 +1,157 @@
+# SLLM 외교 노선(2026-11-04) — AI 제국의 외교 성향(ai_personality)을 우리 행동·첩보 공작·은하 판세에 따라 바꾼다.
+# 앱: src/temper.ts · src/features/temper-app.ts, 화면: ui/office-temper.js(집무실 「외교 노선」).
+# 참고: Dungeon Master 모드(창작마당 3801419429)의 set_ai_personality · relative_power · ordered_country(order_by = trigger:fleet_power) 쓰임.
+# 방향 DIR: 1 = 온건(평화·연합 쪽), 2 = 강경(팽창·전쟁 쪽). 가치관에 맞는 성향 하나를 고른다(게임 personalities 의 allow 와 크게 어긋나지 않게).
+# 대상: 일반 AI 제국만(단일 의식·광신적 정화자·몰락제국·위기 세력 제외). 평화주의 제국은 강경으로 돌지 않는다(status=refused).
+# 로그 글자 안에는 $매개변수$ 를 쓰지 않는다(변수로 옮겨 찍는다).
+#   읽기:  sllm_tmp_ctx = { REQ = 9 }            → SLLM:TMPC(제국마다) · SLLM:TMPTOP(함대 전력 1~5위) · SLLM:TMPEND
+#   바꾸기: sllm_tmp_shift = { REQ = 9 TID = 4 DIR = 1 }   → SLLM:TMPSET req·tid·status(applied|same|refused|invalid|none)·pers(바뀐 뒤 이름)
+#   공작 발각: sllm_tmp_caught = { REQ = 9 TID = 4 } → SLLM:TMPSET status=applied(호감 수정자만)
+
+# 노선 판별 대상: 일반 AI 제국
+sllm_tmp_mark_ok = {
+	if = {
+		limit = {
+			is_ai = yes
+			sllm_is_empire = yes
+			is_gestalt = no
+			NOT = { has_valid_civic = civic_fanatic_purifiers }
+			has_valid_ai_personality = yes
+		}
+		set_variable = { which = sllm_tmp_ok value = 1 }
+	}
+	else = { set_variable = { which = sllm_tmp_ok value = 0 } }
+}
+
+# 지금 성향의 노선: 1 온건 · 2 강경 · 0 그 밖
+sllm_tmp_mark_cls = {
+	if = {
+		limit = { OR = { has_ai_personality = federation_builders has_ai_personality = peaceful_traders has_ai_personality = spiritual_seekers has_ai_personality = harmonious_hierarchy has_ai_personality = erudite_explorers has_ai_personality = xenophobic_isolationists has_ai_personality = fanatic_befrienders has_ai_personality = decadent_hierarchy } }
+		set_variable = { which = sllm_tmp_cls value = 1 }
+	}
+	else_if = {
+		limit = { OR = { has_ai_personality = hegemonic_imperialists has_ai_personality = honorbound_warriors has_ai_personality = evangelising_zealots has_ai_personality = ruthless_capitalists has_ai_personality = slaving_despots has_ai_personality = democratic_crusaders has_ai_personality = metalhead } }
+		set_variable = { which = sllm_tmp_cls value = 2 }
+	}
+	else = { set_variable = { which = sllm_tmp_cls value = 0 } }
+}
+
+# 판세 읽기(플레이어 국가 범위). 「새로 관측」·해마다 1월(sllm_tmp.1)에만.
+sllm_tmp_ctx = {
+	set_variable = { which = sllm_tmp_req value = $REQ$ }
+	save_event_target_as = sllm_tmp_us
+	every_country = {
+		limit = { is_ai = yes sllm_is_empire = yes is_variable_set = sllm_idx }
+		set_variable = { which = sllm_tmp_req value = $REQ$ }
+		sllm_tmp_mark_ok = yes
+		sllm_tmp_mark_cls = yes
+		if = { limit = { relative_power = { who = event_target:sllm_tmp_us category = all value = overwhelming } } set_variable = { which = sllm_tmp_rp value = 5 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_tmp_us category = all value >= superior } } set_variable = { which = sllm_tmp_rp value = 4 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_tmp_us category = all value >= equivalent } } set_variable = { which = sllm_tmp_rp value = 3 } }
+		else_if = { limit = { relative_power = { who = event_target:sllm_tmp_us category = all value >= inferior } } set_variable = { which = sllm_tmp_rp value = 2 } }
+		else = { set_variable = { which = sllm_tmp_rp value = 1 } }
+		if = { limit = { OR = { has_ethic = ethic_pacifist has_ethic = ethic_fanatic_pacifist } } set_variable = { which = sllm_tmp_pac value = 1 } } else = { set_variable = { which = sllm_tmp_pac value = 0 } }
+		if = { limit = { is_at_war_with = event_target:sllm_tmp_us } set_variable = { which = sllm_tmp_war value = 1 } } else = { set_variable = { which = sllm_tmp_war value = 0 } }
+		log = "SLLM:TMPC/;/req=\\[This.sllm_tmp_req]/;/idx=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/pers=\\[This.GetPersonalityName]/;/cls=\\[This.sllm_tmp_cls]/;/ok=\\[This.sllm_tmp_ok]/;/rp=\\[This.sllm_tmp_rp]/;/pac=\\[This.sllm_tmp_pac]/;/war=\\[This.sllm_tmp_war]"
+	}
+	sllm_tmp_top = { N = 0 REQ = $REQ$ }
+	sllm_tmp_top = { N = 1 REQ = $REQ$ }
+	sllm_tmp_top = { N = 2 REQ = $REQ$ }
+	sllm_tmp_top = { N = 3 REQ = $REQ$ }
+	sllm_tmp_top = { N = 4 REQ = $REQ$ }
+	log = "SLLM:TMPEND/;/req=\\[Root.sllm_tmp_req]/;/sid=\\[Root.sllm_save_id]/;/date=\\[GetDate]"
+}
+# 함대 전력 N+1위(일반 제국·플레이어 포함). us = 1 이면 우리.
+sllm_tmp_top = {
+	ordered_country = {
+		limit = { sllm_is_empire = yes }
+		position = $N$
+		order_by = trigger:fleet_power
+		set_variable = { which = sllm_tmp_req value = $REQ$ }
+		set_variable = { which = sllm_tmp_rank value = $N$ }
+		if = { limit = { is_ai = no } set_variable = { which = sllm_tmp_isus value = 1 } } else = { set_variable = { which = sllm_tmp_isus value = 0 } }
+		if = { limit = { NOT = { is_variable_set = sllm_idx } } set_variable = { which = sllm_tmp_ix value = -1 } } else = { set_variable = { which = sllm_tmp_ix value = sllm_idx } }
+		export_trigger_value_to_variable = { trigger = fleet_power variable = sllm_tmp_fp rounded = yes } # 함대 전력 숫자(2026-11-04, 4.5.2 Native Fleet Order 모드에서 검증된 쓰임)
+		log = "SLLM:TMPTOP/;/req=\\[This.sllm_tmp_req]/;/rank=\\[This.sllm_tmp_rank]/;/idx=\\[This.sllm_tmp_ix]/;/us=\\[This.sllm_tmp_isus]/;/fp=\\[This.sllm_tmp_fp]/;/name=\\[This.GetName]"
+	}
+}
+
+# 성향 바꾸기(플레이어 국가 범위에서 부른다).
+sllm_tmp_shift = {
+	set_variable = { which = sllm_tmp_req value = $REQ$ }
+	set_variable = { which = sllm_tmp_tid value = $TID$ }
+	set_variable = { which = sllm_tmp_dir value = $DIR$ }
+	set_variable = { which = sllm_tmp_st value = 0 }
+	save_event_target_as = sllm_tmp_us
+	every_country = {
+		limit = { is_ai = yes is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		sllm_tmp_mark_ok = yes
+		if = {
+			limit = { check_variable = { which = sllm_tmp_ok value = 0 } }
+			event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 3 } }
+		}
+		else_if = {
+			limit = { event_target:sllm_tmp_us = { check_variable = { which = sllm_tmp_dir value = 1 } } }
+			if = { limit = { is_xenophobe = yes } if = { limit = { has_ai_personality = xenophobic_isolationists } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = xenophobic_isolationists event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else_if = { limit = { OR = { has_ethic = ethic_spiritualist has_ethic = ethic_fanatic_spiritualist } } if = { limit = { has_ai_personality = spiritual_seekers } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = spiritual_seekers event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else_if = { limit = { is_megacorp = yes } if = { limit = { has_ai_personality = peaceful_traders } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = peaceful_traders event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else_if = { limit = { OR = { has_ethic = ethic_authoritarian has_ethic = ethic_fanatic_authoritarian } } if = { limit = { has_ai_personality = harmonious_hierarchy } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = harmonious_hierarchy event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else_if = { limit = { OR = { has_ethic = ethic_materialist has_ethic = ethic_fanatic_materialist } } if = { limit = { has_ai_personality = erudite_explorers } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = erudite_explorers event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else = { if = { limit = { has_ai_personality = federation_builders } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = federation_builders event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+		}
+		else = {
+			if = { limit = { OR = { has_ethic = ethic_pacifist has_ethic = ethic_fanatic_pacifist } } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 4 } } }
+			else_if = { limit = { OR = { has_ethic = ethic_spiritualist has_ethic = ethic_fanatic_spiritualist } } if = { limit = { has_ai_personality = evangelising_zealots } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = evangelising_zealots event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else_if = { limit = { is_megacorp = yes } if = { limit = { has_ai_personality = ruthless_capitalists } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = ruthless_capitalists event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else_if = { limit = { OR = { has_ethic = ethic_egalitarian has_ethic = ethic_fanatic_egalitarian has_ethic = ethic_xenophile has_ethic = ethic_fanatic_xenophile } } if = { limit = { has_ai_personality = honorbound_warriors } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = honorbound_warriors event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+			else = { if = { limit = { has_ai_personality = hegemonic_imperialists } event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 2 } } } else = { set_ai_personality = hegemonic_imperialists event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } } } }
+		}
+		set_variable = { which = sllm_tmp_req value = $REQ$ }
+		log = "SLLM:TMPSETP/;/req=\\[This.sllm_tmp_req]/;/pers=\\[This.GetPersonalityName]"
+	}
+	if = { limit = { check_variable = { which = sllm_tmp_st value = 1 } } log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=applied" }
+	else_if = { limit = { check_variable = { which = sllm_tmp_st value = 2 } } log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=same" }
+	else_if = { limit = { check_variable = { which = sllm_tmp_st value = 3 } } log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=invalid" }
+	else_if = { limit = { check_variable = { which = sllm_tmp_st value = 4 } } log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=refused" }
+	else = { log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=none" }
+}
+
+# 노선 공작이 들킴: 그 나라가 우리를 보는 호감 −50(서서히 사라짐).
+sllm_tmp_caught = {
+	set_variable = { which = sllm_tmp_req value = $REQ$ }
+	set_variable = { which = sllm_tmp_tid value = $TID$ }
+	save_event_target_as = sllm_tmp_us
+	set_variable = { which = sllm_tmp_st value = 0 }
+	every_country = {
+		limit = { is_ai = yes is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		add_opinion_modifier = { who = event_target:sllm_tmp_us modifier = sllm_tmp_meddling }
+		event_target:sllm_tmp_us = { set_variable = { which = sllm_tmp_st value = 1 } }
+	}
+	if = { limit = { check_variable = { which = sllm_tmp_st value = 1 } } log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=applied" }
+	else = { log = "SLLM:TMPSET/;/req=\\[Root.sllm_tmp_req]/;/tid=\\[Root.sllm_tmp_tid]/;/status=none" }
+}
+
+# ── 게임 안 비상 정지 칙령(2026-11-04): 앱을 거치지 않고 게임에서 바로 멈춘다 ──
+# 자동 작전 전체 중지: sllm_fo_disable 을 요청 번호 0 으로 부른다 → SLLM:FOSET req=0 what=off (앱이 「칙령으로 정지」로 기록)
+sllm_tmp_halt_fleetorder = {
+	sllm_fo_disable = { REQ = 0 }
+}
+# 예산 집행 전체 중단: 집행 중인 분야마다 수정자·표식·월 비용을 지우고 SLLM:BUDSTOP d·halt=1 (앱이 장관 신뢰를 깎지 않고 기록만)
+sllm_tmp_halt_budget_d = {
+	if = {
+		limit = { is_variable_set = sllm_bud_cost$D$ check_variable = { which = sllm_bud_cost$D$ value > 0 } }
+		set_variable = { which = sllm_bud_dq value = $D$ }
+		sllm_bud_clear = yes
+		remove_country_flag = sllm_bud_$D$
+		set_variable = { which = sllm_bud_cost$D$ value = 0 }
+		log = "SLLM:BUDSTOP/;/d=\\[Root.sllm_bud_dq]/;/halt=1/;/date=\\[GetDate]"
+	}
+}
+sllm_tmp_halt_budget = {
+	sllm_tmp_halt_budget_d = { D = 1 }
+	sllm_tmp_halt_budget_d = { D = 2 }
+	sllm_tmp_halt_budget_d = { D = 3 }
+	sllm_tmp_halt_budget_d = { D = 4 }
+	sllm_tmp_halt_budget_d = { D = 5 }
+	remove_country_flag = sllm_bud_any
+}

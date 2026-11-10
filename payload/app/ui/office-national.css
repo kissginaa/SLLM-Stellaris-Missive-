@@ -1,1 +1,48 @@
-.ne-panel{position:fixed;inset:5vh 8vw;z-index:110;background:#071b25f5;border:1px solid #51939e;box-shadow:0 20px 80px #000c;color:#d8edf1;padding:24px;overflow:auto;font:14px/1.6 "Malgun Gothic",sans-serif;-webkit-app-region:no-drag}.ne-panel header{display:flex;justify-content:space-between;align-items:center}.ne-panel button,.ne-panel select{background:#12323d;color:#dcf4f5;border:1px solid #426a75;padding:8px 12px;cursor:pointer}.ne-panel textarea{box-sizing:border-box;width:100%;background:#05131c;color:#d8edf1;border:1px solid #426a75;padding:10px}.ne-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}.ne-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.ne-day{min-height:56px;background:#0c2630;border:1px solid #234853;padding:8px}.ne-day small{display:block;color:#a8d7da;font-size:11px}.ne-founding{border-color:#d1af65;background:#32352a}.ne-event{border-top:1px solid #36515c;padding:12px 0}.ne-error{color:#ffb5a0}.ne-panel::-webkit-scrollbar{width:8px}.ne-panel::-webkit-scrollbar-thumb{background:#416a75}
+/* National event days + official holidays. 2026-10-22: hologram panel with the office desktop tokens (--hi --gold --text --dim --bad). */
+.ne-panel{--n-hi:var(--hi,#5fd4e4);--n-line:color-mix(in srgb,var(--n-hi) 40%,transparent);--n-line2:color-mix(in srgb,var(--n-hi) 18%,transparent);--n-glow:color-mix(in srgb,var(--n-hi) 55%,transparent);
+ position:fixed;inset:6vh 8vw;z-index:110;overflow:auto;padding:0 24px 24px;color:var(--text,#dcecf0);font:14px/1.6 "Malgun Gothic",sans-serif;-webkit-app-region:no-drag;color-scheme:dark;
+ border:1px solid var(--n-line);border-radius:8px;
+ background:repeating-linear-gradient(transparent 0 3px,color-mix(in srgb,var(--n-hi) 5%,transparent) 3px 4px),color-mix(in srgb,var(--n-hi) 7%,#020a10f2);background-attachment:local,scroll;backdrop-filter:blur(12px);
+ box-shadow:0 0 0 1px color-mix(in srgb,var(--n-hi) 10%,transparent),0 0 46px color-mix(in srgb,var(--n-hi) 22%,transparent),inset 0 0 70px color-mix(in srgb,var(--n-hi) 9%,transparent),0 24px 80px #000b;
+ animation:ne-draw .45s cubic-bezier(.2,.7,.2,1) both}
+@keyframes ne-draw{from{clip-path:inset(0 0 100% 0);filter:brightness(2.1)}to{clip-path:inset(0);filter:none}}
+.ne-panel *{box-sizing:border-box}
+.ne-panel header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;margin:0 -24px 8px;padding:12px 24px 10px;border-bottom:1px solid var(--n-line2);background:color-mix(in srgb,var(--n-hi) 6%,#03101aee)}
+.ne-panel h2{margin:0;font-size:17px;color:var(--gold,#e8c872);text-shadow:0 0 10px color-mix(in srgb,var(--gold,#e8c872) 40%,transparent)}
+.ne-panel h3{margin:0 0 6px;font-size:15px;color:var(--n-hi);text-shadow:0 0 8px var(--n-glow)}
+.ne-panel h4{margin:0 0 4px;font-size:15px;color:var(--gold,#e8c872)}
+.ne-panel p{margin:4px 0}
+.ne-panel small{color:var(--dim,#7fa3ad)}
+.ne-panel button{border:1px solid var(--n-line);border-radius:4px;background:color-mix(in srgb,var(--n-hi) 7%,transparent);color:var(--text,#dcecf0);padding:7px 14px;font:inherit;font-size:13px;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+.ne-panel button:hover:not(:disabled){background:color-mix(in srgb,var(--n-hi) 16%,transparent);border-color:var(--n-hi);box-shadow:0 0 12px color-mix(in srgb,var(--n-hi) 35%,transparent)}
+.ne-panel button:disabled{opacity:.4;cursor:default}
+.ne-panel button:focus-visible,.ne-panel select:focus-visible,.ne-panel input:focus-visible,.ne-panel textarea:focus-visible{outline:2px solid var(--n-hi);outline-offset:2px}
+.ne-panel .ne-primary{border-color:var(--n-hi);background:color-mix(in srgb,var(--n-hi) 18%,transparent);font-weight:700}
+.ne-panel .ne-danger{border-color:color-mix(in srgb,var(--bad,#e0705f) 55%,transparent);background:color-mix(in srgb,var(--bad,#e0705f) 8%,transparent);color:color-mix(in srgb,var(--bad,#e0705f) 45%,#fff)}
+.ne-panel .ne-danger:hover:not(:disabled){border-color:var(--bad,#e0705f);background:color-mix(in srgb,var(--bad,#e0705f) 18%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--bad,#e0705f) 35%,transparent)}
+.ne-panel select,.ne-panel input:not([type=checkbox]),.ne-panel textarea{background:color-mix(in srgb,var(--n-hi) 5%,#000a);color:var(--text,#dcecf0);border:1px solid var(--n-line);border-radius:5px;padding:8px 10px;font:inherit;font-size:13.5px}
+.ne-panel select option{background:#04121a}
+.ne-panel textarea{width:100%;line-height:1.7;resize:vertical}
+.ne-panel input[type=checkbox]{accent-color:var(--n-hi)}
+.ne-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.ne-controls>b{min-width:90px;text-align:center;color:var(--n-hi);text-shadow:0 0 8px var(--n-glow);font-variant-numeric:tabular-nums}
+.ne-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.ne-day{min-height:58px;padding:7px 8px;border:1px solid var(--n-line2);border-radius:4px;background:color-mix(in srgb,var(--n-hi) 4%,transparent);font-variant-numeric:tabular-nums;color:var(--dim,#7fa3ad)}
+.ne-day small{display:block;font-size:11px;line-height:1.4;color:var(--text,#dcecf0)}
+.ne-founding{border-color:var(--gold,#e8c872);background:color-mix(in srgb,var(--gold,#e8c872) 12%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--gold,#e8c872) 30%,transparent);color:var(--gold,#e8c872)}
+.ne-official-holiday{color:var(--n-hi)!important;text-shadow:0 0 6px var(--n-glow)}
+.ne-event{margin-top:14px;padding:14px 16px;border:1px solid var(--n-line2);border-radius:6px;background:color-mix(in srgb,var(--n-hi) 4%,transparent)}
+.ne-event details{margin-top:12px;padding-top:8px;border-top:1px dashed var(--n-line2);color:var(--dim,#7fa3ad);font-size:12.5px}
+.ne-event summary{cursor:pointer;color:var(--n-hi)}
+.ne-toggle{display:flex;align-items:center;gap:6px;margin:10px 0;font-size:13px;color:var(--dim,#7fa3ad)}
+.ne-holiday{display:flow-root;margin-top:12px;padding:14px;border:1px solid var(--n-line);border-left:3px solid var(--gold,#e8c872);border-radius:6px;background:radial-gradient(ellipse 60% 80% at 0% 0%,color-mix(in srgb,var(--gold,#e8c872) 8%,transparent),transparent 70%),color-mix(in srgb,var(--n-hi) 4%,transparent)}
+.ne-holiday.ne-paused{border-left-color:var(--dim,#7fa3ad);opacity:.8}
+.ne-holiday-art{float:left;width:180px;max-width:35%;margin:0 16px 8px 0;border-radius:5px;border:1px solid var(--n-line2);box-shadow:0 0 14px color-mix(in srgb,var(--n-hi) 20%,transparent)}
+.ne-holiday-form{margin-top:14px;padding:16px;border:1px solid var(--n-hi);border-radius:6px;background:color-mix(in srgb,var(--n-hi) 6%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--n-hi) 18%,transparent)}
+.ne-field{display:flex;flex-direction:column;gap:4px;margin:0 0 10px;font-size:12.5px;color:var(--dim,#7fa3ad)}
+.ne-field:has(input[type=checkbox]){flex-direction:row-reverse;justify-content:flex-end;align-items:center}
+.ne-holiday-form>button{margin-right:8px}
+.ne-error{color:color-mix(in srgb,var(--bad,#e0705f) 50%,#fff)}
+.ne-panel::-webkit-scrollbar{width:8px}.ne-panel::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--n-hi) 35%,transparent);border-radius:5px}
+@media(prefers-reduced-motion:reduce){.ne-panel{animation:none}.ne-panel button{transition:none}}
+.ne-holiday.ne-fixed{border-left-color:var(--n-hi)} .ne-holiday.ne-fixed select{margin-right:6px}

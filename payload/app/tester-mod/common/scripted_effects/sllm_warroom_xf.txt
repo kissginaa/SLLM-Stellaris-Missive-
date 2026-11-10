@@ -1,0 +1,231 @@
+# SLLM 연합 원정군(2026-11-05). 앱: src/features/galaxy-app.ts(작전지휘실 동맹 칸 「연합 원정군 요청」), 규칙: src/warroom.ts. 세력 종류: common/country_types/sllm_warroom_country_types.txt.
+# 동맹(sllm_fo_ally_ok)이 수락하면(앱 주사위·답신은 함대 사령부 합동 작전과 같은 규칙) 그 나라의 가장 센 함대 N 개를 새 세력 「<동맹> 연합 원정군」 소유로 옮긴다.
+#   세력 표식 sllm_wr_xf · 동맹 번호 sllm_wr_xf_ally · 함대 수 sllm_wr_xf_n · 기간 sllm_wr_xf_active(시한 표식). 함대 표식 sllm_wr_xff.
+#   함대 사령부의 임대(sllm_fo_ally·sllm_fo_lending)와는 표식을 섞지 않는다(그쪽 매달 점검이 잃은 것으로 세지 않게).
+# 매달(sllm_wr.1 → sllm_wr_xf_tick): 적대 비추기 · 잃은 함대 · 기간 끝·관계 깨짐이면 돌려보내고 세력을 지운다.
+# 로그: WRSET(요청 응답) · WRXFF(옮긴 함대 하나) · WRXF(매달 사건: ev 2 일부 잃음 · 3 전멸 · 4 기간 끝 귀환 · 5 우리가 돌려보냄 · 6 관계가 깨져 철수 · 7 동맹이 사라져 우리에게 합류)
+# 범위: Root = 플레이어 나라.
+
+# 동맹(TID) 찾기 → 전역 event_target sllm_wr_xa
+sllm_wr_xf_find = {
+	clear_global_event_target = sllm_wr_xa
+	every_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } NOT = { has_country_flag = sllm_wr_xf } }
+		save_global_event_target_as = sllm_wr_xa
+	}
+}
+
+# 가장 센 보낼 수 있는 함대 하나를 원정군(event_target:sllm_wr_xnew) 소유로. 범위 = 동맹.
+sllm_wr_xf_take_one = {
+	if = {
+		limit = { any_owned_fleet = { sllm_fo_lendable_fleet = yes } }
+		ordered_owned_fleet = {
+			limit = { sllm_fo_lendable_fleet = yes }
+			order_by = trigger:fleet_power
+			position = 0
+			set_owner = event_target:sllm_wr_xnew
+			set_fleet_flag = sllm_wr_xff
+			set_variable = { which = sllm_fo_op value = 0 }
+			set_fleet_stance = aggressive
+			set_variable = { which = sllm_wr_fp value = trigger:fleet_power }
+			root = { change_variable = { which = sllm_wr_xgot value = 1 } }
+			log = "SLLM:WRXFF/;/req=\\[Root.sllm_wr_req]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/pow=\\[This.sllm_wr_fp]/;/at=\\[This.System.GetName]"
+		}
+	}
+}
+
+# ── 요청 수락 → 원정군 만들기: sllm_wr_xf_create = { REQ = 9 TID = 4 N = 2 DAYS = 360 } ──
+sllm_wr_xf_create = {
+	set_variable = { which = sllm_wr_req value = $REQ$ }
+	set_variable = { which = sllm_wr_xq value = $N$ }
+	set_variable = { which = sllm_wr_xgot value = 0 }
+	sllm_wr_xf_find = { TID = $TID$ }
+	if = {
+		limit = { NOT = { exists = event_target:sllm_wr_xa } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=no_target"
+	}
+	else_if = {
+		limit = { NOT = { event_target:sllm_wr_xa = { sllm_fo_ally_ok = yes } } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=no_target"
+	}
+	else_if = {
+		limit = { any_country = { has_country_flag = sllm_wr_xf check_variable = { which = sllm_wr_xf_ally value = $TID$ } } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=already"
+	}
+	else_if = {
+		limit = { NOT = { event_target:sllm_wr_xa = { any_owned_fleet = { sllm_fo_lendable_fleet = yes } } } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=no_fleet"
+	}
+	else = {
+		clear_global_event_target = sllm_wr_xnew
+		event_target:sllm_wr_xa = {
+			create_country = {
+				name = "SLLM_WR_XF_NAME"
+				type = sllm_wr_xf_type
+				auto_delete = no
+				use_hostilities_from = root
+				species = owner_species
+				authority = this
+				ethos = this
+				flag = this
+				name_list = this
+				ignore_initial_colony_error = yes
+				effect = {
+					set_country_flag = sllm_wr_xf
+					set_timed_country_flag = { flag = sllm_wr_xf_active days = $DAYS$ }
+					set_variable = { which = sllm_wr_xf_ally value = $TID$ }
+					set_variable = { which = sllm_wr_xf_n value = 0 }
+					set_name = { key = SLLM_WR_XF_NAME variable_string = "\\[prev.GetName]" }
+					establish_communications_no_message = prev
+					establish_communications_no_message = root
+					every_country = { establish_communications_no_message = prev }
+					set_faction_hostility = { target = root set_hostile = no set_neutral = no set_friendly = yes }
+					set_faction_hostility = { target = prev set_hostile = no set_neutral = no set_friendly = yes }
+					set_graphical_culture = prev
+					copy_techs_from = { target = prev }
+					save_global_event_target_as = sllm_wr_xnew
+				}
+			}
+		}
+		if = {
+			limit = { exists = event_target:sllm_wr_xnew }
+			set_closed_borders = { who = event_target:sllm_wr_xnew status = no }
+			event_target:sllm_wr_xa = { set_closed_borders = { who = event_target:sllm_wr_xnew status = no } }
+			event_target:sllm_wr_xa = {
+				sllm_wr_xf_take_one = yes
+				if = { limit = { root = { check_variable = { which = sllm_wr_xq value >= 2 } } } sllm_wr_xf_take_one = yes }
+				if = { limit = { root = { check_variable = { which = sllm_wr_xq value >= 3 } } } sllm_wr_xf_take_one = yes }
+			}
+			event_target:sllm_wr_xnew = { set_variable = { which = sllm_wr_xf_n value = root.sllm_wr_xgot } }
+			sllm_wr_xf_mirror = { X = sllm_wr_xnew }
+		}
+		if = {
+			limit = { check_variable = { which = sllm_wr_xgot value > 0 } }
+			log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/n=\\[Root.sllm_wr_xgot]/;/status=applied"
+		}
+		else = {
+			if = { limit = { exists = event_target:sllm_wr_xnew } event_target:sllm_wr_xnew = { destroy_country = yes } }
+			log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/n=0/;/status=no_fleet"
+		}
+		clear_global_event_target = sllm_wr_xnew
+	}
+}
+
+# 적대 비추기(원정군 = event_target:$X$, 동맹 = event_target:sllm_wr_xa): 우리나 그 동맹이 적대하는 나라면 원정군도 적대, 둘 다 아니면 중립으로 되돌린다.
+sllm_wr_xf_mirror = {
+	every_country = {
+		limit = {
+			NOT = { is_same_value = root }
+			NOT = { is_same_value = event_target:sllm_wr_xa }
+			NOT = { has_country_flag = sllm_wr_xf }
+		}
+		if = {
+			limit = {
+				OR = {
+					root = { is_hostile = prev }
+					event_target:sllm_wr_xa = { is_hostile = prev }
+				}
+				NOT = { event_target:$X$ = { is_hostile = prev } }
+			}
+			event_target:$X$ = { set_hostile = prev }
+		}
+		else_if = {
+			limit = {
+				NOT = { root = { is_hostile = prev } }
+				NOT = { event_target:sllm_wr_xa = { is_hostile = prev } }
+				event_target:$X$ = { is_hostile = prev }
+			}
+			event_target:$X$ = { set_faction_hostility = { target = prev set_hostile = no set_neutral = yes set_friendly = no } }
+		}
+	}
+}
+
+# 원정군 함대를 모두 동맹에게 돌려주고 세력에 지울 표식(범위 = 원정군). 동맹이 없으면 우리에게(ev 7).
+sllm_wr_xf_back = {
+	every_owned_fleet = {
+		remove_fleet_flag = sllm_wr_xff
+		remove_fleet_flag = sllm_wr_busy
+		if = { limit = { exists = event_target:sllm_wr_xa } set_owner = event_target:sllm_wr_xa }
+		else = { set_owner = root }
+	}
+	set_country_flag = sllm_wr_xf_dead
+}
+
+# 매달 한 사건 줄(범위 = 원정군). EV = 사건 번호.
+sllm_wr_xf_log = {
+	set_variable = { which = sllm_wr_xev value = $EV$ }
+	set_variable = { which = sllm_wr_xleft value = 0 }
+	every_owned_fleet = { prev = { change_variable = { which = sllm_wr_xleft value = 1 } } }
+	log = "SLLM:WRXF/;/ev=\\[This.sllm_wr_xev]/;/idx=\\[This.sllm_wr_xf_ally]/;/n=\\[This.sllm_wr_xf_n]/;/left=\\[This.sllm_wr_xleft]/;/date=\\[GetDate]/;/name=\\[This.GetName]"
+}
+
+# ── 매달(sllm_wr.1) ──
+sllm_wr_xf_tick = {
+	every_country = {
+		limit = { has_country_flag = sllm_wr_xf NOT = { has_country_flag = sllm_wr_xf_dead } }
+		save_global_event_target_as = sllm_wr_xcur
+		clear_global_event_target = sllm_wr_xa
+		every_country = {
+			limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = prev.sllm_wr_xf_ally } NOT = { has_country_flag = sllm_wr_xf } }
+			save_global_event_target_as = sllm_wr_xa
+		}
+		set_variable = { which = sllm_wr_xnow value = 0 }
+		every_owned_fleet = { prev = { change_variable = { which = sllm_wr_xnow value = 1 } } }
+		if = {
+			limit = { check_variable = { which = sllm_wr_xnow value = 0 } }
+			sllm_wr_xf_log = { EV = 3 }
+			if = { limit = { exists = event_target:sllm_wr_xa event_target:sllm_wr_xa = { is_ai = yes } } event_target:sllm_wr_xa = { add_opinion_modifier = { modifier = sllm_fo_fleet_lost who = root } } }
+			set_country_flag = sllm_wr_xf_dead
+		}
+		else_if = {
+			limit = { NOT = { exists = event_target:sllm_wr_xa } }
+			sllm_wr_xf_log = { EV = 7 }
+			sllm_wr_xf_back = yes
+		}
+		else_if = {
+			limit = { NOT = { event_target:sllm_wr_xa = { sllm_fo_ally_ok = yes } } }
+			sllm_wr_xf_log = { EV = 6 }
+			sllm_wr_xf_back = yes
+		}
+		else = {
+			if = {
+				limit = { check_variable = { which = sllm_wr_xnow value < sllm_wr_xf_n } }
+				set_variable = { which = sllm_wr_xlost value = 1 }
+				sllm_wr_xf_log = { EV = 2 }
+				set_variable = { which = sllm_wr_xf_n value = sllm_wr_xnow }
+				if = { limit = { event_target:sllm_wr_xa = { is_ai = yes } } event_target:sllm_wr_xa = { add_opinion_modifier = { modifier = sllm_fo_fleet_lost who = root } } }
+			}
+			if = {
+				limit = { NOT = { has_country_flag = sllm_wr_xf_active } }
+				sllm_wr_xf_log = { EV = 4 }
+				if = { limit = { NOT = { is_variable_set = sllm_wr_xlost } event_target:sllm_wr_xa = { is_ai = yes } } event_target:sllm_wr_xa = { add_opinion_modifier = { modifier = sllm_fo_fleet_returned who = root } } }
+				sllm_wr_xf_back = yes
+			}
+			else = {
+				sllm_wr_xf_mirror = { X = sllm_wr_xcur }
+				copy_techs_from = { target = event_target:sllm_wr_xa }
+			}
+		}
+	}
+	every_country = { limit = { has_country_flag = sllm_wr_xf_dead } destroy_country = yes }
+	clear_global_event_target = sllm_wr_xcur
+	clear_global_event_target = sllm_wr_xa
+}
+
+# ── 우리가 먼저 돌려보냄: sllm_wr_xf_end = { REQ = 9 TID = 4 } ──
+sllm_wr_xf_end = {
+	set_variable = { which = sllm_wr_req value = $REQ$ }
+	sllm_wr_xf_find = { TID = $TID$ }
+	if = {
+		limit = { any_country = { has_country_flag = sllm_wr_xf check_variable = { which = sllm_wr_xf_ally value = $TID$ } } }
+		every_country = {
+			limit = { has_country_flag = sllm_wr_xf check_variable = { which = sllm_wr_xf_ally value = $TID$ } }
+			sllm_wr_xf_log = { EV = 5 }
+			sllm_wr_xf_back = yes
+		}
+		every_country = { limit = { has_country_flag = sllm_wr_xf_dead } destroy_country = yes }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=applied"
+	}
+	else = { log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=no_target" }
+	clear_global_event_target = sllm_wr_xa
+}

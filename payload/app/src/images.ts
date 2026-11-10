@@ -36,8 +36,16 @@ export function pickVariant(images: Record<string, string>, keys: string[], seed
   }
   return def;
 }
+/** 지도자 개인 초상화(2026-10-24): 세이브마다 인물 한 명. person:<세이브>:<지도자 번호> 또는 번호를 모르는 인물(총독 등)은 person:<세이브>:n:<이름>.
+ *  화면에는 imageState 가 이 세이브의 것을 name:<이름> 으로도 깔아 주고, ui/portrait-variants.js 가 인물 이름(시드)으로 먼저 찾는다. */
+export const PERSON_KEY = /^person:\d{1,9}:(\d{1,12}|n:[^\r\n]{1,80})$/;
+export const personImageKey = (sid: string, lid: number | null | undefined, name: string): string | null => {
+  if (!/^\d{1,9}$/.test(String(sid ?? ''))) return null;
+  if (Number.isSafeInteger(lid) && (lid as number) >= 0) return `person:${sid}:${lid}`;
+  const n = String(name ?? '').replace(/[\r\n]/g, ' ').trim().slice(0, 80); return n ? `person:${sid}:n:${n}` : null;
+};
 export function isImageKey(k: unknown): k is string {
-  return typeof k === 'string' && (SCENE_KEY.test(k) || /^(country|species):.{1,80}$/.test(k) || /^(class|delegate|leader):[a-z]{3,12}$/.test(k) || /^(class|delegate):[a-z]{3,12}#[2-8]$/.test(k) || k === RULER_KEY || /^save:\d{1,9}:(country|species):.{1,80}$/.test(k));
+  return typeof k === 'string' && (SCENE_KEY.test(k) || PERSON_KEY.test(k) || /^(country|species):.{1,80}$/.test(k) || /^(class|delegate|leader):[a-z]{3,12}$/.test(k) || /^(class|delegate):[a-z]{3,12}#[2-8]$/.test(k) || k === RULER_KEY || /^save:\d{1,9}:(country|species):.{1,80}$/.test(k));
 }
 export function sanitizeImageMap(v: unknown): Record<string, string> {
   const out: Record<string, string> = {};

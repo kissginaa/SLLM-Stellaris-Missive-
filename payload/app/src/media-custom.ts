@@ -7,7 +7,7 @@ import { PAPERS } from './galnews';
 import { MEDIA_FAMILIES, MediaPrefs, defaultPersona } from './media-prefs';
 import { L } from './i18n-pick';
 function brandFile(id: string, kind: string): string {
-  if (!MEDIA_FAMILIES.some((f) => f.id === id) || !['paper', 'radio'].includes(kind)) throw new Error(L('알 수 없는 브랜드입니다.', 'Unknown brand.'));
+  if (!MEDIA_FAMILIES.some((f) => f.id === id) || !['paper', 'radio', 'web'].includes(kind)) throw new Error(L('알 수 없는 브랜드입니다.', 'Unknown brand.'));
   return path.join(app.getPath('userData'), 'media-brands', id + '-' + kind + '.png');
 }
 export function brandData(id: string, kind: string): string | null {
@@ -30,5 +30,5 @@ export function resetBrand(id: string, kind: string): void {
 export function mediaView(prefs: MediaPrefs) {
   return MEDIA_FAMILIES.map((f, i) => ({ ...f, name: prefs[i]?.paperName || PAPERS[i].name, radio: prefs[i]?.radioName || f.radio, defaultName: PAPERS[i].name, defaultRadio: f.radio, persona: prefs[i]?.persona || defaultPersona(i, L),
     comments: prefs[i]?.comments ?? PAPERS[i].comments, customized: !!prefs[i]?.persona, font: prefs[i]?.font || 'auto',
-    paperImage: brandData(f.id, 'paper'), radioImage: brandData(f.id, 'radio') }));
+    paperImage: brandData(f.id, 'paper'), radioImage: brandData(f.id, 'radio'), webImage: brandData(f.id, 'web') })); // web = 집무실 홈페이지 로고(2026-11-10, 신문 그림과 따로)
 }

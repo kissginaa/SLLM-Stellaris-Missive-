@@ -1,0 +1,38 @@
+[제목 / Title]
+SLLM Language Pack - Simplified Chinese [SLLM 简体中文语言包]
+
+[설명 — 중국어]
+[h1]SLLM 简体中文语言包[/h1]
+本模组为 [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3819625112]SLLM Missive[/url] 应用提供简体中文界面。
+
+[list]
+[*]已完整收录《回廊三方之争》剧本的全部界面文字（接见、情报局、贵族、帝国势力地图、对决卡牌等）。
+[*]本体界面目前为部分翻译（机器翻译，将逐步完善）。未翻译的文字会显示为英文。
+[*]AI 对话、报纸、电台等由 AI 生成的文字，会按设置中的“AI 回复语言”输出（本语言包默认简体中文）。
+[/list]
+
+[h2]使用方法[/h2]
+[list]
+[*]订阅本模组，并在游戏启动器中启用。
+[*]在 SLLM 应用 → 设置 → 界面语言 中选择“简体中文”（设为“自动”且游戏语言为简体中文时会自动选择）。
+[/list]
+
+建议、错误报告和翻译修正请到 Discord：https://discord.gg/vmsHtYAv6
+
+[설명 — 영어]
+[h1]SLLM Language Pack - Simplified Chinese[/h1]
+A Simplified Chinese interface for the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3819625112]SLLM Missive[/url] app.
+
+[list]
+[*]Every screen of the Corridor Triangle scenario is translated (audiences, intelligence bureau, nobles, imperial power map, duel cards and more).
+[*]The base app is partly translated (machine translation, being improved). Untranslated text is shown in English.
+[*]AI-written text (conversations, newspapers, radio) follows the AI reply language in Settings (this pack defaults it to Simplified Chinese).
+[/list]
+
+[h2]How to use[/h2]
+[list]
+[*]Subscribe and enable this mod in the game launcher.
+[*]In the SLLM app, go to Settings → Interface language and pick 简体中文 (with "Auto" it is chosen automatically when the game runs in Simplified Chinese).
+[/list]
+
+Suggestions, bug reports and translation fixes: Discord https://discord.gg/vmsHtYAv6

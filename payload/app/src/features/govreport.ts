@@ -92,7 +92,7 @@ async function speak(text: string | null): Promise<{ ok: boolean; error?: string
   finally { govReport.busy = false; push(); }
 }
 export function registerGovReport(router: LogRouter): void {
-  router.on(SLOT.GOVREPORT, 'govreport:year', (m: SllmMessage) => { if (m.kind === 'YEAR') void onNewYear(m.kv.date ?? ''); });
+  router.on(SLOT.GOVREPORT, 'govreport:year', () => { /* 무시 */ }); // 새해 총독 통신 요청은 2026-10-23 사용자 결정으로 뗐다(행성 문제 보고는 비서 업무 보고가 맡는다). 창·IPC 는 개발자 시험용으로만 남는다.
   ipcMain.handle('govReportState', async () => view());
   ipcMain.handle('govReportSay', async (_e, text: unknown) => {
     const t = typeof text === 'string' ? text.replace(/\s+/g, ' ').trim().slice(0, 600) : '';

@@ -1,0 +1,135 @@
+[
+  {
+    "key": "nursery-room",
+    "file": "ui/assets/private-rooms/nursery/nursery.webp",
+    "size": "1672x941, opaque",
+    "reference": "ui/assets/private-rooms/private/authoritarian-room.webp (재질·조명·화풍 참고만)",
+    "prompt": "Interior game background, same painterly style, materials and warm lighting as the existing ruler's private room (dark marble, walnut, brass trim, warm lamps): a spacious, gentle royal nursery inside a futuristic palace on a capital world. A tall arched window in the upper center shows a night city of spires and a large moon. A softly glowing star mobile hangs at the upper left. Plush rug, a few small toys and picture books along the side walls, a low bookshelf and a rocking chair at the edges. The LOWER CENTER of the floor (about the middle third of the width, lower two thirds of the height) is left OPEN and uncluttered, evenly lit, because the app draws one child's cradle, bed or desk and the child there. No people, no children, no cradle or bed in the center, no text, no logos. Front view, slight depth. 16:9 landscape, 1672x941."
+  },
+  {
+    "key": "sil-baby-m-1",
+    "file": "ui/assets/private-rooms/nursery/sil-baby-m-1.webp",
+    "size": "800x800, transparent",
+    "build": "slight",
+    "prompt": "A single solid silhouette of a boy, an infant (영유아) about one to two years old, sitting upright on the floor, with a slight, slender, small-framed build, short wisps of hair, arms relaxed at the sides, front view. The body shape must clearly show the slight build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, bottom of the figure touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-baby-m-2",
+    "file": "ui/assets/private-rooms/nursery/sil-baby-m-2.webp",
+    "size": "800x800, transparent",
+    "build": "average",
+    "prompt": "A single solid silhouette of a boy, an infant (영유아) about one to two years old, sitting upright on the floor, with an average build, short wisps of hair, arms relaxed at the sides, front view. The body shape must clearly show the average build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, bottom of the figure touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-baby-m-3",
+    "file": "ui/assets/private-rooms/nursery/sil-baby-m-3.webp",
+    "size": "800x800, transparent",
+    "build": "sturdy",
+    "prompt": "A single solid silhouette of a boy, an infant (영유아) about one to two years old, sitting upright on the floor, with a sturdy, broad, solid build, short wisps of hair, arms relaxed at the sides, front view. The body shape must clearly show the sturdy build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, bottom of the figure touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-baby-f-1",
+    "file": "ui/assets/private-rooms/nursery/sil-baby-f-1.webp",
+    "size": "800x800, transparent",
+    "build": "slight",
+    "prompt": "A single solid silhouette of a girl, an infant (영유아) about one to two years old, sitting upright on the floor, with a slight, slender, small-framed build, a tiny topknot of hair, arms relaxed at the sides, front view. The body shape must clearly show the slight build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, bottom of the figure touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-baby-f-2",
+    "file": "ui/assets/private-rooms/nursery/sil-baby-f-2.webp",
+    "size": "800x800, transparent",
+    "build": "average",
+    "prompt": "A single solid silhouette of a girl, an infant (영유아) about one to two years old, sitting upright on the floor, with an average build, a tiny topknot of hair, arms relaxed at the sides, front view. The body shape must clearly show the average build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, bottom of the figure touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-baby-f-3",
+    "file": "ui/assets/private-rooms/nursery/sil-baby-f-3.webp",
+    "size": "800x800, transparent",
+    "build": "sturdy",
+    "prompt": "A single solid silhouette of a girl, an infant (영유아) about one to two years old, sitting upright on the floor, with a sturdy, broad, solid build, a tiny topknot of hair, arms relaxed at the sides, front view. The body shape must clearly show the sturdy build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, bottom of the figure touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-child-m-1",
+    "file": "ui/assets/private-rooms/nursery/sil-child-m-1.webp",
+    "size": "800x1000, transparent",
+    "build": "slight",
+    "prompt": "A single solid silhouette of a boy, a child (어린이) about seven years old, standing, child proportions (large head, short limbs), with a slight, slender, small-framed build, short neat hair, simple tunic and trousers, arms relaxed at the sides, front view. The body shape must clearly show the slight build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-child-m-2",
+    "file": "ui/assets/private-rooms/nursery/sil-child-m-2.webp",
+    "size": "800x1000, transparent",
+    "build": "average",
+    "prompt": "A single solid silhouette of a boy, a child (어린이) about seven years old, standing, child proportions (large head, short limbs), with an average build, short neat hair, simple tunic and trousers, arms relaxed at the sides, front view. The body shape must clearly show the average build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-child-m-3",
+    "file": "ui/assets/private-rooms/nursery/sil-child-m-3.webp",
+    "size": "800x1000, transparent",
+    "build": "sturdy",
+    "prompt": "A single solid silhouette of a boy, a child (어린이) about seven years old, standing, child proportions (large head, short limbs), with a sturdy, broad, solid build, short neat hair, simple tunic and trousers, arms relaxed at the sides, front view. The body shape must clearly show the sturdy build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-child-f-1",
+    "file": "ui/assets/private-rooms/nursery/sil-child-f-1.webp",
+    "size": "800x1000, transparent",
+    "build": "slight",
+    "prompt": "A single solid silhouette of a girl, a child (어린이) about seven years old, standing, child proportions (large head, short limbs), with a slight, slender, small-framed build, shoulder-length hair, simple knee-length dress, arms relaxed at the sides, front view. The body shape must clearly show the slight build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-child-f-2",
+    "file": "ui/assets/private-rooms/nursery/sil-child-f-2.webp",
+    "size": "800x1000, transparent",
+    "build": "average",
+    "prompt": "A single solid silhouette of a girl, a child (어린이) about seven years old, standing, child proportions (large head, short limbs), with an average build, shoulder-length hair, simple knee-length dress, arms relaxed at the sides, front view. The body shape must clearly show the average build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-child-f-3",
+    "file": "ui/assets/private-rooms/nursery/sil-child-f-3.webp",
+    "size": "800x1000, transparent",
+    "build": "sturdy",
+    "prompt": "A single solid silhouette of a girl, a child (어린이) about seven years old, standing, child proportions (large head, short limbs), with a sturdy, broad, solid build, shoulder-length hair, simple knee-length dress, arms relaxed at the sides, front view. The body shape must clearly show the sturdy build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-teen-m-1",
+    "file": "ui/assets/private-rooms/nursery/sil-teen-m-1.webp",
+    "size": "600x1000, transparent",
+    "build": "slight",
+    "prompt": "A single solid silhouette of a boy, a teenager (청소년) about fifteen years old, standing tall, near-adult proportions, with a slight, slender, small-framed build, short hair, refined palace jacket and trousers, arms relaxed at the sides, front view. The body shape must clearly show the slight build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-teen-m-2",
+    "file": "ui/assets/private-rooms/nursery/sil-teen-m-2.webp",
+    "size": "600x1000, transparent",
+    "build": "average",
+    "prompt": "A single solid silhouette of a boy, a teenager (청소년) about fifteen years old, standing tall, near-adult proportions, with an average build, short hair, refined palace jacket and trousers, arms relaxed at the sides, front view. The body shape must clearly show the average build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-teen-m-3",
+    "file": "ui/assets/private-rooms/nursery/sil-teen-m-3.webp",
+    "size": "600x1000, transparent",
+    "build": "sturdy",
+    "prompt": "A single solid silhouette of a boy, a teenager (청소년) about fifteen years old, standing tall, near-adult proportions, with a sturdy, broad, solid build, short hair, refined palace jacket and trousers, arms relaxed at the sides, front view. The body shape must clearly show the sturdy build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-teen-f-1",
+    "file": "ui/assets/private-rooms/nursery/sil-teen-f-1.webp",
+    "size": "600x1000, transparent",
+    "build": "slight",
+    "prompt": "A single solid silhouette of a girl, a teenager (청소년) about fifteen years old, standing tall, near-adult proportions, with a slight, slender, small-framed build, long hair past the shoulders, refined palace dress or long coat, arms relaxed at the sides, front view. The body shape must clearly show the slight build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-teen-f-2",
+    "file": "ui/assets/private-rooms/nursery/sil-teen-f-2.webp",
+    "size": "600x1000, transparent",
+    "build": "average",
+    "prompt": "A single solid silhouette of a girl, a teenager (청소년) about fifteen years old, standing tall, near-adult proportions, with an average build, long hair past the shoulders, refined palace dress or long coat, arms relaxed at the sides, front view. The body shape must clearly show the average build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  },
+  {
+    "key": "sil-teen-f-3",
+    "file": "ui/assets/private-rooms/nursery/sil-teen-f-3.webp",
+    "size": "600x1000, transparent",
+    "build": "sturdy",
+    "prompt": "A single solid silhouette of a girl, a teenager (청소년) about fifteen years old, standing tall, near-adult proportions, with a sturdy, broad, solid build, long hair past the shoulders, refined palace dress or long coat, arms relaxed at the sides, front view. The body shape must clearly show the sturdy build compared with the other two builds of the same age and sex (same height for the same age; only the frame differs). Pure flat silhouette: one uniform dark color (#0b1e26) with a thin soft cyan rim light (#5fd4e4) along the edge only, no inner details, no face, no clothing texture. Transparent background, centered, feet touching the bottom edge, small margin at the top and sides."
+  }
+]

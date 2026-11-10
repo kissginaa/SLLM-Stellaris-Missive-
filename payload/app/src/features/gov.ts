@@ -7,7 +7,7 @@ import * as path from 'path';
 import { writeRawDiagnostic } from '../diagnostics';
 import { PlanetCollector, PlanetList, govLooksCut, govMessages, extractGovSay, governorName, DEFAULT_GOVERNOR } from '../planets';
 import { GovMemoryStore, govKey, levelOf, LEVELS, cleanMemText } from '../govmemory';
-import { planetPicUrl } from '../planetart';
+import { planetPicUrlAsync } from '../planetart';
 import { planetsEffect } from '../protocol';
 import type { ChatMessage } from '../player2';
 import { enqueue, sendConsole } from '../app/game-link';
@@ -117,6 +117,6 @@ export function registerGov(): void {
     if (!cut) gov.history.push({ role: 'user', content: text }, { role: 'assistant', content: say }); // 끊긴 답은 기록에 남기지 않는다(다음 답이 같은 앞머리를 되풀이하지 않도록)
     return { say, ...(memo ? { memo } : {}) };
   });
-  ipcMain.handle('planetArt', async (_e, pc: unknown) => planetPicUrl(ctx.flagProv.game(), Number(pc)));
+  ipcMain.handle('planetArt', async (_e, pc: unknown) => planetPicUrlAsync(ctx.flagProv.game(), Number(pc))); // 작업 스레드(2026-10-27)
   ipcMain.handle('govClose', async () => { closeGov(); return true; });
 }

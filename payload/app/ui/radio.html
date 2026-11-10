@@ -178,7 +178,7 @@
    if (b.debate) return drawDebate(b);
    const N = b.names || window.NAMES || { announcer: '아나운서', reporter: '기자' };
    setLive(Math.max(6000, b.lines.length * 2800));
-   const blk = add('blk' + (b.crisis ? ' crisis' : ''), `<div class="dt">${b.crisis ? '⚠ ' + esc(TL('긴급 특별 방송', 'EMERGENCY BROADCAST')) + ' · ' : ''}${esc(b.date || '')} · ${esc(T(b.station || '성간 라디오'))} · ${esc(T(b.format === 'studio' ? '스튜디오 대담' : '기자 연결'))} · ${esc(T(b.fictional ? '가상 일상 소식 (창작)' : '게임 사건'))}</div>` + b.lines.map((l, i) => `<div class="l ${l.who === 'announcer' ? 'a' : 'r'}" style="--i:${i}"><span class="who">${esc(T(N[l.who] || (l.who === 'cohost' ? '아나운서 B' : '기자')))}</span>${esc(l.text)}</div>`).join(''));
+   const blk = add('blk' + (b.crisis ? ' crisis' : ''), `<div class="dt">${b.crisis ? '⚠ ' + esc(TL('긴급 특별 방송', 'EMERGENCY BROADCAST')) + ' · ' : ''}${esc(b.date || '')} · ${esc(T(b.station || '성간 라디오'))} · ${b.short ? esc(TL('짧은 꼭지', 'Short segment')) + ' · ' + esc(b.short) : esc(T(b.format === 'studio' ? '스튜디오 대담' : '기자 연결')) + ' · ' + esc(T(b.fictional ? '가상 일상 소식 (창작)' : '게임 사건'))}</div>` + b.lines.map((l, i) => `<div class="l ${l.who === 'announcer' ? 'a' : 'r'}" style="--i:${i}"><span class="who">${esc(T(N[l.who] || (l.who === 'cohost' ? '아나운서 B' : '기자')))}</span>${esc(l.text)}</div>`).join(''));
    if (ttsOn) speak(b.lines, blk);
  });
  // 음성으로 듣기(2026-10-17): 켜 두면 새 방송을 소리 내어 읽는다. 켬/끔·목소리 종류는 이 컴퓨터에만 기억한다.

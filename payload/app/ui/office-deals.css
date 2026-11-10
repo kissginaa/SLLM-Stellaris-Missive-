@@ -1,0 +1,42 @@
+/* 집무실 「외교 거래」(2026-10-26). 대사관(office-embassy.css)과 같은 결 — 목록은 emb-* 를 그대로 쓰고, 여기서는 거래판(deal-ui.js 의 dl-*)을 집무실 모양으로 입힌다. */
+#dealRoot{display:block;overflow:hidden;padding:0 12px;height:100%}
+.dlo-main{gap:10px}
+.dlo-item{flex-direction:column;align-items:stretch;gap:4px}
+.dlo-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.dlo-tags{display:flex;flex-wrap:wrap;gap:4px}
+.dlo-tags i{font-style:normal;font-size:10.5px;border:1px solid var(--line);border-radius:10px;padding:0 7px;color:var(--dim)}
+.dlo-tags i.gold{color:#f0d68a;border-color:#e8c87288}.dlo-tags i.bad{color:#ffb2a6;border-color:#ff7a6a88}.dlo-tags i.warn{color:#ffc58a;border-color:#ffb06a77}
+.dlo-cta b{font-size:13px}.dlo-cta small{color:var(--dim);font-size:11.5px}
+.dlo-row{display:flex;gap:6px;flex-wrap:wrap}
+.emb-btn.dlo-no{border-color:#ff7a6a99;background:#ff6a5a14}
+.dlo-msg{font-size:12.5px}
+/* 거래판(집무실) */
+#dealRoot .dl-office{padding:0;font-size:13px;line-height:1.55;display:flex;flex-direction:column;gap:10px}
+#dealRoot .dl-office .emb-note{margin:-4px 0 0}
+#dealRoot .dl-office .dl-tags{margin:0;gap:6px}
+#dealRoot .dl-office .dl-tags span{border:1px solid var(--line);border-radius:10px;padding:1px 9px;font-size:11.5px;color:var(--text);letter-spacing:0}
+#dealRoot .dl-office .dl-cols{gap:12px}
+#dealRoot .dl-office .dl-col{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.03)}
+#dealRoot .dl-office .dl-col h4{margin:0 0 8px;font-size:11px;letter-spacing:.12em;color:var(--dim);font-weight:400}
+#dealRoot .dl-office select,#dealRoot .dl-office input:not([type=checkbox]){background:rgba(0,0,0,.28);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font:inherit;font-size:12.5px}
+#dealRoot .dl-office select:focus,#dealRoot .dl-office input:focus{outline:none;border-color:var(--hi)}
+#dealRoot .dl-office input[type=checkbox]{accent-color:var(--hi)}
+#dealRoot .dl-office button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:4px;padding:4px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+#dealRoot .dl-office button:hover:not(:disabled){border-color:var(--hi)}
+#dealRoot .dl-office button:disabled{opacity:.45;cursor:default}
+#dealRoot .dl-office button.primary{border-color:var(--hi);background:color-mix(in srgb,var(--hi) 14%,transparent);padding:6px 18px;font-size:13px;align-self:flex-start}
+#dealRoot .dl-office button.armed{border-color:#ff7a6a;color:#ffb2a6;background:#ff6a5a18}
+#dealRoot .dl-office .dl-add{gap:6px;margin:6px 0}
+#dealRoot .dl-office .dl-hint{color:var(--dim);font-size:11.5px}
+#dealRoot .dl-office .dl-item{border-bottom:1px dashed var(--line);padding:5px 0}
+#dealRoot .dl-office .dl-item button{padding:0 8px;font-size:11.5px}
+#dealRoot .dl-office .dl-odds{margin:0;border:1px solid var(--line);border-radius:8px;padding:12px 16px;background:rgba(255,255,255,.03)}
+#dealRoot .dl-office .dl-p{font-size:30px;font-weight:600;line-height:1;color:var(--hi);font-family:inherit}
+#dealRoot .dl-office .dl-parts{color:var(--dim)}#dealRoot .dl-office .dl-parts span:nth-child(2n){color:var(--text);font-family:inherit}
+#dealRoot .dl-office .dl-err{color:#ffb2a6}
+#dealRoot .dl-office .dl-say{border-left:2px solid var(--hi);color:var(--text);font-family:Georgia,'Noto Serif KR',serif}
+#dealRoot .dl-office .dl-sec{margin:0;border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:rgba(255,255,255,.03)}
+#dealRoot .dl-office .dl-sec>b{font-size:11px;letter-spacing:.12em;color:var(--dim);font-weight:400;margin-bottom:6px}
+#dealRoot .dl-foot{font-size:12.5px;color:var(--text);white-space:pre-wrap;padding:2px 2px 8px}
+#dealRoot .dl-foot:empty{display:none}
+@media (max-width:820px){#dealRoot .dl-office .dl-cols{grid-template-columns:1fr}}

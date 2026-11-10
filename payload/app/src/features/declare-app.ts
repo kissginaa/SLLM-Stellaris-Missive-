@@ -1,6 +1,7 @@
 // 전쟁 선언문(2026-10-20 알파 10): 전쟁 시작(EVT war_start) → 알림 → 선언문 창(직접 쓰기·AI 초안) → 저장 → (선택) 출정 의식.
 // 규칙: src/declare.ts, 화면: ui/declare.html. 저장: 앱 데이터 sllm_wardecl.json(세이브별 목록 — 신문·라디오·상대 제국이 나중에 재료로 쓴다).
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import { coverScreen } from '../app/cover-screen'; // 작업 표시줄까지 덮는 전체화면(2026-11-05)
 import * as fs from 'fs';
 import * as path from 'path';
 import { pathToFileURL } from 'url';
@@ -19,7 +20,9 @@ import { parseWarInfo, describeWar, type WarInfo } from '../warinfo';
 import { type Declaration, type WarSide, sanitizeDecl, cleanDeclText, warSide, declTitle, declMessages, parseDecl, DECL_KEEP } from '../declare';
 
 import { link } from '../app/game-link';
-import { terminalRequest, terminalReplies } from './terminal';
+import { terminal, terminalRequest, terminalReplies } from './terminal';
+import { refreshFrontier, frontierFor } from './frontier-app'; // 국경·영유권(2026-10-26)
+import { frontierFactsUs } from '../frontier';
 import { declarationBuffCommand } from '../declaration-buff';
 const L = pick;
 let owner = '', windowOwner = '', issuing = false;
@@ -78,7 +81,10 @@ export function registerDeclare(router: LogRouter): void {
     const p = declare.pending, ws = warSide(gameState.last?.wars, p?.war ?? ''), snap = gameState.last;
     try {
       const wi = p ? declare.info.get(p.war) : undefined;
-      const raw = await ctx.ai.chat(declMessages(ctx.playerName || 'the player empire', p?.war ?? '', wi ? (wi.side === 'att' ? wi.defender : wi.attacker) || ws.enemy : ws.enemy, wi ? wi.side : ws.side, creedEthics(snap?.empireEth), !!snap?.gestalt, p?.date || ctx.gameDate || '', wi ? describeWar(wi, 'en') : ''), { purpose: 'war-declaration', json: true, maxTokens: 1200 });
+      const enemyName = wi ? (wi.side === 'att' ? wi.defender : wi.attacker) || ws.enemy : ws.enemy;
+      const eIdx = terminal.sid === ctx.curSaveId ? terminal.items.find((c) => c.name === enemyName)?.idx ?? 0 : 0; // 적의 통신 번호(이름으로, 모르면 0)
+      if (eIdx) await refreshFrontier([eIdx]).catch(() => {}); // 국경·영유권·점령(2026-10-26)
+      const raw = await ctx.ai.chat(declMessages(ctx.playerName || 'the player empire', p?.war ?? '', enemyName, wi ? wi.side : ws.side, creedEthics(snap?.empireEth), !!snap?.gestalt, p?.date || ctx.gameDate || '', wi ? describeWar(wi, 'en') : '', eIdx ? frontierFactsUs(frontierFor(eIdx)) : []), { purpose: 'war-declaration', json: true, maxTokens: 1200 });
       const d = parseDecl(raw); if (!d) return { ok: false, error: L('AI 답에서 선언문을 읽지 못했습니다. 다시 시도해 주세요.', 'Could not read a declaration from the AI reply. Please try again.') };
       return { ok: true, title: d.title, text: d.text };
     } catch (e) { return { ok: false, error: L('AI 초안 실패: ', 'AI draft failed: ') + (e instanceof Error ? e.message : String(e)) }; }
@@ -117,8 +123,8 @@ export function registerDeclare(router: LogRouter): void {
 function setFullscreen(on: boolean): void {
   const w = declare.win; if (!w || w.isDestroyed()) return;
   if (on === declare.fullscreen) return; declare.fullscreen = on;
-  if (on) { const b = ctx.gameDip ? screen.getDisplayMatching(ctx.gameDip).bounds : screen.getPrimaryDisplay().bounds; w.setResizable(true); w.setBounds(b); w.setAlwaysOnTop(true, 'screen-saver', 2); }
-  else { const area = ctx.gameDip ?? screen.getPrimaryDisplay().workArea; const sz = winSize(area); w.setBounds({ ...sz, x: Math.round(area.x + (area.width - sz.width) / 2), y: Math.round(area.y + (area.height - sz.height) / 2) }); w.setAlwaysOnTop(true, 'screen-saver', 1); }
+  if (on) { w.setResizable(true); coverScreen(w, true, ctx.gameDip); } // 작업 표시줄까지 덮는 진짜 전체화면(2026-11-05, app/cover-screen.ts)
+  else { coverScreen(w, false); const area = ctx.gameDip ?? screen.getPrimaryDisplay().workArea; const sz = winSize(area); w.setBounds({ ...sz, x: Math.round(area.x + (area.width - sz.width) / 2), y: Math.round(area.y + (area.height - sz.height) / 2) }); w.setAlwaysOnTop(true, 'screen-saver', 1); }
 }
 const winSize = (area: { width: number; height: number }) => ({ width: Math.min(1100, Math.round(area.width * 0.8)), height: Math.min(820, Math.round(area.height * 0.86)) });
 export function openDeclare(): void {

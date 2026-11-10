@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { decodeDds, encodePng, type Img } from './flagrender';
+import { imageJob } from './image-pool';
 
 /** 연락처 역할 → 게임 아이콘 파일(없으면 화면이 이름 첫 글자로 대신한다). 통치자는 게임에 하위 직업 아이콘이 없어 넣지 않는다. */
 export const ROLE_ICON: Record<string, string> = {
@@ -41,4 +42,23 @@ export function roleIconMasks(gameDir: string | null): Record<string, string> {
   }
   cache.set(gameDir, out);
   return out;
+}
+const warming = new Set<string>();
+/** 집무실용(2026-10-27 최적화): 만들어 둔 것이 있으면 바로, 없으면 작업 스레드에서 만들고 빈 목록(화면은 이름 글자로) — 다 되면 done(). */
+export function roleIconMasksSoon(gameDir: string | null, done: () => void): Record<string, string> {
+  if (!gameDir) return {};
+  const hit = cache.get(gameDir); if (hit) return hit;
+  if (!warming.has(gameDir)) {
+    warming.add(gameDir);
+    void (async () => {
+      const out: Record<string, string> = {};
+      for (const [role, file] of Object.entries(ROLE_ICON)) {
+        let bytes: Buffer | null = null;
+        try { bytes = fs.readFileSync(path.join(gameDir, 'gfx', 'interface', 'icons', 'leaders', 'subclasses', file)); } catch { /* 없으면 글자로 */ }
+        if (bytes) { const r = await imageJob({ op: 'mask', bytes }); if (r.url) out[role] = r.url; }
+      }
+      cache.set(gameDir, out); warming.delete(gameDir); done();
+    })();
+  }
+  return {};
 }

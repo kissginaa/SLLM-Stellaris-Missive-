@@ -1,0 +1,10 @@
+# SLLM 그레이트 칸 특별 대우(2026-10-26). 모드의 on_actions 는 게임 것과 합쳐진다. 숨은 이벤트만 부른다.
+on_space_battle_won = {
+	events = { sllm_khan.1 }
+}
+on_space_battle_lost = {
+	events = { sllm_khan.1 }
+}
+on_monthly_pulse_country = {
+	events = { sllm_khan.10 }
+}

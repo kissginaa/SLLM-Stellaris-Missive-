@@ -1,0 +1,119 @@
+# SLLM 사이버전·여론 공작(2026-11-04 사용자): 다른 제국이 우리에게 여론 첩보 작전(비방 공작·외교 사건 조작)을 성공시키면 「해외발 여론 공작」 상황.
+# 진행 막대가 차면 국내 여론이 장악된다(안정도 하락). 대응 방식(사이버 사령부·외교 항의·역공작·무시)은 게임 상황 화면에서 고른다.
+# 앱(src/features/cyber-app.ts)은 로그 SLLM:CYBER 로 시작·단계·대응·끝을 받아 연대기에 남기고, 인터넷(국내망·갤럭틱 포럼)이 새로고침 때 그걸 글로 보여 준다.
+# 대응 방식 표식(나라): sllm_cy_ap_cmd 사이버 사령부 · sllm_cy_ap_protest 외교 항의 · sllm_cy_ap_counter 역공작 · (없음) 무시. 공작한 나라 번호 = 나라 변수 sllm_cy_from.
+sllm_cyber_situation = {
+	picture = GFX_evt_smear_campaign
+	category = negative
+	progress_direction = bidirectional
+	start_value = 0
+	initial_progress = 20
+	complete_category = negative
+	fail_category = positive
+	complete_icon = GFX_situation_outcome_negative
+	complete_icon_frame = GFX_situation_outcome_frame_red
+	fail_icon = GFX_situation_outcome_positive
+	fail_icon_frame = GFX_situation_outcome_frame_green
+
+	on_start = {
+		owner = { set_country_flag = sllm_cy_active }
+	}
+	on_progress_complete = {
+		custom_tooltip = sllm_cyber_lost_tt
+		hidden_effect = {
+			owner = {
+				add_modifier = { modifier = sllm_cyber_dominated days = 360 }
+				set_variable = { which = sllm_cy_res value = 2 }
+				sllm_cyber_end = yes
+			}
+			destroy_situation = this
+		}
+	}
+	on_fail = {
+		custom_tooltip = sllm_cyber_repelled_tt
+		hidden_effect = {
+			owner = {
+				set_variable = { which = sllm_cy_res value = 1 }
+				sllm_cyber_end = yes
+			}
+			destroy_situation = this
+		}
+	}
+
+	stages = {
+		sllm_cyber_stage_1 = {
+			icon = GFX_situation_stage_1
+			icon_background = GFX_situation_stage_frame_blue
+			end = 33
+			on_enter = { owner = { sllm_cyber_log_stage = { N = 1 } } }
+		}
+		sllm_cyber_stage_2 = {
+			icon = GFX_situation_stage_2
+			icon_background = GFX_situation_stage_frame_red
+			end = 66
+			modifier = { planet_stability_add = -2 }
+			on_enter = { owner = { sllm_cyber_log_stage = { N = 2 } } }
+		}
+		sllm_cyber_stage_3 = {
+			icon = GFX_situation_stage_3
+			icon_background = GFX_situation_stage_frame_red
+			end = 100
+			modifier = { planet_stability_add = -4 }
+			on_enter = { owner = { sllm_cyber_log_stage = { N = 3 } } }
+		}
+	}
+
+	monthly_progress = {
+		base = 3
+		modifier = { add = -9 desc = sllm_cyber_mp_cmd owner = { has_country_flag = sllm_cy_ap_cmd } }
+		modifier = { add = -5 desc = sllm_cyber_mp_protest owner = { has_country_flag = sllm_cy_ap_protest } }
+		modifier = { add = -4 desc = sllm_cyber_mp_counter owner = { has_country_flag = sllm_cy_ap_counter } }
+		# 역제소(앱 cyber-app.ts → 은하재판소): 이기면 공작이 빠르게 걷히고, 지면 탄력을 받는다
+		modifier = { add = -15 desc = sllm_cyber_mp_won owner = { has_country_flag = sllm_cy_trial_won } }
+		modifier = { add = 3 desc = sllm_cyber_mp_lost owner = { has_country_flag = sllm_cy_trial_lost } }
+	}
+
+	approach = {
+		name = sllm_cyber_ap_ignore
+		icon = GFX_situation_approach_shrug
+		icon_background = GFX_situation_approach_bg_yellow
+		default = yes
+		on_select = { owner = { sllm_cyber_set_ap = { AP = 0 } } }
+	}
+	approach = {
+		name = sllm_cyber_ap_cmd
+		icon = GFX_situation_approach_research
+		icon_background = GFX_situation_approach_bg_green
+		on_select = { owner = { sllm_cyber_set_ap = { AP = 1 } set_country_flag = sllm_cy_ap_cmd } }
+		resources = { category = situations upkeep = { energy = 15 } }
+	}
+	approach = {
+		name = sllm_cyber_ap_protest
+		icon = GFX_situation_approach_influence
+		icon_background = GFX_situation_approach_bg_yellow
+		on_select = {
+			owner = {
+				sllm_cyber_set_ap = { AP = 2 }
+				set_country_flag = sllm_cy_ap_protest
+				# 공작한 나라가 우리를 보는 호감 -20(항의를 받아 언짢음) — 우리는 그 나라에 「여론 공작을 당함」을 기억
+				random_country = {
+					limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = prev.sllm_cy_from } }
+					save_event_target_as = sllm_cy_x
+					add_opinion_modifier = { modifier = sllm_cyber_protested who = prev }
+				}
+				if = {
+					limit = { exists = event_target:sllm_cy_x }
+					add_opinion_modifier = { modifier = sllm_cyber_meddled who = event_target:sllm_cy_x }
+				}
+			}
+		}
+		resources = { category = situations cost = { influence = 30 } }
+	}
+	approach = {
+		name = sllm_cyber_ap_counter
+		icon = GFX_situation_approach_fist
+		icon_background = GFX_situation_approach_bg_red
+		on_select = { owner = { sllm_cyber_set_ap = { AP = 3 } set_country_flag = sllm_cy_ap_counter } }
+		resources = { category = situations upkeep = { energy = 8 influence = 0.5 } }
+	}
+}

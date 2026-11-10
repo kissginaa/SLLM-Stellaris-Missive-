@@ -1,0 +1,27 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 11.4 마이너 픽스 (0.1.0-alpha.11.4)[/h1]
+
+[list]
+[*]설정 > 대화와 소식에 [b]「아이 수 제한 풀기」[/b]가 생겼습니다. 켜면 배우자마다 2명, 통치자당 8명이던 아이 수 상한이 없어집니다(기본은 꺼짐).
+[/list]
+
+앱 업데이트 안내가 나타나면 적용해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 11.4 Minor Fix (0.1.0-alpha.11.4)[/h1]
+
+[list]
+[*]Settings > Stories now has [b]"Remove the limit on children"[/b]. When on, the caps of 2 children per spouse and 8 per ruler are lifted (off by default).
+[/list]
+
+When the app update notice appears, please apply it.
+
+===== Discord (한국어) =====
+# 🔧 SLLM 알파 11.4 마이너 픽스
+👶 설정 > 대화와 소식에 「아이 수 제한 풀기」가 생겼습니다(켜면 배우자마다 2명·통치자당 8명 상한이 사라집니다. 기본은 꺼짐).
+앱 업데이트 안내가 나타나면 적용해 주세요!
+
+===== Discord (English) =====
+# 🔧 SLLM Alpha 11.4 Minor Fix
+👶 Settings > Stories now has "Remove the limit on children" (lifts the 2-per-spouse and 8-per-ruler caps; off by default).
+Apply the app update when the notice appears!

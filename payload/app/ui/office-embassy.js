@@ -7,7 +7,7 @@
   const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; };
   const btn = (cls, text, fn) => { const b = h('button', cls, text); b.type = 'button'; b.onclick = fn; return b; };
   let S = null, D = null, cur = 0, err = '', busy = '', tab = 'emb', OP = null, talkDraft = '', openLetter = 0; // OP: 은하 여론(규탄 성명 기록, 2026-10-20)
-  const show = (id) => { for (const v of document.querySelectorAll('.view')) v.classList.toggle('on', v.id === id); };
+  const show = (id) => { if (!document.getElementById(id)) return; for (const v of document.querySelectorAll('.view')) v.classList.toggle('on', v.id === id); }; // 없는 화면으로 가면 모든 화면이 꺼져 빈 홀로그램만 남는다(2026-10-29 테스터)
   async function load() { try { S = await window.sllm.embassyState(); } catch (e) { S = null; } if (cur && !D) { try { D = await window.sllm.embassyDetail(cur); } catch (e) { D = null; } } draw(); }
   async function pickIdx(idx) { cur = idx; err = ''; try { D = await window.sllm.embassyDetail(idx); } catch (e) { D = null; } draw(); }
   async function run(kind, fn) {
@@ -151,7 +151,7 @@
         const row = h('div', 'emb-trow'); row.append(ta, send); tk.append(row); main.append(tk);
       }
     } else {
-      if (!X.available) { main.append(h('p', 'emb-empty', L('첩보망이 이 나라에 닿지 않습니다. 첩보망을 키우면 요원의 보고가 옵니다.', 'Our network does not reach this empire. Grow your espionage network and agents will report.'))); return; }
+      if (!X.available) { main.append(h('p', 'emb-empty', L('첩보망이 이 나라에 닿지 않습니다. 첩보망을 키우면 요원의 보고가 옵니다.', 'Our network does not reach this empire. Grow your espionage network and agents will report.'))); if (X.agent) main.append(agentCard(X.agent)); return; }
       main.append(h('p', 'emb-note', L('요원들이 모은 비밀 정보입니다. 첩보 수준이 낮을수록 확인되지 않은 소문이 섞이고, 대사관의 공식 보고와 다를 수 있습니다.', 'Secret information gathered by our agents. The lower our intel, the more is unconfirmed rumor, and it may differ from the embassy\'s official report.')));
       const meta2 = h('div', 'emb-meta'); meta2.append(h('span', '', L('신뢰도 ', 'Confidence ') + X.confidence)); main.append(meta2);
       const cb2 = changeBox(D.changes.secret, D.changes.prevDate); if (cb2) main.append(cb2); const mb2 = changeBox(D.monthly ? D.monthly.secret : [], '', true); if (mb2) main.append(mb2);
@@ -160,8 +160,23 @@
       const fa = h('section', 'emb-fac'); fa.append(h('div', 'emb-ph', L('파벌 지지율', 'Faction support')));
       if (X.factions.length) { const fl = h('ul'); for (const f of X.factions) fl.append(h('li', '', f)); fa.append(fl); } else fa.append(h('p', 'emb-empty', L('파벌이 없거나(군체·기계 등) 보고되지 않았습니다.', 'No factions (hive/machine, etc.) or none reported.')));
       main.append(fa);
+      if (X.ops) { // 파벌 지원·공작(2026-10-28 하츠 참고): 그 나라 파벌 하나에 2년간 몰래 자금을 댄다
+        const OP2 = X.ops, op = h('section', 'emb-fac emb-ops'); op.append(h('div', 'emb-ph', L('파벌 공작', 'Faction operation')));
+        if (OP2.against) op.append(h('p', 'emb-chg bad', L(`이 나라가 우리 ${OP2.against.ethName} 파벌을 몰래 지원해 왔습니다(${OP2.against.since}부터, ${OP2.against.revealed}에 드러남).`, `This empire has been secretly funding our ${OP2.against.ethName} faction (since ${OP2.against.since}, exposed ${OP2.against.revealed}).`)));
+        if (OP2.active) op.append(h('p', 'emb-note', L(`진행 중: ${OP2.active.faction}(${OP2.active.ethName}) 지원 · ${OP2.active.since} ~ ${OP2.active.until}${OP2.active.exposed ? ` · ${OP2.active.exposed}에 발각됨` : ''}`, `Running: funding ${OP2.active.faction} (${OP2.active.ethName}) · ${OP2.active.since} – ${OP2.active.until}${OP2.active.exposed ? ` · exposed ${OP2.active.exposed}` : ''}`)));
+        else if (OP2.needIntel) op.append(h('p', 'emb-empty', L('첩보 수준이 「보통」(30) 이상이어야 이 나라 파벌에 손을 쓸 수 있습니다.', 'Our intel must be at least "Moderate" (30) to meddle with this empire\'s factions.')));
+        else {
+          op.append(h('p', 'emb-note', L(`파벌 하나를 골라 2년간 몰래 자금을 댑니다(영향력 ${OP2.cost.influence}·에너지 ${OP2.cost.energy}). 그 나라의 해당 이념 매력도 +15%(2년째 +10% 더), 수도 안정도 -5. 해마다 15%(첩보 수준 높음이면 10%) 확률로 발각되면 상대 호감 -50, 은하재판소에 불려 갈 수 있습니다.`, `Pick a faction and secretly fund it for 2 years (${OP2.cost.influence} influence, ${OP2.cost.energy} energy). That ethic's attraction +15% (+10% more in year two), capital stability -5. Each year there is a 15% chance (10% with high intel) of exposure: their opinion -50, and they may haul us before the Galactic Tribunal.`)));
+          const ul = h('div', 'emb-ops-list');
+          for (const f of OP2.factions) { const b = btn('emb-btn sm', L(`${f.name} (${f.ethName}) 지원`, `Fund ${f.name} (${f.ethName})`), () => run('fsup', async () => { const r = await window.sllm.fsupStart(cur, f.eth, f.name); if (r && r.ok) { err = r.text || ''; D = await window.sllm.embassyDetail(cur); return { ok: true }; } return r; })); b.disabled = !!busy; b.setAttribute('data-i18n-skip', ''); ul.append(b); }
+          if (!OP2.factions.length) ul.append(h('p', 'emb-empty', L('손쓸 수 있는 파벌이 보고되지 않았습니다.', 'No factions reported to work with.')));
+          op.append(ul);
+        }
+        main.append(op);
+      }
       const AG = X.agent; // 첩보 공작원(2026-10-20 알파 9 ④): 이 나라에 심은 우리 사람
-      if (AG) {
+      // 현지 공작원 카드(2026-10-27): 첩보 수준이 낮아 보고서가 잠겨 있어도 공작원은 보여 준다.
+      function agentCard(AG) {
         const ag = h('section', 'emb-agent'); ag.append(h('div', 'emb-ph', L('현지 공작원', 'Agent in place')));
         const top = h('div', 'emb-ag-top'); top.append(h('b', '', L('암호명 ', 'Codename ') + L(AG.code[0], AG.code[1])));
         if (AG.veteran) top.append(h('span', 'emb-ag-vet', L('베테랑', 'Veteran')));
@@ -191,8 +206,9 @@
           lw.append(it);
         }
         ag.append(lw);
-        main.append(ag);
+        return ag;
       }
+      if (AG) main.append(agentCard(AG));
       main.append(cable(AG ? L('공작원 보고', 'Field agent\'s report') + ' · ' + L('암호명 ', 'Codename ') + L(AG.code[0], AG.code[1]) : L('첩보관의 보고', 'Case officer\'s briefing') + (X.amb ? ' · ' + X.amb.name + (X.amb.manner ? ' (' + X.amb.manner + ')' : '') : ''), X.report, AG ? L('현지 공작원에게 이 자료로 보고서를 써 달라고 할 수 있습니다(AI 사용).', 'You can ask the agent in place to write a report from this information (uses AI).') : L('이 나라를 맡은 첩보관에게 이 자료로 보고서를 써 달라고 할 수 있습니다(AI 사용).', 'You can ask the case officer to write a briefing from this information (uses AI).'), X.report ? L('보고서 다시 받기', 'Request a new briefing') : L('첩보 보고서 받기', 'Request a briefing'), 'spy', () => run('spy', () => window.sllm.embassySpyReport(cur)), false));
     }
   }

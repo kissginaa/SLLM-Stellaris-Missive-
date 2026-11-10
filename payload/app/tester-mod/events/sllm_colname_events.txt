@@ -1,0 +1,26 @@
+# SLLM 신규 식민지 이름 짓기(명명식, 2026-11-04): 우리가 직접 개척한 행성에 첫 정착민이 내리면(on_colonized, 정복·양도는 안 옴) 앱에 한 줄.
+# 앱(src/features/colname-app.ts)이 집무실 알림을 띄우고, 이름을 고르면 콘솔로 set_name 을 보낸다(행성 고유 번호 sllm_pl_idx 로 찾음 — 총독 방침과 같은 번호).
+namespace = sllm_colname
+
+planet_event = {
+	id = sllm_colname.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		exists = owner
+		owner = { is_ai = no is_variable_set = sllm_save_id }
+	}
+	immediate = {
+		# 행성 고유 번호: 없으면 나라의 다음 번호(sllm_probe_planets.txt 와 같은 방식)
+		if = {
+			limit = { NOT = { is_variable_set = sllm_pl_idx } }
+			owner = {
+				if = { limit = { NOT = { is_variable_set = sllm_pl_next } } set_variable = { which = sllm_pl_next value = 0 } }
+				change_variable = { which = sllm_pl_next value = 1 }
+			}
+			set_variable = { which = sllm_pl_idx value = owner.sllm_pl_next }
+		}
+		set_variable = { which = sllm_cn_sid value = owner.sllm_save_id }
+		log = "SLLM:COLNEW/;/sid=\\[Root.sllm_cn_sid]/;/idx=\\[Root.sllm_pl_idx]/;/class=\\[This.GetClassName]/;/sys=\\[This.Solar_System.GetName]/;/name=\\[This.GetName]"
+	}
+}

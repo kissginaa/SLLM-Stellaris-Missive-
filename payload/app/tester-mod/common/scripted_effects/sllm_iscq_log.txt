@@ -1,0 +1,29 @@
+# 성간 임시회의 과제 → 게임 상황 기록(2026-10-26). 앱: src/isc-quest.ts(logBeginCommand·logTickCommand·logEndCommand), 체인 정의: common/event_chains/sllm_iscq_chains.txt(생성 파일).
+# 바닐라 몰락한 제국 과제와 같은 begin_event_chain / end_event_chain. 칸(SLOT) 1~3 = 동시에 진행하는 과제 3개. 플레이어 나라 범위에서 부른다.
+# 시작: sllm_iscq_begin = { SLOT = 1 CHAIN = peace GIVER = 4 TARGET = 7 GOAL = 0 NOW = 0 LEFT = 24 }  (CHAIN = peace|war|relation|naval|income_<자원>|stock_<자원>, TARGET 없으면 0)
+# 매달: sllm_iscq_tick = { SLOT = 1 NOW = 125 LEFT = 11 }   끝: sllm_iscq_end = { SLOT = 1 CHAIN = peace }
+# 2026-11-09: 매달 숫자는 모드가 직접 바꾼다(감시 sllm_iscq_watch.txt — 앱이 sllm_iscq_watch 로 켬). sllm_iscq_tick 은 감시가 없는 옛 칸에만.
+sllm_iscq_begin = {
+	random_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $GIVER$ } }
+		save_global_event_target_as = sllm_iscq$SLOT$_giver
+	}
+	random_country = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TARGET$ } }
+		save_global_event_target_as = sllm_iscq$SLOT$_target
+	}
+	set_variable = { which = sllm_iscq$SLOT$_goal value = $GOAL$ }
+	set_variable = { which = sllm_iscq$SLOT$_now value = $NOW$ }
+	set_variable = { which = sllm_iscq$SLOT$_left value = $LEFT$ }
+	begin_event_chain = { event_chain = sllm_iscq_$CHAIN$_$SLOT$ target = this }
+	log = "SLLM:ISCQLOG/;/op=begin/;/slot=$SLOT$/;/chain=$CHAIN$"
+}
+sllm_iscq_tick = {
+	set_variable = { which = sllm_iscq$SLOT$_now value = $NOW$ }
+	set_variable = { which = sllm_iscq$SLOT$_left value = $LEFT$ }
+}
+sllm_iscq_end = {
+	end_event_chain = sllm_iscq_$CHAIN$_$SLOT$
+	remove_country_flag = sllm_iqw$SLOT$_$CHAIN$   # 과제 감시 끄기(2026-11-09, sllm_iscq_watch.txt)
+	log = "SLLM:ISCQLOG/;/op=end/;/slot=$SLOT$/;/chain=$CHAIN$"
+}

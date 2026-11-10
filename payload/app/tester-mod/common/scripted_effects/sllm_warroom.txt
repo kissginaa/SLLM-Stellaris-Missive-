@@ -1,0 +1,310 @@
+# SLLM 작전지휘실 2단계(2026-11-05 사용자: 은하 지도에서 우리 함대를 골라 성계를 눌러 명령, 장관·제독 작전 회의). 앱: src/features/galaxy-app.ts, 규칙: src/warroom.ts.
+# 번호: 성계 = 별(행성)의 sllm_sys(sllm_systems.txt 와 같은 번호표·같은 셈 변수 sllm_sys_n), 함대 = sllm_fo_fid(sllm_fleetorder.txt 와 같은 번호·같은 셈 변수 sllm_fo_fidn).
+#   두 파일은 고치지 않고 같은 규칙으로 번호만 이어 붙인다. 세이브에도 이 변수가 남아 앱이 세이브 지도와 맞춘다.
+# 직접 명령을 받은 함대에는 sllm_fo_manual 을 붙인다 → 자동 작전이 그 함대를 건드리지 않는다(함대 사령부 「자동 작전」에서 되돌릴 수 있음).
+# 함대 풀(2026-11-05 동맹 합동 작전실): every_controlled_fleet — 우리 함대 + 합동 작전으로 빌려 온 동맹 함대(give_fleet, sllm_fleetorder_ally.txt). 우리가 빌려준 원정군은 빠진다.
+#   빌려 온 함대는 WRFL ally = 주인 나라 sllm_idx(우리 함대는 0). 합동 작전 상대(sllm_fo_ally_ok)는 WRALLY 로 보낸다.
+# 범위: Root = This = 플레이어 나라(앱 명령이 every_playable_country 안에서 부른다). 로그에는 $PARAM$ 을 직접 쓰지 않고 변수로.
+
+# 함대 한 줄(함대 범위). 부르기 전에 sllm_wr_aidx(동맹 idx, 우리 함대 0)·sllm_wr_xfv(연합 원정군 함대면 1)를 정해 둔다.
+sllm_wr_fleet_line = {
+	if = { limit = { NOT = { is_variable_set = sllm_fo_fid } } root = { change_variable = { which = sllm_fo_fidn value = 1 } } set_variable = { which = sllm_fo_fid value = root.sllm_fo_fidn } }
+	root = { set_variable = { which = sllm_wr_cur value = 0 } }
+	if = { limit = { exists = solar_system solar_system = { exists = star } } solar_system = { star = { if = { limit = { is_variable_set = sllm_sys } root = { set_variable = { which = sllm_wr_cur value = prev.sllm_sys } } } } } }
+	set_variable = { which = sllm_wr_lid value = 0 }
+	if = { limit = { exists = leader leader = { is_variable_set = sllm_lid } } leader = { prev = { set_variable = { which = sllm_wr_lid value = prev.sllm_lid } } } }
+	if = { limit = { OR = { has_fleet_flag = sllm_fo_manual has_fleet_flag = zz_manual } } set_variable = { which = sllm_wr_mode value = 1 } }
+	else_if = { limit = { has_fleet_flag = sllm_fo_repair } set_variable = { which = sllm_wr_mode value = 2 } }
+	else_if = { limit = { is_variable_set = sllm_fo_op check_variable = { which = sllm_fo_op value > 0 } } set_variable = { which = sllm_wr_mode value = 3 } }
+	else = { set_variable = { which = sllm_wr_mode value = 0 } }
+	if = { limit = { is_fleet_idle = yes } set_variable = { which = sllm_wr_idle value = 1 } } else = { set_variable = { which = sllm_wr_idle value = 0 } }
+	if = { limit = { is_in_combat = yes } set_variable = { which = sllm_wr_fight value = 1 } } else = { set_variable = { which = sllm_wr_fight value = 0 } }
+	set_variable = { which = sllm_wr_fp value = trigger:fleet_power }
+	# 함대에서 가장 큰 배 = 함대 아이콘(2026-11-05 사용자: 스텔라리스 함선 종류 아이콘, 타이탄이 있으면 타이탄). 값 = gfx/interface/icons/ship_sizes.dds 칸 번호(앱 ui/warroom.js SHIP_ICON 과 같음), 모르는 배 = 0
+	if = { limit = { any_owned_ship = { is_ship_size = juggernaut } } set_variable = { which = sllm_wr_big value = 13 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = colossus is_ship_size = massive_ship_fallen_empire is_ship_size = cosmo_crisis_titan } } } set_variable = { which = sllm_wr_big value = 7 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = titan is_ship_size = bio_titan } } } set_variable = { which = sllm_wr_big value = 6 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = mauler_stage_3 is_ship_size = offspring_mauler_stage_3 is_ship_size = large_fallen_mauler is_ship_size = cosmo_crisis_mauler } } } set_variable = { which = sllm_wr_big value = 17 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = mauler_stage_2 is_ship_size = offspring_mauler_stage_2 } } } set_variable = { which = sllm_wr_big value = 16 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = mauler_stage_1 is_ship_size = offspring_mauler_stage_1 } } } set_variable = { which = sllm_wr_big value = 15 } }
+	else_if = { limit = { any_owned_ship = { is_ship_size = paladin_ship } } set_variable = { which = sllm_wr_big value = 28 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = battleship is_ship_size = offspring_battleship is_ship_size = large_ship_fallen_empire is_ship_size = large_ship_ai is_ship_size = large_ship_swarm is_ship_size = large_ship_carrier_swarm is_ship_size = queen_swarm is_ship_size = cosmo_crisis_battlecruiser is_ship_size = ember_battleship } } } set_variable = { which = sllm_wr_big value = 5 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = harbinger_stage_3 is_ship_size = offspring_harbinger_stage_3 is_ship_size = large_fallen_harbinger is_ship_size = cosmo_crisis_harbinger } } } set_variable = { which = sllm_wr_big value = 23 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = harbinger_stage_2 is_ship_size = offspring_harbinger_stage_2 } } } set_variable = { which = sllm_wr_big value = 22 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = harbinger_stage_1 is_ship_size = offspring_harbinger_stage_1 } } } set_variable = { which = sllm_wr_big value = 21 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = cruiser is_ship_size = offspring_cruiser is_ship_size = wenkwort_enforcer is_ship_size = ember_cruiser } } } set_variable = { which = sllm_wr_big value = 4 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = weaver_stage_3 is_ship_size = offspring_weaver_stage_3 is_ship_size = large_fallen_weaver is_ship_size = cosmo_crisis_weaver } } } set_variable = { which = sllm_wr_big value = 20 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = weaver_stage_2 is_ship_size = offspring_weaver_stage_2 } } } set_variable = { which = sllm_wr_big value = 19 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = weaver_stage_1 is_ship_size = offspring_weaver_stage_1 is_ship_size = small_fallen_weaver } } } set_variable = { which = sllm_wr_big value = 18 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = destroyer is_ship_size = offspring_destroyer is_ship_size = small_ship_fallen_empire is_ship_size = small_ship_ai is_ship_size = small_ship_swarm is_ship_size = cosmo_crisis_destroyer } } } set_variable = { which = sllm_wr_big value = 3 } }
+	else_if = { limit = { any_owned_ship = { is_ship_size = frigate } } set_variable = { which = sllm_wr_big value = 14 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = stinger_stage_3 is_ship_size = offspring_stinger_stage_3 is_ship_size = large_fallen_stinger is_ship_size = cosmo_crisis_stinger } } } set_variable = { which = sllm_wr_big value = 26 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = stinger_stage_2 is_ship_size = offspring_stinger_stage_2 } } } set_variable = { which = sllm_wr_big value = 25 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = stinger_stage_1 is_ship_size = offspring_stinger_stage_1 } } } set_variable = { which = sllm_wr_big value = 24 } }
+	else_if = { limit = { any_owned_ship = { OR = { is_ship_size = corvette is_ship_size = offspring_corvette } } } set_variable = { which = sllm_wr_big value = 2 } }
+	else = { set_variable = { which = sllm_wr_big value = 0 } }
+	log = "SLLM:WRFL/;/req=\\[Root.sllm_wr_req]/;/fid=\\[This.sllm_fo_fid]/;/sn=\\[Root.sllm_wr_cur]/;/lid=\\[This.sllm_wr_lid]/;/mode=\\[This.sllm_wr_mode]/;/idle=\\[This.sllm_wr_idle]/;/fight=\\[This.sllm_wr_fight]/;/pow=\\[This.sllm_wr_fp]/;/ally=\\[This.sllm_wr_aidx]/;/xf=\\[This.sllm_wr_xfv]/;/big=\\[This.sllm_wr_big]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]"
+}
+
+# ── 보고: 번호 없는 성계에 번호(새로 붙인 것만 WRSYS), 군 함대 목록(WRFL), 전쟁 상대(WRWAR), 합동 작전 상대(WRALLY) → WREND ──
+sllm_wr_report = {
+	set_variable = { which = sllm_wr_req value = $REQ$ }
+	if = { limit = { NOT = { is_variable_set = sllm_sys_n } } set_variable = { which = sllm_sys_n value = 0 } }
+	if = { limit = { NOT = { is_variable_set = sllm_fo_fidn } } set_variable = { which = sllm_fo_fidn value = 0 } }
+	every_system = {
+		limit = { exists = star star = { NOT = { is_variable_set = sllm_sys } } }
+		star = {
+			root = { change_variable = { which = sllm_sys_n value = 1 } }
+			set_variable = { which = sllm_sys value = root.sllm_sys_n }
+		}
+		log = "SLLM:WRSYS/;/req=\\[Root.sllm_wr_req]/;/n=\\[Root.sllm_sys_n]/;/name=\\[This.GetName]"
+	}
+	if = { limit = { is_at_war = yes } set_variable = { which = sllm_wr_warv value = 1 } } else = { set_variable = { which = sllm_wr_warv value = 0 } }
+	log = "SLLM:WRREP/;/req=\\[Root.sllm_wr_req]/;/war=\\[Root.sllm_wr_warv]/;/date=\\[GetDate]"
+	every_controlled_fleet = {
+		limit = { sllm_fo_military_fleet = yes }
+		set_variable = { which = sllm_wr_aidx value = 0 }
+		set_variable = { which = sllm_wr_xfv value = 0 }
+		if = { limit = { exists = owner NOT = { owner = { is_same_value = root } } owner = { is_variable_set = sllm_idx } } owner = { prev = { set_variable = { which = sllm_wr_aidx value = prev.sllm_idx } } } }
+		sllm_wr_fleet_line = yes
+	}
+	# 연합 원정군(sllm_warroom_xf.txt): 동맹이 보낸 함대를 가진, AI 가 꺼진 우리 쪽 세력 — 명령대로만 움직인다
+	every_country = {
+		limit = { has_country_flag = sllm_wr_xf }
+		every_owned_fleet = {
+			limit = { sllm_fo_military_fleet = yes }
+			set_variable = { which = sllm_wr_aidx value = prev.sllm_wr_xf_ally }
+			set_variable = { which = sllm_wr_xfv value = 1 }
+			sllm_wr_fleet_line = yes
+		}
+	}
+	every_country = {
+		limit = { is_at_war_with = root }
+		if = { limit = { is_variable_set = sllm_idx } set_variable = { which = sllm_wr_ci value = sllm_idx } } else = { set_variable = { which = sllm_wr_ci value = -1 } }
+		log = "SLLM:WRWAR/;/req=\\[Root.sllm_wr_req]/;/idx=\\[This.sllm_wr_ci]/;/name=\\[This.GetName]"
+	}
+	# 합동 작전 상대: 관계(3 연방 · 2 방위 조약 · 1 같은 전쟁), 빌려 온 함대 수(n), 연합 원정군 함대 수(xf), 보낼 수 있는 함대 수·전력(ln·pow), 호감·신뢰 단계(op·tr), 같은 편 전쟁(cw), 함대 사령부 쪽 임대 중(ls)
+	every_country = {
+		limit = { sllm_fo_ally_ok = yes }
+		if = { limit = { is_in_federation_with = root } set_variable = { which = sllm_wr_arel value = 3 } }
+		else_if = { limit = { has_defensive_pact = root } set_variable = { which = sllm_wr_arel value = 2 } }
+		else = { set_variable = { which = sllm_wr_arel value = 1 } }
+		set_variable = { which = sllm_wr_an value = 0 }
+		every_owned_fleet = { limit = { exists = controller controller = { is_same_value = root } } prev = { change_variable = { which = sllm_wr_an value = 1 } } }
+		set_variable = { which = sllm_wr_axf value = 0 }
+		save_event_target_as = sllm_wr_ac
+		every_country = { limit = { has_country_flag = sllm_wr_xf check_variable = { which = sllm_wr_xf_ally value = prev.sllm_idx } } every_owned_fleet = { event_target:sllm_wr_ac = { change_variable = { which = sllm_wr_axf value = 1 } } } }
+		if = { limit = { opinion = { who = root value >= 150 } } set_variable = { which = sllm_wr_aop value = 4 } }
+		else_if = { limit = { opinion = { who = root value >= 75 } } set_variable = { which = sllm_wr_aop value = 3 } }
+		else_if = { limit = { opinion = { who = root value >= 25 } } set_variable = { which = sllm_wr_aop value = 2 } }
+		else_if = { limit = { opinion = { who = root value >= 0 } } set_variable = { which = sllm_wr_aop value = 1 } }
+		else = { set_variable = { which = sllm_wr_aop value = 0 } }
+		if = { limit = { trust = { who = root value >= 75 } } set_variable = { which = sllm_wr_atr value = 3 } }
+		else_if = { limit = { trust = { who = root value >= 40 } } set_variable = { which = sllm_wr_atr value = 2 } }
+		else_if = { limit = { trust = { who = root value >= 10 } } set_variable = { which = sllm_wr_atr value = 1 } }
+		else = { set_variable = { which = sllm_wr_atr value = 0 } }
+		set_variable = { which = sllm_wr_acw value = 0 }
+		if = {
+			limit = {
+				any_war = {
+					OR = {
+						AND = { is_war_participant = { who = root side = attackers } is_war_participant = { who = prev side = attackers } }
+						AND = { is_war_participant = { who = root side = defenders } is_war_participant = { who = prev side = defenders } }
+					}
+				}
+			}
+			set_variable = { which = sllm_wr_acw value = 1 }
+		}
+		set_variable = { which = sllm_wr_aln value = 0 }
+		set_variable = { which = sllm_wr_apow value = 0 }
+		every_owned_fleet = {
+			limit = { sllm_fo_lendable_fleet = yes }
+			set_variable = { which = sllm_wr_fp value = trigger:fleet_power }
+			save_event_target_as = sllm_wr_af
+			prev = { change_variable = { which = sllm_wr_aln value = 1 } change_variable = { which = sllm_wr_apow value = event_target:sllm_wr_af.sllm_wr_fp } }
+		}
+		if = { limit = { has_country_flag = sllm_fo_lending } set_variable = { which = sllm_wr_als value = 1 } } else = { set_variable = { which = sllm_wr_als value = 0 } }
+		log = "SLLM:WRALLY/;/req=\\[Root.sllm_wr_req]/;/idx=\\[This.sllm_idx]/;/rel=\\[This.sllm_wr_arel]/;/n=\\[This.sllm_wr_an]/;/xf=\\[This.sllm_wr_axf]/;/ln=\\[This.sllm_wr_aln]/;/pow=\\[This.sllm_wr_apow]/;/op=\\[This.sllm_wr_aop]/;/tr=\\[This.sllm_wr_atr]/;/cw=\\[This.sllm_wr_acw]/;/ls=\\[This.sllm_wr_als]/;/name=\\[This.GetName]"
+	}
+	clear_variable = sllm_wr_cur
+	log = "SLLM:WREND/;/req=\\[Root.sllm_wr_req]"
+}
+
+# ── 명령: FID 함대에 ACT(1 = SYS 번호 성계로 이동, 2 = 수도로 귀환, 3 = 멈춤) → WRSET ──
+# 우리 함대: 직접 지휘 표식(자동 작전이 손대지 않음). 빌려 온 동맹 함대·연합 원정군: 「요청」 — 다쳤으면 거절, 가끔(12%) 자기 판단으로 거절, 받아들이면 120일만 우리 지휘.
+sllm_wr_order_check = {
+	if = {
+		limit = { sllm_wr_foreign_fleet = yes NOT = { root = { check_variable = { which = sllm_wr_act value = 3 } } } }
+		if = { limit = { has_hp_percentage < 0.5 } root = { set_variable = { which = sllm_wr_res value = 2 } } }
+		else = { random_list = { 12 = { root = { set_variable = { which = sllm_wr_res value = 3 } } } 88 = { } } }
+	}
+}
+sllm_wr_order_apply = {
+	if = { limit = { sllm_wr_foreign_fleet = yes } set_timed_fleet_flag = { flag = sllm_fo_manual days = 120 } remove_fleet_flag = sllm_wr_busy }
+	else = { set_fleet_flag = sllm_fo_manual }
+	remove_fleet_flag = sllm_fo_lead
+	remove_fleet_flag = sllm_fo_repair
+	set_variable = { which = sllm_fo_op value = 0 }
+	if = {
+		limit = { root = { check_variable = { which = sllm_wr_act value = 3 } } }
+		remove_auto_move_target = yes
+		clear_fleet_actions = this
+	}
+	else = {
+		auto_move_to_planet = { target = event_target:sllm_wr_dest clear_auto_move_on_arrival = yes }
+	}
+}
+sllm_wr_order = {
+	set_variable = { which = sllm_wr_req value = $REQ$ }
+	set_variable = { which = sllm_wr_act value = $ACT$ }
+	set_variable = { which = sllm_wr_sq value = $SYS$ }
+	set_variable = { which = sllm_wr_res value = 0 }
+	set_variable = { which = sllm_wr_found value = 0 }
+	clear_global_event_target = sllm_wr_dest
+	if = {
+		limit = { check_variable = { which = sllm_wr_act value = 1 } }
+		random_system = {
+			limit = { exists = star star = { is_variable_set = sllm_sys check_variable = { which = sllm_sys value = root.sllm_wr_sq } } }
+			star = { save_global_event_target_as = sllm_wr_dest }
+		}
+	}
+	else_if = {
+		limit = { check_variable = { which = sllm_wr_act value = 2 } exists = capital_scope }
+		capital_star = { save_global_event_target_as = sllm_wr_dest }
+	}
+	every_controlled_fleet = { limit = { sllm_wr_fid_is = { FID = $FID$ } } root = { set_variable = { which = sllm_wr_found value = 1 } } }
+	every_country = { limit = { has_country_flag = sllm_wr_xf } every_owned_fleet = { limit = { sllm_wr_fid_is = { FID = $FID$ } } root = { set_variable = { which = sllm_wr_found value = 1 } } } }
+	if = {
+		limit = { check_variable = { which = sllm_wr_found value = 0 } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=no_fleet"
+	}
+	else_if = {
+		limit = { NOT = { check_variable = { which = sllm_wr_act value = 3 } } NOT = { exists = event_target:sllm_wr_dest } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=no_target"
+	}
+	else = {
+		set_variable = { which = sllm_wr_res value = 1 }
+		every_controlled_fleet = { limit = { sllm_wr_fid_is = { FID = $FID$ } } sllm_wr_order_check = yes }
+		every_country = { limit = { has_country_flag = sllm_wr_xf } every_owned_fleet = { limit = { sllm_wr_fid_is = { FID = $FID$ } } sllm_wr_order_check = yes } }
+	}
+	if = {
+		limit = { check_variable = { which = sllm_wr_res value = 2 } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=ally_repair"
+	}
+	else_if = {
+		limit = { check_variable = { which = sllm_wr_res value = 3 } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=ally_refuse"
+	}
+	else_if = {
+		limit = { check_variable = { which = sllm_wr_res value = 1 } }
+		every_controlled_fleet = { limit = { sllm_wr_fid_is = { FID = $FID$ } } sllm_wr_order_apply = yes }
+		every_country = { limit = { has_country_flag = sllm_wr_xf } every_owned_fleet = { limit = { sllm_wr_fid_is = { FID = $FID$ } } sllm_wr_order_apply = yes } }
+		log = "SLLM:WRSET/;/req=\\[Root.sllm_wr_req]/;/status=applied"
+	}
+	clear_global_event_target = sllm_wr_dest
+	set_variable = { which = sllm_wr_res value = 0 }
+}
+
+# ── 빌려 온 동맹 함대의 독자 행동(매달, sllm_wr.1). 우리 자동 작전에 들어가 있거나(sllm_fo_op > 0) 우리 지휘를 받는 중(sllm_fo_manual)이면 손대지 않는다. ──
+# 쉬고 있는 동맹 함대마다: 다쳤으면 가장 가까운 우리 조선소로(EV 3), 전쟁 중이면 10칸 안의 가장 가까운 적 성계로(적 식민지 먼저, EV 1), 평시엔 가끔 우리 국경 순찰(EV 2).
+# 연합 원정군 함대(sllm_wr_xff)도 같은 규칙으로 — 그쪽은 AI 가 꺼져 있어 정한 그대로 간다.
+# 한 번 움직이면 60일 동안 다시 정하지 않는다(sllm_wr_busy). 로그 WRAUTO(함대) + WRAUTOS(목적지), 같은 n.
+# 함대 한 개의 판단(함대 범위, sllm_wr_aidx 를 미리 정해 둠)
+sllm_wr_auto_fleet = {
+	clear_global_event_target = sllm_wr_t
+	set_variable = { which = sllm_wr_ev value = 0 }
+	if = {
+		limit = { has_hp_percentage < 0.5 }
+		solar_system = { closest_system = { min_steps = 0 max_steps = 40 limit = { any_starbase_in_system = { exists = owner owner = { is_same_value = root } has_starbase_module = shipyard } } star = { save_global_event_target_as = sllm_wr_t } } }
+		set_variable = { which = sllm_wr_ev value = 3 }
+	}
+	else_if = {
+		limit = { root = { is_at_war = yes } }
+		solar_system = { closest_system = { min_steps = 0 max_steps = 10 limit = { sllm_fo_war_target = yes sllm_fo_war_colony = yes } star = { save_global_event_target_as = sllm_wr_t } } }
+		if = { limit = { NOT = { exists = event_target:sllm_wr_t } } solar_system = { closest_system = { min_steps = 0 max_steps = 10 limit = { sllm_fo_war_target = yes } star = { save_global_event_target_as = sllm_wr_t } } } }
+		set_variable = { which = sllm_wr_ev value = 1 }
+	}
+	else = {
+		random = { chance = 25
+			root = { random_system_within_border = { limit = { exists = star any_neighbor_system = { exists = owner NOT = { owner = { is_same_value = root } } } } star = { save_global_event_target_as = sllm_wr_t } } }
+			set_variable = { which = sllm_wr_ev value = 2 }
+		}
+	}
+	if = {
+		limit = { exists = event_target:sllm_wr_t check_variable = { which = sllm_wr_ev value > 0 } }
+		auto_move_to_planet = { target = event_target:sllm_wr_t clear_auto_move_on_arrival = yes }
+		if = { limit = { check_variable = { which = sllm_wr_ev value = 3 } } set_fleet_stance = passive } else = { set_fleet_stance = aggressive }
+		set_timed_fleet_flag = { flag = sllm_wr_busy days = 60 }
+		root = { change_variable = { which = sllm_wr_evn value = 1 } }
+		log = "SLLM:WRAUTO/;/n=\\[Root.sllm_wr_evn]/;/ev=\\[This.sllm_wr_ev]/;/ally=\\[This.sllm_wr_aidx]/;/date=\\[GetDate]/;/fleet=\\[This.GetName]/;/adm=\\[This.GetLeaderName]/;/at=\\[This.System.GetName]"
+		event_target:sllm_wr_t = { solar_system = { log = "SLLM:WRAUTOS/;/n=\\[Root.sllm_wr_evn]/;/sys=\\[This.GetName]" } }
+	}
+	clear_global_event_target = sllm_wr_t
+}
+sllm_wr_ally_tick = {
+	if = { limit = { NOT = { is_variable_set = sllm_wr_evn } } set_variable = { which = sllm_wr_evn value = 0 } }
+	every_controlled_fleet = {
+		limit = { sllm_wr_ally_fleet = yes sllm_wr_auto_ok = yes }
+		set_variable = { which = sllm_wr_aidx value = 0 }
+		if = { limit = { owner = { is_variable_set = sllm_idx } } owner = { prev = { set_variable = { which = sllm_wr_aidx value = prev.sllm_idx } } } }
+		sllm_wr_auto_fleet = yes
+	}
+	every_country = {
+		limit = { has_country_flag = sllm_wr_xf }
+		every_owned_fleet = {
+			limit = { sllm_fo_military_fleet = yes sllm_wr_auto_ok = yes }
+			set_variable = { which = sllm_wr_aidx value = prev.sllm_wr_xf_ally }
+			sllm_wr_auto_fleet = yes
+		}
+	}
+}
+
+# ── 전쟁 성향 특성(2026-11-05): 앱이 고른 성향을 지도자에게 붙인다(다른 성향 특성은 뗌, 효과 약 +3%). … sllm_wr_doc_set = { LID = 12 TRAIT = sllm_doc_fortress } ──
+sllm_wr_doc_set = {
+	every_owned_leader = {
+		limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = $LID$ } NOT = { sllm_has_doc = yes } } # 게임이 이미 붙였으면 그대로(성향은 한 번 정해지면 고정)
+		if = { limit = { has_trait = sllm_doc_no_retreat } remove_trait = sllm_doc_no_retreat }
+		if = { limit = { has_trait = sllm_doc_focused_striker } remove_trait = sllm_doc_focused_striker }
+		if = { limit = { has_trait = sllm_doc_raider } remove_trait = sllm_doc_raider }
+		if = { limit = { has_trait = sllm_doc_fortress } remove_trait = sllm_doc_fortress }
+		if = { limit = { has_trait = sllm_doc_elastic } remove_trait = sllm_doc_elastic }
+		if = { limit = { has_trait = sllm_doc_guardian } remove_trait = sllm_doc_guardian }
+		if = { limit = { has_trait = sllm_doc_maneuver } remove_trait = sllm_doc_maneuver }
+		if = { limit = { has_trait = sllm_doc_calculator } remove_trait = sllm_doc_calculator }
+		if = { limit = { has_trait = sllm_doc_opportunist } remove_trait = sllm_doc_opportunist }
+		add_trait = { trait = $TRAIT$ show_message = no }
+	}
+}
+# 성향 붙이기 묶음 끝 → WRSET(앱이 기다림)
+sllm_wr_doc_done = {
+	set_variable = { which = sllm_wr_req value = $REQ$ }
+	log = "SLLM:WRSET/;/req=\\[This.sllm_wr_req]/;/status=applied"
+}
+
+# ── 전쟁 성향을 게임이 직접 붙인다(2026-11-05 사용자: 앱을 켜지 않아도 모든 제국의 지휘관이 성향을 갖게). 지도자 범위. ──
+# 앱(src/warroom.ts doctrineOf)과 같은 규칙: 특성이 먼저(무모함 → 후퇴 없는 돌격가 …), 없으면 하위직·나라 성향(군국주의 → 공격형, 평화주의 → 방어형)으로 쏠린 무작위.
+sllm_doc_assign = {
+	if = {
+		limit = { NOT = { sllm_has_doc = yes } }
+		if = { limit = { has_trait = leader_trait_reckless } add_trait = { trait = sllm_doc_no_retreat show_message = no } }
+		else_if = { limit = { has_trait = leader_trait_unyielding } add_trait = { trait = sllm_doc_fortress show_message = no } }
+		else_if = { limit = { OR = { has_trait = leader_trait_trickster has_trait = leader_trait_scout has_trait = leader_trait_gale_speed } } add_trait = { trait = sllm_doc_maneuver show_message = no } }
+		else_if = { limit = { OR = { has_trait = leader_trait_fleet_logistician has_trait = leader_trait_engineer } } add_trait = { trait = sllm_doc_calculator show_message = no } }
+		else_if = { limit = { has_trait = leader_trait_aggressive } add_trait = { trait = sllm_doc_focused_striker show_message = no } }
+		else_if = { limit = { has_trait = leader_trait_corsair } add_trait = { trait = sllm_doc_raider show_message = no } }
+		else_if = { limit = { has_trait = leader_trait_cautious } add_trait = { trait = sllm_doc_guardian show_message = no } }
+		else = {
+			random_list = {
+				10 = { modifier = { factor = 2 owner = { OR = { has_ethic = ethic_militarist has_ethic = ethic_fanatic_militarist } } } modifier = { factor = 0.5 owner = { OR = { has_ethic = ethic_pacifist has_ethic = ethic_fanatic_pacifist } } } modifier = { factor = 1.5 has_trait = subclass_commander_general } add_trait = { trait = sllm_doc_no_retreat show_message = no } }
+				10 = { modifier = { factor = 1.5 owner = { OR = { has_ethic = ethic_militarist has_ethic = ethic_fanatic_militarist } } } modifier = { factor = 1.5 has_trait = subclass_commander_admiral } add_trait = { trait = sllm_doc_focused_striker show_message = no } }
+				10 = { modifier = { factor = 1.3 owner = { OR = { has_ethic = ethic_militarist has_ethic = ethic_fanatic_militarist } } } modifier = { factor = 1.3 has_trait = subclass_commander_admiral } add_trait = { trait = sllm_doc_raider show_message = no } }
+				10 = { modifier = { factor = 2 owner = { OR = { has_ethic = ethic_pacifist has_ethic = ethic_fanatic_pacifist } } } modifier = { factor = 1.5 has_trait = subclass_commander_governor } add_trait = { trait = sllm_doc_fortress show_message = no } }
+				10 = { modifier = { factor = 1.5 owner = { OR = { has_ethic = ethic_pacifist has_ethic = ethic_fanatic_pacifist } } } modifier = { factor = 1.2 has_trait = subclass_commander_general } add_trait = { trait = sllm_doc_elastic show_message = no } }
+				10 = { modifier = { factor = 1.5 owner = { OR = { has_ethic = ethic_pacifist has_ethic = ethic_fanatic_pacifist } } } modifier = { factor = 1.5 has_trait = subclass_commander_governor } add_trait = { trait = sllm_doc_guardian show_message = no } }
+				10 = { modifier = { factor = 1.5 has_trait = subclass_commander_councilor } modifier = { factor = 1.3 has_trait = subclass_commander_admiral } add_trait = { trait = sllm_doc_maneuver show_message = no } }
+				10 = { modifier = { factor = 1.5 has_trait = subclass_commander_councilor } modifier = { factor = 0.7 owner = { OR = { has_ethic = ethic_militarist has_ethic = ethic_fanatic_militarist } } } add_trait = { trait = sllm_doc_calculator show_message = no } }
+				10 = { modifier = { factor = 1.3 has_trait = subclass_commander_councilor } add_trait = { trait = sllm_doc_opportunist show_message = no } }
+			}
+		}
+	}
+}

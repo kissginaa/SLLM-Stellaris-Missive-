@@ -1,0 +1,37 @@
+# SLLM 전범 인도 요구(3단계, 2026-11-04). 효과: common/scripted_effects/sllm_infamy.txt(sllm_wc_mark·sllm_wc_do).
+# sllm_wc.1 전쟁이 끝날 때(on_war_ended, root = 진 나라, from = 이긴 나라): 플레이어가 졌고 전범 표식 지도자가 있으면 이긴 AI 가 인도를 요구 → 앱(WCDEMAND)이 LLM 서신을 띄운다.
+# sllm_wc.2 앱이 고른 답(인도·자국 군사법정·거부)을 적용하고 WCSET 으로 알린다(root = 플레이어).
+namespace = sllm_wc
+
+country_event = {
+	id = sllm_wc.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		is_variable_set = sllm_save_id
+		exists = from
+		from = { is_ai = yes sllm_is_empire = yes is_homicidal = no is_variable_set = sllm_idx }
+		any_owned_leader = { has_leader_flag = sllm_war_criminal }
+	}
+	immediate = {
+		set_variable = { which = sllm_wc_n value = 0 }
+		every_owned_leader = {
+			limit = { has_leader_flag = sllm_war_criminal }
+			prev = { change_variable = { which = sllm_wc_n value = 1 } }
+		}
+		from = { log = "SLLM:WCDEMAND/;/sid=\\[Root.sllm_save_id]/;/tid=\\[This.sllm_idx]/;/name=\\[This.GetName]/;/n=\\[Root.sllm_wc_n]/;/why=war/;/date=\\[GetDate]" }
+	}
+}
+
+country_event = {
+	id = sllm_wc.2
+	hide_window = yes
+	is_triggered_only = yes
+	immediate = {
+		sllm_wc_do = yes
+		if = { limit = { check_variable = { which = sllm_wc_st value = 1 } } log = "SLLM:WCSET/;/req=\\[Root.sllm_wc_req]/;/status=applied/;/n=\\[Root.sllm_wc_n]" }
+		else_if = { limit = { check_variable = { which = sllm_wc_st value = 2 } } log = "SLLM:WCSET/;/req=\\[Root.sllm_wc_req]/;/status=gone/;/n=\\[Root.sllm_wc_n]" }
+		else = { log = "SLLM:WCSET/;/req=\\[Root.sllm_wc_req]/;/status=short/;/n=\\[Root.sllm_wc_n]" }
+	}
+}

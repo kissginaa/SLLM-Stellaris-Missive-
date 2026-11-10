@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Paparazzi</title>
+<!-- 파파라치(2026-10-31, 계획서 11번). 앱: src/features/paparazzi-app.ts · 규칙·틀 기사: src/paparazzi.ts.
+     외출 사건이 찍히면 이 창이 「찰칵!」과 함께 뜸 → 매수(금고) · 무시(기사 나감) · 고소(소송비, 반반). 아래는 지금까지 나간 타블로이드 기사.
+     문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--red:#ff3b4e;--gold:#ffcf5a;--text:#f2eee8;--dim:#9a948c;--paper:#f3ead8;--ink:#1a1612}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:#0b0b0e;color:var(--text);font:15px/1.5 "Malgun Gothic","Segoe UI",sans-serif}
+ button{font:inherit;color:inherit}
+ #drag{position:fixed;z-index:30;left:0;right:0;top:0;height:30px;-webkit-app-region:drag}
+ #x{position:fixed;z-index:31;right:12px;top:6px;background:none;border:0;color:var(--dim);font-size:18px;cursor:pointer;-webkit-app-region:no-drag} #x:hover{color:#fff}
+ #flash{position:fixed;inset:0;z-index:40;background:#fff;opacity:0;pointer-events:none} #flash.go{animation:flash .9s ease-out} @keyframes flash{0%{opacity:.95}100%{opacity:0}}
+ main{max-width:900px;margin:0 auto;padding:44px 22px 30px;height:100%;overflow:auto}
+ h1{margin:0 0 4px;font:900 34px/1 Georgia,"Times New Roman",serif;letter-spacing:1px;color:var(--red);text-transform:uppercase} .sub{color:var(--dim);font-size:13px;margin-bottom:18px}
+ .snap{display:grid;grid-template-columns:260px 1fr;gap:20px;padding:18px;margin-bottom:16px;border-radius:12px;background:#16151a;border:1px solid #ffffff1a;box-shadow:0 10px 30px #000a}
+ .photo{position:relative;background:#fff;padding:10px 10px 34px;transform:rotate(-2.5deg);box-shadow:0 8px 20px #000c}
+ .photo svg{display:block;width:100%;height:auto;filter:grayscale(.6) contrast(1.1)} .photo .date{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:13px "Courier New",monospace;color:#555}
+ .photo::after{content:'';position:absolute;inset:10px 10px 34px;background:repeating-radial-gradient(#0000 0 1px,#0001 1px 2px);pointer-events:none}
+ .cap{font-size:18px;font-weight:700;margin:0 0 6px} .tone{display:inline-block;padding:1px 9px;border-radius:9px;font-size:12px;margin-right:6px} .tone.good{background:#1f4a2e;color:#b9f5c9} .tone.bad{background:#5a1a22;color:#ffc2c8} .tone.mixed{background:#4a3f1a;color:#ffe9a8}
+ .eff{color:var(--dim);font-size:13px;margin:8px 0 14px} .eff b{color:var(--text)}
+ .acts{display:flex;gap:10px;flex-wrap:wrap} .act{padding:9px 16px;border-radius:22px;border:1px solid #ffffff33;background:#0e0d11;cursor:pointer;text-align:left}
+ .act small{display:block;color:var(--dim);font-size:11px} .act:hover:not(:disabled){border-color:var(--gold);box-shadow:0 0 14px #ffcf5a33} .act:disabled{opacity:.4;cursor:default}
+ .act.bribe{border-color:#ffcf5a88} .act.sue{border-color:#7fb0ff88}
+ .left{color:var(--dim);font-size:12px;margin-top:10px}
+ #msg{min-height:22px;margin:0 0 10px;color:var(--gold)} #msg.err{color:var(--red)}
+ .paper{background:var(--paper);color:var(--ink);border-radius:4px;padding:18px 22px;margin-top:8px;box-shadow:0 10px 30px #000c}
+ .paper .mast{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px double var(--ink);padding-bottom:6px;margin-bottom:10px} .paper .mast b{font:900 26px Georgia,serif;color:#b0141f} .paper .mast span{font-size:12px}
+ .story{padding:10px 0;border-bottom:1px solid #1a161233} .story:last-child{border-bottom:0} .story h3{margin:0 0 4px;font:800 19px/1.25 Georgia,serif} .story p{margin:0;font-size:14px} .story .meta{font-size:11px;color:#6a5f52;margin-top:4px} .story .extra{font-size:13px;color:#b0141f;margin-top:4px}
+ .empty{color:#6a5f52;font-style:italic}
+ .quiet{color:var(--dim);font-size:13px;margin-top:14px}
+</style></head>
+<body>
+<div id="drag"></div><button id="x" type="button">✕</button><div id="flash"></div>
+<main><h1 id="ttl"></h1><div class="sub" id="sub"></div><div id="msg"></div><div id="snaps"></div><div id="paperBox"></div><div class="quiet" id="quiet"></div></main>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ let S = null, seen = new Set();
+ // 사진 속 장면(선 그림): 사건 종류마다 소품 하나 + 통치자 실루엣(뒷모습, 망원 렌즈로 찍은 듯 흐릿하게)
+ const PROP = {
+  casinoWin: '<circle cx="230" cy="120" r="34" fill="none" stroke="#333" stroke-width="5"/><path d="M230 86v68M196 120h68" stroke="#333" stroke-width="3"/>', casinoLoss: '<circle cx="230" cy="120" r="34" fill="none" stroke="#333" stroke-width="5"/><path d="M230 86v68M196 120h68" stroke="#333" stroke-width="3"/>',
+  date: '<circle cx="230" cy="70" r="16" fill="#222"/><path d="M206 200c0-60 10-100 24-112 14 12 24 52 24 112z" fill="#222"/>', affair: '<circle cx="230" cy="70" r="16" fill="#222"/><path d="M206 200c0-60 10-100 24-112 14 12 24 52 24 112z" fill="#222"/>',
+  shopping: '<rect x="200" y="110" width="50" height="60" fill="#333"/><path d="M212 110c0-20 26-20 26 0" stroke="#333" stroke-width="4" fill="none"/>', gift: '<rect x="204" y="120" width="44" height="40" fill="#333"/><path d="M226 120v40M204 140h44" stroke="#bbb" stroke-width="3"/>',
+  tavern: '<rect x="200" y="100" width="22" height="40" rx="4" fill="#333"/><rect x="232" y="108" width="18" height="32" rx="4" fill="#444"/>', bmRaid: '<circle cx="60" cy="40" r="22" fill="#e33" opacity=".6"/><circle cx="250" cy="40" r="22" fill="#36f" opacity=".6"/>',
+  bmBuy: '<rect x="196" y="120" width="60" height="44" fill="#3a2a18"/><path d="M196 120l30-16 30 16" fill="#2a1e10"/>', speechGood: '<path d="M200 200l14-60h32l14 60z" fill="#333"/><rect x="214" y="120" width="32" height="22" fill="#333"/>',
+  speechBad: '<path d="M200 200l14-60h32l14 60z" fill="#333"/><rect x="214" y="120" width="32" height="22" fill="#333"/>', ritual: '<path d="M200 200V110l30-30 30 30v90z" fill="#333"/><circle cx="230" cy="135" r="10" fill="#bbb"/>',
+ };
+ const photo = (k, seed) => `<svg viewBox="0 0 300 220"><defs><filter id="b${seed}"><feGaussianBlur stdDeviation="1.6"/></filter><radialGradient id="v${seed}" cx=".5" cy=".5" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient></defs>
+  <rect width="300" height="220" fill="#8d8a84"/><g filter="url(#b${seed})"><rect y="150" width="300" height="70" fill="#5d5a55"/>${PROP[k] || ''}
+  <circle cx="110" cy="78" r="20" fill="#111"/><path d="M80 210c0-70 12-110 30-118 18 8 30 48 30 118z" fill="#111"/><path d="M92 74c4-16 32-16 36 0" stroke="#111" stroke-width="10" fill="none"/></g>
+  <rect width="300" height="220" fill="url(#v${seed})"/><path d="M20 20h24M20 20v24M280 20h-24M280 20v24M20 200h24M20 200v-24M280 200h-24M280 200v-24" stroke="#fff" stroke-width="2" opacity=".7"/></svg>`;
+ const toneName = (t) => t === 'good' ? L('좋은 기사감', 'Flattering') : t === 'bad' ? L('나쁜 기사감', 'Damaging') : L('엇갈릴 기사감', 'Mixed');
+ const msg = (t, bad) => { const m = $('msg'); m.textContent = t || ''; m.className = bad ? 'err' : ''; };
+ const btn = (cls, t, small, f, dis) => { const b = h('button', 'act ' + cls); b.type = 'button'; b.append(document.createTextNode(t)); if (small) b.append(h('small', '', small)); b.disabled = !!dis; b.onclick = f; return b; };
+ async function decide(id, choice) { const r = await window.sllm.paparazziDecide(id, choice); if (r && r.state) S = r.state; msg(r && r.ok ? r.msg : (r && r.error) || '', !(r && r.ok)); render(); }
+ function render() {
+  if (!S || !S.ready) return;
+  $('ttl').textContent = S.paper; $('sub').textContent = L('통치자의 외출을 쫓는 파파라치. 찍힌 사진은 사들이거나, 내버려 두거나, 고소할 수 있습니다.', 'The paparazzi follow the ruler\'s outings. A photo can be bought up, ignored, or fought in court.');
+  const box = $('snaps'); box.textContent = '';
+  for (const p of S.pending) {
+   if (!seen.has(p.id)) { seen.add(p.id); const f = $('flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+   const c = h('div', 'snap'), ph = h('div', 'photo'); ph.innerHTML = photo(p.kind, p.id); ph.append(h('div', 'date', p.on)); c.append(ph);
+   const r = h('div'); r.append(h('div', 'cap', L('찰칵! 파파라치가 찍었습니다', 'Snap! The paparazzi got a shot')));
+   const t = h('div'); t.append(h('span', 'tone ' + p.tone, toneName(p.tone)), document.createTextNode(L(`통치자가 ${p.caption}`, `The ruler ${p.caption}`))); r.append(t);
+   const e = []; if (p.effects.mood) e.push(L(`민심 ${p.effects.mood > 0 ? '+' : ''}${p.effects.mood}`, `mood ${p.effects.mood > 0 ? '+' : ''}${p.effects.mood}`)); if (p.effects.susp) e.push(L('씀씀이 의혹(궁정이 눈여겨봄)', 'spending suspicion (the court takes note)')); if (p.effects.foreign) e.push(p.effects.foreign === 'good' ? L('외국 호감 조금 +', 'foreign opinion slightly +') : L('외국 호감 조금 −', 'foreign opinion slightly −'));
+   const ef = h('div', 'eff'); ef.append(document.createTextNode(L('기사가 나가면: ', 'If it runs: ')), h('b', '', e.join(' · ') || L('별일 없음', 'little effect'))); r.append(ef);
+   const a = h('div', 'acts');
+   a.append(btn('bribe', L(`사진 사들이기 · ${p.bribe}`, `Buy the photos · ${p.bribe}`), L('금고에서. 기사는 안 나감', 'From the vault. No story'), () => decide(p.id, 'bribe'), S.vault < p.bribe));
+   a.append(btn('', p.tone === 'good' ? L('기사 내게 두기', 'Let it run') : L('무시하기', 'Ignore it'), L('기사가 나감', 'The story runs'), () => decide(p.id, 'ignore')));
+   if (p.canSue) a.append(btn('sue', L(`고소하기 · ${S.suitFee}`, `Sue · ${S.suitFee}`), L(`이길 확률 ${S.suitWin}% · 지면 기사 + 역풍`, `${S.suitWin}% to win · lose and it runs with backlash`), () => decide(p.id, 'sue'), S.vault < S.suitFee));
+   r.append(a, h('div', 'left', L(`${p.daysLeft}일 안에 정하지 않으면 기사가 나갑니다.`, `If you don't decide within ${p.daysLeft} days, the story runs.`))); c.append(r); box.append(c);
+  }
+  const pb = $('paperBox'); pb.textContent = ''; const pp = h('div', 'paper'), mast = h('div', 'mast'); mast.append(h('b', '', S.paper), h('span', '', L('타블로이드 · 지금까지 나간 기사', 'Tabloid · stories so far'))); pp.append(mast);
+  if (!S.stories.length) pp.append(h('div', 'empty', L('아직 나간 기사가 없습니다.', 'No stories yet.')));
+  for (const s of S.stories) { const st = h('div', 'story'); st.append(h('h3', '', s.head), h('p', '', s.body)); if (s.extra) st.append(h('div', 'extra', s.extra)); st.append(h('div', 'meta', `${s.on} · ${s.how === 'timeout' ? L('대응하지 않음', 'no response') : s.how === 'lostSuit' ? L('고소 패소', 'lost the suit') : L('무시함', 'ignored')}`)); pp.append(st); }
+  pb.append(pp);
+  $('quiet').textContent = S.quiet.length ? L('조용히 넘긴 사진: ', 'Photos kept quiet: ') + S.quiet.map((q) => `${q.on} ${q.what} (${q.how === 'bribed' ? L('매수', 'bought') : L('고소 승소', 'won in court')})`).join(' · ') : '';
+ }
+ $('x').onclick = () => window.sllm.paparazziClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.paparazziClose(); });
+ document.addEventListener('sllm-language', () => render());
+ if (window.sllm.onPaparazziState) window.sllm.onPaparazziState((s) => { S = s; render(); });
+ window.sllm.paparazziState().then((s) => { S = s; render(); });
+</script>
+</body></html>

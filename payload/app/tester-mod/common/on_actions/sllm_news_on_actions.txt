@@ -1,0 +1,24 @@
+# SLLM - 신문·홈페이지 실시간 소식(2026-11-10). 은하 어디서든 큰 사건이 일어나는 순간 한 줄(SLLM:NEWS)만 남긴다. 게임 규칙은 바꾸지 않는다.
+# 범위는 게임 00_on_actions.txt 주석을 따랐다. 모드 on_actions 는 게임 것과 합쳐진다.
+
+# 거대 구조물 완공 (Root = 국가, From = 구조물, FromFrom = 성계)
+on_megastructure_built = { events = { sllm_news.1 } }
+# 정부 형태가 바뀐 뒤 (This = 국가)
+on_post_government_changed = { events = { sllm_news.2 } }
+# 지도자를 사로잡음 (This = 사로잡힌 지도자, From = 잡은 나라, FromFrom = 잡힌 나라, FromFromFrom = 성계)
+on_leader_captured = { events = { sllm_news.3 } }
+# 폭격으로 식민지가 사라짐 (This = 행성, From = 폭격한 나라)
+on_colony_destroyed_by_bombardment = { events = { sllm_news.4 } }
+# 연방 의장국이 바뀜 (This = 새 의장국)
+on_federation_new_leader = { events = { sllm_news.5 } }
+# 은하 공동체 창설 (This = 첫 회원국)
+on_galactic_community_formed = { events = { sllm_news.6 } }
+# 2026-11-10 사용자: 전투 승리·고고학·궤도 폭격도 신문 기사로.
+# 우주 전투 승리 (This = 이긴 나라, From = 진 나라, FromFrom = 이긴 함대, FromFromFrom = 진 함대)
+on_space_battle_won = { events = { sllm_news.7 } }
+# 고고학 유적 발굴 완료 (This = 과학선 함대, From = 유적)
+on_arch_site_finished = { events = { sllm_news.8 } }
+# 궤도 폭격 피해(날마다 불림 — 이벤트가 행성 표식으로 처음 한 번만 남김) (This = 행성, From = 폭격한 나라)
+on_planet_bombarded = { events = { sllm_news.9 } }
+# 폭격으로 인구 사망 (This = 행성, From = 폭격한 나라, FromFrom = 폭격 함대)
+on_pop_bombed_to_death = { events = { sllm_news.10 } }

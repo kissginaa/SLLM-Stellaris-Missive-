@@ -1,0 +1,7 @@
+# SLLM 원시문명 관측(2026-11-03). 모드의 on_actions 는 게임 것과 합쳐진다. 숨은 이벤트만 부른다(on_actions 에 effect 블록 불가).
+on_planet_surveyed = {
+	events = { sllm_preftl.1 }
+}
+on_building_observation_station = {
+	events = { sllm_preftl.2 }
+}

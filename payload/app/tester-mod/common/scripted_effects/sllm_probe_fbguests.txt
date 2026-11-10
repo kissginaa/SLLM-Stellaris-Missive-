@@ -1,0 +1,30 @@
+# 타국 주최 만찬의 참석자(2026-10-23 집 PC 초안). 플레이어 나라 범위에서 부른다(앱: src/features/fbanquet-app.ts). 실제 게임 지도자만 소개한다(44: 가상 인물을 만들지 않음).
+# 대상 제국(sllm_idx = TID)의 통치자 아닌 지도자 가운데 평의원을 먼저, 모두 합쳐 4명까지. 지도자 줄은 나라 변수로 요청 번호를 읽는다(지도자 scope 에서 Prev = 그 나라).
+sllm_probe_fbguests = {
+ sllm_probe_init_vars = yes
+ if = { limit = { NOT = { is_variable_set = sllm_fg_next } } set_variable = { which = sllm_fg_next value = 0 } } # 타국 지인 표시 번호(생사 확인용, 2026-10-23) — 저장 내내 유지
+ set_variable = { which = sllm_out_req value = $REQ$ }
+ sllm_probe_assign_idx = yes
+ every_country = {
+  limit = { check_variable = { which = sllm_idx value = $TID$ } is_ai = yes has_communications = prev }
+  set_variable = { which = sllm_fb_req value = prev.sllm_out_req }
+  set_variable = { which = sllm_fb_c value = 0 }
+  every_owned_leader = {
+   limit = { is_ruler = no is_councilor = yes prev = { check_variable = { which = sllm_fb_c value < 4 } } }
+   prev = { change_variable = { which = sllm_fb_c value = 1 } }
+   if = { limit = { NOT = { is_variable_set = sllm_fgid } } prevprev = { change_variable = { which = sllm_fg_next value = 1 } } set_variable = { which = sllm_fgid value = prevprev.sllm_fg_next } }
+   if = { limit = { leader_class = commander } log = "SLLM:FBGUEST/;/req=\\[Prev.sllm_fb_req]/;/cls=commander/;/council=1/;/fg=\\[This.sllm_fgid]/;/name=\\[This.GetName]" }
+   else_if = { limit = { leader_class = scientist } log = "SLLM:FBGUEST/;/req=\\[Prev.sllm_fb_req]/;/cls=scientist/;/council=1/;/fg=\\[This.sllm_fgid]/;/name=\\[This.GetName]" }
+   else = { log = "SLLM:FBGUEST/;/req=\\[Prev.sllm_fb_req]/;/cls=official/;/council=1/;/fg=\\[This.sllm_fgid]/;/name=\\[This.GetName]" }
+  }
+  every_owned_leader = {
+   limit = { is_ruler = no is_councilor = no prev = { check_variable = { which = sllm_fb_c value < 4 } } }
+   prev = { change_variable = { which = sllm_fb_c value = 1 } }
+   if = { limit = { NOT = { is_variable_set = sllm_fgid } } prevprev = { change_variable = { which = sllm_fg_next value = 1 } } set_variable = { which = sllm_fgid value = prevprev.sllm_fg_next } }
+   if = { limit = { leader_class = commander } log = "SLLM:FBGUEST/;/req=\\[Prev.sllm_fb_req]/;/cls=commander/;/council=0/;/fg=\\[This.sllm_fgid]/;/name=\\[This.GetName]" }
+   else_if = { limit = { leader_class = scientist } log = "SLLM:FBGUEST/;/req=\\[Prev.sllm_fb_req]/;/cls=scientist/;/council=0/;/fg=\\[This.sllm_fgid]/;/name=\\[This.GetName]" }
+   else = { log = "SLLM:FBGUEST/;/req=\\[Prev.sllm_fb_req]/;/cls=official/;/council=0/;/fg=\\[This.sllm_fgid]/;/name=\\[This.GetName]" }
+  }
+ }
+ log = "SLLM:FBGUEST_END/;/sid=\\[This.sllm_save_id]/;/req=\\[This.sllm_out_req]"
+}

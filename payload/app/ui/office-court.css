@@ -1,0 +1,40 @@
+/* 집무실 「궁정」(2026-10-28 정치). 대사관·외교 거래 화면과 같은 결(emb-*)에 가계도만 더한다. 아기방 대화 상자 안에서도 쓰므로 변수마다 기본값을 둔다. */
+#court .apph{gap:10px}
+.crt-tabs{display:flex;gap:4px;margin-left:auto}
+.crt-tabs .tab{border:1px solid var(--line,#5fd4e455);background:transparent;color:var(--dim,#7fa3ad);border-radius:4px;padding:3px 12px;font-size:12.5px;cursor:pointer}
+.crt-tabs .tab[aria-selected="true"]{border-color:var(--hi,#5fd4e4);color:var(--text,#dcecf0);background:color-mix(in srgb,var(--hi,#5fd4e4) 14%,transparent)}
+.crt-root{overflow-y:auto;padding:12px 14px 16px}
+.crt-body{display:flex;flex-direction:column;gap:12px;max-width:1100px}
+.crt-text{margin:0;line-height:1.6}.crt-won{margin:0;color:var(--gold,#e8c77a)}
+.crt-plot.found{border-color:#ff7a6a88}.crt-plot.past{opacity:.8}
+.crt-acts{display:flex;flex-wrap:wrap;gap:6px}
+.crt-hard{border-color:#e0705f !important;background:#e0705f1c !important}
+.crt-acts .armed{border-color:#ff7a6a !important;color:#ffc8be}
+.crt-log{margin:0;padding-left:18px;font-size:12px;color:var(--dim,#7fa3ad);line-height:1.6}
+.crt-quiet{font-style:italic}
+.crt-traits{margin:0;padding-left:18px;line-height:1.7}.crt-traits b{color:var(--gold,#e8c77a);font-weight:600}
+.crt-rename{display:flex;gap:6px;align-items:center}.crt-rename input{background:var(--inputbg,#0006);color:inherit;border:1px solid var(--line,#5fd4e455);border-radius:4px;padding:4px 8px;font:inherit;width:220px}
+.crt-rulers{margin:0;padding-left:20px;line-height:1.7;font-size:13px}
+.crt-mar{font-size:13px;padding:3px 0;border-bottom:1px dashed var(--line,#5fd4e433)}.crt-mar.strained{color:#ffb2a6}
+.crt-chips{display:inline-flex;flex-wrap:wrap;gap:3px}.crt-chips i{font-style:normal;font-size:10.5px;border:1px solid #e8c77a66;color:var(--gold,#e8c77a);border-radius:9px;padding:0 6px;line-height:16px}
+/* 가계도 */
+.crt-treehost{display:flex;flex-direction:column;gap:8px;min-width:0}
+.crt-treebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.crt-treebar select{background:var(--inputbg,#0006);color:inherit;border:1px solid var(--line,#5fd4e455);border-radius:4px;padding:3px 6px}
+.crt-tree{position:relative;overflow:auto;padding:10px 6px 18px;max-height:min(70vh,760px)}
+.rooms-dialog .crt-tree{max-height:60vh}
+.crt-lines{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.crt-ln{fill:none;stroke:color-mix(in srgb,var(--hi,#5fd4e4) 55%,transparent);stroke-width:1.4}
+.crt-ln.next{stroke:var(--gold,#e8c77a);stroke-width:1.8}.crt-ln.line{stroke-dasharray:4 4;stroke:var(--dim,#7fa3ad)}
+.crt-hhead{display:flex;gap:10px;align-items:center;margin:0 0 10px}.crt-hhead b{font-size:16px;letter-spacing:.04em}
+.crt-gen{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;margin:0 0 30px}
+.crt-couple{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--line,#5fd4e455);border-radius:10px;background:rgba(255,255,255,.03)}
+.crt-ring{color:var(--gold,#e8c77a);font-size:15px}
+.crt-kids{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.crt-p{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:120px;max-width:190px;text-align:left;border:1px solid var(--line,#5fd4e455);border-radius:6px;background:var(--panel,#0d1a20);color:var(--text,#dcecf0);padding:6px 9px;font:inherit;font-size:12.5px;cursor:pointer}
+.crt-p:hover{border-color:var(--hi,#5fd4e4)}.crt-p.static{cursor:default}.crt-p.static:hover{border-color:var(--line,#5fd4e455)}
+.crt-p b{font-size:13px}.crt-p small{color:var(--dim,#7fa3ad);font-size:11px}
+.crt-p.ruler{border-color:#e8c77a99}.crt-p.ruler.now{box-shadow:0 0 0 1px #e8c77a66,0 0 14px #e8c77a22}
+.crt-p.next{border-color:#e8c77a}
+.crt-p.gone{opacity:.5}
+.crt-tags{display:flex;gap:3px}.crt-tags i{font-style:normal;font-size:10.5px;border:1px solid #ff7a6a88;color:#ffb2a6;border-radius:9px;padding:0 6px;line-height:16px}
+.crt-wed{font-style:normal;font-size:11px;color:#cfe0ff}.crt-wed.bad{color:#ffb2a6}

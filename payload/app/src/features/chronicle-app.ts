@@ -5,12 +5,16 @@ import * as path from 'path';
 import { ChronicleStore, ChronMeta, RADIO_IDX, chronKey } from '../chronicle';
 import { radioMirrorPlan } from '../radio';
 import { ctx } from '../app/ctx';
+import { bgWriteJson, flushBgWrites } from '../app/bg-worker';
 import { pick } from './settings-ui';
 
 let chronStore: ChronicleStore | null = null;
 export function chron(): ChronicleStore {
   if (!chronStore) {
     chronStore = new ChronicleStore(path.join(app.getPath('userData'), 'sllm_chronicle.json'), (sid) => ctx.govMem().currentBranch(sid));
+    chronStore.lazyMs = 1500; // 줄마다 파일 전체를 다시 쓰지 않고 1.5초에 한 번(2026-11-08, 사건 줄이 몰릴 때 앱 멈춤) — 끌 때 마저 쓴다
+    chronStore.writer = (f, d, done) => bgWriteJson(f, d, done); // 9MB 남짓을 만들고 쓰는 일은 작업 스레드가(2026-11-08)
+    const st = chronStore; app.on('before-quit', () => { try { flushBgWrites(); st.flush(); } catch { /* 종료 중 */ } });
     // 새 기록이 들어가면 연대기 화면에 알린다(짧은 시간에 몰리면 한 번으로 합친다)
     chronStore.onAdd = () => { if (chronNotifyT) return; chronNotifyT = setTimeout(() => { chronNotifyT = null; ctx.toUi('chronChanged', null); }, 300); };
   }

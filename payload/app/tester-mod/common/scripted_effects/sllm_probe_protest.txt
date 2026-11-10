@@ -1,0 +1,110 @@
+# SLLM 시위 시스템 자료(2026-10-23 초안, 집 PC 게임 script_documentation 으로 이름 확인 — 게임 안 검수 전).
+# 월간 상황(sllm_probe_state_scan) 안, STATE_END 바로 앞에서 부른다. 국가 scope(플레이어). 게임 규칙은 바꾸지 않는다.
+# 불러오기 이벤트에서는 Root 가 국가가 아닐 수 있어 Root 를 쓰지 않고 prev 사슬로 국가 변수를 쓴다(sllm_probe_scan.txt 와 같은 방식).
+# 로그:
+#   SLLM:PROTPLANET  행성마다(every_owned_colony 순서 = 앱의 k, 해산 명령도 같은 순서) — 인구 합·성향별 인구(pop_group 의 has_ethic, pop_group_size 가중)·
+#                    안정도·범죄·실업·주거·편의시설·총독 번호(sllm_lid)·총독 파벌 성향
+#   SLLM:RIGHTS      종족마다 — 시민권 유형 번호(1 완전 2 기계완전 3 동화 4 제한 5 노예 6 로봇예속 7 숙청 8 기계숙청 0 그 밖)
+# 군체·기계 제국(is_gestalt)은 시위가 없으므로 보내지 않는다.
+#   대신 SLLM:DEVIANT  이탈(planet_crime) 30 이상인 행성만 — 이름·이탈·안정도(알파 11 「이탈 노드 보고」, 앱 src/features/gestalt-report-app.ts)
+sllm_probe_protest_scan = {
+	if = {
+		limit = { is_gestalt = no }
+		every_owned_colony = {
+			set_variable = { which = sllm_pq_t value = 0 }
+			set_variable = { which = sllm_pq_e1 value = 0 } set_variable = { which = sllm_pq_e2 value = 0 } set_variable = { which = sllm_pq_e3 value = 0 } set_variable = { which = sllm_pq_e4 value = 0 }
+			set_variable = { which = sllm_pq_e5 value = 0 } set_variable = { which = sllm_pq_e6 value = 0 } set_variable = { which = sllm_pq_e7 value = 0 } set_variable = { which = sllm_pq_e8 value = 0 }
+			# 성향별 인구는 3달에 한 번(나라 변수 sllm_pq_pg = 1, sllm_probe_state_scan 에서 정함, 2026-10-24 렉 줄이기). 인구 합(t)도 이때만 센다.
+			if = { limit = { prev = { check_variable = { which = sllm_pq_pg value = 1 } } }
+			every_owned_pop_group = {
+				export_trigger_value_to_variable = { trigger = pop_group_size variable = sllm_pq_sz }
+				prev = { change_variable = { which = sllm_pq_t value = prev.sllm_pq_sz } }
+				if = { limit = { has_ethic = ethic_militarist } prev = { change_variable = { which = sllm_pq_e1 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_pacifist } prev = { change_variable = { which = sllm_pq_e2 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_authoritarian } prev = { change_variable = { which = sllm_pq_e3 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_egalitarian } prev = { change_variable = { which = sllm_pq_e4 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_xenophile } prev = { change_variable = { which = sllm_pq_e5 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_xenophobe } prev = { change_variable = { which = sllm_pq_e6 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_materialist } prev = { change_variable = { which = sllm_pq_e7 value = prev.sllm_pq_sz } } }
+				else_if = { limit = { has_ethic = ethic_spiritualist } prev = { change_variable = { which = sllm_pq_e8 value = prev.sllm_pq_sz } } }
+				clear_variable = sllm_pq_sz # 인구 집단마다 남지 않게(2026-10-24)
+			}
+			}
+			export_trigger_value_to_variable = { trigger = planet_stability variable = sllm_pq_st }
+			prev = { change_variable = { which = sllm_md_sum value = prev.sllm_pq_st } change_variable = { which = sllm_md_n value = 1 } } # 민심 합(2026-11-09: 행성을 두 번 돌지 않게, sllm_probe_state_scan)
+			if = { limit = { planet_stability < 25 } prev = { change_variable = { which = sllm_md_low value = 1 } } }
+			export_trigger_value_to_variable = { trigger = planet_crime variable = sllm_pq_cr }
+			export_trigger_value_to_variable = { trigger = num_unemployed variable = sllm_pq_un }
+			export_trigger_value_to_variable = { trigger = free_housing variable = sllm_pq_ho }
+			export_trigger_value_to_variable = { trigger = free_amenities variable = sllm_pq_am }
+			set_variable = { which = sllm_pq_gl value = 0 }
+			set_variable = { which = sllm_pq_ge value = 0 }
+			if = {
+				limit = { exists = leader }
+				leader = {
+					set_variable = { which = sllm_pq_lge value = 0 }
+					if = {
+						limit = { exists = pop_faction }
+						pop_faction = {
+							if = { limit = { has_ethic = ethic_militarist } prev = { set_variable = { which = sllm_pq_lge value = 1 } } }
+							else_if = { limit = { has_ethic = ethic_pacifist } prev = { set_variable = { which = sllm_pq_lge value = 2 } } }
+							else_if = { limit = { has_ethic = ethic_authoritarian } prev = { set_variable = { which = sllm_pq_lge value = 3 } } }
+							else_if = { limit = { has_ethic = ethic_egalitarian } prev = { set_variable = { which = sllm_pq_lge value = 4 } } }
+							else_if = { limit = { has_ethic = ethic_xenophile } prev = { set_variable = { which = sllm_pq_lge value = 5 } } }
+							else_if = { limit = { has_ethic = ethic_xenophobe } prev = { set_variable = { which = sllm_pq_lge value = 6 } } }
+							else_if = { limit = { has_ethic = ethic_materialist } prev = { set_variable = { which = sllm_pq_lge value = 7 } } }
+							else_if = { limit = { has_ethic = ethic_spiritualist } prev = { set_variable = { which = sllm_pq_lge value = 8 } } }
+						}
+					}
+					prev = { set_variable = { which = sllm_pq_ge value = prev.sllm_pq_lge } }
+					if = { limit = { is_variable_set = sllm_lid } prev = { set_variable = { which = sllm_pq_gl value = prev.sllm_lid } } }
+					clear_variable = sllm_pq_lge
+				}
+			}
+			prev = {
+				set_variable = { which = sllm_pq_rt value = prev.sllm_pq_t }
+				set_variable = { which = sllm_pq_r1 value = prev.sllm_pq_e1 } set_variable = { which = sllm_pq_r2 value = prev.sllm_pq_e2 } set_variable = { which = sllm_pq_r3 value = prev.sllm_pq_e3 } set_variable = { which = sllm_pq_r4 value = prev.sllm_pq_e4 }
+				set_variable = { which = sllm_pq_r5 value = prev.sllm_pq_e5 } set_variable = { which = sllm_pq_r6 value = prev.sllm_pq_e6 } set_variable = { which = sllm_pq_r7 value = prev.sllm_pq_e7 } set_variable = { which = sllm_pq_r8 value = prev.sllm_pq_e8 }
+				set_variable = { which = sllm_pq_rst value = prev.sllm_pq_st } set_variable = { which = sllm_pq_rcr value = prev.sllm_pq_cr } set_variable = { which = sllm_pq_run value = prev.sllm_pq_un }
+				set_variable = { which = sllm_pq_rho value = prev.sllm_pq_ho } set_variable = { which = sllm_pq_ram value = prev.sllm_pq_am }
+				set_variable = { which = sllm_pq_rgl value = prev.sllm_pq_gl } set_variable = { which = sllm_pq_rge value = prev.sllm_pq_ge }
+			}
+			log = "SLLM:PROTPLANET/;/n=\\[Prev.sllm_st_n]/;/t=\\[Prev.sllm_pq_rt]/;/e1=\\[Prev.sllm_pq_r1]/;/e2=\\[Prev.sllm_pq_r2]/;/e3=\\[Prev.sllm_pq_r3]/;/e4=\\[Prev.sllm_pq_r4]/;/e5=\\[Prev.sllm_pq_r5]/;/e6=\\[Prev.sllm_pq_r6]/;/e7=\\[Prev.sllm_pq_r7]/;/e8=\\[Prev.sllm_pq_r8]/;/st=\\[Prev.sllm_pq_rst]/;/cr=\\[Prev.sllm_pq_rcr]/;/un=\\[Prev.sllm_pq_run]/;/ho=\\[Prev.sllm_pq_rho]/;/am=\\[Prev.sllm_pq_ram]/;/gl=\\[Prev.sllm_pq_rgl]/;/ge=\\[Prev.sllm_pq_rge]/;/pg=\\[Prev.sllm_pq_pg]/;/name=\\[This.GetName]"
+			# 변수 줄이기(2026-10-24): 행성에 남은 임시 값 지우기
+			clear_variable = sllm_pq_t clear_variable = sllm_pq_e1 clear_variable = sllm_pq_e2 clear_variable = sllm_pq_e3 clear_variable = sllm_pq_e4
+			clear_variable = sllm_pq_e5 clear_variable = sllm_pq_e6 clear_variable = sllm_pq_e7 clear_variable = sllm_pq_e8
+			clear_variable = sllm_pq_st clear_variable = sllm_pq_cr clear_variable = sllm_pq_un clear_variable = sllm_pq_ho clear_variable = sllm_pq_am clear_variable = sllm_pq_gl clear_variable = sllm_pq_ge
+		}
+		every_owned_species = {
+			prev = { set_variable = { which = sllm_pq_cit value = 0 } }
+			if = { limit = { has_citizenship_type = { country = prev type = citizenship_full } } prev = { set_variable = { which = sllm_pq_cit value = 1 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_full_machine } } prev = { set_variable = { which = sllm_pq_cit value = 2 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_assimilation } } prev = { set_variable = { which = sllm_pq_cit value = 3 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_limited } } prev = { set_variable = { which = sllm_pq_cit value = 4 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_slavery } } prev = { set_variable = { which = sllm_pq_cit value = 5 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_robot_servitude } } prev = { set_variable = { which = sllm_pq_cit value = 6 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_purge } } prev = { set_variable = { which = sllm_pq_cit value = 7 } } }
+			else_if = { limit = { has_citizenship_type = { country = prev type = citizenship_purge_machine } } prev = { set_variable = { which = sllm_pq_cit value = 8 } } }
+			log = "SLLM:RIGHTS/;/n=\\[Prev.sllm_st_n]/;/cit=\\[Prev.sllm_pq_cit]/;/sp=\\[This.GetName]"
+		}
+		# 나라에 복사해 둔 기록용 값도 지운다(2026-10-24). sllm_pq_m(주기)·sllm_pq_pg 는 남긴다.
+		clear_variable = sllm_pq_rt clear_variable = sllm_pq_r1 clear_variable = sllm_pq_r2 clear_variable = sllm_pq_r3 clear_variable = sllm_pq_r4
+		clear_variable = sllm_pq_r5 clear_variable = sllm_pq_r6 clear_variable = sllm_pq_r7 clear_variable = sllm_pq_r8
+		clear_variable = sllm_pq_rst clear_variable = sllm_pq_rcr clear_variable = sllm_pq_run clear_variable = sllm_pq_rho clear_variable = sllm_pq_ram clear_variable = sllm_pq_rgl clear_variable = sllm_pq_rge clear_variable = sllm_pq_cit
+	}
+	else = {
+		# 단일 의식(알파 11, 2026-10-25): 시위 대신 「이탈 노드」 — 이탈(게임 planet_crime) 30 이상인 행성만 한 줄씩(렉 줄이기). 줄이 없으면 이탈 노드 없음.
+		every_owned_colony = {
+			export_trigger_value_to_variable = { trigger = planet_crime variable = sllm_pq_cr }
+			if = {
+				limit = { check_variable = { which = sllm_pq_cr value >= 30 } }
+				export_trigger_value_to_variable = { trigger = planet_stability variable = sllm_pq_st }
+				prev = { set_variable = { which = sllm_pq_rcr value = prev.sllm_pq_cr } set_variable = { which = sllm_pq_rst value = prev.sllm_pq_st } }
+				log = "SLLM:DEVIANT/;/n=\\[Prev.sllm_st_n]/;/name=\\[This.GetName]/;/cr=\\[Prev.sllm_pq_rcr]/;/st=\\[Prev.sllm_pq_rst]"
+				clear_variable = sllm_pq_st
+			}
+			clear_variable = sllm_pq_cr
+		}
+		clear_variable = sllm_pq_rcr clear_variable = sllm_pq_rst
+	}
+}

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Date</title>
+<!-- 데이트 지도(24·25, 2026-10-23 집 PC 초안). 앱: src/features/romance-app.ts · 규칙: src/romance.ts.
+     데이트 지도에서 장소를 고르면 장소 배경 위 미연시식 대화창(기존 초상화 + 이름 + 대사)으로 들어간다. 결과 판정·호감 반영은 앱, 대사만 AI.
+     문구는 ui(한, 영)만(언어 팩 호환). 인물 이름·대사는 data-i18n-skip. -->
+<style>
+ :root{--bg:#0b1020;--text:#eef0f8;--dim:#9aa4c4;--hi:#ff9ec8;--hi2:#8fd8ff;--gold:#ffd27a;--line:color-mix(in srgb,#ff9ec8 35%,transparent);--panel:#141a33;--mono:"D2Coding","Cascadia Mono",Consolas,"Malgun Gothic",monospace}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,input{font:inherit;color:var(--text)} button{cursor:pointer;border:1px solid var(--line);background:color-mix(in srgb,var(--hi) 12%,transparent);padding:6px 14px;border-radius:999px} button:hover:not(:disabled){background:var(--hi);color:#2a0b1c} button:disabled{opacity:.4;cursor:not-allowed}
+ #top{position:absolute;left:0;right:0;top:0;height:44px;display:flex;align-items:center;gap:12px;padding:0 14px;z-index:30;-webkit-app-region:drag;background:linear-gradient(#000a,#0000)}
+ #top .t{font-weight:700;letter-spacing:.08em;color:var(--hi)} #top .sp{flex:1} #top button{-webkit-app-region:no-drag}
+ #x{background:none;border-color:transparent;color:var(--dim);padding:2px 8px}
+ #who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim)} #who b{color:var(--text)} #heart{color:var(--hi)}
+ /* 지도 */
+ #map{position:absolute;inset:44px 0 0 0;display:flex;align-items:center;justify-content:center}
+ #map svg{width:min(96vw,150vh);height:auto;max-height:calc(100vh - 150px)}
+ .spot{cursor:pointer} .spot circle.ring{fill:color-mix(in srgb,var(--hi) 20%,#000);stroke:var(--hi);stroke-width:2;transition:all .2s} .spot:hover circle.ring{fill:var(--hi)}
+ .spot text{fill:var(--text);font:600 15px "Malgun Gothic",sans-serif;text-anchor:middle;paint-order:stroke;stroke:#0b1020;stroke-width:4px}
+ .spot .ic{font-size:22px;stroke:none} .spot.done circle.ring{stroke:var(--gold);fill:color-mix(in srgb,var(--gold) 25%,#000)} .spot.lock{cursor:not-allowed;opacity:.45}
+ #mapNote{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font-size:13px;color:var(--dim);background:color-mix(in srgb,var(--bg) 80%,transparent);padding:6px 14px;border-radius:999px;border:1px solid var(--line)}
+ /* 장면 */
+ #scene{position:absolute;inset:0;display:none} body.inscene #scene{display:block} body.inscene #map,body.inscene #mapNote{display:none}
+ #bg{position:absolute;inset:0;transition:background .6s}
+ #pt{position:absolute;left:6%;bottom:200px;width:min(30vw,340px);aspect-ratio:3/3.7;border-radius:18px;overflow:hidden;border:2px solid color-mix(in srgb,var(--hi) 60%,transparent);box-shadow:0 0 40px color-mix(in srgb,var(--hi) 30%,transparent);background:#0006}
+ #pt img{width:100%;height:100%;object-fit:cover;object-position:50% 18%} #pt .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 80px var(--mono);color:var(--hi);opacity:.6}
+ #spotName{position:absolute;right:24px;top:58px;font:600 13px var(--mono);letter-spacing:.14em;color:var(--dim);background:#0007;padding:4px 12px;border-radius:999px}
+ #box{position:absolute;left:4%;right:4%;bottom:18px;min-height:168px;border-radius:16px;background:color-mix(in srgb,#0b1020 88%,transparent);border:1px solid var(--line);padding:14px 18px;display:flex;flex-direction:column;gap:8px;box-shadow:0 10px 40px #0009}
+ #lp{float:left;width:74px;height:74px;margin:0 12px 6px 0;border-radius:50%;overflow:hidden;border:2px solid color-mix(in srgb,var(--hi) 60%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--hi) 30%,transparent);background:#0b1b23} #lp[hidden]{display:none} #lp img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+ #nm{font-weight:700;color:var(--hi)} #say{font-size:15.5px;min-height:46px;white-space:pre-wrap}
+ #mine{color:var(--gold);font-size:13px;min-height:18px}
+ .in{display:flex;gap:8px} #q{flex:1;border:1px solid var(--line);background:#0006;border-radius:999px;padding:7px 14px;outline:none}
+ .acts{display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--dim)} .acts .r{display:flex;gap:8px}
+ #status{color:#ffb3a8;font-size:12.5px;min-height:16px}
+ #result{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:40} #result.on{display:flex}
+ #result .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 28px;text-align:center;min-width:320px} #result b{display:block;font-size:20px;color:var(--hi);margin:6px 0}
+
+ /* AI park artwork: labels and visit state remain live, language-pack compatible. */
+ #map{inset:44px 0 62px}
+ #map svg{width:min(100vw,calc((100vh - 106px)*1.666667));max-height:100%;filter:drop-shadow(0 12px 30px #0008)}
+ .spot circle.ring{fill:#102839ed;stroke:#9ddfe5;stroke-width:1.5}
+ .spot .spot-label{fill:#081923ed;stroke:#78b5bd99;stroke-width:1}
+ .spot text{font-size:14px;stroke-width:2px}
+ .spot .ic{font-size:20px}
+ .spot:hover .spot-label,.spot:focus .spot-label{fill:#284755;stroke:#ffe0a3}
+ .spot:focus{outline:none}.spot:focus circle.ring{stroke:#fff;stroke-width:3}
+ .spot.done .spot-label{stroke:var(--gold)}
+ .spot.lock{opacity:.75}
+ #mapNote{white-space:nowrap;bottom:12px}
+
+ /* Linked map pins and destination list. */
+ #map{gap:0;align-items:stretch;padding:14px 18px}
+ .map-art{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;background:#080f19;border:1px solid #35515c;border-radius:12px 0 0 12px;overflow:hidden}
+ #map svg{width:100%;height:auto;max-height:100%;filter:none}
+ .places{width:252px;flex-shrink:0;padding:18px 14px;background:linear-gradient(160deg,#142c36,#0c1724);border:1px solid #35515c;border-left:0;border-radius:0 12px 12px 0;overflow:auto;scrollbar-width:thin;scrollbar-color:#537987 #0c1724}
+ .places h2{font-size:19px;margin:0 0 5px;color:#ffdfaa}.places p{font-size:12px;color:#a9c0ca;margin:0 0 18px}
+ .place-list{display:flex;flex-direction:column;gap:7px}
+ .place{width:100%;display:flex;gap:12px;align-items:center;text-align:left;border:1px solid #3c5965;background:#102532;border-radius:7px;padding:10px;color:#eef6fa}
+ .place-no{display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;border:1px solid #83c9d5;border-radius:50%;color:#bcf3fc;font-weight:700}
+ .place-info{display:flex;flex-direction:column;min-width:0;flex:1}.place-info b{font-size:14px}.place-info small{font-size:11px;color:#9ab9c5}.place-arrow{font-size:22px;color:#9ce5ee}
+ .place.highlight,.place:hover:not(:disabled){background:#294b58;color:white;border-color:#f5d59b}
+ .place.lock{opacity:.55}.place.done .place-no{color:#ffe0a2;border-color:#e4bf77}.place.current{border-color:#e4bf77;background:#353329}
+ .spot .halo{fill:#08172488;stroke:#c6eaff66;stroke-width:1}.spot .ring{fill:#102b3a;stroke:#b5f2ff;stroke-width:2}
+ .spot text{font-size:12px;stroke-width:1}.spot .number{font-size:17px;stroke:none;fill:white;font-weight:700}
+ .spot.highlight .halo{fill:#ffdb8a55;stroke:#ffe2a5;stroke-width:3}.spot.highlight .ring{fill:#785e2e;stroke:#fff1c7}
+ .spot.highlight .spot-label{fill:#304958;stroke:#ffdfaa}.spot.current .ring{stroke:#ffe0a2;fill:#675020}
+ .spot.lock{opacity:.65}
+ @media(max-width:1050px){#map{padding:8px}.places{width:210px;padding:12px 10px}.places h2{font-size:17px}.places p{margin-bottom:10px}.place{padding:7px;gap:8px}.place-list{gap:5px}.place-info b{font-size:13px}}
+
+ /* Scene art and the secretary are separate layers; other leaders show scenery only. */
+ #bg{background-color:#101b2c}
+ #scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#050b1933,transparent 23%,transparent 65%,#050b1944);z-index:0}
+ #pt{left:26%;bottom:-5%;height:98%;width:auto;aspect-ratio:2/3;transform:translateX(-50%);border:0;border-radius:0;box-shadow:none;background:none;overflow:visible;z-index:1;pointer-events:none}
+ #pt[hidden]{display:none}
+ #pt img{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(2px 4px 5px #07132240)}
+ #box{z-index:3;background:linear-gradient(110deg,#0a1728ef,#101d30db);border-color:#a3c6d46b;backdrop-filter:blur(9px);max-height:34vh}
+ #say{max-height:15vh;overflow:auto;scrollbar-width:thin;scrollbar-color:#5b8795 transparent}
+ #mine{max-height:5vh;overflow:auto}
+ #spotName{z-index:3;color:#eef6ff;border:1px solid #d6bc8c77;background:#0b1929cc}
+
+ /* Per-place companion poses. */
+ #scene[data-place] #pt{left:27%;height:98%;bottom:-5%}
+ #scene[data-place="wheel"] #pt{left:22%;height:83%;bottom:-6%}
+ #scene[data-place="garden"] #pt{left:27%;height:95%;bottom:-15%}
+ #scene[data-place="restaurant"] #pt{left:74%;height:76%;bottom:-2%}
+ #scene[data-place="tower"] #pt{left:43%;height:80%;bottom:13%}
+ #scene[data-place="relics"] #pt{left:30%;height:95%;bottom:-3%}
+</style>
+<script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+</head><body>
+<div id="top"><span class="t" id="ttl"></span><span id="who"></span><span class="sp"></span><button id="toMap" type="button" hidden></button><button id="end" type="button"></button><button id="x" type="button">✕</button></div>
+<div id="map"></div>
+<div id="mapNote"></div>
+<div id="scene"><div id="bg"></div><div id="spotName" data-i18n-skip></div><div id="pt"></div>
+ <div id="box"><div id="lp" hidden></div><div id="nm" data-i18n-skip></div><div id="say" data-i18n-skip></div><div id="mine" data-i18n-skip></div>
+  <div class="in"><input id="q" autocomplete="off"><button id="send" type="button"></button></div>
+  <div class="acts"><span id="turns"></span><span id="status" role="status"></span></div></div></div>
+<div id="result"><div class="card"><div id="rT"></div><b id="rB" data-i18n-skip></b><div id="rD"></div><div style="margin-top:14px"><button id="rOk" type="button"></button></div></div></div>
+<script>
+ const $ = (id) => document.getElementById(id);
+ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+ const ui = (ko, en) => window.SLLMI18n?.pick ? window.SLLMI18n.pick(ko, en) : ko;
+ let S = null, IMG = { images: {}, defaults: {} }, busy = false, inScene = false;
+ const pic = (k, seed) => (k && window.SLLMVariant && SLLMVariant.pick(IMG.images, ['delegate:' + k, 'class:' + k], seed, IMG.defaults[k])) || null;
+ // 지도 자리(그림 좌표 1000×600). 길은 입구에서 시작해 갈라진다.
+ const POS = { gate: [480, 485, '🎟'], stalls: [770, 365, '🍢'], garden: [165, 145, '🌸'], wheel: [478, 218, '🎡'], tower: [724, 152, '🔭'], restaurant: [900, 235, '🍽'], relics: [293, 64, '🏺'] };
+ const BG = { gate: 'linear-gradient(180deg,#2a3b78,#d86f9a 70%,#f2b179)', rides: 'linear-gradient(180deg,#1a1240,#5b2a8a 55%,#e0559a)', stalls: 'linear-gradient(180deg,#2b1a14,#8a4a22 55%,#f0a050)', garden: 'linear-gradient(180deg,#0f1c33,#2b5a5a 55%,#8ac8a0)', wheel: 'linear-gradient(180deg,#0a0f2a,#3a2a6a 50%,#f08aa0)', tower: 'radial-gradient(ellipse at 50% 20%,#3a4a9a,#0a0f2a 70%)', restaurant: 'linear-gradient(180deg,#1a0f12,#5a2a2a 55%,#c08a5a)', relics: 'linear-gradient(180deg,#14141a,#3a3426 60%,#8a7a50)' };
+ function statics() {
+  $('ttl').textContent = ui('데이트', 'DATE'); $('end').textContent = ui('데이트 마치기', 'End the date'); $('toMap').textContent = ui('‹ 지도로', '‹ Map');
+  $('x').title = ui('닫기 (Esc) — 데이트는 마치기 전까지 열린 채로 남습니다', 'Close (Esc) — the date stays open until you end it');
+  $('q').placeholder = ui('말을 건네세요…', 'Say something…'); $('send').textContent = ui('말하기', 'Say'); $('rOk').textContent = ui('집무실로', 'Back to the office');
+ }
+ function drawMap() {
+  const paths = [['gate', 'wheel'], ['gate', 'rides'], ['gate', 'stalls'], ['rides', 'garden'], ['wheel', 'garden'], ['wheel', 'tower'], ['stalls', 'restaurant'], ['tower', 'restaurant'], ['garden', 'relics'], ['wheel', 'relics']];
+  const sp = Object.fromEntries((S.spots || []).map((s) => [s.id, s]));
+  let svg = `<svg viewBox="0 0 1000 600" role="group" aria-label="${esc(ui('데이트 지도', 'Date map'))}"><rect width="1000" height="600" fill="#111b30"/><image href="assets/date/park-map-v2.png" width="1000" height="600" preserveAspectRatio="xMidYMid slice"/><rect width="1000" height="600" fill="#061221" opacity=".10"/>`;
+  let cards = '';
+  for (const [i, id] of Object.keys(POS).entries()) { const s = sp[id]; if (!s) continue; const [x,y] = POS[id];
+   const current = S.spot?.id === id;
+   const state = s.locked ? ui('잠김', 'Locked') : current ? ui('현재 장소', 'Current stop') : s.visited ? ui('방문 완료', 'Visited') : ui('방문하기', 'Visit');
+   const cls = `${s.visited ? ' done' : ''}${s.locked ? ' lock' : ''}${current ? ' current' : ''}`;
+   svg += `<g class="spot${cls}" data-id="${id}" tabindex="0" role="button" aria-label="${esc(s.name + ' · ' + state)}"><circle class="halo" cx="${x}" cy="${y}" r="27"/><circle class="ring" cx="${x}" cy="${y}" r="18"/><text class="number" x="${x}" y="${y+6}">${s.locked ? '×' : s.visited && !current ? '✓' : i+1}</text><rect class="spot-label" x="${x-68}" y="${y+23}" width="136" height="25" rx="5"/><text x="${x}" y="${y+40}">${esc(s.name)}</text></g>`;
+   cards += `<button type="button" class="place${cls}" data-id="${id}"><span class="place-no">${i+1}</span><span class="place-info"><b>${esc(s.name)}</b><small>${esc(state)}</small></span><span class="place-arrow">${s.locked ? '🔒' : current ? '●' : s.visited ? '✓' : '›'}</span></button>`;
+  }
+  $('map').innerHTML = `<div class="map-art">${svg}</svg></div><aside class="places"><h2>${esc(ui('어디로 갈까요?', 'Where shall we go?'))}</h2><p>${esc(ui('지도 또는 목록에서 장소를 고르세요.', 'Choose a place on the map or below.'))}</p><div class="place-list">${cards}</div></aside>`;
+  for (const g of document.querySelectorAll('.spot,.place')) {
+   const f=()=>go(g.dataset.id);g.onclick=f;
+   if(g.classList.contains('spot'))g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}};
+   const highlight=on=>{for(const el of document.querySelectorAll('.spot,.place'))el.classList.toggle('highlight',on&&el.dataset.id===g.dataset.id);};
+   g.onmouseenter=()=>highlight(true);g.onmouseleave=()=>highlight(false);g.onfocus=()=>highlight(true);g.onblur=()=>highlight(false);
+  }
+  $('mapNote').innerHTML = `<span>${esc(ui(`들를 수 있는 곳 ${S.left}곳 남음`, `${S.left} place(s) left to visit`))}</span>${S.spot ? `<button type="button" id="back2">${esc(ui(`${S.spot.name}(으)로 돌아가기`, `Back to ${S.spot.name}`))}</button>` : ''}`;
+  if ($('back2')) $('back2').onclick = () => { inScene = true; render(); };
+ }
+ function drawScene() {
+  const sp = S.spot; if (!sp) return;
+  const sceneIds = ['gate','stalls','garden','wheel','tower','restaurant','relics'];
+  $('bg').style.background = sceneIds.includes(sp.id) ? `url("assets/date/scenes/${['tower','garden'].includes(sp.id) ? sp.id + '-v2' : sp.id + '-v1'}.png") center / cover no-repeat` : BG[sp.id] || BG.gate;
+  $('spotName').textContent = sp.name;
+  // Explicit identity only. Normal leaders must never receive the secretary sprite.
+  const isSecretary = S.partner?.key === 'sec';
+  $('pt').hidden = !isSecretary;
+  const pose = sceneIds.includes(sp.id) ? sp.id : 'gate';
+  $('scene').dataset.place = pose;
+  $('pt').style.left = '';
+  const src = `assets/date/scenes/secretary-${pose}-v2.png`;
+  if (isSecretary) {
+   let im = $('pt').querySelector('img');
+   if (!im) { im = document.createElement('img'); im.alt = ''; $('pt').replaceChildren(im); }
+   if (im.getAttribute('src') !== src) im.src = src;
+   im.onerror = () => { $('pt').hidden = true; };
+  } else $('pt').replaceChildren();
+  // 일반 지도자(24): 전용 전신 그림 대신 기존 초상화를 대화창에(비서는 전신 그림이 있으므로 숨김)
+  { const u = !isSecretary && S.partner ? pic(S.partner.cls, S.partner.name) : null; const lp = $('lp'); lp.hidden = !u; if (u) { let im = lp.querySelector('img'); if (!im) { im = document.createElement('img'); im.alt = ''; lp.replaceChildren(im); } if (im.getAttribute('src') !== u) im.src = u; im.onerror = () => { lp.hidden = true; }; } }
+  const last = [...sp.talk].reverse().find((t) => t.who === 'partner'), mine = [...sp.talk].reverse().find((t) => t.who === 'ruler');
+  $('nm').textContent = S.partner.name; if (!busy) $('say').textContent = last ? last.text : '…';
+  $('mine').textContent = mine ? `${S.ruler || ui('나', 'Me')}: ${mine.text}` : '';
+  $('turns').textContent = ui(`여기서 ${S.turnsLeft}번 더 이야기할 수 있습니다`, `${S.turnsLeft} more line(s) here`);
+  $('send').disabled = busy || S.busy || S.turnsLeft <= 0; $('q').disabled = busy || S.turnsLeft <= 0;
+ }
+ function render(st) {
+  if (st) S = st; if (!S) return;
+  if (!S.open) { if (!$('result').classList.contains('on')) window.sllm.dateClose(); return; }
+  document.body.classList.toggle('inscene', inScene && !!S.spot);
+  $('who').innerHTML = `<span>${esc(ui('함께하는 사람', 'With'))}</span> <b data-i18n-skip>${esc(S.partner.name)}</b> <span id="heart">${S.affection === null ? '' : '♥ ' + S.affection}</span>`;
+  $('toMap').hidden = !(inScene && S.spot); $('end').disabled = busy;
+  drawMap(); if (inScene) drawScene();
+ }
+ async function type(text) { const el = $('say'), ch = [...text]; for (let i = 1; i <= ch.length; i++) { el.textContent = ch.slice(0, i).join(''); await new Promise((r) => setTimeout(r, 18)); } }
+ async function go(id) {
+  const s = (S.spots || []).find((x) => x.id === id); if (!s || busy) return;
+  if (s.visited && S.spot && S.spot.id === id) { inScene = true; render(); return; }
+  if (s.locked || s.visited) { $('mapNote').firstChild.textContent = s.locked ? ui('유물전시관은 다음 마이너 패치 때 공개될 예정입니다.', 'The Relic Gallery will open in the next minor patch.') : ui('이번 데이트에서 이미 들른 곳입니다.', 'Already visited on this date.'); return; }
+  busy = true; inScene = true; S.spot = { id, name: s.name, talk: [] }; S.turnsLeft = 0; render(); $('say').textContent = ui('…걸어가는 중', '…on the way');
+  try { const r = await window.sllm.dateGo(id); if (r.state) S = r.state; if (!r.ok) { $('status').textContent = r.error || ''; } else { busy = false; render(); await type(r.say); } }
+  finally { busy = false; render(); $('q').focus(); }
+ }
+ async function send() {
+  const t = $('q').value.trim(); if (!t || busy) return;
+  busy = true; $('status').textContent = ''; $('mine').textContent = `${S.ruler || ui('나', 'Me')}: ${t}`; $('q').value = ''; $('say').textContent = '…'; drawScene();
+  try { const r = await window.sllm.dateSay(t); if (r.state) S = r.state; if (!r.ok) { $('status').textContent = r.error || ''; $('q').value = t; } else { busy = false; drawScene(); await type(r.say); } }
+  finally { busy = false; render(); $('q').focus(); }
+ }
+ $('send').onclick = send; $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) send(); });
+ $('toMap').onclick = () => { inScene = false; render(); };
+ $('end').onclick = async () => {
+  if (busy) return; busy = true;
+  try { const r = await window.sllm.dateEnd(); if (!r.ok) { $('status').textContent = r.error || ''; return; }
+   if (r.cancelled) { window.sllm.dateClose(); return; }
+   $('rT').textContent = ui('데이트를 마쳤습니다', 'The date is over'); $('rB').textContent = r.label;
+   $('rD').textContent = r.delta > 0 ? ui(`호감 +${r.delta} (지금 ${r.affection})`, `Affection +${r.delta} (now ${r.affection})`) : r.delta < 0 ? ui(`호감 ${r.delta} (지금 ${r.affection})`, `Affection ${r.delta} (now ${r.affection})`) : ui(`호감 변화 없음 (지금 ${r.affection})`, `No change in affection (now ${r.affection})`);
+   $('result').classList.add('on');
+  } finally { busy = false; }
+ };
+ $('rOk').onclick = () => window.sllm.dateClose();
+ $('x').onclick = () => window.sllm.dateClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.dateClose(); });
+ statics();
+ document.addEventListener('sllm-language', () => { statics(); if (S) render(); });
+ window.sllm.onDateState((st) => { if (!busy) render(st); else if (st) S = st; });
+ window.sllm.onTheme && window.sllm.onTheme(() => {});
+ window.sllm.getImageState().then((st) => { IMG = st || IMG; }, () => {}).then(() => window.sllm.dateState()).then((st) => { if (st) { inScene = !!(st.spot && st.spot.talk.length); render(st); } });
+</script>
+</body></html>

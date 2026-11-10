@@ -5,7 +5,7 @@ export function agendaTitle(key: string): string {
   return k || '안건';
 }
 
-const CRISIS_NAMES: Record<string, string> = { prethoryn: '프레토린 스컬지', unbidden: '불청객', contingency: '컨틴전시', greatkhan: '대칸', nanites: '나노 군체' };
+const CRISIS_NAMES: Record<string, string> = { prethoryn: '프레소린 스컬지', unbidden: '언비든', contingency: '컨틴전시', greatkhan: '그레이트 칸', nanites: '나노 군체' };
 /**
  * 의회 안건이 은하 위기를 알리는 것이면 연대기용 한 문장을, 아니면 null.
  * - resolution_galactic_focus_crisis_<종류>: 위기가 이미 나타나 공동체가 대응에 나선다

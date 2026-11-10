@@ -1,0 +1,40 @@
+# SLLM 종속국 통치권(2026-11-05) — 앱: src/features/vassal-reign-app.ts · 효과: scripted_effects/sllm_vassal_reign.txt
+# 괴뢰 통치자(5년): 종주국이 앉힌 통치자. 우리 사람이면 더 충성스럽다. monthly_loyalty 는 바닐라 종속 수정자와 같은 키.
+sllm_vr_puppet = {
+	monthly_loyalty = 1.5
+}
+sllm_vr_puppet_ours = {
+	monthly_loyalty = 2.5
+}
+# 밀려난 통치자의 원한(3년)
+sllm_vr_grudge = {
+	monthly_loyalty = -0.5
+}
+# 간섭 반감 1·2·3단계(충성도에 따라 180·360·540일)
+sllm_vr_meddle_1 = {
+	planet_stability_add = -5
+	faction_approval = -0.05
+}
+sllm_vr_meddle_2 = {
+	planet_stability_add = -10
+	faction_approval = -0.1
+}
+sllm_vr_meddle_3 = {
+	planet_stability_add = -15
+	faction_approval = -0.2
+}
+# 함대 헌납(2년) · 강제 헌납(3년)
+sllm_vr_tithe = {
+	monthly_loyalty = -1
+}
+sllm_vr_tithe_forced = {
+	monthly_loyalty = -2
+}
+# 역방향(2026-11-05, 우리가 종속국일 때): 종주국 명령 거절(2년) · 종주국 감시관(5년)
+sllm_vo_defiance = {
+	monthly_loyalty = -1
+}
+sllm_vo_minder = {
+	country_unity_produces_mult = -0.1
+	monthly_loyalty = 1
+}

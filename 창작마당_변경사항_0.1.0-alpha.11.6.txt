@@ -1,0 +1,336 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 11.6 — 인터넷, 궁정과 가문, 새 외교, 일상 분위기 (0.1.0-alpha.11.6)[/h1]
+
+알파 11.4 이후의 업데이트입니다. 집무실에서 은하의 [b]인터넷[/b]을 돌아다닐 수 있게 되었고, 우리 제국 안의 [b]음모와 통치 가문[/b], 하츠 오브 아이언에서 따온 [b]새 외교 3가지[/b], 제국 상황에 따라 바뀌는 [b]일상 분위기[/b]가 생겼습니다. 새 기능은 대부분 틀 문장과 확률로 움직이고, AI는 직접 쓴 글·대화에만 씁니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]🌐 인터넷 (집무실 「제국 안의 사람들」 → 「인터넷」)[/h2]
+[list]
+[*]은하 세계관 속 홈페이지 3곳을 돌아다닙니다. [b]트윙클[/b](짧은 글 · 다시 반짝 · 공감 · 지금 뜨는 태그), [b]DS인사이드[/b](익명 갤럭시 · 개념성 · 닉 옆에 「ㅇㅇ(KL4.118)」 같은 은하망 주소), [b]레드시프트[/b](s/ 게시판 · 청색편이/적색편이 투표 · 긴 토론글).
+[*]시민 글은 AI 없이 만들어집니다. 인터넷을 열거나 ⟳ 새로고침할 때, 지난번 이후 흐른 게임 시간만큼, 사이트마다 최대 15개를 만듭니다. 게임 시간이 거의 흐르지 않았으면 「아직 새 소식이 없습니다」가 나옵니다.
+[*]세이브마다 단골 시민 24명(진보·보수·중립, 실제 파벌 지지율에 맞춤)이 있고, 민심에 따라 찬반 비율이 움직입니다(어느 쪽도 90%를 넘지 않음). 자기 성향을 말하는 의견글과 반대 성향의 댓글 언쟁도 있습니다.
+[*]시민들이 [b]경기 단계[/b](호황 · 보통 · 둔화 · 불황 · 공황)를 체감합니다. 물가·배급·정전·구직 같은 글이 늘어납니다.
+[*]13세가 넘은 통치자의 자녀도 글을 올립니다(한 번에 최대 3개, 돌아가며).
+[*][b]일상 인플루언서 5명[/b](루미 · 소라 셰프 · 네브 · 미오와 꼬물이 · 아델 본): 새로고침마다 적어도 2개의 글이 올라옵니다. 이름을 누르면 프로필, 「팔로우」, 「프로필 편집」(이름·소개·입버릇·분야·성향·사진)이 있습니다. 사진은 「저대역 모드」라 설명 카드로 나옵니다.
+[*][b]직접 쓰기[/b]: 트윙클·레드시프트는 공식 계정과 민간 계정, DS인사이드는 익명입니다. 글과 답글에는 AI가 시민 반응을 한 번에 붙여 줍니다(글 하나당 AI 1번). 민간 계정 닉네임은 직접 정합니다.
+[*]민간 계정·익명 글은 [b]아주 드물게[/b] 통치자라는 게 들통납니다(통치자를 감싸는 글을 쓰면 아주 조금 더). 들통나면 신문에 실립니다.
+[*]인터넷 글은 민심을 바꾸지 않습니다. 예외는 신문에 실릴 때뿐입니다(공식 글이 크게 화제가 되거나 논란이 될 때, 6개월에 한 건까지).
+[*][b]행성 홍보 협업[/b]: 공식 계정으로 인플루언서에게 행성 홍보를 의뢰하면 에너지 50 + 소비재 100을 내고, 2년 동안 그 행성의 이주 끌림이 +10~25%(인플루언서 규모에 따라) 오릅니다. 홍보 글에는 사진이 붙습니다.
+[*][b]광고[/b]: 사이트마다 원래 사이트식 광고가 나옵니다(트윙클 후원 글, DS 배너, 레드시프트 홍보 글). 광고를 누르면 광고주 홈페이지가 열리고, 엔클레이브 광고에서는 수집품 판매·순회 공연·큐레이터 대여로 바로 가거나 「1:1 문의」로 흥정할 수 있습니다.
+[*]기계 지성·군체 제국에는 인터넷이 없습니다.
+[/list]
+
+[h2]🏛️ 궁정 — 음모 (집무실 「궁정」)[/h2]
+[list]
+[*]우리 지도자(통치자 제외)가 가끔 음모를 꾸밉니다. 1년에 한 번 8% 확률이고, 행성이 불안하거나 시위 중이거나 전쟁에서 지고 있으면 더 잦아집니다(최대 25%). 동시에 2건까지입니다.
+[*]종류: 총독의 독립 모의 · 장군·제독의 권력 노림 · 장관 부패 · 반대 파벌과 결탁 · 적국 망명 준비 · (세습 정부) 후계 다툼.
+[*]진행도 30이 되면 비서가 「수상한 낌새」를 귀띔합니다. 그때부터 [b]매수[/b](에너지 300, 진행도 −30)·[b]추문 폭로[/b](영향력 50, 음모자 영향력 −40·진행도 −20)로 견제할 수 있습니다.
+[*]매달 조금씩 드러날 기회가 있고(진행도 50이 넘으면 더 잘 드러남), 드러나면 처리를 고릅니다: [b]회유[/b](에너지 500 + 영향력 50, 5년 안에 30% 확률로 다시 꾸밈) · [b]좌천[/b](민심 −1) · [b]체포[/b](「수감됨」 특성, 민심 −3, 30% 확률로 시위) · [b]추방[/b](민심 −5, 50% 확률로 시위, 40% 확률로 적국이 받아 지도자로 씀). 좌천·체포·추방은 그 인물 쪽 파벌 매력도를 1년 동안 −10% 낮춥니다.
+[*]수감자는 「수감자」 탭에서 석방하거나 처형 절차로 넘길 수 있습니다.
+[*]끝까지 들키지 않으면 음모가 이루어집니다: 행성 안정도 −15(2년)와 시위 · 영향력 −100 · 에너지 −10%(1년) · 파벌 매력도 +15%(2년) · 실제로 적국 지도자가 됨.
+[/list]
+
+[h2]👑 가문과 가계도[/h2]
+[list]
+[*]통치 가문이 생깁니다. 이름은 통치자의 성이 기본이고 바꿀 수 있습니다. 가문 특성 16종 가운데 2개를 가지며(이야기 효과), 1:1 대화에서 가문 사람의 말투에 묻어납니다.
+[*]가문 특성은 자녀에게 하나마다 70% 확률로 이어지고, 세대마다 20% 확률로 새 특성이 생깁니다. 아기방에서 자녀의 가문 특성을 볼 수 있습니다.
+[*]통치자가 바뀌면 같은 성이거나 아기방에서 자란 자녀일 때 가문이 이어지고, 아니면 새 가문이 섭니다.
+[*][b]가계도[/b]: 「궁정 › 가계도」와 아기방의 「가문·가계도」에서 봅니다. 세대가 위에서 아래로 이어지고, 다음 통치자가 된 자녀는 금색 선으로 이어집니다. 고인은 흐리게, 수감·추방·망명은 꼬리표로 보이고, 카드를 누르면 1:1 대화가 열립니다.
+[/list]
+
+[h2]💍 정략결혼 (외교 거래판)[/h2]
+[list]
+[*]성인이 된 자녀를 상대 제국 통치 가문의 인물과 혼인시킬 수 있습니다. 받아들일 확률은 외교 거래와 같은 방식에 +10(경쟁국이면 −20)이고, 지참금(에너지)을 얹으면 더 쉬워집니다.
+[*]혼인이 이어지는 동안 상대 호감 +40. 지도자 자녀는 원하면 상대 제국으로 보내 그쪽 지도자가 되게 할 수 있습니다.
+[*]그 제국과 전쟁이 나면 혼인 동맹의 호감이 사라지고, 자녀가 곤란해집니다.
+[/list]
+
+[h2]🤝 새 외교 3가지 (하츠 오브 아이언 참고)[/h2]
+[list]
+[*][b]물자 지원[/b](외교 거래판): 전쟁 중인 제국에 참전 없이 매달 자원을 보냅니다(우리 월수입의 5~20%, 1~5년). 받는 쪽 호감 +30, 지원하는 동안 해마다 +10. 그 적국은 알게 되면 −20(첩보 수준 30 이상이면 바로, 아니면 해마다 20%). 참전 요청에 물자 지원으로 답하면 거절 감점이 −30에서 −10으로 줄어듭니다.
+[*][b]파벌 지원·공작[/b](대사관 › 첩보 보고): 첩보 수준 30 이상인 제국의 파벌에 영향력 100 + 에너지 500을 대면, 2년 동안 그 이념 매력도 +15%(2년째 +10% 더), 수도 안정도 −5. 해마다 15%(첩보 수준이 높으면 10%) 확률로 발각되면 호감 −50, 60% 확률로 은하재판소에 고발됩니다. 반대로 다른 제국이 우리 파벌을 몰래 도우면 시위 원인에 「외세 개입」이 붙습니다.
+[*][b]종속국 자치도[/b](종속국 채널): 0~100. 40이 되면 권리 확대 요구(들어주면 −10, 거절하면 +10), 70이면 독립 요구 서신, 90 이상이 2년 이어지면 실제로 독립합니다. 대화로 달래면 한 달에 −3씩 내려갑니다.
+[/list]
+
+[h2]👶 육아 — 민간인의 길[/h2]
+[list]
+[*]아이마다 태어날 때 「희망」(나랏일 · 예술 · 학문 · 장사 · 돌봄 · 모험)이 정해집니다.
+[*]18세가 되면 갈림길: 지도자로 임명하거나 민간인으로 살게 합니다. 희망과 다른 길을 고르면 아이가 서운해합니다.
+[*]민간인 자녀는 게임의 전문직 이름 그대로인 직업 11가지 중 하나로 삽니다(물리학자 · 직공 · 무역상 · 의료 노동자 등). 해마다 삶의 사건이 생깁니다(좋은 일 75% · 평범한 일 20% · 나쁜 일 5%, 어릴 때 대화를 많이 했으면 좋은 일이 조금 더).
+[*]민간인 자녀도 아기방에서 대화할 수 있고, 나중에 지도자로 불러들일 수 있습니다. 세습 정부의 후계자 자격도 남습니다.
+[*]관심 자녀에 ★별표를 치면 사건이 더 자주 찾아옵니다. 설정에 「가족 사건 알림」(모두 · 큰 사건만 · 끄기)이 생겼습니다.
+[/list]
+
+[h2]📰 신문 · 🧠 기억[/h2]
+[list]
+[*]AI 제국끼리의 전쟁 결과와 행성 주인이 바뀐 소식(전쟁·거래)이 신문에 실립니다. 행성 하나하나는 라디오 대기열에 넣지 않고 신문에서 묶어 다룹니다.
+[*][b]들은 말이 퍼짐[/b]: 우리가 한 제국에 한 약속·위협·험담이 그 제국의 동맹·우호국에 낮은 확률(3%, 대사관·첩보가 있으면 최대 8%)로 흘러갑니다. 다음 대화에서 「당신이 그런 말을 했다더군」이 나올 수 있습니다.
+[*]대화를 시작할 때 지금 상황과 관련 있는 [b]오래된 기억[/b] 3개를 꺼내 옵니다.
+[*]연대기가 길어지면 오래된 기록을 과거형 「장(章)」으로 압축합니다(원문은 따로 보관).
+[*]「제국 전기」·「인물 전기」 창에 말투·비밀 칸이 생겼고, 파일로 [b]내보내기·가져오기[/b]가 됩니다.
+[/list]
+
+[h2]☀️ 일상 분위기[/h2]
+[list]
+[*]제국 분위기가 매달 계산됩니다: 전시/평화 · 경기 · 불안 · 위기, 그리고 사건으로 잠깐 켜지는 경사(아이 탄생·혼인·승전·행성 기념일) · 애도(통치자·가족의 죽음·패전) · 술렁임(음모가 드러남). 같은 분위기라도 제국 성향에 따라 말투가 다릅니다.
+[*][b]비서의 아침 인사[/b]: 달이 바뀐 뒤 처음 부르면 그날 수도의 분위기를 한 줄로 전합니다.
+[*][b]라디오 짧은 꼭지[/b]: 방송 사이에 행성 날씨 · 생활 소식 · 짧은 광고가 나오고, 30%는 [b]청취자 전화 연결[/b]입니다. 시민의 성향에 따라 같은 소식에도 반응이 갈립니다. 게임이 멈춰 있으면 나오지 않습니다.
+[/list]
+
+[h2]⚖️ 은하재판소[/h2]
+[list]
+[*]판사는 이제 진실(실제로 누가 했는지)을 모르고, 작전 이름과 고발국만 압니다. 입증은 고발국이 해야 합니다.
+[*]대면 심리는 1인칭 전체 화면 법정에서 진행됩니다(기자회견 화면은 그대로).
+[/list]
+
+앱 업데이트 안내가 나타나면 적용해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 11.6 — The Internet, Court & Dynasty, New Diplomacy, Daily Mood (0.1.0-alpha.11.6)[/h1]
+
+This update follows Alpha 11.4. You can now browse the galaxy's [b]internet[/b] from the Office, your own empire has [b]plots and a ruling house[/b], there are [b]three new diplomatic tools[/b] inspired by Hearts of Iron, and a [b]daily mood[/b] that shifts with the state of your empire. Most new features run on templates and dice; AI is used only for posts and conversations you write yourself.
+
+⚠️ [b]Mod files changed.[/b] Update this mod (Workshop) and the app together, then fully restart the game.
+
+[h2]🌐 The Internet (Office › "People of the Empire" › "Internet")[/h2]
+[list]
+[*]Browse three in-universe websites: [b]Twinkle[/b] (short posts · Retwinkle · Like · Trending now), [b]DS Inside[/b] (anonymous galaxies · Hall of Stars · galactic-net addresses like "anon (KL4.118)" next to names) and [b]Redshift[/b] (s/ boards · Blueshift/Redshift votes · long discussion posts).
+[*]Citizen posts are made without AI. When you open the internet or press ⟳ Refresh, posts are generated for the game time that has passed since last time, up to 15 per site. If almost no game time has passed you get "Nothing new yet".
+[*]Each save has 24 regular citizens (progressive · conservative · neutral, matched to real faction support). Opinion shifts with public mood, but neither side ever goes above 90%. Citizens also post their own beliefs, and opposing citizens argue in the comments.
+[*]Citizens feel the [b]economy[/b] (boom · normal · slowdown · recession · depression): more posts about prices, rationing, blackouts and job hunting.
+[*]The ruler's children over 13 post too (at most 3 per refresh, taking turns).
+[*][b]Five lifestyle influencers[/b] (Lumi · Chef Sora · Nev · Mio & Squish · Adele Vonn): at least 2 of their posts appear on every refresh. Click a name for their profile, "Follow" and "Edit profile" (name, bio, catchphrase, field, leaning, photo). Photos arrive as description cards ("low-bandwidth mode").
+[*][b]Write your own[/b]: Twinkle and Redshift have an official account and a personal account; DS Inside is anonymous. AI adds citizen reactions to each post or reply in one call. You choose your personal-account nicknames.
+[*]Personal and anonymous posts are [b]very rarely[/b] traced back to the ruler (slightly more often if you keep defending the ruler). If that happens, it makes the papers.
+[*]Internet posts do not change public mood. The only exception is when something makes the papers (an official post that goes viral or causes a backlash, at most once every 6 months).
+[*][b]Planet promotion[/b]: from the official account, commission an influencer to promote a planet for 50 energy + 100 consumer goods. For 2 years that planet's immigration pull rises by +10–25% (by influencer size). Promo posts come with photos.
+[*][b]Ads[/b]: each site shows ads in its own style (sponsored twinkles, DS banners, promoted Redshift posts). Clicking an ad opens the advertiser's homepage; enclave ads lead straight to collectible sales, touring shows or curator loans, or a "1:1 Inquiry" to haggle.
+[*]Machine intelligences and hive minds have no internet.
+[/list]
+
+[h2]🏛️ Court — Plots (Office › "Court")[/h2]
+[list]
+[*]Your leaders (not the ruler) sometimes plot. There is an 8% check each year, more often when planets are unstable, protests are under way or a war is going badly (up to 25%). At most 2 plots at once.
+[*]Kinds: a governor's secession plot · a general's or admiral's power grab · a minister's graft · collusion with an opposition faction · plans to defect to an enemy · (hereditary rule) a succession struggle.
+[*]At progress 30 your secretary hears rumors about a suspect. From then on you can check them: [b]Bribe[/b] (300 energy, progress −30) or [b]Expose a scandal[/b] (50 influence, plotter influence −40, progress −20).
+[*]Each month there is a chance the plot comes to light (higher past progress 50). Then you choose: [b]Appease[/b] (500 energy + 50 influence; 30% chance they plot again within 5 years) · [b]Demote[/b] (mood −1) · [b]Arrest[/b] ("Imprisoned" trait, mood −3, 30% chance of protests) · [b]Exile[/b] (mood −5, 50% chance of protests, 40% chance an enemy takes them in as a leader). Demote, arrest and exile lower that faction's attraction by 10% for a year.
+[*]From the Prisoners tab you can release a prisoner or hand them over for execution.
+[*]If a plot stays hidden to the end, it succeeds: stability −15 (2 years) and protests · influence −100 · energy −10% (1 year) · faction attraction +15% (2 years) · or the plotter really becomes an enemy leader.
+[/list]
+
+[h2]👑 House & Family Tree[/h2]
+[list]
+[*]Your ruler now heads a house. Its name defaults to the ruler's surname and can be renamed. It has 2 of 16 house traits (story only), which colour how house members speak in 1:1 talks.
+[*]Each trait passes to a child with a 70% chance, and each generation has a 20% chance of a new one. You can see a child's house traits in the nursery.
+[*]When the ruler changes, the house continues if the new ruler shares the surname or grew up in the nursery; otherwise a new house rises.
+[*][b]Family tree[/b]: under "Court › Family tree" and the nursery's "House & family tree". Generations run top to bottom, and the child who became ruler is linked in gold. The departed are faded, prisoners, exiles and defectors are tagged, and clicking a card opens a 1:1 talk.
+[/list]
+
+[h2]💍 Political Marriage (deal board)[/h2]
+[list]
+[*]Marry a grown child to a member of another empire's ruling house. The chance they accept works like a diplomatic deal, +10 (−20 if they are a rival); a dowry in energy makes it easier.
+[*]While the marriage lasts their opinion of us is +40. A leader child can be sent to their empire to become one of its leaders.
+[*]If war breaks out with that empire, the marriage bonus disappears and the child is caught in between.
+[/list]
+
+[h2]🤝 Three New Diplomatic Tools (Hearts of Iron inspired)[/h2]
+[list]
+[*][b]Lend-lease[/b] (deal board): send monthly supplies to an empire at war without joining it (5–20% of our income, 1–5 years). Their opinion +30, plus +10 each year it lasts. Their enemies take −20 once they notice (at once with intel 30+, otherwise 20% a year). Answering a call to arms with supplies cuts the refusal penalty from −30 to −10.
+[*][b]Faction support & meddling[/b] (Embassy › Espionage report): with intel 30+ on an empire, spend 100 influence + 500 energy to back one of its factions for 2 years: that ethic's attraction +15% (another +10% in year two) and capital stability −5. Each year there is a 15% chance (10% with high intel) of exposure: opinion −50 and a 60% chance of a Galactic Tribunal case. If another empire secretly backs one of our factions, protests gain a "foreign meddling" cause.
+[*][b]Subject autonomy[/b] (subject channel): 0–100. At 40 they demand more rights (grant −10, refuse +10), at 70 they send an independence letter, and after 2 years at 90+ they really break free. Talking to them calms it by 3 a month.
+[/list]
+
+[h2]👶 Children — The Civilian Path[/h2]
+[list]
+[*]Each child is born with a wish (serving the state · art · scholarship · trade · caring for others · adventure).
+[*]At 18 you choose: appoint them as a leader or let them live as a civilian. Going against their wish leaves them hurt.
+[*]Civilian children work one of 11 jobs named after the game's specialist jobs (Physicist, Artisan, Trader, Medical Worker…). Each year brings life events (75% good · 20% ordinary · 5% bad; a little more good if you talked a lot when they were young).
+[*]Civilian children can still be visited in the nursery and called up as leaders later, and they keep their place in hereditary succession.
+[*]★ Star a favorite child for more frequent events. Settings now have "Family event notices" (all · big events only · off).
+[/list]
+
+[h2]📰 News · 🧠 Memory[/h2]
+[list]
+[*]Wars between AI empires and planets changing hands (by war or deal) now make the papers. Individual planets are grouped in the paper rather than queued for the radio.
+[*][b]Words travel[/b]: promises, threats and insults you make to one empire can reach its allies and friends at a low chance (3%, up to 8% with embassies and intel). You may hear "I hear you told them…" in a later talk.
+[*]When a talk starts, 3 [b]older memories[/b] that fit the current situation are brought back.
+[*]Long chronicles fold their oldest entries into past-tense "chapters" (the original lines are kept separately).
+[*]The empire and person backstory windows now have voice and secret fields, plus [b]export/import[/b] to a file.
+[/list]
+
+[h2]☀️ Daily Mood[/h2]
+[list]
+[*]Your empire's mood is worked out every month: war/peace · economy · unrest · crisis, plus short-lived celebration (a birth, a marriage, a victory, a planet holiday) · mourning (death of the ruler or family, a defeat) · stir (a plot uncovered). The same mood sounds different depending on your empire's ethics.
+[*][b]Secretary's morning line[/b]: the first time you call her in a new month, she sums up the mood in the capital in one line.
+[*][b]Radio short segments[/b]: between broadcasts you hear planetary weather, daily life and short ads, and 30% are [b]listener call-ins[/b]. Callers react differently to the same news depending on their leaning. Nothing airs while the game is paused.
+[/list]
+
+[h2]⚖️ Galactic Tribunal[/h2]
+[list]
+[*]The judge no longer knows the truth (who actually did it); it only knows the operation and the accuser. The burden of proof is on the accuser.
+[*]Face-to-face hearings now take place in a first-person, full-screen courtroom (the press conference screen is unchanged).
+[/list]
+
+When the app update notice appears, please apply it.
+
+===== Discord (한국어) — 2000자가 넘어 메시지를 나눔 =====
+----- 메시지 1 -----
+**(1/3)**
+# SLLM 알파 11.6 — 인터넷, 궁정과 가문, 새 외교, 일상 분위기 (0.1.0-alpha.11.6)
+
+알파 11.4 이후의 업데이트입니다. 집무실에서 은하의 **인터넷**을 돌아다닐 수 있게 되었고, 우리 제국 안의 **음모와 통치 가문**, 하츠 오브 아이언에서 따온 **새 외교 3가지**, 제국 상황에 따라 바뀌는 **일상 분위기**가 생겼습니다. 새 기능은 대부분 틀 문장과 확률로 움직이고, AI는 직접 쓴 글·대화에만 씁니다.
+
+⚠️ **모드 파일이 바뀌었습니다.** 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+## 🌐 인터넷 (집무실 「제국 안의 사람들」 → 「인터넷」)
+- 은하 세계관 속 홈페이지 3곳을 돌아다닙니다. **트윙클**(짧은 글 · 다시 반짝 · 공감 · 지금 뜨는 태그), **DS인사이드**(익명 갤럭시 · 개념성 · 닉 옆에 「ㅇㅇ(KL4.118)」 같은 은하망 주소), **레드시프트**(s/ 게시판 · 청색편이/적색편이 투표 · 긴 토론글).
+- 시민 글은 AI 없이 만들어집니다. 인터넷을 열거나 ⟳ 새로고침할 때, 지난번 이후 흐른 게임 시간만큼, 사이트마다 최대 15개를 만듭니다. 게임 시간이 거의 흐르지 않았으면 「아직 새 소식이 없습니다」가 나옵니다.
+- 세이브마다 단골 시민 24명(진보·보수·중립, 실제 파벌 지지율에 맞춤)이 있고, 민심에 따라 찬반 비율이 움직입니다(어느 쪽도 90%를 넘지 않음). 자기 성향을 말하는 의견글과 반대 성향의 댓글 언쟁도 있습니다.
+- 시민들이 **경기 단계**(호황 · 보통 · 둔화 · 불황 · 공황)를 체감합니다. 물가·배급·정전·구직 같은 글이 늘어납니다.
+- 13세가 넘은 통치자의 자녀도 글을 올립니다(한 번에 최대 3개, 돌아가며).
+- **일상 인플루언서 5명**(루미 · 소라 셰프 · 네브 · 미오와 꼬물이 · 아델 본): 새로고침마다 적어도 2개의 글이 올라옵니다. 이름을 누르면 프로필, 「팔로우」, 「프로필 편집」(이름·소개·입버릇·분야·성향·사진)이 있습니다. 사진은 「저대역 모드」라 설명 카드로 나옵니다.
+- **직접 쓰기**: 트윙클·레드시프트는 공식 계정과 민간 계정, DS인사이드는 익명입니다. 글과 답글에는 AI가 시민 반응을 한 번에 붙여 줍니다(글 하나당 AI 1번). 민간 계정 닉네임은 직접 정합니다.
+- 민간 계정·익명 글은 **아주 드물게** 통치자라는 게 들통납니다(통치자를 감싸는 글을 쓰면 아주 조금 더). 들통나면 신문에 실립니다.
+- 인터넷 글은 민심을 바꾸지 않습니다. 예외는 신문에 실릴 때뿐입니다(공식 글이 크게 화제가 되거나 논란이 될 때, 6개월에 한 건까지).
+- **행성 홍보 협업**: 공식 계정으로 인플루언서에게 행성 홍보를 의뢰하면 에너지 50 + 소비재 100을 내고, 2년 동안 그 행성의 이주 끌림이 +10~25%(인플루언서 규모에 따라) 오릅니다. 홍보 글에는 사진이 붙습니다.
+- **광고**: 사이트마다 원래 사이트식 광고가 나옵니다(트윙클 후원 글, DS 배너, 레드시프트 홍보 글). 광고를 누르면 광고주 홈페이지가 열리고, 엔클레이브 광고에서는 수집품 판매·순회 공연·큐레이터 대여로 바로 가거나 「1:1 문의」로 흥정할 수 있습니다.
+- 기계 지성·군체 제국에는 인터넷이 없습니다.
+
+----- 메시지 2 -----
+**(2/3)**
+## 🏛️ 궁정 — 음모 (집무실 「궁정」)
+- 우리 지도자(통치자 제외)가 가끔 음모를 꾸밉니다. 1년에 한 번 8% 확률이고, 행성이 불안하거나 시위 중이거나 전쟁에서 지고 있으면 더 잦아집니다(최대 25%). 동시에 2건까지입니다.
+- 종류: 총독의 독립 모의 · 장군·제독의 권력 노림 · 장관 부패 · 반대 파벌과 결탁 · 적국 망명 준비 · (세습 정부) 후계 다툼.
+- 진행도 30이 되면 비서가 「수상한 낌새」를 귀띔합니다. 그때부터 **매수**(에너지 300, 진행도 −30)·**추문 폭로**(영향력 50, 음모자 영향력 −40·진행도 −20)로 견제할 수 있습니다.
+- 매달 조금씩 드러날 기회가 있고(진행도 50이 넘으면 더 잘 드러남), 드러나면 처리를 고릅니다: **회유**(에너지 500 + 영향력 50, 5년 안에 30% 확률로 다시 꾸밈) · **좌천**(민심 −1) · **체포**(「수감됨」 특성, 민심 −3, 30% 확률로 시위) · **추방**(민심 −5, 50% 확률로 시위, 40% 확률로 적국이 받아 지도자로 씀). 좌천·체포·추방은 그 인물 쪽 파벌 매력도를 1년 동안 −10% 낮춥니다.
+- 수감자는 「수감자」 탭에서 석방하거나 처형 절차로 넘길 수 있습니다.
+- 끝까지 들키지 않으면 음모가 이루어집니다: 행성 안정도 −15(2년)와 시위 · 영향력 −100 · 에너지 −10%(1년) · 파벌 매력도 +15%(2년) · 실제로 적국 지도자가 됨.
+
+## 👑 가문과 가계도
+- 통치 가문이 생깁니다. 이름은 통치자의 성이 기본이고 바꿀 수 있습니다. 가문 특성 16종 가운데 2개를 가지며(이야기 효과), 1:1 대화에서 가문 사람의 말투에 묻어납니다.
+- 가문 특성은 자녀에게 하나마다 70% 확률로 이어지고, 세대마다 20% 확률로 새 특성이 생깁니다. 아기방에서 자녀의 가문 특성을 볼 수 있습니다.
+- 통치자가 바뀌면 같은 성이거나 아기방에서 자란 자녀일 때 가문이 이어지고, 아니면 새 가문이 섭니다.
+- **가계도**: 「궁정 › 가계도」와 아기방의 「가문·가계도」에서 봅니다. 세대가 위에서 아래로 이어지고, 다음 통치자가 된 자녀는 금색 선으로 이어집니다. 고인은 흐리게, 수감·추방·망명은 꼬리표로 보이고, 카드를 누르면 1:1 대화가 열립니다.
+
+## 💍 정략결혼 (외교 거래판)
+- 성인이 된 자녀를 상대 제국 통치 가문의 인물과 혼인시킬 수 있습니다. 받아들일 확률은 외교 거래와 같은 방식에 +10(경쟁국이면 −20)이고, 지참금(에너지)을 얹으면 더 쉬워집니다.
+- 혼인이 이어지는 동안 상대 호감 +40. 지도자 자녀는 원하면 상대 제국으로 보내 그쪽 지도자가 되게 할 수 있습니다.
+- 그 제국과 전쟁이 나면 혼인 동맹의 호감이 사라지고, 자녀가 곤란해집니다.
+
+----- 메시지 3 -----
+**(3/3)**
+## 🤝 새 외교 3가지 (하츠 오브 아이언 참고)
+- **물자 지원**(외교 거래판): 전쟁 중인 제국에 참전 없이 매달 자원을 보냅니다(우리 월수입의 5~20%, 1~5년). 받는 쪽 호감 +30, 지원하는 동안 해마다 +10. 그 적국은 알게 되면 −20(첩보 수준 30 이상이면 바로, 아니면 해마다 20%). 참전 요청에 물자 지원으로 답하면 거절 감점이 −30에서 −10으로 줄어듭니다.
+- **파벌 지원·공작**(대사관 › 첩보 보고): 첩보 수준 30 이상인 제국의 파벌에 영향력 100 + 에너지 500을 대면, 2년 동안 그 이념 매력도 +15%(2년째 +10% 더), 수도 안정도 −5. 해마다 15%(첩보 수준이 높으면 10%) 확률로 발각되면 호감 −50, 60% 확률로 은하재판소에 고발됩니다. 반대로 다른 제국이 우리 파벌을 몰래 도우면 시위 원인에 「외세 개입」이 붙습니다.
+- **종속국 자치도**(종속국 채널): 0~100. 40이 되면 권리 확대 요구(들어주면 −10, 거절하면 +10), 70이면 독립 요구 서신, 90 이상이 2년 이어지면 실제로 독립합니다. 대화로 달래면 한 달에 −3씩 내려갑니다.
+
+## 👶 육아 — 민간인의 길
+- 아이마다 태어날 때 「희망」(나랏일 · 예술 · 학문 · 장사 · 돌봄 · 모험)이 정해집니다.
+- 18세가 되면 갈림길: 지도자로 임명하거나 민간인으로 살게 합니다. 희망과 다른 길을 고르면 아이가 서운해합니다.
+- 민간인 자녀는 게임의 전문직 이름 그대로인 직업 11가지 중 하나로 삽니다(물리학자 · 직공 · 무역상 · 의료 노동자 등). 해마다 삶의 사건이 생깁니다(좋은 일 75% · 평범한 일 20% · 나쁜 일 5%, 어릴 때 대화를 많이 했으면 좋은 일이 조금 더).
+- 민간인 자녀도 아기방에서 대화할 수 있고, 나중에 지도자로 불러들일 수 있습니다. 세습 정부의 후계자 자격도 남습니다.
+- 관심 자녀에 ★별표를 치면 사건이 더 자주 찾아옵니다. 설정에 「가족 사건 알림」(모두 · 큰 사건만 · 끄기)이 생겼습니다.
+
+## 📰 신문 · 🧠 기억
+- AI 제국끼리의 전쟁 결과와 행성 주인이 바뀐 소식(전쟁·거래)이 신문에 실립니다. 행성 하나하나는 라디오 대기열에 넣지 않고 신문에서 묶어 다룹니다.
+- **들은 말이 퍼짐**: 우리가 한 제국에 한 약속·위협·험담이 그 제국의 동맹·우호국에 낮은 확률(3%, 대사관·첩보가 있으면 최대 8%)로 흘러갑니다. 다음 대화에서 「당신이 그런 말을 했다더군」이 나올 수 있습니다.
+- 대화를 시작할 때 지금 상황과 관련 있는 **오래된 기억** 3개를 꺼내 옵니다.
+- 연대기가 길어지면 오래된 기록을 과거형 「장(章)」으로 압축합니다(원문은 따로 보관).
+- 「제국 전기」·「인물 전기」 창에 말투·비밀 칸이 생겼고, 파일로 **내보내기·가져오기**가 됩니다.
+
+## ☀️ 일상 분위기
+- 제국 분위기가 매달 계산됩니다: 전시/평화 · 경기 · 불안 · 위기, 그리고 사건으로 잠깐 켜지는 경사(아이 탄생·혼인·승전·행성 기념일) · 애도(통치자·가족의 죽음·패전) · 술렁임(음모가 드러남). 같은 분위기라도 제국 성향에 따라 말투가 다릅니다.
+- **비서의 아침 인사**: 달이 바뀐 뒤 처음 부르면 그날 수도의 분위기를 한 줄로 전합니다.
+- **라디오 짧은 꼭지**: 방송 사이에 행성 날씨 · 생활 소식 · 짧은 광고가 나오고, 30%는 **청취자 전화 연결**입니다. 시민의 성향에 따라 같은 소식에도 반응이 갈립니다. 게임이 멈춰 있으면 나오지 않습니다.
+
+## ⚖️ 은하재판소
+- 판사는 이제 진실(실제로 누가 했는지)을 모르고, 작전 이름과 고발국만 압니다. 입증은 고발국이 해야 합니다.
+- 대면 심리는 1인칭 전체 화면 법정에서 진행됩니다(기자회견 화면은 그대로).
+
+앱 업데이트 안내가 나타나면 적용해 주세요.
+
+===== Discord (English) — split into messages (over 2000 chars) =====
+----- Message 1 -----
+**(1/7)**
+# SLLM Alpha 11.6 — The Internet, Court & Dynasty, New Diplomacy, Daily Mood (0.1.0-alpha.11.6)
+
+This update follows Alpha 11.4. You can now browse the galaxy's **internet** from the Office, your own empire has **plots and a ruling house**, there are **three new diplomatic tools** inspired by Hearts of Iron, and a **daily mood** that shifts with the state of your empire. Most new features run on templates and dice; AI is used only for posts and conversations you write yourself.
+
+⚠️ **Mod files changed.** Update this mod (Workshop) and the app together, then fully restart the game.
+
+----- Message 2 -----
+**(2/7)**
+## 🌐 The Internet (Office › "People of the Empire" › "Internet")
+- Browse three in-universe websites: **Twinkle** (short posts · Retwinkle · Like · Trending now), **DS Inside** (anonymous galaxies · Hall of Stars · galactic-net addresses like "anon (KL4.118)" next to names) and **Redshift** (s/ boards · Blueshift/Redshift votes · long discussion posts).
+- Citizen posts are made without AI. When you open the internet or press ⟳ Refresh, posts are generated for the game time that has passed since last time, up to 15 per site. If almost no game time has passed you get "Nothing new yet".
+- Each save has 24 regular citizens (progressive · conservative · neutral, matched to real faction support). Opinion shifts with public mood, but neither side ever goes above 90%. Citizens also post their own beliefs, and opposing citizens argue in the comments.
+- Citizens feel the **economy** (boom · normal · slowdown · recession · depression): more posts about prices, rationing, blackouts and job hunting.
+- The ruler's children over 13 post too (at most 3 per refresh, taking turns).
+- **Five lifestyle influencers** (Lumi · Chef Sora · Nev · Mio & Squish · Adele Vonn): at least 2 of their posts appear on every refresh. Click a name for their profile, "Follow" and "Edit profile" (name, bio, catchphrase, field, leaning, photo). Photos arrive as description cards ("low-bandwidth mode").
+- **Write your own**: Twinkle and Redshift have an official account and a personal account; DS Inside is anonymous. AI adds citizen reactions to each post or reply in one call. You choose your personal-account nicknames.
+- Personal and anonymous posts are **very rarely** traced back to the ruler (slightly more often if you keep defending the ruler). If that happens, it makes the papers.
+
+----- Message 3 -----
+**(3/7)**
+- Internet posts do not change public mood. The only exception is when something makes the papers (an official post that goes viral or causes a backlash, at most once every 6 months).
+- **Planet promotion**: from the official account, commission an influencer to promote a planet for 50 energy + 100 consumer goods. For 2 years that planet's immigration pull rises by +10–25% (by influencer size). Promo posts come with photos.
+- **Ads**: each site shows ads in its own style (sponsored twinkles, DS banners, promoted Redshift posts). Clicking an ad opens the advertiser's homepage; enclave ads lead straight to collectible sales, touring shows or curator loans, or a "1:1 Inquiry" to haggle.
+- Machine intelligences and hive minds have no internet.
+
+----- Message 4 -----
+**(4/7)**
+## 🏛️ Court — Plots (Office › "Court")
+- Your leaders (not the ruler) sometimes plot. There is an 8% check each year, more often when planets are unstable, protests are under way or a war is going badly (up to 25%). At most 2 plots at once.
+- Kinds: a governor's secession plot · a general's or admiral's power grab · a minister's graft · collusion with an opposition faction · plans to defect to an enemy · (hereditary rule) a succession struggle.
+- At progress 30 your secretary hears rumors about a suspect. From then on you can check them: **Bribe** (300 energy, progress −30) or **Expose a scandal** (50 influence, plotter influence −40, progress −20).
+- Each month there is a chance the plot comes to light (higher past progress 50). Then you choose: **Appease** (500 energy + 50 influence; 30% chance they plot again within 5 years) · **Demote** (mood −1) · **Arrest** ("Imprisoned" trait, mood −3, 30% chance of protests) · **Exile** (mood −5, 50% chance of protests, 40% chance an enemy takes them in as a leader). Demote, arrest and exile lower that faction's attraction by 10% for a year.
+- From the Prisoners tab you can release a prisoner or hand them over for execution.
+- If a plot stays hidden to the end, it succeeds: stability −15 (2 years) and protests · influence −100 · energy −10% (1 year) · faction attraction +15% (2 years) · or the plotter really becomes an enemy leader.
+
+----- Message 5 -----
+**(5/7)**
+## 👑 House & Family Tree
+- Your ruler now heads a house. Its name defaults to the ruler's surname and can be renamed. It has 2 of 16 house traits (story only), which colour how house members speak in 1:1 talks.
+- Each trait passes to a child with a 70% chance, and each generation has a 20% chance of a new one. You can see a child's house traits in the nursery.
+- When the ruler changes, the house continues if the new ruler shares the surname or grew up in the nursery; otherwise a new house rises.
+- **Family tree**: under "Court › Family tree" and the nursery's "House & family tree". Generations run top to bottom, and the child who became ruler is linked in gold. The departed are faded, prisoners, exiles and defectors are tagged, and clicking a card opens a 1:1 talk.
+
+## 💍 Political Marriage (deal board)
+- Marry a grown child to a member of another empire's ruling house. The chance they accept works like a diplomatic deal, +10 (−20 if they are a rival); a dowry in energy makes it easier.
+- While the marriage lasts their opinion of us is +40. A leader child can be sent to their empire to become one of its leaders.
+- If war breaks out with that empire, the marriage bonus disappears and the child is caught in between.
+
+----- Message 6 -----
+**(6/7)**
+## 🤝 Three New Diplomatic Tools (Hearts of Iron inspired)
+- **Lend-lease** (deal board): send monthly supplies to an empire at war without joining it (5–20% of our income, 1–5 years). Their opinion +30, plus +10 each year it lasts. Their enemies take −20 once they notice (at once with intel 30+, otherwise 20% a year). Answering a call to arms with supplies cuts the refusal penalty from −30 to −10.
+- **Faction support & meddling** (Embassy › Espionage report): with intel 30+ on an empire, spend 100 influence + 500 energy to back one of its factions for 2 years: that ethic's attraction +15% (another +10% in year two) and capital stability −5. Each year there is a 15% chance (10% with high intel) of exposure: opinion −50 and a 60% chance of a Galactic Tribunal case. If another empire secretly backs one of our factions, protests gain a "foreign meddling" cause.
+- **Subject autonomy** (subject channel): 0–100. At 40 they demand more rights (grant −10, refuse +10), at 70 they send an independence letter, and after 2 years at 90+ they really break free. Talking to them calms it by 3 a month.
+
+## 👶 Children — The Civilian Path
+- Each child is born with a wish (serving the state · art · scholarship · trade · caring for others · adventure).
+- At 18 you choose: appoint them as a leader or let them live as a civilian. Going against their wish leaves them hurt.
+- Civilian children work one of 11 jobs named after the game's specialist jobs (Physicist, Artisan, Trader, Medical Worker…). Each year brings life events (75% good · 20% ordinary · 5% bad; a little more good if you talked a lot when they were young).
+- Civilian children can still be visited in the nursery and called up as leaders later, and they keep their place in hereditary succession.
+- ★ Star a favorite child for more frequent events. Settings now have "Family event notices" (all · big events only · off).
+
+----- Message 7 -----
+**(7/7)**
+## 📰 News · 🧠 Memory
+- Wars between AI empires and planets changing hands (by war or deal) now make the papers. Individual planets are grouped in the paper rather than queued for the radio.
+- **Words travel**: promises, threats and insults you make to one empire can reach its allies and friends at a low chance (3%, up to 8% with embassies and intel). You may hear "I hear you told them…" in a later talk.
+- When a talk starts, 3 **older memories** that fit the current situation are brought back.
+- Long chronicles fold their oldest entries into past-tense "chapters" (the original lines are kept separately).
+- The empire and person backstory windows now have voice and secret fields, plus **export/import** to a file.
+
+## ☀️ Daily Mood
+- Your empire's mood is worked out every month: war/peace · economy · unrest · crisis, plus short-lived celebration (a birth, a marriage, a victory, a planet holiday) · mourning (death of the ruler or family, a defeat) · stir (a plot uncovered). The same mood sounds different depending on your empire's ethics.
+- **Secretary's morning line**: the first time you call her in a new month, she sums up the mood in the capital in one line.
+- **Radio short segments**: between broadcasts you hear planetary weather, daily life and short ads, and 30% are **listener call-ins**. Callers react differently to the same news depending on their leaning. Nothing airs while the game is paused.
+
+## ⚖️ Galactic Tribunal
+- The judge no longer knows the truth (who actually did it); it only knows the operation and the accuser. The burden of proof is on the accuser.
+- Face-to-face hearings now take place in a first-person, full-screen courtroom (the press conference screen is unchanged).
+
+When the app update notice appears, please apply it.

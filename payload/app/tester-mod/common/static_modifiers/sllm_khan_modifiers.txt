@@ -1,0 +1,10 @@
+# SLLM 그레이트 칸 특별 대우(2026-10-26 사용자 확정): 칸의 총애 = 그레이트 칸의 태수국인 동안 기본 자원 생산 +15%(태수국 공물 30% 가운데 절반쯤을 덜어 줌).
+sllm_khan_favor = {
+	icon = "gfx/interface/icons/modifiers/mod_country_resource_max_add.dds"
+	icon_frame = 2
+	country_energy_produces_mult = 0.15
+	country_minerals_produces_mult = 0.15
+	country_food_produces_mult = 0.15
+	country_alloys_produces_mult = 0.15
+	country_consumer_goods_produces_mult = 0.15
+}

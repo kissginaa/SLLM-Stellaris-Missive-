@@ -43,18 +43,22 @@
  .result .big{font-size:22px;color:var(--gold);letter-spacing:.06em} .result.reprimanded{border-color:var(--bad)} .result.reprimanded .big{color:var(--bad)}
  .empty{margin:60px auto;max-width:540px;text-align:center;color:var(--dim)} .empty h2{color:var(--gold);font-size:15px;font-weight:600}
  .btn:focus-visible,.adm:focus-visible,#txt:focus-visible{outline:2px solid var(--hi)}
-</style><script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><link rel="stylesheet" href="window-chrome.css"><link rel="stylesheet" href="fleet-scenes.css"><link rel="stylesheet" href="admiral-press-art.css"><link rel="stylesheet" href="admiral-inquiry-art.css"></head><body data-room="fleet">
+</style><script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><script src="fleet-order.js"></script><script src="fleet-captive.js"></script><script src="fleet-infamy.js"></script><script src="fleet-galaxy.js"></script><link rel="stylesheet" href="window-chrome.css"><link rel="stylesheet" href="fleet-scenes.css"><link rel="stylesheet" href="admiral-press-art.css"><link rel="stylesheet" href="admiral-inquiry-art.css"></head><body data-room="fleet">
 <div id="head"><div id="emb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14.5l9-10 9 10-9 5z"/><path d="M12 4.5v15M7.5 12h9"/></svg></div><div class="t"><b id="ttl" data-i18n-skip></b><small id="sub" data-i18n-skip></small></div><div class="sp"></div><button id="x" aria-label="닫기">✕</button></div>
 <div id="main" data-i18n-skip><div id="side"></div><div id="pane"></div></div>
 <script>
  const $ = (id) => document.getElementById(id);
  const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
- let S = null, sel = 0, busy = false, lastErr = '', draft = '';
+ let S = null, sel = 0, busy = false, lastErr = '', draft = '', orderOpen = false;
  const stLabel = (s) => s === 'acclaimed' ? L('추앙', 'Acclaimed') : s === 'reprimanded' ? L('질책', 'Reprimanded') : '';
  const resLabel = (r) => r === 'won' ? L('승리', 'Victory') : L('패배', 'Defeat');
  function drawSide() {
-  const side = $('side'); side.innerHTML = `<p class="sec">${L('지휘관 · 최근 전투(우주전·지상전)', 'COMMANDERS · RECENT BATTLES (SPACE · GROUND)')}</p>`;
+  const side = $('side'); side.innerHTML = '';
+  // 자동 작전(2026-11-04): 맨 위 칸
+  const fo = document.createElement('button'); fo.className = 'adm' + (sel === 'order' ? ' on' : ''); fo.innerHTML = `<b>${L('자동 작전', 'Automated operations')}</b><small>${L('작전 현황 · 함대 지휘 · 제독 무전', 'Operations · fleet control · admiral radio')}</small>`;
+  fo.onclick = () => { if (S.hearing) return; sel = 'order'; lastErr = ''; draw(); }; fo.disabled = !!S.hearing; side.appendChild(fo);
+  side.insertAdjacentHTML('beforeend', `<p class="sec">${L('지휘관 · 최근 전투(우주전·지상전)', 'COMMANDERS · RECENT BATTLES (SPACE · GROUND)')}</p>`);
   if (!S.admirals.length) { const p = document.createElement('small'); p.style.color = 'var(--dim)'; p.textContent = L('아직 기록된 지휘관 전투가 없습니다.', 'No commander battles recorded yet.'); side.appendChild(p); }
   for (const a of S.admirals) {
    const b = document.createElement('button'); b.className = 'adm' + (a.lid === sel ? ' on' : '');
@@ -151,9 +155,12 @@
  function draw() {
   if (!S) return;
   $('ttl').textContent = L('함대 사령부', 'FLEET COMMAND'); $('sub').textContent = S.empire || L('플레이어 제국', 'Player empire');
-  if (S.hearing) sel = S.hearing.lid; else if (!S.admirals.some((a) => a.lid === sel)) sel = S.admirals[0] ? S.admirals[0].lid : 0;
+  if (S.hearing) sel = S.hearing.lid; else if (sel !== 'order' && !S.admirals.some((a) => a.lid === sel)) sel = S.admirals[0] ? S.admirals[0].lid : 'order';
   document.body.classList.toggle('hearing', !!S.hearing);
-  drawSide(); if (S.hearing) drawHearing(S.hearing); else drawAdmiral();
+  drawSide();
+  const order = sel === 'order' && !S.hearing && window.SLLMFleetOrder; // 자동 작전 칸(ui/fleet-order.js)
+  if (!order && window.SLLMFleetOrder) window.SLLMFleetOrder.hide();
+  if (S.hearing) drawHearing(S.hearing); else if (order) { if (orderOpen) window.SLLMFleetOrder.redraw(); else { orderOpen = true; window.SLLMFleetOrder.show($('pane')); } } else { orderOpen = false; drawAdmiral(); }
  }
  $('x').onclick = () => { if (S && S.hearing && !S.hearing.done && !confirm(L('청문회 도중에 나가면 남은 전투는 나쁨으로 처리됩니다(질책될 수 있음). 나갈까요?', 'Leaving mid-hearing rates the remaining battles as poor (may lead to a reprimand). Leave?'))) return; window.sllm.fleetClose(); };
  const loadImages = () => window.sllm.getImageState().then((v) => { if (v) { IMG = v; if (S && !busy) draw(); } }).catch(() => {});

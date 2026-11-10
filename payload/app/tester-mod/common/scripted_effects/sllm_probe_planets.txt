@@ -82,9 +82,54 @@ sllm_probe_log_one_planet = {
 	export_trigger_value_to_variable = { trigger = pop_amount variable = sllm_pl_pn rounded = yes }
 	export_trigger_value_to_variable = { trigger = planet_stability variable = sllm_pl_stab }
 	export_trigger_value_to_variable = { trigger = free_amenities variable = sllm_pl_amen }
+	# 빈 일자리·실업자·안정도 고정 보정(2026-11-05, Empire Dashboard Feed 모드에서 배운 기법: 게임이 세이브에 남기지 않는 정확한 값) — 총독 보고·대화의 근거
+	set_variable = { which = sllm_pl_fj value = -1 }
+	set_variable = { which = sllm_pl_un value = -1 }
+	set_variable = { which = sllm_pl_sa value = 0 }
+	export_trigger_value_to_variable = { trigger = free_jobs variable = sllm_pl_fj }
+	export_trigger_value_to_variable = { trigger = num_unemployed variable = sllm_pl_un }
+	export_modifier_to_variable = { modifier = planet_stability_add variable = sllm_pl_sa }
 	export_trigger_value_to_variable = { trigger = free_housing variable = sllm_pl_hous }
 	if = { limit = { is_capital = yes } set_variable = { which = sllm_pl_cap value = 1 } }
 	sllm_probe_set_pc = yes
+	# 행성 고유 기념일(2026-10-23): 설립 뒤 개월(colony_age, 4.5.1 트리거)과 행성 지정(바닐라 common/colony_types 키). 지정 1 수도 2 광업 3 농업 4 에너지 5 연구 6 산업 7 교역 8 행정·신앙 9 요새 10 휴양 11 형벌·노예 12 도시 0 그 밖
+	set_variable = { which = sllm_pl_age value = -1 }
+	export_trigger_value_to_variable = { trigger = colony_age variable = sllm_pl_age }
+	set_variable = { which = sllm_pl_des value = 0 }
+	if = { limit = { OR = { has_designation = col_capital has_designation = col_capital_foundry has_designation = col_capital_factory has_designation = col_capital_trade has_designation = col_capital_extraction has_designation = col_capital_hive has_designation = col_capital_machine } } set_variable = { which = sllm_pl_des value = 1 } }
+	else_if = { limit = { OR = { has_designation = col_mining has_designation = col_habitat_mining } } set_variable = { which = sllm_pl_des value = 2 } }
+	else_if = { limit = { OR = { has_designation = col_farming has_designation = col_habitat_farming has_designation = col_habitat_gestalt_farming has_designation = col_ring_farming } } set_variable = { which = sllm_pl_des value = 3 } }
+	else_if = { limit = { OR = { has_designation = col_generator has_designation = col_habitat_energy has_designation = col_ring_generator } } set_variable = { which = sllm_pl_des value = 4 } }
+	else_if = { limit = { OR = { has_designation = col_research has_designation = col_habitat_research has_designation = col_ring_research has_designation = col_ecu_research } } set_variable = { which = sllm_pl_des value = 5 } }
+	else_if = { limit = { OR = { has_designation = col_industrial has_designation = col_foundry has_designation = col_factory has_designation = col_habitat_industrial has_designation = col_habitat_foundry has_designation = col_habitat_factory has_designation = col_ecu_industrial has_designation = col_ecu_foundry has_designation = col_ecu_factory has_designation = col_mac_foundry has_designation = col_mac_factory has_designation = col_hiv_foundry } } set_variable = { which = sllm_pl_des value = 6 } }
+	else_if = { limit = { OR = { has_designation = col_trade_machine has_designation = col_habitat_trade has_designation = col_ring_trade } } set_variable = { which = sllm_pl_des value = 7 } }
+	else_if = { limit = { OR = { has_designation = col_bureau has_designation = col_bureau_spiritualist has_designation = col_bureau_hive has_designation = col_bureau_machine has_designation = col_habitat_bureau has_designation = col_habitat_bureau_spiritualist has_designation = col_habitat_bureau_hive has_designation = col_habitat_bureau_machine } } set_variable = { which = sllm_pl_des value = 8 } }
+	else_if = { limit = { OR = { has_designation = col_fortress has_designation = col_habitat_fortress } } set_variable = { which = sllm_pl_des value = 9 } }
+	else_if = { limit = { OR = { has_designation = col_resort has_designation = col_pleasure } } set_variable = { which = sllm_pl_des value = 10 } }
+	else_if = { limit = { OR = { has_designation = col_penal has_designation = col_slave } } set_variable = { which = sllm_pl_des value = 11 } }
+	else_if = { limit = { OR = { has_designation = col_city has_designation = col_hive has_designation = col_nexus has_designation = col_ecu_mix has_designation = col_hiv } } set_variable = { which = sllm_pl_des value = 12 } }
+	# 총독 방침(2026-11-03, 앱 src/features/govpolicy-app.ts): 행성 고유 번호(처음 읽을 때 하나씩) + 맡긴 방침 번호(0 없음, 순서는 앱 src/govpolicy.ts)
+	if = {
+		limit = { NOT = { is_variable_set = sllm_pl_idx } }
+		root = {
+			if = { limit = { NOT = { is_variable_set = sllm_pl_next } } set_variable = { which = sllm_pl_next value = 0 } }
+			change_variable = { which = sllm_pl_next value = 1 }
+			prev = { set_variable = { which = sllm_pl_idx value = prev.sllm_pl_next } }   # root.변수 대신 prev 사슬(2026-11-08)
+		}
+	}
+	set_variable = { which = sllm_pl_gpol value = 0 }
+	if = { limit = { has_planet_flag = sllm_gov_research } set_variable = { which = sllm_pl_gpol value = 1 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_foundry } set_variable = { which = sllm_pl_gpol value = 2 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_factory } set_variable = { which = sllm_pl_gpol value = 3 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_mining } set_variable = { which = sllm_pl_gpol value = 4 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_generator } set_variable = { which = sllm_pl_gpol value = 5 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_farming } set_variable = { which = sllm_pl_gpol value = 6 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_urban } set_variable = { which = sllm_pl_gpol value = 7 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_fortress } set_variable = { which = sllm_pl_gpol value = 8 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_unity } set_variable = { which = sllm_pl_gpol value = 9 } }
+	else_if = { limit = { has_planet_flag = sllm_gov_trade } set_variable = { which = sllm_pl_gpol value = 10 } }
+	set_variable = { which = sllm_pl_gvet value = 0 }
+	if = { limit = { has_modifier = sllm_gov_veteran } set_variable = { which = sllm_pl_gvet value = 1 } }
 	root = {
 		set_variable = { which = sllm_r_seen value = prev.sllm_pl_seen }
 		set_variable = { which = sllm_r_pops value = prev.sllm_pl_pops }
@@ -94,8 +139,16 @@ sllm_probe_log_one_planet = {
 		set_variable = { which = sllm_r_hous value = prev.sllm_pl_hous }
 		set_variable = { which = sllm_r_cap value = prev.sllm_pl_cap }
 		set_variable = { which = sllm_r_pc value = prev.sllm_pl_pc }
+		set_variable = { which = sllm_r_age value = prev.sllm_pl_age }
+		set_variable = { which = sllm_r_des value = prev.sllm_pl_des }
+		set_variable = { which = sllm_r_idx value = prev.sllm_pl_idx }
+		set_variable = { which = sllm_r_gpol value = prev.sllm_pl_gpol }
+		set_variable = { which = sllm_r_gvet value = prev.sllm_pl_gvet }
+		set_variable = { which = sllm_r_fj value = prev.sllm_pl_fj }
+		set_variable = { which = sllm_r_un value = prev.sllm_pl_un }
+		set_variable = { which = sllm_r_sa value = prev.sllm_pl_sa }
 	}
-	log = "SLLM:PLANET/;/seen=\\[Root.sllm_r_seen]/;/name=\\[This.GetName]/;/pops=\\[Root.sllm_r_pops]/;/pn=\\[Root.sllm_r_pn]/;/stab=\\[Root.sllm_r_stab]/;/amen=\\[Root.sllm_r_amen]/;/hous=\\[Root.sllm_r_hous]/;/cap=\\[Root.sllm_r_cap]/;/pc=\\[Root.sllm_r_pc]/;/class=\\[This.GetClassName]"
+	log = "SLLM:PLANET/;/seen=\\[Root.sllm_r_seen]/;/name=\\[This.GetName]/;/pops=\\[Root.sllm_r_pops]/;/pn=\\[Root.sllm_r_pn]/;/stab=\\[Root.sllm_r_stab]/;/amen=\\[Root.sllm_r_amen]/;/hous=\\[Root.sllm_r_hous]/;/cap=\\[Root.sllm_r_cap]/;/pc=\\[Root.sllm_r_pc]/;/cage=\\[Root.sllm_r_age]/;/des=\\[Root.sllm_r_des]/;/class=\\[This.GetClassName]/;/idx=\\[Root.sllm_r_idx]/;/gpol=\\[Root.sllm_r_gpol]/;/gvet=\\[Root.sllm_r_gvet]/;/fj=\\[Root.sllm_r_fj]/;/un=\\[Root.sllm_r_un]/;/sa=\\[Root.sllm_r_sa]"
 	# Governor (leader assigned to the planet), if the planet has one. Right after its PLANET line, so the app pairs them by order.
 	if = {
 		limit = { exists = leader }

@@ -1,0 +1,95 @@
+# SLLM 사로잡은 적 제독(2026-11-04 사용자) — 전투에서 적 함대의 마지막 배를 격침하면 가끔 그 제독을 사로잡는다(플레이어만, 동시에 3명까지).
+# 앱: src/captive.ts · src/features/captive-app.ts, 화면: ui/fleet-captive.js(함대 사령부 창, 심문실 배경). 심문 대화는 앱의 LLM.
+# 게임 연결(4.5 문서 확인 + War Crimes Expanded 모드 3811476508 의 쓰임 참고, 코드는 따로 씀):
+#   on_ship_destroyed_perp(THIS = 이긴 나라, FROM = 진 나라, FROMFROMFROM = 격침된 배) → exile_leader_as = sllm_capN@root 로 보관.
+#   몸값·석방 = 원래 나라에 set_leader(돌려보냄) · 심문 = add_intel · 회유 = 우리나라에 set_leader(우리 지도자 명단) · 처형 = kill_exiled_leader(+ 악명 5, 전쟁범죄 기록).
+# 슬롯 N = 1..3 (국가 표식 sllm_cap_sN). 원래 나라 번호는 sllm_capN_from. 로그 글자 안에는 $매개변수$ 를 쓰지 않는다.
+
+# 사로잡기(이긴 나라 = 플레이어 범위, 이벤트 sllm_cap.1 에서)
+sllm_cap_into = {
+	set_country_flag = sllm_cap_s$S$
+	set_variable = { which = sllm_cap_last value = $S$ }
+	set_variable = { which = sllm_cap$S$_from value = -1 }
+	from = { if = { limit = { is_variable_set = sllm_idx } root = { set_variable = { which = sllm_cap$S$_from value = prev.sllm_idx } } } }
+	from = { log = "SLLM:CAPFROM/;/sid=\\[Root.sllm_save_id]/;/slot=\\[Root.sllm_cap_last]/;/fidx=\\[Root.sllm_cap_last_from]/;/fname=\\[This.GetName]/;/date=\\[GetDate]" }
+	fromfromfrom = { fleet = { leader = {
+		log = "SLLM:CAPTURE/;/sid=\\[Root.sllm_save_id]/;/slot=\\[Root.sllm_cap_last]/;/name=\\[This.GetName]/;/date=\\[GetDate]"
+		exile_leader_as = sllm_cap$S$@root
+	} } }
+}
+sllm_cap_take = {
+	if = { limit = { NOT = { has_country_flag = sllm_cap_s1 } } sllm_cap_from_copy = yes sllm_cap_into = { S = 1 } }
+	else_if = { limit = { NOT = { has_country_flag = sllm_cap_s2 } } sllm_cap_from_copy = yes sllm_cap_into = { S = 2 } }
+	else_if = { limit = { NOT = { has_country_flag = sllm_cap_s3 } } sllm_cap_from_copy = yes sllm_cap_into = { S = 3 } }
+}
+# 로그용: 진 나라 번호를 sllm_cap_last_from 에 미리 둔다
+sllm_cap_from_copy = {
+	set_variable = { which = sllm_cap_last_from value = -1 }
+	from = { if = { limit = { is_variable_set = sllm_idx } root = { set_variable = { which = sllm_cap_last_from value = prev.sllm_idx } } } }
+}
+
+# 처리(플레이어 범위, 이벤트 sllm_cap.2 에서 root = 플레이어). ACT: 1 몸값 · 2 심문 · 3 회유 · 4 처형 · 5 석방 · 6 비밀 처형. 앱이 sllm_cap_act·sllm_cap_slot·sllm_cap_intel 을 둔다.
+sllm_cap_do = {
+	set_variable = { which = sllm_cap_st value = 0 }
+	if = {
+		limit = { has_country_flag = sllm_cap_s$S$ }
+		# 원래 나라 찾기(없으면 st 는 그대로 0 → 몸값·석방·심문은 gone)
+		every_country = {
+			limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = root.sllm_cap$S$_from } }
+			save_event_target_as = sllm_cap_home
+			root = { set_variable = { which = sllm_cap_st value = 1 } }
+		}
+		if = {
+			limit = { check_variable = { which = sllm_cap_act value = 1 } }
+			if = {
+				limit = { check_variable = { which = sllm_cap_st value = 1 } }
+				event_target:sllm_cap_home = { set_leader = sllm_cap$S$@root add_opinion_modifier = { who = root modifier = sllm_cap_ransomed } }
+				add_resource = { energy = 300 influence = 25 }
+			}
+			else = { kill_exiled_leader = sllm_cap$S$@root set_variable = { which = sllm_cap_st value = 2 } }
+			remove_country_flag = sllm_cap_s$S$
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_cap_act value = 2 } }
+			if = {
+				limit = { check_variable = { which = sllm_cap_st value = 1 } }
+				add_intel = { amount = sllm_cap_intel who = event_target:sllm_cap_home }
+			}
+			else = { set_variable = { which = sllm_cap_st value = 2 } }
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_cap_act value = 3 } }
+			set_leader = sllm_cap$S$@root
+			if = { limit = { check_variable = { which = sllm_cap_st value = 1 } } event_target:sllm_cap_home = { add_opinion_modifier = { who = root modifier = sllm_cap_turned } } }
+			set_variable = { which = sllm_cap_st value = 1 }
+			remove_country_flag = sllm_cap_s$S$
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_cap_act value = 4 } }
+			kill_exiled_leader = sllm_cap$S$@root
+			if = { limit = { check_variable = { which = sllm_cap_st value = 1 } } event_target:sllm_cap_home = { add_opinion_modifier = { who = root modifier = sllm_cap_executed } } }
+			sllm_inf_add = { AMT = 5 }
+			sllm_inf_crime_country = { K = 5 } # 악명·전쟁범죄(sllm_infamy.txt)
+			set_variable = { which = sllm_cap_st value = 1 }
+			remove_country_flag = sllm_cap_s$S$
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_cap_act value = 6 } }
+			# 비밀 처형(3단계, 2026-11-04): 원래 나라는 모른다(호감 변화 없음). 대신 숨은 악명 +8 — 드러나면 1.5배(sllm_infamy.txt).
+			kill_exiled_leader = sllm_cap$S$@root
+			sllm_inf_hide_add = { AMT = 8 }
+			set_variable = { which = sllm_cap_st value = 1 }
+			remove_country_flag = sllm_cap_s$S$
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_cap_act value = 5 } }
+			if = {
+				limit = { check_variable = { which = sllm_cap_st value = 1 } }
+				event_target:sllm_cap_home = { set_leader = sllm_cap$S$@root add_opinion_modifier = { who = root modifier = sllm_cap_released } }
+			}
+			else = { kill_exiled_leader = sllm_cap$S$@root set_variable = { which = sllm_cap_st value = 2 } }
+			remove_country_flag = sllm_cap_s$S$
+		}
+	}
+	else = { set_variable = { which = sllm_cap_st value = 3 } }
+}

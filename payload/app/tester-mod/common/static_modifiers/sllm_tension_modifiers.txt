@@ -1,0 +1,16 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 두 거대 세력에 단계마다 붙는 나라 수정자. 효과: scripted_effects/sllm_tension.txt
+# 동원(75 이상): 함대 한도 +20, 함선 유지비 +10%
+sllm_tn_mobilized = {
+	country_naval_cap_add = 20
+	ships_upkeep_mult = 0.1
+}
+# 일촉즉발(90 이상): 안정도 −3, 통합 +5%(결집)
+sllm_tn_brink = {
+	planet_stability_add = -3
+	country_unity_produces_mult = 0.05
+}
+# 결판 전쟁에서 짐(10년): 영향력 −20%, 통합 −10%
+sllm_tn_humbled = {
+	country_influence_produces_mult = -0.2
+	country_unity_produces_mult = -0.1
+}

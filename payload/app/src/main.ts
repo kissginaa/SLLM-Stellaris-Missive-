@@ -12,12 +12,13 @@ import { buildBriefing, briefingPrompt } from './briefing';
 import { LogWatcher } from './logWatcher';
 import { initializeEnvironment, resolveEnvironment, environmentSaveRoots, setRuntimeUserDir, defaultConnectionMod } from './environment-paths';
 import { Player2Client } from './player2';
-import { AiRouter } from './aiclient';
+import { AiRouter, setPromptAugment } from './aiclient';
 import { warmUpInput } from './keyboard';
 import { SllmMessage, reqSeenIn, modProtocolState, MOD_PROTOCOL, MOD_PROTOCOL_NOTICE } from './protocol';
 import { Profile } from './prompt';
 import { cleanSaveId } from './images';
 import { settings, loadSettingsFile, activeCustom } from './app/settings';
+import { natureText, setOurEmpireProvider } from './our-empire'; // 우리 제국 정보(2026-11-03)
 import { safeSend } from './safe-send';
 import { bindCtx } from './app/ctx';
 import { chat, registerChat, resetConversation } from './features/chat';
@@ -26,7 +27,9 @@ import { mail, registerMail, syncInbox, mailNote, restartAiTimer } from './featu
 import { registerCouncil } from './features/council';
 import { speech, registerSpeech, startSpeechPrep } from './features/speech-app';
 import { registerGameState, onGameSnapshot } from './features/gamestate-app';
-import { noteGestaltSnapshot } from './features/gestalt-app';
+import { noteGestaltSnapshot, registerGestalt } from './features/gestalt-app';
+import { registerGestaltReport } from './features/gestalt-report-app';
+import { registerFallen } from './features/fallen-app'; // 몰락제국 각성 알림(알파 11) // 동기화 로그·공명 보고·이탈 노드(알파 11)
 import { initAddons, addonCompat, registerAddons } from './features/addons-app';
 import { registerFaction, registerFactionLog, setCabinetPersona, setCabinetOfficeNotify, cabinetReady } from './features/faction-app';
 import { gov, registerGov, govMem, openGov } from './features/gov';
@@ -46,27 +49,103 @@ import { registerEspionage } from './features/espionage-app';
 import { registerPress } from './features/press-app';
 import { registerVassal } from './features/vassal-app';
 import { registerFleet } from './features/fleet-app';
+import { registerFleetOrder } from './features/fleetorder-app'; // 자동 작전(2026-11-04)
+import { registerBudget } from './features/budget-app'; // 예산 회의(2026-11-04)
+import { registerCyber } from './features/cyber-app'; // 해외발 여론 공작(2026-11-04)
+import { registerTemper } from './features/temper-app'; // 외교 노선(2026-11-04)
+import { registerVassalCourt } from './features/vassal-court-app'; // 종속국 통치(2026-11-04)
+import { registerCaptive } from './features/captive-app'; // 사로잡은 적 제독(2026-11-04)
+import { registerInfamy } from './features/infamy-app'; // 악명·전쟁범죄(2026-11-04)
+import { registerGalaxy } from './features/galaxy-app'; // 작전지휘실 은하 지도(2026-11-05)
+import { registerVassalReign } from './features/vassal-reign-app';
+import { registerTension } from './features/tension-app'; // 대립 긴장도: 시나리오 전용(2026-11-05)
+import { registerScenario, scenarioForPrompt } from './features/scenario-app'; // 시나리오 알아보기·지난 역사·AI 배경(2026-11-05)
+import { registerScenarioMap } from './features/scenario-map-app'; // 시나리오 은하 지도: 섹터·총독(2026-11-06)
+import { registerRebels } from './features/rebels-app'; // 반란과 공작: 반란군 후원·취약 국가·선동(2026-11-05)
+import { registerOverlordPressure } from './features/overlord-pressure-app'; // 역방향: AI 종주국이 우리에게(2026-11-05) // 종속국 통치권: 괴뢰 통치자·대리전·간섭 반감·정책 동조·종속국 쟁탈(2026-11-05)
+import { registerVassalAdmin } from './features/vassal-admin-app'; // 종속국 행정: 성계 이양·기술 원조·동화 정책(2026-11-04)
+import { registerAlarm } from './features/alarm-app'; // 일정표·쿨다운 알림(2026-11-04)
 import { registerChronBook } from './features/chronbook-app';
 import { registerTts } from './features/tts-app';
-import { registerCrisis } from './features/crisis-app';
+import { registerCrisis, crisisTalk, setCrisisDoc, setCrisisCalm, crisisWih } from './features/crisis-app';
+import { pactTalk, pactAllies, endAllPacts } from './features/crisis-pact-app'; // 공동 대응 협약(알파 11)
+import { CRISIS_TYPES } from './faction-voice'; // 위기 세력은 「은하 위기 상황」 줄을 받지 않는다(알파 11)
 import { registerPrivateRooms } from './features/private-rooms-app';
 import { registerOffice, setOfficeCabinet, pushOffice } from './features/office-app';
 import { registerPeople } from './features/people-app';
 import { registerPolicy, policyResetForSave } from './features/policy-app';
 import { registerPersona, personaPeek, personaNote } from './features/persona-app';
 import { registerLetters } from './features/letters-app';
-import { registerMemorial } from './features/memorial-app';
-import { registerSecretary } from './features/secretary-app';
+import { registerMemorial, setMemorialExecutionCheck } from './features/memorial-app';
+import { registerSecretary, setSecretaryPledges } from './features/secretary-app';
 import { registerOfficeStyle } from './features/office-style-app';
 import { registerIndependence } from './features/independence-app';
 import { registerPetitions } from './features/petition-app';
 import { registerEmbassy } from './features/embassy-app';
 import { registerMusic } from './features/music-app';
 import { registerMood } from './features/mood-app';
+import { registerCivic } from './features/civic-app'; // 시민 정치: 여론조사·국민투표·특별사면(2026-11-03)
+import { registerPreftl } from './features/preftl-app'; // 원시문명 관측(2026-11-03)
+import { registerPreftlNet } from './features/preftl-net-app'; // 원시문명 인터넷 염탐(2026-11-04)
+import { registerAudit } from './features/audit-app'; // 국정감사(2026-11-03, 설정으로 켬)
+import { registerNoconf } from './features/noconf-app'; // 불신임(2026-11-03, 설정으로 켬)
+import { registerLobby } from './features/lobby-app'; // 로비: 공식 지원·뒷돈(2026-11-03)
+import { registerParliament } from './features/parliament-app'; // 여당·야당: 의석·연정·야당 대표·원내 공방(2026-11-03)
+import { registerTwoParty } from './features/twoparty-app'; // 양당 정치: 정당 지지율·대정부 질문·선거전·총선(2026-11-06)
+import { registerEnclave } from './features/enclave-app'; // 엔클레이브·캐러밴 소식(알파 11)
+import { registerEmotions, emotionsFor } from './features/emotions-app';
+import { registerSystems } from './features/systems-app'; // 성계 번호표·대화에서 언급된 성계 이름표(알파 11)
+import { registerKhan, khanTalk } from './features/khan-app'; // 그레이트 칸 특별 대우(2026-10-26)
+import { registerSaveSignals } from './features/save-signal-app'; // 세이브 다시 읽기를 바뀜 신호 때만(2026-11-09)
+import { registerUsage } from './features/usage-app'; // 한 달 사용량 기록(콘솔 명령 수·세이브 읽기, 2026-11-09)
+import { registerDeals, dealOwed } from './features/deals-app'; // 외교 거래(2026-10-26)
+import { registerChildren } from './features/children-app'; // 통치자의 아이·아기방(2026-10-27)
+import { owedLine } from './deals';
+import { registerFrontier } from './features/frontier-app'; // 국경·전선(2026-10-26)
+import { registerMarauders, isMarauderType, marauderTalk } from './features/marauder-app'; // 약탈자 대응(2026-10-26)
+import { registerCollectibles, issueDoc } from './features/collectibles-app'; // 상인 수집품·골동품 진열장·국가 문서함(알파 11)
+import { registerInternet } from './features/internet-app'; // 인터넷: 트윙클·DS인사이드·레드시프트(2026-10-28)
+import { registerMemoryLinks, chaptersFor } from './features/memory-app';
+import { registerDayMood } from './features/daymood-app'; // 동적 일상 분위기(2026-10-28 알파 10)
+import { registerCourt } from './features/court-app'; // 음모·가문·가계도·정략결혼(2026-10-28 정치)
+import { registerHoi } from './features/hoi-app'; // 물자 지원·파벌 공작·종속국 자치도(2026-10-28 하츠 참고) // 들은 말 퍼지기·관련 기억·장(章) 압축(2026-10-28 ChatSyncAuto 참고)
 import { registerDebate } from './features/debate-app';
 import { registerScandal } from './features/scandal-app';
 import { registerAgents } from './features/agents-app';
 import { registerOfficialHolidays } from './features/official-holidays-app';
+import { registerProtests } from './features/protests-app'; // 시위(2026-10-23 초안)
+import { registerEmergency, setEmergencyPersona } from './features/emergency-app'; // 긴급회의(2026-10-23 초안)
+import { registerIsc } from './features/isc-app'; // 성간제국통신임시회의(2026-10-23 초안)
+import { registerPolitics, setPoliticsPersona } from './features/politics-app'; // 정치적 지위 장부(2026-10-23 초안)
+import { registerRelations, setRelationsPersona } from './features/relations-app'; // 인물 관계·사교회·불만 특성(2026-10-23 초안)
+import { registerRomance, setRomancePersona } from './features/romance-app'; // 통치자 연애·청혼·결혼식(2026-10-23 초안)
+import { registerGc, setGcPersona, pledgeFacts } from './features/gc-app'; // 행성총독회의(2026-10-23 초안)
+import { registerChess } from './features/chess-app'; // 지도자와 체스(2026-10-30)
+import { registerGovPolicy } from './features/govpolicy-app'; // 총독에게 행성 맡기기(2026-11-03)
+import { registerEmp } from './features/emp-app'; // 비상대권(2026-11-05)
+import { registerColName } from './features/colname-app'; // 신규 식민지 이름 짓기(2026-11-04)
+import { registerFleetName } from './features/fleetname-app'; // 함대 명명 건(2026-11-04)
+import { registerRenameLedger } from './features/rename-ledger'; // 이름의 정치: 개명 장부·게임 호출(2026-11-04)
+import { registerGForum } from './features/gforum-app'; // 갤럭틱 포럼(/int/, 2026-11-04)
+import { registerVault } from './features/vault-app'; // 통치자 개인 금고(2026-10-30)
+import { registerCasino } from './features/casino-app';
+import { registerParty } from './features/party-app'; // 관저 파티(2026-11-03, 개인실) // 우주 카지노(2026-10-30, 시스템만)
+import { registerLog } from './features/log-app'; // 레전드 오브 갤럭시(2026-10-30)
+import { registerOuting } from './features/outing-app';
+import { registerLandmark } from './features/landmark-app'; // 성향별 특별한 곳(2026-10-30)
+import { registerBlackmarket } from './features/blackmarket-app'; // 암시장 골목(2026-10-30)
+import { registerTavern } from './features/tavern-app'; // 뒷골목 선술집(2026-10-30, 변장 잠행)
+import { registerPetshop } from './features/petshop-app'; // 펫샵(2026-10-30, 외출 → 펫샵)
+import { registerBedroom } from './features/bedroom-app'; // 통치자 침실(2026-10-30, 개인실 책상 위 열쇠)
+import { registerPaparazzi } from './features/paparazzi-app'; // 파파라치(2026-10-31)
+import { registerStore } from './features/store-app'; // 백화점(2026-10-30, 40~43층 귀빈층) // 외출(2026-10-30, 책상 위 지갑 → 수도 지도)
+import { registerHolidays } from './features/holiday-app'; // 행성 고유 기념일·통치자 방문(2026-10-23 초안)
+import { registerRetired, setRetiredPersona } from './features/retired-app'; // 은퇴 지도자의 앱 내 생활(2026-10-23 초안)
+import { registerFbanquet } from './features/fbanquet-app'; // 타국 주최 만찬 초대(2026-10-23 초안)
+import { registerFletters } from './features/fletters-app'; // 타국 지인 개인 서신(2026-10-23 초안)
+import { registerExecution, setExecutionPersona, executionOwnsDeath } from './features/execution-app'; // 처형(2026-10-23 초안)
+import { registerWorkshop } from './features/workshop-app'; // 창작마당 애드온 자동 감지(2026-10-23 초안)
+import { registerLore, loreForPrompt } from './features/lore-app'; // 세계관 팩 서재(2026-10-23 초안)
 import { registerNationalEvents } from './features/national-events-app';
 import { registerCeremony } from './features/ceremony-app';
 import { registerDeclare } from './features/declare-app';
@@ -80,6 +159,7 @@ import { registerMediation } from './features/mediation-app';
 import { registerPeace } from './features/peace-app';
 import { registerSummit, registerSummitLog } from './features/summit';
 import { registerAppUpdate } from './features/app-update';
+import { registerGameDll } from './features/game-dll-app'; // 게임 폴더 연결 DLL 자동 교체(2026-11-04)
 import { registerBackstory, backstories } from './features/backstory-app';
 import { wins, registerWindows, quitAll, toUi, createWindow, createTray, startFade, registerHotkey, notify, needPaused, refreshTray, updateBadge, onMonthTick, setAppOpen, BASE_ICON, iconBaseHeight } from './features/windows';
 import { registerSettingsUi, CLIENT_ID, uiText, aiLanguage, locFolder, pick } from './features/settings-ui';
@@ -184,23 +264,40 @@ function withLore<T extends { name: string; idx?: number; player?: string }>(t: 
       briefing = briefingPrompt(br);
       if (curSaveId) chronicle = chronLines(govMem().split(curSaveId, chron().list(chronKey(curSaveId, t.idx))).own.filter((e) => !e.world));
     }
+    const chapters = typeof t.idx === 'number' && t.idx > 0 ? chaptersFor(t.idx) : []; // 오래된 기록의 장(章)(2026-10-28)
+    const card = backstories.empireCardPrompt(t.name); // 제국 지도자 말투·비밀(플레이어가 편집, 2026-10-28)
     const paper = currentPaper();
     const pr = profileWithEthics((t as T & {profile?:Profile}).profile, t.idx || 0);
     return {
       ...t,
       readOnlyActions: typeof t.idx === 'number' && !actionsAllowed(t.idx),
+      ...(typeof t.idx === 'number' && t.idx > 0 && (terminal.items.find((c) => c.idx === t.idx)?.type || flagProv.typeFor(t.idx)) === 'awakened_marauders' && khanTalk() ? { khan: khanTalk() } : {}), // 그레이트 칸 특별 대우(2026-10-26)
+      ...(typeof t.idx === 'number' && t.idx > 0 && dealOwed(t.idx) ? { owed: owedLine() } : {}), // 외교 거래: 우리가 약속을 어긴 빚(2026-10-26)
+      ...(typeof t.idx === 'number' && t.idx > 0 && isMarauderType(terminal.items.find((c) => c.idx === t.idx)?.type || flagProv.typeFor(t.idx)) ? { marauder: marauderTalk(t.idx, Number((t as { score?: number }).score) || 0) } : {}), // 약탈자 대응(2026-10-26)
       ...(typeof t.idx === 'number' && autoPortraitUrl(t.idx) ? { autoPortrait: autoPortraitUrl(t.idx) } : {}),
       ...(pr ? { profile: pr } : {}),
       ...(terminal.sid === curSaveId && terminal.playerGest ? { playerGest: terminal.playerGest } : {}),
-      ...(typeof t.idx === 'number' && t.idx > 0 ? (() => { const ct = terminal.items.find((c) => c.idx === t.idx)?.type || flagProv.typeFor(t.idx!); const eth = modCompatibility.liveFor(curSaveId, t.idx!)?.ids ?? flagProv.ethicsFor(t.idx!); return { ...(ct ? { ctype: ct } : {}), ...(eth?.length ? { ethicIds: eth } : {}) }; })() : {}), // 몰락한 제국 말투(2026-10-19)
+      ...(typeof t.idx === 'number' && t.idx > 0 ? (() => { const tc = terminal.items.find((c) => c.idx === t.idx), ct = tc?.type || flagProv.typeFor(t.idx!), sub = tc?.sub; const eth = modCompatibility.liveFor(curSaveId, t.idx!)?.ids ?? flagProv.ethicsFor(t.idx!); return { ...(ct ? { ctype: ct } : {}), ...(sub ? { csub: sub } : {}), ...(() => { const em = emotionsFor(t.idx!); return em ? { emotions: em } : {}; })(), ...(() => { if (ct && (CRISIS_TYPES as readonly string[]).includes(ct)) return {}; const cl = [crisisTalk(), ct === 'default' ? pactTalk(t.idx!, { type: ct, war: !!pr?.flags.war, score: Number((t as { score?: number }).score) || 0, e: emotionsFor(t.idx!) }) : ''].filter(Boolean).join('\n'); return cl ? { crisis: cl } : {}; })(), ...(tc?.fe ? { feMask: tc.fe } : {}), ...(crisisWih() ? { wih: true } : {}), ...(eth?.length ? { ethicIds: eth } : {}) }; })() : {}), // 몰락한 제국 말투(2026-10-19) · 엔클레이브 세부 말투(알파 11)
       ...(paper.length ? { galnews: paper } : {}),
-      ...(a ? { lore: a.text } : {}),
+      ...(a || card ? { lore: [a?.text ?? '', card].filter(Boolean).join('\n') } : {}),
+      ...(chapters.length ? { chapters } : {}),
       ...(b ? { playerLore: b.text } : {}),
+      ...(typeof t.idx === 'number' && t.idx > 0 && natureOf(t.idx) ? { selfNature: natureOf(t.idx) } : {}), // 상대 제국의 정부 형태·국시·종족 특성(2026-11-03)
+      ...(playerIdx > 0 && natureOf(playerIdx) ? { playerNature: natureOf(playerIdx) } : {}), // 우리 제국의 정부 형태·국시·종족 특성
       ...(briefing ? { briefing } : {}),
       ...(chronicle.length ? { chronicle } : {}),
     };
   } catch { return t; }
 }
+/** 세이브에서 읽은 제국의 정부 형태·국시·기원·건국 종족 특성을 화면 언어 이름으로(2026-11-03). 모르면 ''. */
+function natureOf(idx: number): string { try { return natureText(flagProv.natureFor(idx), (id) => modCompatibility.nameOf(id)); } catch { return ''; } }
+/** 우리 제국: 플레이어가 쓴 전기(없으면 게임 전기)와 정체. 인물 1:1·파벌 회의 프롬프트에 붙는다(policy-app withPolicyContext). */
+setOurEmpireProvider(() => {
+  const name = playerName || '';
+  let lore = name ? backstories.empire(name) : '';
+  if (!lore && playerIdx > 0) { const bio = flagProv.bioFor(playerIdx); if (bio) lore = clipLore(modCompatibility.biography(bio)); }
+  return { name, lore, nature: playerIdx > 0 ? natureOf(playerIdx) : '' };
+});
 /** 대화 상대의 깃발 그림(세이브 + 게임 폴더 이미지). 읽지 못하면 null 이라 화면은 임시 그림을 쓴다. */
 function flagUrlFor(idx: unknown): string | null {
   try { if(typeof idx!=='number'||idx<=0)return null;const name=terminal.items.find(c=>c.idx===idx)?.name||idxNames.get(idx)||'';return modCompatibility.flagOverride(name)||flagProv.urlFor(idx); } catch { return null; }
@@ -323,6 +420,7 @@ app.whenReady().then(() => {
   createWindow();
   createTray();
   startFade();
+  flagProv.onUpdate(() => { if (chat.talk) toUi('talk', chat.talk); toUi('contacts', terminalView()); }); // 세이브를 작업 스레드에서 다 읽으면 깃발·초상화를 다시 그리게(2026-10-27)
   { const err = registerHotkey(); if (err) setTimeout(() => toUi('status', err), 1500); }
   const noteSave = (sid: string) => {
     if (!sid || sid === curSaveId) return;
@@ -362,7 +460,7 @@ app.whenReady().then(() => {
   // 게임 로그 줄 분배: 원래 한 함수였던 처리를 같은 순서의 자리 번호로 나눴다(src/app/log-router.ts, A-00b 3번)
   router.on(SLOT.STATS, 'main:stats', (m: SllmMessage) => {
     if(Object.keys(gameSignalCounts).length<200||gameSignalCounts[m.kind]!==undefined)gameSignalCounts[m.kind]=(gameSignalCounts[m.kind]||0)+1;lastGameSignal={kind:m.kind,time:new Date().toISOString()};
-    const metadata=Object.fromEntries(['req','last','idx','sid','n','date','phase','state','kind','ok','key','protocol','version','type','rel'].filter(k=>m.kv[k]!==undefined).map(k=>[k,m.kv[k]]));logDiagnostic('info','game.signal',{kind:m.kind,...metadata});
+    const metadata=Object.fromEntries(['req','last','idx','sid','n','date','phase','state','kind','ok','key','protocol','version','type','rel'].filter(k=>m.kv[k]!==undefined).map(k=>[k,m.kv[k]]));if(m.kind!=='SYS')logDiagnostic('info','game.signal',{kind:m.kind,...metadata}); // 성계 번호표 줄(수백~천 줄)은 진단 기록에서 뺀다(알파 11)
   });
   let protoWarnedEpoch = -1;
   router.on(SLOT.HELLO, 'main:hello', (m: SllmMessage) => {
@@ -370,6 +468,7 @@ app.whenReady().then(() => {
       const req = Number(m.kv.req);
       link.runtimeMod = { version: m.kv.version || '?', protocol: Number(m.kv.protocol) || 0, verified: req > 0 && terminalReplies.has('HELLO:' + req) };
       terminalReplies.get('HELLO:' + req)?.(m);
+      { const hs = cleanSaveId(m.kv.sid); if (hs) noteSave(hs); } // 세이브를 불러온 뒤 앱을 켜면 LOADED 를 못 받는다. 매달 오는 HELLO 의 세이브 번호로 잡는다(2026-11-03: 인터넷·궁정이 「세이브를 먼저 불러와」만 띄움)
       toUi('environment', environmentInfo());
       const hp = Number(m.kv.protocol) || 0, ps = modProtocolState(hp); // 연결 규격이 다르면 연결 한 번당 한 번 알린다(알파 6)
       if (ps !== 'ok' && protoWarnedEpoch !== link.epoch) { protoWarnedEpoch = link.epoch; logDiagnostic('warn', 'mod.protocol_mismatch', { mod: hp, app: MOD_PROTOCOL, state: ps }); toUi('event', MOD_PROTOCOL_NOTICE[ps]); }
@@ -420,10 +519,18 @@ app.whenReady().then(() => {
   onGameSnapshot(noteGestaltSnapshot); // 단일 의식 제국 판정(언론사 인터뷰·내각 회의 막기, 인물 말투) — 2026-10-19
   registerFactionLog(router); registerFaction(); // SLOT.FACTION_MEET + 내각(장관) 회의 IPC (src/features/faction-app.ts, 2026-10-19 파벌 회의에서 바뀜)
   setCabinetPersona({ mem: personaPeek, note: personaNote }); // 장관들의 1:1 통신 말투·신뢰·기억(persona-app)
+  setEmergencyPersona({ mem: personaPeek }); // 긴급회의 평의원 말투·신뢰(같은 persona-app, 2026-10-23)
+  setPoliticsPersona({ note: personaNote }); // 시위 총독 입장 → 인물 카드 신뢰(2026-10-23)
+  setRelationsPersona({ mem: personaPeek, note: personaNote }); // 사교회 장면·중재에 인물 말투, 중재 결과는 인물 기억에(2026-10-24)
+  setRomancePersona({ mem: personaPeek, note: personaNote }); // 데이트 상대 말투·기억, 데이트·고백 기억 남기기(2026-10-23)
+  setSecretaryPledges(pledgeFacts); // 비서: 총독 약속 기한은 물어볼 때만 답한다(알파 11)
+  setGcPersona({ mem: personaPeek, note: personaNote }); // 총독회의 총독 말투·신뢰(2026-10-23) + 약속 이행·불이행 신뢰 증감(알파 11)
+  setRetiredPersona({ mem: personaPeek }); // 은퇴 인물 통신 말투·기억(2026-10-23)
+  setExecutionPersona({ note: personaNote }); // 처형을 안 인물의 기억 한 줄(2026-10-23)
+  setMemorialExecutionCheck(executionOwnsDeath); // 처형된 인물은 추모·작별과 겹치지 않게(2026-10-23)
   setOfficeCabinet(cabinetReady); setCabinetOfficeNotify(pushOffice); // 집무실 책상 태블릿·「내각 회의가 준비되었습니다」 알람(2026-10-19)
-  router.on(SLOT.GOVTALK, 'main:govtalk', (m: SllmMessage) => {
-    if (m.kind === 'GOVTALK' && m.kv.name) openGov(m.kv.name.slice(0, 80));
-  });
+  // 옛 1:1 총독 대화(GOVTALK → 총독 창)는 2026-10-23 사용자 결정으로 뗐다. 총독 일은 집무실 「행성 총독」 칸(총독회의 등)과 비서 업무 보고로.
+  router.on(SLOT.GOVTALK, 'main:govtalk', () => { /* 예전 세이브·모드에서 오는 GOVTALK 줄은 받기만 하고 무시한다 */ });
   // SLOT.END: src/features/chat.ts registerChat()
   // SLOT.RESKEY: src/features/council.ts registerCouncil()
   router.on(SLOT.LOADED, 'main:loaded', (m: SllmMessage) => {
@@ -432,13 +539,14 @@ app.whenReady().then(() => {
       // 같은 세이브를 다시 불러와도(과거 자동 저장 포함) 이전 시점의 수락 대기 제안·쌓인 호감은 버린다(2026-10-18). 다른 세이브면 noteSave 가 비운다.
       if (chat.pending || chat.pend) { chat.pending = null; chat.pend = null; toUi('event', pick('세이브를 다시 불러와 수락 대기 중이던 제안을 취소했습니다.', 'The save was reloaded, so the pending proposal was cancelled.')); }
       const sid = cleanSaveId(m.kv.sid); noteSave(sid);
-      if (m.kv.date) { gameDate = m.kv.date; if (sid && govMem().track(sid, m.kv.date)) toUi('event', pick('세이브를 과거로 불러와 총독 기억의 시간선이 갈라졌습니다.', 'An earlier save was loaded, so the governor memory timeline branched.')); }
+      if (m.kv.date) { gameDate = m.kv.date; if (sid && govMem().trackLoad(sid, m.kv.date, m.kv.tl)) toUi('event', pick('세이브를 과거로 불러와 총독 기억의 시간선이 갈라졌습니다.', 'An earlier save was loaded, so the governor memory timeline branched.')); }
     }
   });
   // SLOT.TALK: src/features/chat.ts registerChat()
   // SLOT.PROFILE: src/features/chat.ts registerChat()
   // SLOT.INBOX_SYNC: src/features/mail-app.ts registerMail()
   router.on(SLOT.TO_UI, 'main:to_ui', (m: SllmMessage) => {
+    if (m.kind === 'SYS') return; // 성계 번호표 줄은 화면에 보내지 않는다(알파 11, 많아서)
     toUi('sllm', m);
   });
   registerGameLink(router);
@@ -470,6 +578,7 @@ app.whenReady().then(() => {
   // 버그 신고 묶음 IPC 4개: src/features/support.ts 로 옮김(A-00b 4번)
   registerSupport();
   registerBackstory(autoLore); // backstoryEmpire·backstoryEmpireSet·backstoryPerson·backstoryPersonSet 제국·인물 전기 입력 (src/features/backstory-app.ts) — 2026-10-18
+  registerGameDll(); // 게임이 꺼져 있을 때 게임 폴더 DLL 을 앱이 가진 새 DLL 로 바꾼다 (src/features/game-dll-app.ts) — 2026-11-04
   registerAppUpdate(); // 창작마당 모드로 받은 앱 업데이트 알림·교체 (src/features/app-update.ts) — 2026-10-18
   registerSettingsUi(); // getSettings·setPlayer2ClientId·setAiLanguage·setLanguage·setMailEnabled·getCustomCss·openCustomCss (src/features/settings-ui.ts)
   registerWindows(); // 창·런처·알림 카드·게이트·창 설정 IPC 17개 (src/features/windows.ts)
@@ -479,6 +588,24 @@ app.whenReady().then(() => {
   registerMedia(); // mediaGet·mediaSave·mediaBrand·newsList·gossipList·paperOpen·paperClose (src/features/media.ts)
   registerRadio(); // radioGet·radioSelect·radioOff·radioNow (src/features/radio-app.ts)
   // 연설 IPC 5개: src/features/speech-app.ts registerSpeech()
+  registerCasino(); // 우주 카지노: 슬롯·룰렛·성간 주사위·블랙잭·포커(판돈은 금고) (src/features/casino-app.ts, 2026-10-30)
+  registerParty(); // 관저 파티: 손님 고르기 → 세 장면 → 단체 사진(src/features/party-app.ts, 2026-11-03)
+  registerLandmark(); // 성향별 특별한 곳: 의식·인물 대화·공개 연설 (src/features/landmark-app.ts)
+  registerBlackmarket(); // 암시장 골목: 희귀 생물·밀수품 흥정, 정보상(궁정 음모 단서·감정), 가짜·단속 (src/features/blackmarket-app.ts)
+  registerTavern(); // 뒷골목 선술집: 변장 → 엿듣기(LLM 한 번)·한 잔 돌리기·합석 대화·의심 게이지 (src/features/tavern-app.ts)
+  registerPetshop(); // 펫샵: 수조 벽·동물 코너·오늘 들어온 희귀종 (src/features/petshop-app.ts)
+  registerBedroom(); // 침실: 가구·액자·진열 배치, 어항·애완동물, 연인·배우자와 대화 (src/features/bedroom-app.ts)
+  registerPaparazzi(); // 파파라치: 외출 사건 → 사진 → 매수·무시·고소 → 틀 기사(민심·부패 낌새·외교) (src/features/paparazzi-app.ts)
+  registerStore(); // 백화점: 엘리베이터 → 40 리빙관·41 패션·주얼리관(선물)·42 갤러리관·43 스카이 라운지 (src/features/store-app.ts)
+  registerOuting(); // 외출: 수도 지도 → 데이트 공원·우주 경기장(나머지 장소는 준비 중) (src/features/outing-app.ts, 2026-10-30)
+  registerLog(); // 레전드 오브 갤럭시: 국내 리그·구단·밴픽·토토·은하 올림픽(상금·연봉은 금고) (src/features/log-app.ts, 2026-10-30)
+  registerGForum(); // 갤럭틱 포럼: gforumState·gforumRefresh·gforumReply (인터넷 창 네 번째 탭 ui/office-gforum.js, 2026-11-04)
+  registerRenameLedger(router); // 굴욕 조항·종속국 개명·AI 개명 요구가 함께 쓰는 RENAME 응답 (src/features/rename-ledger.ts, 2026-11-04)
+  registerFleetName(router); // 함대 명명 건: fleetNameState·fleetNameAsk·fleetNamePick + SLOT.FLEETNAME (내각 회의실 ui/cabinet-fleetname.js, 2026-11-04)
+  registerColName(router); // 신규 식민지 이름 짓기: colNameState·colNameNotify·colNameAsk·colNamePick + SLOT.COLNAME (src/features/colname-app.ts, 2026-11-04)
+  registerGovPolicy(router); // 총독에게 행성 맡기기: govPolState·govPolSet + SLOT.GOVPOL (src/features/govpolicy-app.ts, 2026-11-03)
+  registerEmp(router); // 비상대권: empState·empSet + SLOT.EMP (src/features/emp-app.ts, 2026-11-05)
+  registerVault(router); // 통치자 개인 금고: vaultState·vaultDeposit·vaultWithdraw·vaultRetry + SLOT.VAULT (src/features/vault-app.ts, 2026-10-30)
   registerCouncil(router); // 의회 IPC 6개 + 로그 자리 RESOLUTION·AGENDA·RESKEY (src/features/council.ts)
   registerGovReport(router); // A-26 총독 홀로그램 보고: govReportState·govReportSay·govReportRetry·govReportClose + SLOT.GOVREPORT (src/features/govreport.ts)
   registerGov(); // govRefresh·govReset·govMemList·govMemAdd·govMemDel·govChat·planetArt·govClose (src/features/gov.ts)
@@ -506,11 +633,56 @@ app.whenReady().then(() => {
   registerEmbassy(router); // + SLOT.EMBASSY 대사관 보고서(집무실 바탕화면) — 2026-10-19
   registerMusic(); // 국가·군가(집무실 바탕화면, 앱 전용) — 2026-10-20 알파 10 앞당김
   registerMood(); // 민심(시민 지지도) 화면 자료 — 2026-10-20 알파 10
+  registerCivic(router); // + SLOT.CIVIC 시민 정치: 여론조사·국민투표 기록·특별사면(src/features/civic-app.ts) — 2026-11-03
+  registerPreftl(router); // + SLOT.PREFTL 원시문명 관측: 목록·변화 기록·관찰 보고서(src/features/preftl-app.ts) — 2026-11-03
+  registerPreftlNet(); // 원시문명 인터넷 염탐: 원자력 시대부터 그들의 컴퓨터망 게시판(src/features/preftl-net-app.ts) — 2026-11-04
+  registerAudit(); // 국정감사: 12년마다, 결과 수정자는 CIVIC 회신(src/features/audit-app.ts) — 2026-11-03
+  registerNoconf(); // 불신임: 지지율 25%(감사 논란 땐 30%) 아래 석 달 → 불신임안, 결과 수정자는 CIVIC 회신(src/features/noconf-app.ts) — 2026-11-03
+  registerLobby(); // 로비: 이익단체의 공식 지원·뒷돈, 효과는 CIVIC 회신(src/features/lobby-app.ts) — 2026-11-03
+  registerTwoParty(); // 양당 정치: 의회 파벌을 두 거대 정당으로 묶고 지지율·대정부 질문·총선(src/features/twoparty-app.ts) — 2026-11-06
+  registerParliament(); // 여당·야당: 의석·연정·야당 대표·원내 공방, 효과는 CIVIC 회신(src/features/parliament-app.ts) — 2026-11-03
+  registerEnclave(); // 엔클레이브·캐러밴 소식: 축제 개막·소동·캐러밴 도착(알파 11, 2026-10-25)
+  registerSystems(router); // 성계 번호표(SYS)·대화에서 언급된 성계 지도 이름표 + SLOT.SYSTEMS
+  setCrisisDoc((kind, since, ended) => { const sid = curSaveId; if (sid) { const allies = pactAllies(); issueDoc(sid, { issuer: 'crisis', kind: 'crisis', date: since, closedOn: ended, ref: kind, nation: playerName || undefined, ...(allies.length ? { allies } : {}) }); } }); // 은하 위기 극복 기록(알파 11) · 함께 싸운 제국(공동 대응 협약)
+  setCrisisCalm(() => endAllPacts()); // 적대 위기가 모두 끝나면 공동 대응 협약도 끝(알파 11)
+  registerFallen(router); // 몰락제국 각성: 가로챈 신호·특별판 + SLOT.FALLEN
+  registerGestaltReport(router); // 동기화 로그·공명 보고 + SLOT.GESTALT(이탈 노드)
+  registerGestalt(); // 단일 의식 말투: 따로 뜨는 창이 플레이어 제국 종류를 묻는다(알파 11)
+  registerEmotions(router); // 감정 기억 4종: 통신 목록마다(3달에 한 번) 쌓고 옅어짐 + SLOT.EMOTIONS
+  registerChildren(router); // 통치자의 아이: 해마다 탄생 판정·양육 사건·청소년 대화·성인식(create_leader) + SLOT.CHILDREN(2026-10-27)
+  registerDeals(router); // 외교 거래: 설득 확률·묶음 거래·조공 평화·갈고리·참전 요청 + SLOT.DEALS(2026-10-26)
+  registerUsage(); // 한 달 사용량: 월간 상황마다 진단 기록 usage.month(2026-11-09)
+  registerSaveSignals(router); // + SLOT.SAVESIGNAL 세이브 다시 읽기는 바뀜 신호 때만(통치자 교체·첫 접촉·불러옴·우리 정부·12달) — 2026-11-09
+  registerKhan(router); // 그레이트 칸 특별 대우: 등장 때 한 번 조사 → 선물·칸의 총애 + SLOT.KHAN(2026-10-26)
+  registerFrontier(router); // 국경·전선: 대화·회의 전에 이웃·맞닿은 성계·점령 읽기 + SLOT.FRONTIER(2026-10-26)
+  registerMarauders(router); // 약탈자 대응: 위협·습격 돌리기·용병 흥정 + SLOT.MARAUDER(2026-10-26)
+  registerCollectibles(router); // 상인 수집품 구매·골동품 진열장·국가 문서함(알파 11, 2026-10-25) + SLOT.ENCLAVE_SHOP
+  registerHoi(router); // aidStart·aidStop·fsupStart·autoRights + SLOT.HOI(2026-10-28)
+  registerDayMood(); // 분위기 태그 · 비서 아침 인사 · 라디오 짧은 꼭지(2026-10-28)
+  registerCourt(router); // courtView·courtTree·courtAct·courtFree·courtRename + SLOT.COURT(2026-10-28 정치)
+  registerMemoryLinks(router); // 들은 말 퍼지기(SLOT.MEMORY)·연대기 상한 → 장(章) 압축(2026-10-28)
+  registerInternet(); // internetState·Open·Refresh·Post·Write·Reply·Nick·Follow·Influencer·Promo 인터넷(2026-10-28)
   registerDebate(); // 신문·라디오 찬반 논평 — 2026-10-20 알파 10
   registerScandal(); // 비방 공작 → 신문 추문·대응 — 2026-10-20 알파 9
   registerAgents(); // 첩보망 = 공작원 인물(이름·암호명·위장·연락 두절) — 2026-10-20 알파 9
   registerNationalEvents(router);
   registerOfficialHolidays(router);
+  registerProtests(router); // + SLOT.PROTESTS 시위(집무실 「시위」) — 2026-10-23 초안
+  registerEmergency(); // 긴급회의(집무실 「긴급회의」 → 회의실) — 2026-10-23 초안
+  registerPolitics(); // 정치적 지위 장부: 인물 카드 standingInfo — 2026-10-23 초안
+  registerRelations(router); // + SLOT.RELATIONS 인물 관계: 사교회(집무실 「사교회」)·인물 카드 인간관계·불만 특성 — 2026-10-23 초안
+  registerRomance(); // 통치자 연애: 인물 카드 버튼 → 데이트 지도(date-park.html)·고백·청혼·결혼식 — 2026-10-23 초안
+  registerChess(); // 지도자와 체스: 사교회·만찬에서 우리 지도자·다른 제국 통치자와(2026-10-30)
+  registerGc(); // 행성총독회의: 격년 11월 정기·긴급 소집(집무실 「총독회의」 → gov-council.html) — 2026-10-23 초안
+  registerHolidays(); // 행성 기념일: 설립 1년 뒤 AI 가 제목·설명, 당일 방문 → 그 행성에 효과(「국가 행사날」 창) — 2026-10-23 초안
+  registerRetired(); // 은퇴 인물: LEADEROUT·명단 → 은퇴 기록, 집무실 「은퇴 인물」 통신 — 2026-10-23 초안
+  registerFbanquet(router); // + SLOT.FOREIGN_BANQUET 타국 만찬: 매월 초대 판정, 집무실 「초대장」 → banquet.html?mode=foreign — 2026-10-23 초안
+  registerFletters(); // 타국 지인 서신: 집무실 「초대장」의 타국 지인 칸, 답장은 다음 게임 달 — 2026-10-23 초안
+  registerExecution(); // 처형: 인물 카드 「처형…」 → 최종 확인 → kill_leader, 아는 인물만 반응 — 2026-10-23 초안
+  registerWorkshop(); // 창작마당 애드온: 구독 폴더는 읽기만, 「설치」하면 앱 애드온 폴더로 복사(꺼진 채) — 2026-10-23 초안
+  registerLore(); setPromptAugment(loreForPrompt); // 세계관 팩 서재: 집무실 「서재」, AI 참조는 캠페인별로 켠 world 책 요약만 — 2026-10-23 초안
+  setPromptAugment((p) => [loreForPrompt(p), scenarioForPrompt(p)].filter(Boolean).join('\n\n')); // 위 서재 세계관 + 시나리오 배경·대립 긴장도(src/features/scenario-app.ts, 2026-11-05)
+  registerIsc(router); // + SLOT.ISC 성간 임시회의(집무실 「성간 임시회의」 → 회의실) — 2026-10-23 초안
   registerCeremony(router); // 출정 의식(복무신조 전체화면 낭독) — 2026-10-20
   registerCondemn(router); // + SLOT.CONDEMN 규탄 성명(WARVOICE → 판정·알림·호감) — 2026-10-20
   registerDeclare(router); // + SLOT.DECLARE 전쟁 선언문(전쟁 시작 알림 → 선언문 → 낭독 방송 → 출정 의식) — 2026-10-20
@@ -518,6 +690,22 @@ app.whenReady().then(() => {
   registerTts(); // ttsAiCheck·ttsAiSpeak 라디오 AI 음성(OpenAI /audio/speech) — 2026-10-17
   registerChronBook(); // chronBookExport 연대기 책 내보내기(HTML/PDF) — 2026-10-17
   registerFleet(router); // + SLOT.FLEET 함대 사령부(제독 전투 기록·청문회) — 2026-10-17
+  registerGalaxy(router); // + SLOT.WARROOM 함대 명령·작전 회의(2단계). 작전지휘실 은하 지도: 세이브에서 성계·항로·영토·함대를 읽어 함대 사령부 창에(src/features/galaxy-app.ts) — 2026-11-05
+  registerInfamy(router); // + SLOT.INFAMY 악명·전쟁범죄: 폭격·행성 말살·숙청·포로 처형 기록, 외교 대화·비서·연대기에 알림(src/features/infamy-app.ts) — 2026-11-04
+  registerCaptive(router); // + SLOT.CAPTIVE 사로잡은 적 제독: 심문실 LLM 대화·몸값·심문·회유·처형·석방(src/features/captive-app.ts) — 2026-11-04
+  registerFleetOrder(router); // + SLOT.FLEETORDER 자동 작전: 해군 작전·수리 복귀·제독 무전(src/features/fleetorder-app.ts) — 2026-11-04
+  registerCyber(router); // + SLOT.CYBER 해외발 여론 공작 상황 → 공작 장부·알림·연대기(src/features/cyber-app.ts) — 2026-11-04
+  registerTemper(router); // + SLOT.TEMPER 외교 노선: AI 제국 성향 변화·노선 공작·은하 판세(src/features/temper-app.ts) — 2026-11-04
+  registerBudget(router); // + SLOT.BUDGET 예산 회의: 장관 예산 요청·집행·매달 차감(src/features/budget-app.ts) — 2026-11-04
+  registerVassalCourt(router); // + SLOT.VASCOURT 종속국 통치: 조공 감면 요청·감독관 파견·계약 재협상 반응(src/features/vassal-court-app.ts) — 2026-11-04
+  registerVassalAdmin(router); // + SLOT.VADMIN 종속국 행정: 성계 이양·기술 원조·동화 정책, 거래 「성계 할양」 공용(src/features/vassal-admin-app.ts) — 2026-11-04
+  registerVassalReign(router); // + SLOT.VREIGN 종속국 통치권: 괴뢰 통치자·대리전 지시·간섭 반감·정책 동조·종속국 쟁탈 전쟁명분(src/features/vassal-reign-app.ts) — 2026-11-05
+  registerScenario(router); // + SLOT.SCENARIO 시나리오 알아보기(src/features/scenario-app.ts) — 2026-11-05
+  registerScenarioMap(router); // + SLOT.SCNMAP 시나리오 은하 지도: 섹터·총독 초상화(src/features/scenario-map-app.ts, 시나리오 전용) — 2026-11-06
+  registerTension(router); // + SLOT.TENSION 대립 긴장도(src/features/tension-app.ts, 시나리오 전용) — 2026-11-05
+  registerRebels(router); // + SLOT.REBELS 반란과 공작(src/features/rebels-app.ts) — 2026-11-05
+  registerOverlordPressure(router); // + SLOT.OVPRESS 역방향: AI 종주국 명령(대리전·징발·헌납·감시관)·동조·간섭 반감·AI 의 종속국 쟁탈(src/features/overlord-pressure-app.ts) — 2026-11-05
+  registerAlarm(router); // + SLOT.ALARM 일정표: 게임 숨은 재사용 대기 매달 읽기·알림·비서 보고·상황 막대(src/features/alarm-app.ts) — 2026-11-04
   registerVassal(router); // + SLOT.VASSAL 종속국 통신 채널(청원 결과 적용 응답·타이머 서신) — 2026-10-17
   registerPress(router); // + SLOT.PRESS 언론사 인터뷰(시행령 준비·월 신호·버프 확인) — 2026-10-17
   registerEffectVerifier(router);

@@ -1,0 +1,9 @@
+# SLLM 총독 방침(2026-11-03): 매달 숙련 확인(숨은 이벤트, 플레이어·맡긴 적 있을 때만)
+on_monthly_pulse_country = {
+	events = { sllm_gov.1 }
+}
+
+# 행성 등급이 바뀌면 총독이 계획을 다시 짠다(2026-11-05, sllm_gov.20)
+on_planet_class_changed = {
+	events = { sllm_gov.20 }
+}

@@ -1,0 +1,6 @@
+# 일정표 막대 속도: 1000 점을 (sllm_al_total / 30) 달에 채움 = 30000 / sllm_al_total. 상황 범위에서 계산. 0 나누기 방지.
+sllm_alarm_rate = {
+	base = 0
+	modifier = { add = 30000 check_variable = { which = sllm_al_total value > 0 } }
+	modifier = { divide = sllm_al_total check_variable = { which = sllm_al_total value > 0 } }
+}

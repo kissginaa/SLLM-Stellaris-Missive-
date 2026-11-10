@@ -1,0 +1,12 @@
+# SLLM 약탈자 흥정 — 용병 할인 정산(2026-11-09 사용자: 「매달 확인이 필요 없는 것은 바뀔 때만」 · 회랑 방식).
+# 예전: 흥정이 살아 있는 동안 앱이 매달 콘솔로 sllm_mrd_merc_check 를 보냈다. 지금: 모드가 매달 스스로 확인하고, 돌려줄 때만 SLLM:MRCREF 줄을 남긴다.
+# 흥정 표식(sllm_mrd_deal, 360일)이 없으면 trigger 에서 바로 끝난다. 효과: common/scripted_effects/sllm_marauder_deals.txt
+namespace = sllm_mrd
+
+country_event = {
+	id = sllm_mrd.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { is_ai = no has_country_flag = sllm_mrd_deal }
+	immediate = { sllm_mrd_merc_check = yes }
+}

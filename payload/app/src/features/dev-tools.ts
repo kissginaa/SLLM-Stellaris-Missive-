@@ -21,6 +21,7 @@ import { openSummit, readFederation } from './summit';
 import { demoGovReport } from './govreport';
 import { sampleFederation } from '../dev-fake';
 import { pick as L } from './settings-ui';
+import { aiTruthLines } from './ai-truth-app'; // AI 제국 실제 상태(2026-10-29)
 
 type DevResult = { ok: boolean; message?: string; error?: string; lines?: string[] };
 type Handler = () => Promise<DevResult>;
@@ -168,6 +169,8 @@ export function registerDevTools(router?: LogRouter): void {
   // 6. 대화 속내(A-17): 가짜 PROFILE 의 beh 비트가 시스템 프롬프트에 어떻게 들어가는지(LLM 호출 없음).
   ipcMain.handle('devBehaviorPreview', guarded(async () => ({ ok: true, message: L('beh=5(공격+속국), beh=24(동맹+공존)의 프롬프트 줄입니다.', 'Prompt lines for beh=5 (aggressive + subjects) and beh=24 (alliance + coexistence).'), lines: behaviorPreview() })));
   // 7. 시험 데이터 지우기: 지울 수 있는 것은 저장소의 기능으로 지우고, 지우는 기능이 없는 저장소는 그렇다고 알린다.
+  /** AI 제국 실제 상태(2026-10-29, 읽기만): 앱이 각 제국에 대해 쥔 상태와 한 번도 안 돈 기능. */
+  ipcMain.handle('devAiTruth', guarded(async () => { const lines = aiTruthLines(); return { ok: true, message: L(`AI 제국 실제 상태 ${lines.length}줄`, `AI empire ground truth: ${lines.length} lines`), lines }; }));
   ipcMain.handle('devClearTest', guarded(async () => {
     const out: string[] = [];
     radioDev.bypass = false; out.push(L('라디오 "지금 듣기" 게임 없이 듣기: 껐습니다.', 'Radio "Listen now" without the game: turned off.'));

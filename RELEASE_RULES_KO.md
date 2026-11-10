@@ -58,7 +58,7 @@
 
 ## 8. 창작마당으로 앱 업데이트 (2026-10-18 사용자 결정)
 
-- 설치기_만들기.bat(make-installer.ps1) 이 마지막에 `tools/make-app-update.js` 로 **문서 `mod/sllm_missive/sllm_app_update/`** (있으면 `dist/workshop_<버전>/sllm_missive/` 에도) 에 앱 파일 + `manifest.json` + `manifest.sig` 를 넣는다. 모드 파일 자체는 건드리지 않는다.
+- 설치기_만들기.bat(make-installer.ps1) 이 마지막에 `tools/make-app-update.js` 로 **문서 `mod/sllm_missive/sllm_app_update/`** (있으면 `dist/workshop_<버전>/sllm_missive/` 에도) 에 앱 파일 + `manifest.json` + `manifest.sig` 를 넣는다. 모드 파일은 `descriptor.mod` 의 `version` 줄과 `sllm_probe_connection.txt` 의 HELLO `version=` 만 같은 버전으로 맞추고(2026-10-24 사용자 결정, 업데이트_만들기.bat 포함) 나머지는 건드리지 않는다.
 - 묶음에 넣는 것: `dist`·`ui`·`native`·`example`·`package.json`·`start_app.bat`·`portrait-library.pak`·README/ALPHA_SETUP/RELEASE_NOTES. 넣지 않는 것: `src`·`tools`·`runtime`·`tester-mod`·공개 키·설치 기록 파일.
 - 서명: Ed25519. 개인 키 `%USERPROFILE%\.sllm\update-signing-key.pem`(처음 실행 때 자동 생성, 백업 필수, 공유·업로드 금지). 공개 키 `update-public-key.pem` 은 payload·실행 앱·설치기에 들어간다. 개인 키를 잃으면 새 키를 만들고 사용자는 설치기를 한 번 다시 받아야 한다.
 - 앱(설치판만): 켜진 뒤와 20분마다 구독 모드의 묶음을 확인 → 서명·해시가 맞고 더 높은 버전이면 「업데이트/나중에」를 묻고, 누르면 바뀐 파일만 교체(백업은 앱 데이터 `update-backup`, 실패 시 되돌림) 후 다시 시작.

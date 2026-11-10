@@ -1,0 +1,9299 @@
+# SLLM 퀘스트 효과 라이브러리 (tools/gen-quest-effects.py 로 생성 — 직접 고치지 말고 생성기를 고칠 것)
+# 이름: sllm_q<자리 1~8>_<id>_p (좋은 쪽 1단계) / _n (나쁜 쪽 1단계). 앱이 add_modifier = { modifier = … days = N multiplier = 단계 } 로 붙인다.
+# 키는 Stellaris 4.5.1 script_docs 의 바닐라 이름만 쓴다 — 다른 모드 없이 동작.
+
+sllm_q1_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q1_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q2_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q2_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q3_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q3_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q4_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q4_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q5_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q5_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q6_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q6_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q7_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q7_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q8_energy_p = {
+	country_energy_produces_mult = 0.01
+}
+
+sllm_q8_energy_n = {
+	country_energy_produces_mult = -0.01
+}
+
+sllm_q1_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q1_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q2_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q2_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q3_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q3_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q4_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q4_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q5_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q5_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q6_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q6_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q7_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q7_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q8_minerals_p = {
+	country_minerals_produces_mult = 0.01
+}
+
+sllm_q8_minerals_n = {
+	country_minerals_produces_mult = -0.01
+}
+
+sllm_q1_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q1_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q2_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q2_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q3_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q3_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q4_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q4_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q5_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q5_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q6_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q6_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q7_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q7_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q8_food_p = {
+	country_food_produces_mult = 0.01
+}
+
+sllm_q8_food_n = {
+	country_food_produces_mult = -0.01
+}
+
+sllm_q1_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q1_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q2_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q2_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q3_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q3_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q4_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q4_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q5_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q5_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q6_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q6_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q7_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q7_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q8_alloys_p = {
+	country_alloys_produces_mult = 0.01
+}
+
+sllm_q8_alloys_n = {
+	country_alloys_produces_mult = -0.01
+}
+
+sllm_q1_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q1_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q2_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q2_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q3_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q3_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q4_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q4_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q5_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q5_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q6_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q6_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q7_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q7_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q8_goods_p = {
+	country_consumer_goods_produces_mult = 0.01
+}
+
+sllm_q8_goods_n = {
+	country_consumer_goods_produces_mult = -0.01
+}
+
+sllm_q1_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q1_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q2_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q2_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q3_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q3_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q4_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q4_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q5_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q5_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q6_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q6_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q7_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q7_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q8_unity_p = {
+	country_unity_produces_mult = 0.01
+}
+
+sllm_q8_unity_n = {
+	country_unity_produces_mult = -0.01
+}
+
+sllm_q1_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q1_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q2_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q2_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q3_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q3_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q4_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q4_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q5_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q5_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q6_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q6_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q7_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q7_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q8_influence_p = {
+	country_influence_produces_mult = 0.01
+}
+
+sllm_q8_influence_n = {
+	country_influence_produces_mult = -0.01
+}
+
+sllm_q1_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q1_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q2_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q2_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q3_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q3_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q4_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q4_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q5_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q5_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q6_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q6_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q7_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q7_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q8_trade_p = {
+	country_trade_produces_mult = 0.01
+}
+
+sllm_q8_trade_n = {
+	country_trade_produces_mult = -0.01
+}
+
+sllm_q1_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q1_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q2_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q2_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q3_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q3_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q4_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q4_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q5_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q5_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q6_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q6_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q7_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q7_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q8_gases_p = {
+	country_exotic_gases_produces_mult = 0.01
+}
+
+sllm_q8_gases_n = {
+	country_exotic_gases_produces_mult = -0.01
+}
+
+sllm_q1_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q1_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q2_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q2_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q3_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q3_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q4_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q4_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q5_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q5_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q6_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q6_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q7_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q7_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q8_motes_p = {
+	country_volatile_motes_produces_mult = 0.01
+}
+
+sllm_q8_motes_n = {
+	country_volatile_motes_produces_mult = -0.01
+}
+
+sllm_q1_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q1_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q2_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q2_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q3_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q3_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q4_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q4_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q5_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q5_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q6_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q6_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q7_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q7_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q8_crystals_p = {
+	country_rare_crystals_produces_mult = 0.01
+}
+
+sllm_q8_crystals_n = {
+	country_rare_crystals_produces_mult = -0.01
+}
+
+sllm_q1_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q1_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q2_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q2_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q3_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q3_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q4_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q4_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q5_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q5_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q6_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q6_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q7_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q7_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q8_nanites_p = {
+	country_nanites_produces_mult = 0.01
+}
+
+sllm_q8_nanites_n = {
+	country_nanites_produces_mult = -0.01
+}
+
+sllm_q1_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q1_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q2_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q2_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q3_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q3_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q4_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q4_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q5_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q5_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q6_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q6_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q7_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q7_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q8_darkmatter_p = {
+	country_sr_dark_matter_produces_mult = 0.01
+}
+
+sllm_q8_darkmatter_n = {
+	country_sr_dark_matter_produces_mult = -0.01
+}
+
+sllm_q1_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q1_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q2_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q2_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q3_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q3_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q4_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q4_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q5_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q5_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q6_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q6_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q7_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q7_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q8_zro_p = {
+	country_sr_zro_produces_mult = 0.01
+}
+
+sllm_q8_zro_n = {
+	country_sr_zro_produces_mult = -0.01
+}
+
+sllm_q1_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q1_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q2_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q2_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q3_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q3_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q4_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q4_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q5_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q5_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q6_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q6_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q7_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q7_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q8_livingmetal_p = {
+	country_sr_living_metal_produces_mult = 0.01
+}
+
+sllm_q8_livingmetal_n = {
+	country_sr_living_metal_produces_mult = -0.01
+}
+
+sllm_q1_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q1_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q2_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q2_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q3_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q3_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q4_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q4_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q5_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q5_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q6_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q6_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q7_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q7_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q8_artifacts_p = {
+	country_minor_artifacts_produces_mult = 0.01
+}
+
+sllm_q8_artifacts_n = {
+	country_minor_artifacts_produces_mult = -0.01
+}
+
+sllm_q1_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q1_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q2_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q2_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q3_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q3_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q4_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q4_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q5_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q5_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q6_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q6_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q7_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q7_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q8_storage_p = {
+	country_resource_max_add = 100
+}
+
+sllm_q8_storage_n = {
+	country_resource_max_add = -100
+}
+
+sllm_q1_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q1_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q2_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q2_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q3_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q3_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q4_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q4_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q5_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q5_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q6_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q6_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q7_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q7_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q8_physics_p = {
+	country_physics_research_produces_mult = 0.01
+}
+
+sllm_q8_physics_n = {
+	country_physics_research_produces_mult = -0.01
+}
+
+sllm_q1_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q1_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q2_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q2_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q3_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q3_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q4_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q4_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q5_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q5_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q6_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q6_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q7_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q7_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q8_society_p = {
+	country_society_research_produces_mult = 0.01
+}
+
+sllm_q8_society_n = {
+	country_society_research_produces_mult = -0.01
+}
+
+sllm_q1_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q1_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q2_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q2_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q3_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q3_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q4_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q4_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q5_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q5_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q6_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q6_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q7_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q7_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q8_engineering_p = {
+	country_engineering_research_produces_mult = 0.01
+}
+
+sllm_q8_engineering_n = {
+	country_engineering_research_produces_mult = -0.01
+}
+
+sllm_q1_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q1_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q2_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q2_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q3_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q3_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q4_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q4_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q5_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q5_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q6_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q6_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q7_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q7_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q8_researchspeed_p = {
+	all_technology_research_speed = 0.01
+}
+
+sllm_q8_researchspeed_n = {
+	all_technology_research_speed = -0.01
+}
+
+sllm_q1_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q1_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q2_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q2_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q3_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q3_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q4_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q4_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q5_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q5_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q6_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q6_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q7_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q7_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q8_techchoices_p = {
+	num_tech_alternatives_add = 1
+}
+
+sllm_q8_techchoices_n = {
+	num_tech_alternatives_add = -1
+}
+
+sllm_q1_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q1_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q2_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q2_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q3_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q3_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q4_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q4_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q5_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q5_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q6_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q6_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q7_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q7_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q8_size_p = {
+	empire_size_mult = -0.01
+}
+
+sllm_q8_size_n = {
+	empire_size_mult = 0.01
+}
+
+sllm_q1_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q1_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q2_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q2_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q3_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q3_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q4_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q4_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q5_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q5_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q6_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q6_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q7_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q7_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q8_sizepops_p = {
+	empire_size_pops_mult = -0.01
+}
+
+sllm_q8_sizepops_n = {
+	empire_size_pops_mult = 0.01
+}
+
+sllm_q1_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q1_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q2_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q2_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q3_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q3_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q4_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q4_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q5_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q5_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q6_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q6_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q7_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q7_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q8_sizecol_p = {
+	empire_size_colonies_mult = -0.01
+}
+
+sllm_q8_sizecol_n = {
+	empire_size_colonies_mult = 0.01
+}
+
+sllm_q1_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q1_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q2_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q2_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q3_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q3_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q4_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q4_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q5_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q5_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q6_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q6_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q7_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q7_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q8_edictcost_p = {
+	edicts_cost_mult = -0.01
+}
+
+sllm_q8_edictcost_n = {
+	edicts_cost_mult = 0.01
+}
+
+sllm_q1_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q1_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q2_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q2_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q3_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q3_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q4_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q4_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q5_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q5_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q6_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q6_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q7_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q7_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q8_edictfund_p = {
+	country_edict_fund_add = 10
+}
+
+sllm_q8_edictfund_n = {
+	country_edict_fund_add = -10
+}
+
+sllm_q1_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q1_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q2_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q2_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q3_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q3_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q4_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q4_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q5_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q5_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q6_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q6_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q7_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q7_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q8_tradcost_p = {
+	tradition_cost_mult = -0.01
+}
+
+sllm_q8_tradcost_n = {
+	tradition_cost_mult = 0.01
+}
+
+sllm_q1_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q1_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q2_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q2_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q3_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q3_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q4_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q4_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q5_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q5_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q6_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q6_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q7_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q7_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q8_claimcost_p = {
+	country_claim_influence_cost_mult = -0.01
+}
+
+sllm_q8_claimcost_n = {
+	country_claim_influence_cost_mult = 0.01
+}
+
+sllm_q1_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q1_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q2_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q2_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q3_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q3_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q4_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q4_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q5_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q5_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q6_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q6_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q7_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q7_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q8_agenda_p = {
+	council_agenda_progress_speed = 0.01
+}
+
+sllm_q8_agenda_n = {
+	council_agenda_progress_speed = -0.01
+}
+
+sllm_q1_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q1_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q2_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q2_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q3_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q3_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q4_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q4_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q5_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q5_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q6_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q6_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q7_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q7_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q8_agendacd_p = {
+	council_agenda_cooldown_mult = -0.01
+}
+
+sllm_q8_agendacd_n = {
+	council_agenda_cooldown_mult = 0.01
+}
+
+sllm_q1_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q1_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q2_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q2_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q3_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q3_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q4_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q4_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q5_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q5_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q6_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q6_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q7_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q7_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q8_approval_p = {
+	faction_approval = 0.01
+}
+
+sllm_q8_approval_n = {
+	faction_approval = -0.01
+}
+
+sllm_q1_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q1_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q2_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q2_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q3_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q3_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q4_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q4_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q5_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q5_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q6_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q6_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q7_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q7_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q8_officials_p = {
+	country_official_cap_add = 1
+}
+
+sllm_q8_officials_n = {
+	country_official_cap_add = -1
+}
+
+sllm_q1_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q1_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q2_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q2_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q3_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q3_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q4_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q4_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q5_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q5_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q6_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q6_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q7_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q7_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q8_scientists_p = {
+	country_scientist_cap_add = 1
+}
+
+sllm_q8_scientists_n = {
+	country_scientist_cap_add = -1
+}
+
+sllm_q1_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q1_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q2_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q2_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q3_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q3_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q4_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q4_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q5_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q5_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q6_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q6_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q7_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q7_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q8_commanders_p = {
+	country_commander_cap_add = 1
+}
+
+sllm_q8_commanders_n = {
+	country_commander_cap_add = -1
+}
+
+sllm_q1_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q1_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q2_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q2_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q3_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q3_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q4_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q4_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q5_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q5_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q6_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q6_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q7_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q7_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q8_terraformcost_p = {
+	terraforming_cost_mult = -0.01
+}
+
+sllm_q8_terraformcost_n = {
+	terraforming_cost_mult = 0.01
+}
+
+sllm_q1_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q1_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q2_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q2_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q3_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q3_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q4_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q4_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q5_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q5_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q6_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q6_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q7_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q7_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q8_decisionspeed_p = {
+	planet_decision_enact_speed_mult = 0.01
+}
+
+sllm_q8_decisionspeed_n = {
+	planet_decision_enact_speed_mult = -0.01
+}
+
+sllm_q1_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q1_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q2_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q2_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q3_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q3_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q4_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q4_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q5_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q5_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q6_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q6_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q7_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q7_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q8_diploweight_p = {
+	diplo_weight_mult = 0.01
+}
+
+sllm_q8_diploweight_n = {
+	diplo_weight_mult = -0.01
+}
+
+sllm_q1_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q1_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q2_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q2_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q3_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q3_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q4_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q4_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q5_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q5_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q6_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q6_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q7_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q7_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q8_envoys_p = {
+	envoys_add = 1
+}
+
+sllm_q8_envoys_n = {
+	envoys_add = -1
+}
+
+sllm_q1_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q1_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q2_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q2_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q3_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q3_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q4_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q4_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q5_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q5_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q6_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q6_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q7_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q7_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q8_relations_p = {
+	envoy_improve_relations_mult = 0.01
+}
+
+sllm_q8_relations_n = {
+	envoy_improve_relations_mult = -0.01
+}
+
+sllm_q1_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q1_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q2_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q2_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q3_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q3_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q4_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q4_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q5_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q5_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q6_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q6_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q7_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q7_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q8_trust_p = {
+	country_trust_growth = 0.01
+}
+
+sllm_q8_trust_n = {
+	country_trust_growth = -0.01
+}
+
+sllm_q1_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q1_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q2_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q2_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q3_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q3_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q4_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q4_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q5_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q5_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q6_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q6_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q7_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q7_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q8_tribute_p = {
+	subject_tribute_mult = 0.01
+}
+
+sllm_q8_tribute_n = {
+	subject_tribute_mult = -0.01
+}
+
+sllm_q1_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q1_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q2_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q2_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q3_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q3_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q4_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q4_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q5_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q5_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q6_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q6_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q7_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q7_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q8_loyalty_p = {
+	monthly_loyalty_from_subjects = 0.01
+}
+
+sllm_q8_loyalty_n = {
+	monthly_loyalty_from_subjects = -0.01
+}
+
+sllm_q1_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q1_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q2_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q2_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q3_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q3_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q4_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q4_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q5_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q5_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q6_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q6_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q7_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q7_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q8_warex_p = {
+	country_war_exhaustion_mult = -0.01
+}
+
+sllm_q8_warex_n = {
+	country_war_exhaustion_mult = 0.01
+}
+
+sllm_q1_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q1_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q2_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q2_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q3_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q3_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q4_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q4_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q5_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q5_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q6_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q6_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q7_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q7_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q8_decrypt_p = {
+	intel_decryption_add = 1
+}
+
+sllm_q8_decrypt_n = {
+	intel_decryption_add = -1
+}
+
+sllm_q1_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q1_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q2_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q2_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q3_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q3_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q4_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q4_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q5_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q5_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q6_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q6_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q7_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q7_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q8_encrypt_p = {
+	intel_encryption_add = 1
+}
+
+sllm_q8_encrypt_n = {
+	intel_encryption_add = -1
+}
+
+sllm_q1_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q1_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q2_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q2_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q3_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q3_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q4_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q4_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q5_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q5_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q6_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q6_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q7_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q7_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q8_opspeed_p = {
+	espionage_operation_speed_mult = 0.01
+}
+
+sllm_q8_opspeed_n = {
+	espionage_operation_speed_mult = -0.01
+}
+
+sllm_q1_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q1_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q2_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q2_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q3_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q3_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q4_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q4_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q5_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q5_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q6_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q6_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q7_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q7_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q8_opcost_p = {
+	espionage_operation_cost_mult = -0.01
+}
+
+sllm_q8_opcost_n = {
+	espionage_operation_cost_mult = 0.01
+}
+
+sllm_q1_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q1_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q2_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q2_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q3_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q3_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q4_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q4_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q5_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q5_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q6_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q6_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q7_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q7_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q8_contactspeed_p = {
+	first_contact_speed_mult = 0.01
+}
+
+sllm_q8_contactspeed_n = {
+	first_contact_speed_mult = -0.01
+}
+
+sllm_q1_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q1_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q2_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q2_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q3_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q3_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q4_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q4_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q5_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q5_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q6_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q6_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q7_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q7_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q8_infiltration_p = {
+	spy_network_daily_value_mult = 0.01
+}
+
+sllm_q8_infiltration_n = {
+	spy_network_daily_value_mult = -0.01
+}
+
+sllm_q1_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q1_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q2_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q2_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q3_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q3_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q4_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q4_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q5_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q5_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q6_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q6_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q7_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q7_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q8_intel_p = {
+	intel_gain_speed = 0.01
+}
+
+sllm_q8_intel_n = {
+	intel_gain_speed = -0.01
+}
+
+sllm_q1_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q1_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q2_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q2_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q3_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q3_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q4_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q4_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q5_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q5_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q6_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q6_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q7_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q7_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q8_shipdmg_p = {
+	ship_weapon_damage = 0.01
+}
+
+sllm_q8_shipdmg_n = {
+	ship_weapon_damage = -0.01
+}
+
+sllm_q1_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q1_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q2_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q2_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q3_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q3_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q4_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q4_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q5_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q5_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q6_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q6_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q7_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q7_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q8_shiprate_p = {
+	ship_fire_rate_mult = 0.01
+}
+
+sllm_q8_shiprate_n = {
+	ship_fire_rate_mult = -0.01
+}
+
+sllm_q1_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q1_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q2_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q2_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q3_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q3_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q4_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q4_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q5_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q5_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q6_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q6_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q7_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q7_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q8_shiprange_p = {
+	ship_weapon_range_mult = 0.01
+}
+
+sllm_q8_shiprange_n = {
+	ship_weapon_range_mult = -0.01
+}
+
+sllm_q1_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q1_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q2_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q2_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q3_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q3_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q4_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q4_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q5_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q5_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q6_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q6_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q7_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q7_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q8_shipacc_p = {
+	ship_accuracy_add = 1
+}
+
+sllm_q8_shipacc_n = {
+	ship_accuracy_add = -1
+}
+
+sllm_q1_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q1_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q2_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q2_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q3_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q3_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q4_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q4_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q5_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q5_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q6_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q6_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q7_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q7_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q8_shiptracking_p = {
+	ship_tracking_add = 1
+}
+
+sllm_q8_shiptracking_n = {
+	ship_tracking_add = -1
+}
+
+sllm_q1_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q1_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q2_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q2_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q3_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q3_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q4_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q4_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q5_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q5_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q6_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q6_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q7_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q7_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q8_shiphull_p = {
+	ship_hull_mult = 0.01
+}
+
+sllm_q8_shiphull_n = {
+	ship_hull_mult = -0.01
+}
+
+sllm_q1_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q1_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q2_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q2_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q3_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q3_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q4_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q4_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q5_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q5_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q6_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q6_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q7_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q7_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q8_shiparmor_p = {
+	ship_armor_mult = 0.01
+}
+
+sllm_q8_shiparmor_n = {
+	ship_armor_mult = -0.01
+}
+
+sllm_q1_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q1_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q2_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q2_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q3_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q3_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q4_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q4_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q5_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q5_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q6_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q6_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q7_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q7_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q8_shipshield_p = {
+	ship_shield_mult = 0.01
+}
+
+sllm_q8_shipshield_n = {
+	ship_shield_mult = -0.01
+}
+
+sllm_q1_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q1_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q2_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q2_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q3_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q3_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q4_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q4_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q5_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q5_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q6_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q6_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q7_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q7_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q8_shipevasion_p = {
+	ship_evasion_mult = 0.01
+}
+
+sllm_q8_shipevasion_n = {
+	ship_evasion_mult = -0.01
+}
+
+sllm_q1_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q1_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q2_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q2_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q3_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q3_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q4_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q4_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q5_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q5_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q6_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q6_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q7_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q7_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q8_shipspeed_p = {
+	ship_base_speed_mult = 0.01
+}
+
+sllm_q8_shipspeed_n = {
+	ship_base_speed_mult = -0.01
+}
+
+sllm_q1_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q1_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q2_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q2_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q3_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q3_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q4_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q4_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q5_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q5_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q6_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q6_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q7_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q7_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q8_ftlspeed_p = {
+	ship_interstellar_speed_mult = 0.01
+}
+
+sllm_q8_ftlspeed_n = {
+	ship_interstellar_speed_mult = -0.01
+}
+
+sllm_q1_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q1_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q2_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q2_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q3_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q3_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q4_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q4_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q5_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q5_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q6_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q6_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q7_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q7_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q8_shipexp_p = {
+	ship_experience_gain_mult = 0.01
+}
+
+sllm_q8_shipexp_n = {
+	ship_experience_gain_mult = -0.01
+}
+
+sllm_q1_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q1_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q2_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q2_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q3_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q3_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q4_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q4_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q5_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q5_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q6_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q6_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q7_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q7_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q8_armorregen_p = {
+	ship_armor_regen_add_perc = 0.01
+}
+
+sllm_q8_armorregen_n = {
+	ship_armor_regen_add_perc = -0.01
+}
+
+sllm_q1_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q1_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q2_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q2_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q3_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q3_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q4_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q4_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q5_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q5_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q6_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q6_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q7_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q7_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q8_hullregen_p = {
+	ship_hull_regen_add_perc = 0.01
+}
+
+sllm_q8_hullregen_n = {
+	ship_hull_regen_add_perc = -0.01
+}
+
+sllm_q1_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q1_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q2_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q2_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q3_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q3_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q4_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q4_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q5_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q5_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q6_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q6_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q7_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q7_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q8_shieldregen_p = {
+	ship_shield_regen_add_perc = 0.01
+}
+
+sllm_q8_shieldregen_n = {
+	ship_shield_regen_add_perc = -0.01
+}
+
+sllm_q1_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q1_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q2_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q2_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q3_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q3_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q4_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q4_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q5_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q5_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q6_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q6_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q7_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q7_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q8_disengage_p = {
+	ship_disengage_chance_mult = 0.01
+}
+
+sllm_q8_disengage_n = {
+	ship_disengage_chance_mult = -0.01
+}
+
+sllm_q1_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q1_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q2_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q2_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q3_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q3_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q4_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q4_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q5_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q5_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q6_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q6_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q7_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q7_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q8_cloak_p = {
+	ship_cloaking_strength_add = 1
+}
+
+sllm_q8_cloak_n = {
+	ship_cloaking_strength_add = -1
+}
+
+sllm_q1_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q1_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q2_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q2_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q3_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q3_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q4_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q4_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q5_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q5_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q6_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q6_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q7_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q7_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q8_cloakdetect_p = {
+	ship_cloaking_detection_add = 1
+}
+
+sllm_q8_cloakdetect_n = {
+	ship_cloaking_detection_add = -1
+}
+
+sllm_q1_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q1_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q2_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q2_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q3_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q3_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q4_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q4_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q5_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q5_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q6_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q6_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q7_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q7_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q8_sensor_p = {
+	ship_sensor_range_add = 1
+}
+
+sllm_q8_sensor_n = {
+	ship_sensor_range_add = -1
+}
+
+sllm_q1_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q1_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q2_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q2_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q3_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q3_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q4_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q4_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q5_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q5_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q6_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q6_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q7_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q7_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q8_jumpcd_p = {
+	ship_jumpdrive_cooldown_mult = -0.01
+}
+
+sllm_q8_jumpcd_n = {
+	ship_jumpdrive_cooldown_mult = 0.01
+}
+
+sllm_q1_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q1_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q2_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q2_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q3_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q3_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q4_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q4_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q5_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q5_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q6_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q6_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q7_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q7_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q8_bombard_p = {
+	ship_orbital_bombardment_mult = 0.01
+}
+
+sllm_q8_bombard_n = {
+	ship_orbital_bombardment_mult = -0.01
+}
+
+sllm_q1_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q1_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q2_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q2_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q3_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q3_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q4_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q4_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q5_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q5_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q6_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q6_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q7_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q7_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q8_navalcap_p = {
+	country_naval_cap_mult = 0.01
+}
+
+sllm_q8_navalcap_n = {
+	country_naval_cap_mult = -0.01
+}
+
+sllm_q1_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q1_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q2_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q2_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q3_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q3_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q4_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q4_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q5_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q5_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q6_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q6_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q7_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q7_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q8_commandlimit_p = {
+	command_limit_add = 1
+}
+
+sllm_q8_commandlimit_n = {
+	command_limit_add = -1
+}
+
+sllm_q1_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q1_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q2_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q2_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q3_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q3_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q4_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q4_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q5_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q5_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q6_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q6_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q7_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q7_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q8_shipupkeep_p = {
+	ships_upkeep_mult = -0.01
+}
+
+sllm_q8_shipupkeep_n = {
+	ships_upkeep_mult = 0.01
+}
+
+sllm_q1_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q1_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q2_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q2_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q3_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q3_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q4_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q4_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q5_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q5_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q6_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q6_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q7_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q7_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q8_shipcost_p = {
+	starbase_shipyard_build_cost_mult = -0.01
+}
+
+sllm_q8_shipcost_n = {
+	starbase_shipyard_build_cost_mult = 0.01
+}
+
+sllm_q1_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q1_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q2_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q2_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q3_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q3_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q4_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q4_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q5_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q5_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q6_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q6_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q7_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q7_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q8_shipspeedbuild_p = {
+	starbase_shipyard_build_speed_mult = 0.01
+}
+
+sllm_q8_shipspeedbuild_n = {
+	starbase_shipyard_build_speed_mult = -0.01
+}
+
+sllm_q1_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q1_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q2_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q2_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q3_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q3_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q4_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q4_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q5_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q5_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q6_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q6_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q7_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q7_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q8_armydmg_p = {
+	army_attack_damage_mult = 0.01
+}
+
+sllm_q8_armydmg_n = {
+	army_attack_damage_mult = -0.01
+}
+
+sllm_q1_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q1_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q2_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q2_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q3_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q3_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q4_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q4_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q5_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q5_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q6_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q6_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q7_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q7_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q8_armyhp_p = {
+	army_attack_health_mult = 0.01
+}
+
+sllm_q8_armyhp_n = {
+	army_attack_health_mult = -0.01
+}
+
+sllm_q1_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q1_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q2_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q2_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q3_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q3_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q4_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q4_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q5_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q5_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q6_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q6_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q7_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q7_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q8_armymorale_p = {
+	army_attack_morale_mult = 0.01
+}
+
+sllm_q8_armymorale_n = {
+	army_attack_morale_mult = -0.01
+}
+
+sllm_q1_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q1_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q2_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q2_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q3_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q3_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q4_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q4_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q5_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q5_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q6_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q6_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q7_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q7_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q8_armycost_p = {
+	armies_cost_mult = -0.01
+}
+
+sllm_q8_armycost_n = {
+	armies_cost_mult = 0.01
+}
+
+sllm_q1_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q1_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q2_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q2_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q3_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q3_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q4_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q4_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q5_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q5_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q6_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q6_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q7_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q7_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q8_armyupkeep_p = {
+	armies_upkeep_mult = -0.01
+}
+
+sllm_q8_armyupkeep_n = {
+	armies_upkeep_mult = 0.01
+}
+
+sllm_q1_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q1_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q2_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q2_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q3_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q3_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q4_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q4_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q5_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q5_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q6_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q6_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q7_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q7_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q8_defdmg_p = {
+	army_defense_damage_mult = 0.01
+}
+
+sllm_q8_defdmg_n = {
+	army_defense_damage_mult = -0.01
+}
+
+sllm_q1_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q1_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q2_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q2_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q3_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q3_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q4_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q4_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q5_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q5_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q6_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q6_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q7_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q7_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q8_defhp_p = {
+	army_defense_health_mult = 0.01
+}
+
+sllm_q8_defhp_n = {
+	army_defense_health_mult = -0.01
+}
+
+sllm_q1_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q1_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q2_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q2_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q3_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q3_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q4_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q4_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q5_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q5_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q6_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q6_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q7_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q7_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q8_defmorale_p = {
+	army_defense_morale_mult = 0.01
+}
+
+sllm_q8_defmorale_n = {
+	army_defense_morale_mult = -0.01
+}
+
+sllm_q1_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q1_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q2_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q2_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q3_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q3_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q4_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q4_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q5_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q5_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q6_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q6_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q7_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q7_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q8_armyexp_p = {
+	army_experience_gain_mult = 0.01
+}
+
+sllm_q8_armyexp_n = {
+	army_experience_gain_mult = -0.01
+}
+
+sllm_q1_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q1_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q2_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q2_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q3_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q3_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q4_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q4_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q5_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q5_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q6_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q6_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q7_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q7_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q8_armybuild_p = {
+	planet_army_build_speed_mult = 0.01
+}
+
+sllm_q8_armybuild_n = {
+	planet_army_build_speed_mult = -0.01
+}
+
+sllm_q1_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q1_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q2_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q2_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q3_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q3_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q4_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q4_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q5_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q5_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q6_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q6_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q7_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q7_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q8_moraledmg_p = {
+	army_morale_damage_mult = 0.01
+}
+
+sllm_q8_moraledmg_n = {
+	army_morale_damage_mult = -0.01
+}
+
+sllm_q1_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q1_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q2_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q2_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q3_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q3_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q4_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q4_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q5_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q5_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q6_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q6_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q7_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q7_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q8_collateral_p = {
+	army_collateral_damage_mult = 0.01
+}
+
+sllm_q8_collateral_n = {
+	army_collateral_damage_mult = -0.01
+}
+
+sllm_q1_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q1_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q2_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q2_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q3_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q3_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q4_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q4_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q5_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q5_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q6_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q6_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q7_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q7_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q8_armytaken_p = {
+	army_damage_taken_mult = -0.01
+}
+
+sllm_q8_armytaken_n = {
+	army_damage_taken_mult = 0.01
+}
+
+sllm_q1_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q1_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q2_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q2_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q3_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q3_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q4_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q4_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q5_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q5_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q6_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q6_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q7_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q7_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q8_defarmies_p = {
+	planet_defense_armies_add = 1
+}
+
+sllm_q8_defarmies_n = {
+	planet_defense_armies_add = -1
+}
+
+sllm_q1_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q1_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q2_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q2_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q3_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q3_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q4_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q4_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q5_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q5_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q6_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q6_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q7_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q7_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q8_bldcost_p = {
+	planet_buildings_cost_mult = -0.01
+}
+
+sllm_q8_bldcost_n = {
+	planet_buildings_cost_mult = 0.01
+}
+
+sllm_q1_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q1_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q2_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q2_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q3_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q3_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q4_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q4_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q5_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q5_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q6_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q6_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q7_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q7_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q8_bldupkeep_p = {
+	planet_buildings_upkeep_mult = -0.01
+}
+
+sllm_q8_bldupkeep_n = {
+	planet_buildings_upkeep_mult = 0.01
+}
+
+sllm_q1_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q1_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q2_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q2_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q3_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q3_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q4_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q4_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q5_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q5_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q6_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q6_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q7_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q7_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q8_distcost_p = {
+	planet_districts_cost_mult = -0.01
+}
+
+sllm_q8_distcost_n = {
+	planet_districts_cost_mult = 0.01
+}
+
+sllm_q1_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q1_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q2_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q2_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q3_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q3_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q4_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q4_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q5_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q5_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q6_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q6_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q7_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q7_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q8_distupkeep_p = {
+	planet_districts_upkeep_mult = -0.01
+}
+
+sllm_q8_distupkeep_n = {
+	planet_districts_upkeep_mult = 0.01
+}
+
+sllm_q1_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q1_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q2_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q2_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q3_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q3_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q4_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q4_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q5_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q5_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q6_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q6_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q7_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q7_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q8_bldspeed_p = {
+	planet_building_build_speed_mult = 0.01
+}
+
+sllm_q8_bldspeed_n = {
+	planet_building_build_speed_mult = -0.01
+}
+
+sllm_q1_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q1_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q2_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q2_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q3_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q3_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q4_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q4_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q5_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q5_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q6_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q6_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q7_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q7_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q8_bldoutput_p = {
+	planet_buildings_produces_mult = 0.01
+}
+
+sllm_q8_bldoutput_n = {
+	planet_buildings_produces_mult = -0.01
+}
+
+sllm_q1_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q1_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q2_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q2_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q3_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q3_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q4_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q4_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q5_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q5_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q6_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q6_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q7_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q7_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q8_blocker_p = {
+	planet_clear_blocker_speed_mult = 0.01
+}
+
+sllm_q8_blocker_n = {
+	planet_clear_blocker_speed_mult = -0.01
+}
+
+sllm_q1_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q1_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q2_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q2_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q3_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q3_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q4_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q4_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q5_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q5_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q6_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q6_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q7_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q7_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q8_maxdistricts_p = {
+	planet_max_districts_add = 1
+}
+
+sllm_q8_maxdistricts_n = {
+	planet_max_districts_add = -1
+}
+
+sllm_q1_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q1_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q2_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q2_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q3_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q3_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q4_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q4_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q5_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q5_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q6_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q6_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q7_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q7_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q8_bldslots_p = {
+	zone_building_slots_add = 1
+}
+
+sllm_q8_bldslots_n = {
+	zone_building_slots_add = -1
+}
+
+sllm_q1_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q1_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q2_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q2_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q3_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q3_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q4_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q4_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q5_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q5_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q6_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q6_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q7_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q7_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q8_megacost_p = {
+	megastructures_cost_mult = -0.01
+}
+
+sllm_q8_megacost_n = {
+	megastructures_cost_mult = 0.01
+}
+
+sllm_q1_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q1_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q2_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q2_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q3_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q3_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q4_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q4_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q5_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q5_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q6_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q6_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q7_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q7_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q8_megaspeed_p = {
+	megastructure_build_speed_mult = 0.01
+}
+
+sllm_q8_megaspeed_n = {
+	megastructure_build_speed_mult = -0.01
+}
+
+sllm_q1_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q1_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q2_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q2_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q3_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q3_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q4_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q4_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q5_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q5_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q6_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q6_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q7_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q7_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q8_megaupkeep_p = {
+	megastructures_upkeep_mult = -0.01
+}
+
+sllm_q8_megaupkeep_n = {
+	megastructures_upkeep_mult = 0.01
+}
+
+sllm_q1_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q1_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q2_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q2_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q3_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q3_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q4_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q4_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q5_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q5_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q6_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q6_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q7_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q7_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q8_megacap_p = {
+	country_megastructure_build_cap_add = 1
+}
+
+sllm_q8_megacap_n = {
+	country_megastructure_build_cap_add = -1
+}
+
+sllm_q1_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q1_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q2_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q2_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q3_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q3_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q4_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q4_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q5_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q5_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q6_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q6_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q7_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q7_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q8_terraform_p = {
+	terraform_speed_mult = 0.01
+}
+
+sllm_q8_terraform_n = {
+	terraform_speed_mult = -0.01
+}
+
+sllm_q1_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q1_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q2_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q2_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q3_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q3_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q4_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q4_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q5_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q5_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q6_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q6_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q7_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q7_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q8_sbcost_p = {
+	starbase_buildings_cost_mult = -0.01
+}
+
+sllm_q8_sbcost_n = {
+	starbase_buildings_cost_mult = 0.01
+}
+
+sllm_q1_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q1_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q2_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q2_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q3_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q3_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q4_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q4_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q5_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q5_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q6_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q6_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q7_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q7_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q8_sbspeed_p = {
+	starbase_building_build_speed_mult = 0.01
+}
+
+sllm_q8_sbspeed_n = {
+	starbase_building_build_speed_mult = -0.01
+}
+
+sllm_q1_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q1_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q2_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q2_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q3_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q3_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q4_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q4_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q5_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q5_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q6_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q6_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q7_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q7_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q8_sbcap_p = {
+	country_starbase_capacity_mult = 0.01
+}
+
+sllm_q8_sbcap_n = {
+	country_starbase_capacity_mult = -0.01
+}
+
+sllm_q1_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q1_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q2_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q2_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q3_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q3_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q4_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q4_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q5_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q5_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q6_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q6_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q7_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q7_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q8_sbbuildspeed_p = {
+	starbase_upgrade_speed_mult = 0.01
+}
+
+sllm_q8_sbbuildspeed_n = {
+	starbase_upgrade_speed_mult = -0.01
+}
+
+sllm_q1_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q1_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q2_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q2_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q3_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q3_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q4_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q4_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q5_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q5_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q6_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q6_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q7_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q7_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q8_sbupgrade_p = {
+	starbase_upgrade_cost_mult = -0.01
+}
+
+sllm_q8_sbupgrade_n = {
+	starbase_upgrade_cost_mult = 0.01
+}
+
+sllm_q1_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q1_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q2_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q2_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q3_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q3_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q4_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q4_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q5_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q5_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q6_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q6_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q7_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q7_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q8_sbinfluence_p = {
+	country_starbase_influence_cost_mult = -0.01
+}
+
+sllm_q8_sbinfluence_n = {
+	country_starbase_influence_cost_mult = 0.01
+}
+
+sllm_q1_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q1_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q2_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q2_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q3_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q3_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q4_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q4_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q5_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q5_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q6_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q6_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q7_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q7_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q8_platforms_p = {
+	starbase_defense_platform_capacity_add = 1
+}
+
+sllm_q8_platforms_n = {
+	starbase_defense_platform_capacity_add = -1
+}
+
+sllm_q1_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q1_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q2_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q2_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q3_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q3_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q4_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q4_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q5_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q5_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q6_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q6_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q7_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q7_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q8_shipyard_p = {
+	starbase_shipyard_capacity_add = 1
+}
+
+sllm_q8_shipyard_n = {
+	starbase_shipyard_capacity_add = -1
+}
+
+sllm_q1_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q1_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q2_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q2_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q3_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q3_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q4_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q4_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q5_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q5_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q6_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q6_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q7_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q7_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q8_outpostspeed_p = {
+	starbase_outpost_cost_mult = -0.01
+}
+
+sllm_q8_outpostspeed_n = {
+	starbase_outpost_cost_mult = 0.01
+}
+
+sllm_q1_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q1_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q2_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q2_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q3_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q3_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q4_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q4_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q5_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q5_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q6_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q6_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q7_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q7_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q8_stationspeed_p = {
+	shipclass_mining_station_build_speed_mult = 0.01
+	shipclass_research_station_build_speed_mult = 0.01
+}
+
+sllm_q8_stationspeed_n = {
+	shipclass_mining_station_build_speed_mult = -0.01
+	shipclass_research_station_build_speed_mult = -0.01
+}
+
+sllm_q1_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q1_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q2_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q2_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q3_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q3_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q4_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q4_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q5_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q5_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q6_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q6_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q7_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q7_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q8_happiness_p = {
+	pop_happiness = 0.01
+}
+
+sllm_q8_happiness_n = {
+	pop_happiness = -0.01
+}
+
+sllm_q1_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q1_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q2_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q2_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q3_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q3_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q4_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q4_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q5_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q5_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q6_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q6_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q7_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q7_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q8_amenities_p = {
+	planet_amenities_mult = 0.01
+}
+
+sllm_q8_amenities_n = {
+	planet_amenities_mult = -0.01
+}
+
+sllm_q1_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q1_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q2_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q2_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q3_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q3_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q4_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q4_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q5_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q5_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q6_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q6_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q7_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q7_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q8_housing_p = {
+	pop_housing_usage_mult = -0.01
+}
+
+sllm_q8_housing_n = {
+	pop_housing_usage_mult = 0.01
+}
+
+sllm_q1_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q1_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q2_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q2_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q3_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q3_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q4_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q4_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q5_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q5_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q6_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q6_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q7_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q7_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q8_housingadd_p = {
+	planet_housing_mult = 0.01
+}
+
+sllm_q8_housingadd_n = {
+	planet_housing_mult = -0.01
+}
+
+sllm_q1_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q1_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q2_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q2_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q3_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q3_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q4_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q4_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q5_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q5_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q6_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q6_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q7_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q7_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q8_crime_p = {
+	planet_crime_add = -1
+}
+
+sllm_q8_crime_n = {
+	planet_crime_add = 1
+}
+
+sllm_q1_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q1_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q2_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q2_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q3_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q3_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q4_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q4_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q5_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q5_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q6_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q6_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q7_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q7_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q8_jobs_p = {
+	planet_jobs_produces_mult = 0.01
+}
+
+sllm_q8_jobs_n = {
+	planet_jobs_produces_mult = -0.01
+}
+
+sllm_q1_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q1_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q2_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q2_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q3_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q3_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q4_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q4_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q5_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q5_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q6_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q6_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q7_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q7_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q8_jobupkeep_p = {
+	planet_jobs_upkeep_mult = -0.01
+}
+
+sllm_q8_jobupkeep_n = {
+	planet_jobs_upkeep_mult = 0.01
+}
+
+sllm_q1_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q1_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q2_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q2_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q3_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q3_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q4_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q4_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q5_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q5_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q6_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q6_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q7_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q7_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q8_popupkeep_p = {
+	planet_pops_upkeep_mult = -0.01
+}
+
+sllm_q8_popupkeep_n = {
+	planet_pops_upkeep_mult = 0.01
+}
+
+sllm_q1_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q1_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q2_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q2_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q3_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q3_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q4_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q4_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q5_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q5_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q6_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q6_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q7_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q7_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q8_popgrowth_p = {
+	logistic_growth_mult = 0.01
+}
+
+sllm_q8_popgrowth_n = {
+	logistic_growth_mult = -0.01
+}
+
+sllm_q1_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q1_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q2_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q2_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q3_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q3_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q4_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q4_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q5_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q5_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q6_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q6_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q7_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q7_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q8_assembly_p = {
+	planet_pop_assembly_mult = 0.01
+}
+
+sllm_q8_assembly_n = {
+	planet_pop_assembly_mult = -0.01
+}
+
+sllm_q1_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q1_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q2_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q2_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q3_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q3_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q4_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q4_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q5_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q5_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q6_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q6_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q7_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q7_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q8_resettle_p = {
+	pop_resettlement_cost_mult = -0.01
+}
+
+sllm_q8_resettle_n = {
+	pop_resettlement_cost_mult = 0.01
+}
+
+sllm_q1_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q1_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q2_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q2_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q3_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q3_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q4_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q4_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q5_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q5_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q6_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q6_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q7_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q7_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q8_ethicshift_p = {
+	pop_ethics_shift_speed_mult = 0.01
+}
+
+sllm_q8_ethicshift_n = {
+	pop_ethics_shift_speed_mult = -0.01
+}
+
+sllm_q1_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q1_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q2_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q2_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q3_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q3_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q4_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q4_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q5_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q5_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q6_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q6_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q7_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q7_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q8_colonydev_p = {
+	planet_colony_development_speed_mult = 0.01
+}
+
+sllm_q8_colonydev_n = {
+	planet_colony_development_speed_mult = -0.01
+}
+
+sllm_q1_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q1_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q2_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q2_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q3_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q3_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q4_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q4_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q5_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q5_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q6_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q6_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q7_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q7_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q8_workforce_p = {
+	pop_workforce_mult = 0.01
+}
+
+sllm_q8_workforce_n = {
+	pop_workforce_mult = -0.01
+}
+
+sllm_q1_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q1_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q2_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q2_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q3_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q3_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q4_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q4_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q5_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q5_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q6_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q6_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q7_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q7_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q8_stability_p = {
+	planet_stability_add = 1
+}
+
+sllm_q8_stability_n = {
+	planet_stability_add = -1
+}
+
+sllm_q1_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q1_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q2_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q2_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q3_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q3_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q4_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q4_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q5_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q5_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q6_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q6_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q7_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q7_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q8_habitability_p = {
+	pop_environment_tolerance = 0.01
+}
+
+sllm_q8_habitability_n = {
+	pop_environment_tolerance = -0.01
+}
+
+sllm_q1_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q1_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q2_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q2_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q3_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q3_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q4_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q4_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q5_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q5_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q6_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q6_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q7_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q7_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q8_amenityuse_p = {
+	pop_amenities_usage_mult = -0.01
+}
+
+sllm_q8_amenityuse_n = {
+	pop_amenities_usage_mult = 0.01
+}
+
+sllm_q1_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q1_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q2_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q2_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q3_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q3_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q4_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q4_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q5_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q5_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q6_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q6_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q7_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q7_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q8_leaderexp_p = {
+	commander_exp_gain = 0.01
+}
+
+sllm_q8_leaderexp_n = {
+	commander_exp_gain = -0.01
+}
+
+sllm_q1_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q1_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q2_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q2_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q3_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q3_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q4_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q4_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q5_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q5_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q6_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q6_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q7_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q7_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q8_scientistexp_p = {
+	scientist_exp_gain = 0.01
+}
+
+sllm_q8_scientistexp_n = {
+	scientist_exp_gain = -0.01
+}
+
+sllm_q1_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q1_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q2_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q2_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q3_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q3_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q4_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q4_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q5_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q5_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q6_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q6_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q7_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q7_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q8_officialexp_p = {
+	official_exp_gain = 0.01
+}
+
+sllm_q8_officialexp_n = {
+	official_exp_gain = -0.01
+}
+
+sllm_q1_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q1_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q2_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q2_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q3_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q3_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q4_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q4_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q5_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q5_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q6_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q6_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q7_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q7_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q8_councilexp_p = {
+	councilor_exp_gain = 0.01
+}
+
+sllm_q8_councilexp_n = {
+	councilor_exp_gain = -0.01
+}
+
+sllm_q1_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q1_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q2_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q2_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q3_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q3_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q4_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q4_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q5_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q5_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q6_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q6_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q7_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q7_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q8_lifespan_p = {
+	leader_lifespan_mult = 0.01
+}
+
+sllm_q8_lifespan_n = {
+	leader_lifespan_mult = -0.01
+}
+
+sllm_q1_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q1_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q2_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q2_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q3_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q3_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q4_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q4_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q5_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q5_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q6_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q6_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q7_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q7_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q8_hirecost_p = {
+	leaders_cost_mult = -0.01
+}
+
+sllm_q8_hirecost_n = {
+	leaders_cost_mult = 0.01
+}
+
+sllm_q1_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q1_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q2_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q2_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q3_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q3_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q4_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q4_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q5_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q5_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q6_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q6_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q7_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q7_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q8_leaderupkeep_p = {
+	leaders_upkeep_mult = -0.01
+}
+
+sllm_q8_leaderupkeep_n = {
+	leaders_upkeep_mult = 0.01
+}
+
+sllm_q1_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q1_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q2_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q2_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q3_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q3_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q4_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q4_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q5_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q5_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q6_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q6_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q7_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q7_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q8_leaderpool_p = {
+	country_leader_pool_size = 1
+}
+
+sllm_q8_leaderpool_n = {
+	country_leader_pool_size = -1
+}
+
+sllm_q1_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q1_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q2_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q2_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q3_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q3_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q4_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q4_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q5_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q5_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q6_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q6_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q7_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q7_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q8_levelcap_p = {
+	leader_skill_levels = 1
+}
+
+sllm_q8_levelcap_n = {
+	leader_skill_levels = -1
+}
+
+sllm_q1_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q1_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q2_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q2_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q3_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q3_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q4_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q4_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q5_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q5_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q6_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q6_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q7_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q7_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q8_startlevel_p = {
+	leader_initial_skill = 1
+}
+
+sllm_q8_startlevel_n = {
+	leader_initial_skill = -1
+}
+
+sllm_q1_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q1_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q2_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q2_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q3_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q3_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q4_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q4_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q5_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q5_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q6_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q6_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q7_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q7_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q8_survey_p = {
+	science_ship_survey_speed = 0.01
+}
+
+sllm_q8_survey_n = {
+	science_ship_survey_speed = -0.01
+}
+
+sllm_q1_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q1_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q2_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q2_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q3_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q3_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q4_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q4_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q5_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q5_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q6_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q6_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q7_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q7_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q8_anomaly_p = {
+	ship_anomaly_research_speed_mult = 0.01
+}
+
+sllm_q8_anomaly_n = {
+	ship_anomaly_research_speed_mult = -0.01
+}
+
+sllm_q1_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q1_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q2_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q2_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q3_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q3_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q4_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q4_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q5_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q5_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q6_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q6_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q7_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q7_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}
+
+sllm_q8_archaeo_p = {
+	ship_archaeological_site_excavation_speed_mult = 0.01
+}
+
+sllm_q8_archaeo_n = {
+	ship_archaeological_site_excavation_speed_mult = -0.01
+}

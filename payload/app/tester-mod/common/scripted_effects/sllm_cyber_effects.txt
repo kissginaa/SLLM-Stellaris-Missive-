@@ -1,0 +1,23 @@
+# SLLM 사이버전·여론 공작(2026-11-04) — 상황(sllm_cyber_situation)이 부르는 효과. 모두 우리 나라(owner) 범위에서.
+# 로그 SLLM:CYBER: ev=start|stage|ap|end · sid · from(공작한 나라 번호) · n(단계) · ap(0 무시 1 사이버 사령부 2 외교 항의 3 역공작) · res(1 격퇴 2 장악)
+sllm_cyber_set_ap = {
+	remove_country_flag = sllm_cy_ap_cmd
+	remove_country_flag = sllm_cy_ap_protest
+	remove_country_flag = sllm_cy_ap_counter
+	set_variable = { which = sllm_cy_ap value = $AP$ }
+	log = "SLLM:CYBER/;/ev=ap/;/sid=\\[This.sllm_save_id]/;/from=\\[This.sllm_cy_from]/;/ap=\\[This.sllm_cy_ap]/;/date=\\[GetDate]"
+}
+sllm_cyber_log_stage = {
+	set_variable = { which = sllm_cy_n value = $N$ }
+	log = "SLLM:CYBER/;/ev=stage/;/sid=\\[This.sllm_save_id]/;/from=\\[This.sllm_cy_from]/;/n=\\[This.sllm_cy_n]/;/date=\\[GetDate]"
+}
+sllm_cyber_end = {
+	log = "SLLM:CYBER/;/ev=end/;/sid=\\[This.sllm_save_id]/;/from=\\[This.sllm_cy_from]/;/res=\\[This.sllm_cy_res]/;/ap=\\[This.sllm_cy_ap]/;/date=\\[GetDate]"
+	remove_country_flag = sllm_cy_active
+	remove_country_flag = sllm_cy_ap_cmd
+	remove_country_flag = sllm_cy_ap_protest
+	remove_country_flag = sllm_cy_ap_counter
+	remove_country_flag = sllm_cy_trial_won
+	remove_country_flag = sllm_cy_trial_lost
+	set_timed_country_flag = { flag = sllm_cy_cooldown days = 720 }
+}

@@ -1,0 +1,107 @@
+# SLLM 자동 작전(2026-11-04) — 공용 조건. 우리가 직접 쓴 것(「자동작전 · Auto Combat」 모드의 설계를 참고만 함, 코드는 가져오지 않음).
+# 함대 범위에서 부른다. root = 플레이어 국가.
+
+# (every_controlled_fleet 안에서 부른다 — 빌려 온 동맹 함대도 들어간다.)
+# 작전에 새로 넣을 수 있는 군 함대: 직접 지휘·수리 중·이미 작전 중·전투 중·체력 70% 미만은 뺀다. 수송선·민간선은 전투력 0이라 빠진다.
+sllm_fo_free_fleet = {
+	is_civilian = no
+	is_mobile = yes
+	NOT = { is_ship_class = shipclass_transport }
+	NOT = { has_fleet_flag = sllm_fo_manual }
+	NOT = { has_fleet_flag = sllm_fo_repair }
+	NOT = { has_fleet_flag = zz_manual }
+	is_variable_set = sllm_fo_op
+	check_variable = { which = sllm_fo_op value = 0 }
+	is_in_combat = no
+	NOT = { sllm_fo_needs_repair = yes }
+	has_hp_percentage > 0.5
+	fleet_power > 0
+}
+
+# 자동 작전이 다루는 군 함대 전부(보고·자세용).
+sllm_fo_military_fleet = {
+	is_civilian = no
+	is_mobile = yes
+	NOT = { is_ship_class = shipclass_transport }
+	fleet_power > 0
+}
+
+# 성계 범위: 칠 만한 적 성계(+ 작전 지시의 「적 요새 피하기」·「우리 영토 안에서만」, 2026-11-04). 전쟁 중인 나라의 성계(정거장)이거나 그 나라 군 함대가 있고, 우리가 들어갈 수 있고 보이며, 다른 작전이 노리지 않는 곳.
+# 괴물만 있는 성계는 전쟁 중엔 노리지 않는다.
+sllm_fo_war_target = {
+	has_access_fleet = root
+	is_in_sensor_range_of_country = root
+	NOT = { has_star_flag = sllm_fo_tgt }
+	hostile_military_power = { who = root safety_buffer = no value > 0 }
+	# 적 요새 피하기(작전 지시 sllm_fo_nosb = 1, 2026-11-04): 전쟁 중인 나라의 전초기지보다 큰 정거장이 있는 성계는 노리지 않는다
+	OR = {
+		root = { NOT = { check_variable = { which = sllm_fo_nosb value = 1 } } }
+		NOT = { exists = starbase }
+		starbase = { OR = { NOT = { exists = owner } owner = { NOT = { is_at_war_with = root } } has_starbase_size = starbase_outpost } }
+	}
+	# 우리 영토 안에서만(sllm_fo_home = 1, 2026-11-04): 우리 성계에 들어온 적만 친다(방어 작전)
+	OR = {
+		root = { NOT = { check_variable = { which = sllm_fo_home value = 1 } } }
+		AND = { exists = owner owner = { is_same_value = root } }
+	}
+	OR = {
+		AND = {
+			exists = owner
+			owner = { is_at_war_with = root }
+		}
+		any_fleet_in_system = {
+			exists = owner
+			owner = { is_at_war_with = root }
+			is_civilian = no
+			is_mobile = yes
+			NOT = { is_cloaked = yes }
+		}
+	}
+}
+
+# 성계 범위: 적 식민지가 있는 성계(먼저 친다 — 정거장을 치워야 나중에 육군이 내릴 수 있다).
+sllm_fo_war_colony = {
+	any_system_planet_colony = {
+		exists = owner
+		owner = { is_at_war_with = root }
+	}
+}
+
+# 함대 범위: 수리하러 가야 하나(작전 지시의 수리 기준 sllm_fo_hpt: 1 40% · 2 50% · 3 60% · 4 70% · 5 80%, 없으면 60%).
+sllm_fo_needs_repair = {
+	OR = {
+		AND = { root = { check_variable = { which = sllm_fo_hpt value = 1 } } has_hp_percentage < 0.4 }
+		AND = { root = { check_variable = { which = sllm_fo_hpt value = 2 } } has_hp_percentage < 0.5 }
+		AND = { root = { OR = { check_variable = { which = sllm_fo_hpt value = 3 } NOT = { is_variable_set = sllm_fo_hpt } } } has_hp_percentage < 0.6 }
+		AND = { root = { check_variable = { which = sllm_fo_hpt value = 4 } } has_hp_percentage < 0.7 }
+		AND = { root = { check_variable = { which = sllm_fo_hpt value = 5 } } has_hp_percentage < 0.8 }
+	}
+}
+
+# 나라 범위(동맹 후보): 일반 AI 제국 가운데 연방·방위 조약·같은 편으로 같은 전쟁 중인 나라. root = 플레이어.
+sllm_fo_ally_ok = {
+	is_ai = yes
+	sllm_is_empire = yes
+	is_variable_set = sllm_idx
+	NOT = { is_at_war_with = root }
+	OR = {
+		is_in_federation_with = root
+		has_defensive_pact = root
+		any_war = {
+			OR = {
+				AND = { is_war_participant = { who = root side = attackers } is_war_participant = { who = prev side = attackers } }
+				AND = { is_war_participant = { who = root side = defenders } is_war_participant = { who = prev side = defenders } }
+			}
+		}
+	}
+}
+# 함대 범위: 빌려줄 수 있는 군 함대(전투 중·수리 필요·이미 빌려준 것·수송선 제외).
+sllm_fo_lendable_fleet = {
+	is_civilian = no
+	is_mobile = yes
+	NOT = { is_ship_class = shipclass_transport }
+	is_leased = no
+	is_in_combat = no
+	has_hp_percentage > 0.7
+	fleet_power > 0
+}

@@ -77,14 +77,14 @@
 <div id="hall"><div class="scenebg"></div>
  <div id="sortbox"><span class="cap">정렬</span><select id="sortSel"><option value="color">제국 색 순</option><option value="weight">가중치 큰 순</option><option value="name">이름 순</option><option value="stance">입장별(찬성→기권→반대)</option></select></div><div id="debate"><span class="cap" id="turnCnt" style="color:var(--gold);margin-right:10px"></span><span class="cap" id="dbCnt">플레이어가 의회 전체에 발언하면 발언권이 추첨됩니다</span><div id="dbNext" title="이번 발언의 발언권을 얻은 제국"></div></div><div id="speech"></div><svg class="deco" id="deco"></svg><div id="seats"></div><div class="chamber-crest" aria-hidden="true">✦</div>
  <div id="tallybox"><div id="nums"><span id="nF"><b id="vF">0</b><small id="pF"></small></span><span id="nU"><b id="vU">0</b><small id="pU"></small></span><span id="nA"><b id="vA">0</b><small id="pA"></small></span></div>
-  <div id="tally"><i id="tFor"></i><i id="tUn"></i><i id="tAg"></i><div class="mark" style="left:20%"><span>20</span></div><div class="mark" style="left:80%"><span>80</span></div></div></div>
+  <div id="tally"><i id="tFor"></i><i id="tUn"></i><i id="tAg"></i><div class="mark" style="left:40%"><span>40</span></div><div class="mark" style="left:60%"><span>60</span></div></div></div>
 </div>
 <div id="chat"><div id="log"></div>
  <div id="ctl">
   <div class="row"><span class="cap">내 입장</span><div class="seg"><button id="pFor" class="on">찬성하도록 설득</button><button id="pAg">반대하도록 설득</button></div><span class="sp"></span><span class="cap">발언 대상 <b id="target" style="color:var(--hi)">의회 전체</b></span></div>
   <div class="row" style="flex-wrap:nowrap"><div class="prompt"><span class="pr">›</span><input id="q" placeholder="의회에 발언…" autocomplete="off"></div><button id="send" class="primary">발언</button></div>
  </div></div>
-<div id="foot"><span class="hint">의석 수는 가중치에 비례합니다. 발언은 항상 의회 전체를 향합니다. 실제 안건의 응답은 AI가 성향대로 씁니다(시연판은 정해진 문장). 조명: 파랑 찬성 · 빨강 반대 · 회색 기권.</span><button id="reset" class="dv" title="시연용">다시 소집</button><button id="reread" class="dv" style="display:none" title="게임에서 회원국 정보를 다시 읽습니다. 토론 기록은 초기화됩니다.">정보 다시 읽기</button><button id="fPass" disabled>강제 통과</button><button id="fFail" disabled>강제 부결</button><button id="end">회의 종료</button></div>
+<div id="foot"><span class="hint">의석 수는 가중치에 비례합니다. 의원석을 누르면 그 제국에게 직접 말합니다(다른 제국이 끼어들 수 있음). 실제 안건의 응답은 AI가 성향대로 씁니다(시연판은 정해진 문장). 조명: 파랑 찬성 · 빨강 반대 · 회색 기권.</span><button id="reset" class="dv" title="시연용">다시 소집</button><button id="reread" class="dv" style="display:none" title="게임에서 회원국 정보를 다시 읽습니다. 토론 기록은 초기화됩니다.">정보 다시 읽기</button><button id="fPass" disabled>강제 통과</button><button id="fFail" disabled>강제 부결</button><button id="end">회의 종료</button></div>
 <div id="devVoteNotice" hidden style="padding:6px 12px;color:#ffd685;border-top:1px solid currentColor"><span>개발자 집계 고정 · 개별 의원석과 집계가 다를 수 있습니다.</span> <span id="devVoteSide"></span> <b id="devVoteValue"></b></div>
 <script>
  const $ = (id) => document.getElementById(id);
@@ -116,6 +116,7 @@
   u: ['아직 판단하기에는 정보가 부족합니다.', '조금 더 근거를 들어 보고 싶습니다.', '양쪽 모두 일리가 있어 보입니다.'],
   shift: ['…말씀하신 점은 일리가 있군요. 입장을 다시 생각해 보겠습니다.', '그 논리는 뜻밖이었습니다. 한 걸음 물러서겠습니다.'],
  };
+ const FORCE = 60; // 강제 결정에 필요한 비율(%, 2026-11-04 사용자 결정) — council-state FORCE_PCT 와 같음
  let devVotes = { devMode: false, devCouncilVote: 'normal', devCouncilPercent: 85, devCouncilNoAi: false };
  const fixedVotes = () => devVotes.devMode === true && ['for', 'against'].includes(devVotes.devCouncilVote);
  function setDevVotes(st) { devVotes = st || devVotes; if (M.length) draw(); }
@@ -146,9 +147,54 @@
   M.push({ n: '플레이어 제국 (나)', k: 'human', mix: [{ k: 'human', s: .7 }, { k: 'mammalian', s: .3 }], w: Math.round(M.reduce((a, m) => a + m.w, 0) * 0.9 * 10) / 10, p: 0, firm: 1, player: true }); // 시연용: 플레이어 제국은 의석이 아주 많다. 발언권·설득 계산에서는 빠진다
   
   }
-  stopDebate(); $('dbNext').innerHTML = ''; $('dbCnt').textContent = '플레이어가 의회 전체에 발언하면 발언권이 추첨됩니다'; over = false; ORDER = null; hist = []; busy = false; sent = []; forceBusy = false; turns = 0; showTurns(); window.sllm.getSettings().then((st) => { maxTurns = st && st.councilTurns > 0 ? st.councilTurns : 20; showTurns(); setDevVotes(st); }, () => {}); $('log').innerHTML = ''; $('q').disabled = false; $('send').disabled = false; $('reread').disabled = false;
-  line('sys', '', L('회의가 소집되었습니다. 안건: ', 'The council has been convened. Motion: ') + $('atitle').textContent); line('sys', '', L('표는 각 제국의 외교 가중치로 셉니다(전체에서 차지하는 비율로 80%를 셉니다). 80% 이상이어야 강제로 통과·부결시킬 수 있습니다.', 'Votes are counted by each empire\'s diplomatic weight (80% is measured as a share of the total). At least 80% is needed to force passage or rejection.'));
+  HOST = info && info.host && typeof info.host === 'object' ? info.host : null; hostMode();
+  stopDebate(); $('dbNext').innerHTML = ''; $('dbCnt').textContent = L('플레이어가 의회 전체에 발언하면 찬성 · 반대 제국이 같은 수(기본 2개국씩)로 답합니다(설정에서 바꿀 수 있음)', 'When you address the council, the same number of empires for and against reply (2 each by default, changeable in settings)'); over = false; ORDER = null; hist = []; busy = false; sent = []; forceBusy = false; turns = 0; showTurns(); window.sllm.getSettings().then((st) => { showTurns(); setDevVotes(st); }, () => {}); talkTo = -1; showTarget(); $('log').innerHTML = ''; $('q').disabled = false; $('send').disabled = false; $('reread').disabled = false;
+  line('sys', '', L('회의가 소집되었습니다. 안건: ', 'The council has been convened. Motion: ') + $('atitle').textContent); line('sys', '', L(`표는 각 제국의 외교 가중치로 셉니다(전체에서 차지하는 비율). 찬성이 ${FORCE}% 이상이면 강제 통과, 반대가 ${FORCE}% 이상이면 강제 부결할 수 있습니다.`, `Votes are counted by each empire\'s diplomatic weight (as a share of the total). At ${FORCE}% For you can force passage; at ${FORCE}% Against you can force rejection.`));
+  if (HOST) hostIntro();
   draw();
+ }
+ // 개최지 선정 회의(2026-10-31): LoG 월즈·올림픽 유치(log-app logHostCouncil). debate = 7월 투표 전 유치 연설(설득한 만큼 그 나라 표가 우리 쪽으로, 앱이 반영), vote = 지난 투표 장면 다시 보기.
+ let HOST = null, voteTimer = null;
+ const hostVote = () => !!(HOST && HOST.mode === 'vote');
+ function hostMode() {
+  document.body.classList.toggle('hostmode', !!HOST); if (voteTimer) { clearInterval(voteTimer); voteTimer = null; }
+  $('pAg').style.display = HOST ? 'none' : ''; $('pFor').textContent = HOST ? L('우리 개최를 지지하도록 설득', 'Persuade them to back our bid') : L('찬성하도록 설득', 'Persuade to vote for');
+  for (const id of ['fPass', 'fFail', 'reread', 'reset']) $(id).style.display = HOST ? 'none' : '';
+  if (!HOST) return;
+  dir = 1; $('pFor').classList.add('on'); $('pAg').classList.remove('on');
+  $('asub').textContent = L('유치 신청국: ', 'Bidders: ') + [HOST.me, lastInfo && lastInfo.target].filter(Boolean).join(', ');
+  const sc = HOST.score || {}, rv = (HOST.rivals || []).map(Number), bl = HOST.ballots || {};
+  for (const m of M) {
+   if (m.player) { m.n = L(`${HOST.me || '우리 제국'} (유치 신청국 · 나)`, `${HOST.me || 'Our empire'} (bidder · me)`); m.p = 100; m.firm = 1; continue; }
+   if (rv.includes(Number(m.gi))) { m.p = -100; m.firm = 1; m.rival = true; m.n = m.n + L(' (경쟁 신청국)', ' (rival bidder)'); continue; }
+   if (hostVote()) { const b = bl[m.gi]; m.p = b === 'us' ? 100 : b ? -100 : 0; m.ballot = b || ''; }
+   else if (Number.isFinite(Number(sc[m.gi]))) m.p = Math.max(-95, Math.min(95, Number(sc[m.gi])));
+  }
+  $('tagDemo').textContent = hostVote() ? L('투표 장면 · 실제 투표 결과', 'Vote scene · actual results') : L('개최지 선정 · 설득은 7월 투표에 반영', 'Host selection · persuasion counts in the July vote');
+ }
+ function hostIntro() {
+  $('log').innerHTML = '';
+  const evName = HOST.ev === 'oly' ? L('은하 올림픽', 'Galactic Olympics') : L('은하 월즈', 'Galactic Worlds');
+  if (!hostVote()) {
+   line('sys', '', L(`${HOST.year} ${evName} 개최지 선정 회의가 소집되었습니다. 파랑은 우리 개최를 지지할 나라, 빨강은 경쟁국 쪽, 회색은 아직 정하지 못한 나라입니다.`, `The council convenes to choose the ${HOST.year} ${evName} host. Blue leans to us, red to a rival, grey is undecided.`));
+   line('sys', '', L('우리가 개최해야 하는 이유를 말하세요. 대표들이 설득된 만큼 그 나라 표가 7월 투표에서 우리 쪽으로 기웁니다(나라마다 한도 있음, 같은 말 반복은 효과 없음). 경쟁 신청국은 자기 나라에 투표합니다.', 'Make your case. Each delegate you persuade leans toward us in the July vote (capped per nation; repeating yourself has no effect). Rival bidders vote for themselves.'));
+   return;
+  }
+  $('q').disabled = true; $('send').disabled = true; over = true;
+  const rounds = Array.isArray(HOST.rounds) ? HOST.rounds : [];
+  line('sys', '', L(`${HOST.year} ${evName} 개최지 투표를 시작합니다. 매 차례 꼴찌가 탈락합니다.`, `Voting begins for the ${HOST.year} ${evName} host. The last place drops out each round.`));
+  let i = 0;
+  const step = () => {
+   if (i >= rounds.length) { clearInterval(voteTimer); voteTimer = null; const V = $('verdict');
+    line('ok', '', HOST.won ? L(`🎉 ${HOST.winner || HOST.me} 개최 확정! 우리가 유치에 성공했습니다.`, `🎉 ${HOST.winner || HOST.me} will host! We won the bid.`) : L(`개최지: ${HOST.winner || '?'}. 이번 유치는 실패했습니다.`, `Host: ${HOST.winner || '?'}. Our bid failed.`));
+    V.textContent = HOST.won ? L('유치 성공', 'Bid won') : L(`개최지 ${HOST.winner || '?'}`, `Host: ${HOST.winner || '?'}`); V.className = 'ok'; return; }
+   const r = rounds[i] || [], last = r.length > 1 ? r[r.length - 1] : null, n = i + 1; i++;
+   const txt = r.map((x) => `${x.name}${x.us ? L('(우리)', ' (us)') : ''} ${x.votes}${L('표', '')}`).join(' · ');
+   line('sys', L(`${n}차 투표`, `Round ${n}`), txt + (last && rounds.length > n ? L(` → ${last.name} 탈락`, ` → ${last.name} eliminated`) : ''));
+   const tot = r.reduce((a, x) => a + x.votes, 0) || 1, us = r.find((x) => x.us);
+   $('verdict').textContent = L(`${n}차 투표 · 우리 ${us ? Math.round(us.votes / tot * 100) + '%' : '탈락'}`, `Round ${n} · us ${us ? Math.round(us.votes / tot * 100) + '%' : 'out'}`);
+  };
+  step(); voteTimer = setInterval(step, 2200);
  }
  function line(cls, who, text) { const d = document.createElement('div'); d.className = 'ln ' + cls; d.innerHTML = (who ? '<div class="who"></div>' : '') + '<span class="t"></span>'; if (who) d.querySelector('.who').textContent = who; d.querySelector('.t').textContent = text; $('log').appendChild(d); $('log').scrollTop = 1e9; }
  // 발언권 추첨: 플레이어가 의회 전체에 한 번 발언할 때마다 참석 제국 수만큼의 발언권이 생기고, 각 발언권은 가중치 비율의 확률로 한 제국에게 간다(복원 추출).
@@ -156,7 +202,22 @@
  const pastel = (m) => `hsl(${hash(m.n) % 360} 55% 75%)`;
  const pOne = (i) => M[i].player ? 0 : M[i].w / aiIdx().reduce((a, k) => a + M[k].w, 0); // AI 제국끼리만 비교한다(플레이어 제국의 의석은 계산에서 뺀다)
  const MAX_SPEAKERS = 8; // 한 번의 발언에 답하는 최대 제국 수(main.ts COUNCIL_MAX_SPEAKERS 와 같은 값)
+ // 찬반 팀(2026-10-29 기본): 발언마다 찬성 2 · 반대 2 로 고정. 팀 안에서는 가중치 비율로 서로 다른 제국을 뽑는다(같은 제국 두 번 없음).
+ // 한 팀이 모자라면(1명·0명) 그만큼 기권 제국에서 가중치 비율로 채운다. 순서는 찬-반-찬-반(토론처럼 주고받게).
+ let TEAM_TURNS = 2; // 팀당 발언 수: 설정 「찬반 팀당 발언 수」(1~4)로 바뀐다
+ function pickW(pool, k) { const out = [], p = pool.slice(); while (out.length < k && p.length) { const tw = p.reduce((a, i) => a + M[i].w, 0); let r = Math.random() * tw, j = 0; for (; j < p.length - 1; j++) { r -= M[p[j]].w; if (r < 0) break; } out.push(p.splice(j, 1)[0]); } return out; }
+ function teamLots() {
+  const ai = aiIdx(), by = (s) => ai.filter((i) => stOf(M[i]) === s);
+  const pf = pickW(by('f'), TEAM_TURNS), pa = pickW(by('a'), TEAM_TURNS), pu = pickW(by('u'), TEAM_TURNS * 2 - pf.length - pa.length), out = [];
+  for (let k = 0; k < TEAM_TURNS; k++) { if (pf[k] !== undefined) out.push(pf[k]); if (pa[k] !== undefined) out.push(pa[k]); }
+  lastTeams = { f: pf.length, a: pa.length, u: pu.length };
+  return out.concat(pu);
+ }
+ let lastTeams = null;
+ const lotsMode = (st) => { const n = Math.round(Number(st && st.councilTeamTurns)); TEAM_TURNS = n >= 1 && n <= 4 ? n : 2; return st && st.councilMode === 'equal' ? 'equal' : st && st.councilMode === 'weighted' ? 'weighted' : 'teams'; };
+ const lotsLabel = (mode) => mode === 'teams' ? L(`찬성 ${lastTeams ? lastTeams.f : 0} · 반대 ${lastTeams ? lastTeams.a : 0}${lastTeams && lastTeams.u ? ` · 기권 ${lastTeams.u}` : ''}`, `For ${lastTeams ? lastTeams.f : 0} · Against ${lastTeams ? lastTeams.a : 0}${lastTeams && lastTeams.u ? ` · Abstain ${lastTeams.u}` : ''}`) : mode === 'equal' ? L('공평 배정', 'fair allocation') : L('추첨', 'lottery');
  function drawLots(slots, mode) {
+  if (mode === 'teams') return teamLots();
   const ai = aiIdx(), na = ai.length, n = slots > 0 ? slots : na, tw = ai.reduce((a, i) => a + M[i].w, 0), picks = [];
   if (!na) return picks;
   if (mode === 'equal') { // 공평하게: AI 제국을 무작위 순서로 한 번씩(횟수가 제국 수보다 많으면 한 바퀴 더)
@@ -173,6 +234,19 @@
   const silent = aiIdx().length - Object.keys(cnt).length;
   $('dbCnt').textContent = L(`발언권 ${picks.length}회 · ${Object.keys(cnt).length}개국이 얻음 · ${silent}개국은 못 얻음`, `Speaking turns: ${picks.length} · granted to ${Object.keys(cnt).length} empires · ${silent} empires got none`);
   return { cnt, silent };
+ }
+ // 의원석을 누르면 그 제국에게 직접 말한다(2026-10-29 다시 켬). 다시 누르거나 「의회 전체」를 누르면 의회 전체로.
+ // 직접 말하면 그 제국이 먼저 답하고, 다른 제국이 끼어들 수 있다: 45% 확률로 한 나라, 그중 25%는 한 나라 더(65%는 상대 편에서).
+ let talkTo = -1;
+ const INTERJECT = { one: 0.45, two: 0.25, rival: 0.65 };
+ function showTarget() { const t = $('target'); if (!t) return; t.textContent = talkTo >= 0 && M[talkTo] ? M[talkTo].n : L('의회 전체', 'Whole council'); t.style.cursor = talkTo >= 0 ? 'pointer' : ''; t.title = talkTo >= 0 ? L('누르면 의회 전체로', 'Click to address the whole council') : ''; $('q').placeholder = talkTo >= 0 ? L(`${M[talkTo].n}에게 발언…`, `Speak to ${M[talkTo].n}…`) : L('의회에 발언…', 'Address the council…'); }
+ function interjectors(to) {
+  const out = []; if (Math.random() >= INTERJECT.one) return out;
+  const others = aiIdx().filter((i) => i !== to), st = stOf(M[to]), rival = others.filter((i) => stOf(M[i]) !== st && stOf(M[i]) !== 'u');
+  const pick1 = (pool) => pickW(pool, 1)[0];
+  const take = () => { const pool = (rival.filter((i) => !out.includes(i)).length && Math.random() < INTERJECT.rival ? rival : others).filter((i) => !out.includes(i)); const k = pick1(pool); if (k !== undefined) out.push(k); };
+  take(); if (Math.random() < INTERJECT.two) take();
+  return out;
  }
  function stopDebate() { if (timer) { clearInterval(timer); timer = null; } talking = -1; $('speech').style.display = 'none'; }
  // 추첨된 발언을 하나씩 말하게 한다. before 는 이번 설득 전의 입장(바뀌었으면 놀란 반응)
@@ -219,10 +293,10 @@
   $('pF').textContent = Math.round(pc.f) + '%'; $('pA').textContent = Math.round(pc.a) + '%'; $('pU').textContent = Math.round(pc.u) + '%';
   const v = $('verdict'); v.className = '';
   if (over) { /* 결과 문구는 끝낼 때 정한다 */ }
-  else if (pc.f >= 80 || pc.a >= 80) { const w = pc.f >= 80 ? SN.f : SN.a; v.textContent = canForce() ? L(`${w}이 80%를 넘었습니다. 강제로 ${pc.f >= 80 ? '통과' : '부결'}시킬 수 있습니다.`, `${w} is over 80%. You can force ${pc.f >= 80 ? 'passage' : 'rejection'}.`) : L(`${w}이 80%를 넘었지만 게임 정보를 완전히 읽지 못해 강제 결정은 잠겨 있습니다. 위쪽 \"정보 다시 읽기\" 버튼으로 다시 시도할 수 있습니다(토론만 가능).`, `${w} is over 80%, but the game information could not be fully read, so forcing a decision is locked. Try again with the \"Re-read information\" button above (discussion only).`); v.className = canForce() ? 'ok' : ''; }
-  else v.textContent = pc.f >= 60 || pc.a >= 60 ? '60%를 넘었지만 강제 실행에는 80%가 필요합니다.' : '강제로 결정할 수 있는 표가 아닙니다.';
-  $('reread').style.display = realVote() && lastInfo.reliable !== true && !over && turns === 0 && !forceBusy ? '' : 'none';
-  $('fPass').disabled = !canForce() || pc.f < 80; $('fFail').disabled = !canForce() || pc.a < 80;
+  else if (HOST) v.textContent = L(`지금 우리 쪽 ${Math.round(pc.f)}% · 경쟁국 쪽 ${Math.round(pc.a)}% · 미정 ${Math.round(pc.u)}% (실제 표는 7월 투표에서 정해집니다)`, `Leaning to us ${Math.round(pc.f)}% · to rivals ${Math.round(pc.a)}% · undecided ${Math.round(pc.u)}% (actual votes are cast in July)`);
+  else v.textContent = L(`강제 통과는 찬성 ${FORCE}%, 강제 부결은 반대 ${FORCE}% 이상일 때 할 수 있습니다(지금 찬성 ${Math.round(pc.f)}% · 반대 ${Math.round(pc.a)}%)${realVote() && lastInfo.reliable !== true ? ' · 게임 정보를 완전히 읽지 못한 안건이라 결과가 다를 수 있습니다' : ''}.`, `You can force passage at ${FORCE}% For, or rejection at ${FORCE}% Against (now For ${Math.round(pc.f)}% · Against ${Math.round(pc.a)}%)${realVote() && lastInfo.reliable !== true ? ' · the game information for this motion was not fully read, so the result may differ' : ''}.`);
+  if (!HOST) $('reread').style.display = realVote() && lastInfo.reliable !== true && !over && turns === 0 && !forceBusy ? '' : 'none';
+  $('fPass').disabled = !canForce() || !forceOk(true); $('fFail').disabled = !canForce() || !forceOk(false);
   layout();
  }
  // 의원석 홀: 가운데 통로 양쪽에 단(앞줄 크게, 뒷줄 작게)으로 의석을 놓는다. 자리는 고정, 조명 색만 입장에 따라 바뀐다.
@@ -294,6 +368,7 @@
    d.setAttribute('aria-label', d.title); d.removeAttribute('title'); // A-24: 정보는 마우스를 올리면 뜨는 카드로
    d.onmouseenter = (e) => hovShow(e, m, mi, st, ck, seatsOf[mi]); d.onmousemove = hovMove; d.onmouseleave = hovHide;
    if (m.gi) flagOf(m.gi).then((fu) => { const fi = d.querySelector('img.flag'); if (fu && fi) { fi.src = fu; fi.hidden = false; } });
+   d.onclick = () => { if (over || m.player || busy) return; talkTo = talkTo === mi ? -1 : mi; showTarget(); $('q').focus(); }; d.style.cursor = m.player ? '' : 'pointer';
    d.oncontextmenu = (e) => { e.preventDefault(); if (over || m.player || (lastInfo && !lastInfo.demo)) return; m.p = m.p >= 25 ? -60 : m.p <= -25 ? 0 : 60; draw(); }; // 시연판 전용: 오른쪽 클릭으로 입장 바꾸기. 게임 안건(실제 표결)에서는 막는다(F-05: 뒤집어 80%를 만든 뒤 강제 통과를 보낼 수 있었다)
    box.appendChild(d);
   });
@@ -307,12 +382,14 @@
  // 실제 안건: 발언권을 얻은 AI 제국들이 LLM으로 성향대로 답한다. 설득되면 입장이 바뀐다.
  async function debate(t) {
   busy = true; $('send').disabled = true;
-  line('me', '나 → 의회 전체', t);
+  const to = talkTo >= 0 && M[talkTo] && !M[talkTo].player ? talkTo : -1;
+  line('me', to >= 0 ? L(`나 → ${M[to].n}`, `Me → ${M[to].n}`) : L('나 → 의회 전체', 'Me → Whole council'), t);
   const before = M.map((m) => stOf(m));
   let ids;
-  {
-   const st = await window.sllm.getSettings().catch(() => null), eq = st && st.councilMode === 'equal', picks = drawLots(st && st.councilSlots, eq ? 'equal' : 'weighted'), r = showLots(picks);
-   line('sys', '', L(`발언권 ${picks.length}회 ${eq ? '공평 배정' : '추첨'}: ${Object.keys(r.cnt).length}개국이 얻고 ${r.silent}개국은 기회를 얻지 못했습니다.`, `Speaking turns: ${picks.length} (${eq ? 'fair allocation' : 'lottery'}): ${Object.keys(r.cnt).length} empires got one and ${r.silent} got no chance.`));
+  if (to >= 0) { const ij = interjectors(to); ids = [to, ...ij]; if (ij.length) line('sys', '', L(`${ij.map((i) => M[i].n).join(', ')}이(가) 끼어듭니다.`, `${ij.map((i) => M[i].n).join(', ')} cut${ij.length > 1 ? '' : 's'} in.`)); }
+  else {
+   const st = await window.sllm.getSettings().catch(() => null), mode = lotsMode(st), picks = drawLots(st && st.councilSlots, mode), r = showLots(picks);
+   line('sys', '', L(`발언권 ${picks.length}회 (${lotsLabel(mode)}): ${Object.keys(r.cnt).length}개국이 얻고 ${r.silent}개국은 이번에 듣기만 합니다.`, `Speaking turns: ${picks.length} (${lotsLabel(mode)}): ${Object.keys(r.cnt).length} empires speak and ${r.silent} only listen this time.`));
    ids = []; picks.forEach((i) => { if (!ids.includes(i)) ids.push(i); });
    if (ids.length > MAX_SPEAKERS) line('sys', '', L(`발언권을 얻은 ${ids.length}개국 중 한 번에 답할 수 있는 ${MAX_SPEAKERS}개국만 답합니다.`, `Of the ${ids.length} empires granted a turn, only ${MAX_SPEAKERS} can reply at once.`));
    ids = ids.slice(0, MAX_SPEAKERS);
@@ -321,7 +398,7 @@
   const info = lastInfo || {};
   const repeat = sent.slice(-5).some((p) => sim(p, t) >= 0.6); // 앞서 한 주장의 반복이면 설득 효과가 거의 없다
   if (repeat) line('sys', '', '앞서 한 주장과 거의 같습니다. 새 논거가 없으면 설득 효과가 거의 없습니다.');
-  const res = await window.sllm.councilDebate({ title: $('atitle').textContent, desc: info.desc || '', proposer: info.proposer || '', target: info.target || '', dir: dir > 0 ? 'f' : 'a', text: t, history: hist, tally: tallyPct(), repeat, speakers: ids.map((i) => ({ id: i, gi: M[i].gi, name: M[i].n, weight: M[i].w, stance: stOf(M[i]), firm: M[i].firm, score: M[i].p, notes: M[i].notes || [] })) }).catch((e) => ({ ok: false, error: String(e && e.message || e) }));
+  const res = await window.sllm.councilDebate({ title: $('atitle').textContent, desc: info.desc || '', proposer: info.proposer || '', target: info.target || '', dir: dir > 0 ? 'f' : 'a', text: t, history: hist, ...(HOST && !hostVote() ? { hostKey: info.key || '' } : {}), tally: tallyPct(), repeat, ...(to >= 0 ? { to: M[to].n } : {}), speakers: ids.map((i) => ({ id: i, gi: M[i].gi, name: M[i].n, weight: M[i].w, stance: stOf(M[i]), firm: M[i].firm, score: M[i].p, notes: M[i].notes || [] })) }).catch((e) => ({ ok: false, error: String(e && e.message || e) }));
   hist.push('플레이어: ' + t); sent.push(t);
   if (over) { busy = false; return; }
   if (!res || !res.ok) { // 실패하면 정해진 문장으로 대신한다
@@ -329,7 +406,7 @@
    playLots(ids, before); // 입장은 그대로 둔다(AI 답이 없으면 설득도 없다)
    busy = false; $('send').disabled = false; return;
   }
-  stopDebate(); let pos = 0; const reps = res.replies;
+  stopDebate(); let pos = 0; const reps = to >= 0 ? res.replies.slice().sort((x, y) => (x.id === to ? -1 : y.id === to ? 1 : 0)) : res.replies; // 직접 말한 제국이 먼저
   const step = () => {
    if (over || pos >= reps.length) { stopDebate(); draw(); busy = false; if (!over) $('send').disabled = false; afterRound(); return; }
    const r = reps[pos++], m = M[r.id], was = stOf(m);
@@ -346,19 +423,21 @@
  function speak() {
   const t = $('q').value.trim(); if (!t || over || busy) return; $('q').value = ''; turns++; showTurns();
   if (lastInfo && !lastInfo.demo && M.some((m) => m.gi !== undefined)) { debate(t); return; }
-  const targets = aiIdx();
-  line('me', '나 → 의회 전체', t);
+  const to = talkTo >= 0 && M[talkTo] && !M[talkTo].player ? talkTo : -1, targets = to >= 0 ? [to] : aiIdx();
+  line('me', to >= 0 ? L(`나 → ${M[to].n}`, `Me → ${M[to].n}`) : L('나 → 의회 전체', 'Me → Whole council'), t);
   const before = M.map((m) => stOf(m));
     if (!fixedVotes()) targets.forEach((i) => { const m = M[i], base = rnd(4, 14) * m.firm * 0.6; m.p = Math.max(-100, Math.min(100, m.p + dir * base)); });
   // 의회 전체에 한 발언에 대해 기존 발언권 추첨으로 응답할 제국을 정한다.
-  window.sllm.getSettings().then((st) => { const eq = st && st.councilMode === 'equal', picks = drawLots(st && st.councilSlots, eq ? 'equal' : 'weighted'), r = showLots(picks); line('sys', '', L(`발언권 ${picks.length}회 ${eq ? '공평 배정' : '추첨'}${st && st.councilSlots > 0 ? '(설정값)' : '(참석 제국 수)'}: ${Object.keys(r.cnt).length}개국이 얻고 ${r.silent}개국은 기회를 얻지 못했습니다.`, `Speaking turns: ${picks.length} (${eq ? 'fair allocation' : 'lottery'})${st && st.councilSlots > 0 ? ' (setting)' : ' (number of attending empires)'}: ${Object.keys(r.cnt).length} empires got one and ${r.silent} got no chance.`)); playLots(picks, before); }, () => { const picks = drawLots(0, 'weighted'); showLots(picks); playLots(picks, before); });
+  if (to >= 0) { const ij = interjectors(to); if (ij.length) line('sys', '', L(`${ij.map((i) => M[i].n).join(', ')}이(가) 끼어듭니다.`, `${ij.map((i) => M[i].n).join(', ')} cut${ij.length > 1 ? '' : 's'} in.`)); playLots([to, ...ij], before); draw(); return; }
+  window.sllm.getSettings().then((st) => { const mode = lotsMode(st), picks = drawLots(st && st.councilSlots, mode), r = showLots(picks); line('sys', '', L(`발언권 ${picks.length}회 (${lotsLabel(mode)})${mode !== 'teams' ? (st && st.councilSlots > 0 ? '(설정값)' : '(참석 제국 수)') : ''}: ${Object.keys(r.cnt).length}개국이 얻고 ${r.silent}개국은 이번에 듣기만 합니다.`, `Speaking turns: ${picks.length} (${lotsLabel(mode)})${mode !== 'teams' ? (st && st.councilSlots > 0 ? ' (setting)' : ' (number of attending empires)') : ''}: ${Object.keys(r.cnt).length} empires speak and ${r.silent} only listen this time.`)); playLots(picks, before); }, () => { const picks = drawLots(0, 'weighted'); showLots(picks); playLots(picks, before); });
   draw();
  }
  const realVote = () => !!(lastInfo && !lastInfo.demo && lastInfo.key);
  // 강제 결정을 열어도 되는가: 시연판이거나, 게임에서 회원국·가중치·찬반·안건 코드를 제대로 읽은 실제 안건일 때만
- const canForce = () => !over && !forceBusy && (!realVote() || lastInfo.reliable === true);
+ const canForce = () => !HOST && !over && !forceBusy; // 2026-10-29: 정보 완전성과 상관없이. 표 조건은 아래 FORCE(2026-11-04: 60%)
+ function forceOk(passed) { const pc = tallyPct(); return (passed ? pc.f : pc.a) >= FORCE; } // 강제 통과 = 찬성, 강제 부결 = 반대가 FORCE% 이상
  async function finish(passed) {
-  const pc = tallyPct(); if (!canForce() || (passed ? pc.f : pc.a) < 80) return; forceBusy = true; stopDebate(); draw();
+  if (!canForce() || !forceOk(passed)) return; forceBusy = true; stopDebate(); draw();
   const word = passed ? L('통과', 'passage') : L('부결(안건 취소)', 'rejection (motion withdrawn)');
   if (!realVote()) { over = true; line('ok', '', passed ? '결의안이 통과되었습니다. (시연판: 게임에는 반영되지 않습니다)' : '결의안이 부결되었습니다. (시연판: 게임에는 반영되지 않습니다)'); $('verdict').textContent = passed ? '통과' : '부결'; $('verdict').className = 'ok'; }
   else {
@@ -376,22 +455,15 @@
   }
   forceBusy = false; draw();
  }
- // 발언 횟수를 다 쓴 뒤: 한쪽이 80%에 닿았고 강제 결정이 열려 있으면 버튼으로 결정하게 두고, 아니면 합의 실패로 끝낸다(게임에는 아무것도 보내지 않는다).
- function afterRound() {
-  if (over) return;
-  if (turns >= maxTurns) {
-   const t = tallyPct(); line('sys', '', L(`발언 ${maxTurns}회를 모두 썼습니다. 최종 집계: 찬성 ${Math.round(t.f)}% · 반대 ${Math.round(t.a)}% · 기권 ${Math.round(t.u)}%`, `All ${maxTurns} turns used. Final tally: For ${Math.round(t.f)}% · Against ${Math.round(t.a)}% · Abstain ${Math.round(t.u)}%`));
-   $('q').disabled = true; $('send').disabled = true;
-   if ((t.f >= 80 || t.a >= 80) && canForce()) { line('sys', '', L(`${t.f >= 80 ? '찬성' : '반대'}이 80%를 넘었습니다. 아래의 강제 ${t.f >= 80 ? '통과' : '부결'} 버튼으로 결정하세요.`, `${t.f >= 80 ? 'For' : 'Against'} is over 80%. Decide with the force-${t.f >= 80 ? 'pass' : 'reject'} button below.`)); draw(); return; }
-   over = true; line('ok', '', '합의에 도달하지 못했습니다. 기존 게임 표결을 계속합니다.'); $('verdict').textContent = '합의 실패 · 게임 표결 계속'; $('verdict').className = ''; draw();
-  }
- }
- let turns = 0, maxTurns = 20;
- const showTurns = () => { $('turnCnt').textContent = L(`발언 ${turns}/${maxTurns}`, `Turn ${turns}/${maxTurns}`); };
+ // 발언 횟수를 다 쓴 뒤: 한쪽이 FORCE%에 닿았고 강제 결정이 열려 있으면 버튼으로 결정하게 두고, 아니면 합의 실패로 끝낸다(게임에는 아무것도 보내지 않는다).
+ function afterRound() { /* 2026-10-29: 발언 횟수 한도를 없앴다(사용자 결정). 끝내기는 강제 결정이나 「회의 종료」로 */ }
+ let turns = 0;
+ const showTurns = () => { $('turnCnt').textContent = L(`발언 ${turns}회`, `Turn ${turns}`); };
+ $('target').onclick = () => { if (talkTo >= 0) { talkTo = -1; showTarget(); } };
  $('send').onclick = speak; $('q').onkeydown = (e) => { if (e.key === 'Enter' && !e.isComposing) speak(); };
- $('pFor').onclick = () => { dir = 1; $('pFor').classList.add('on'); $('pAg').classList.remove('on'); if (M.length) draw(); }; $('pAg').onclick = () => { dir = -1; $('pAg').classList.add('on'); $('pFor').classList.remove('on'); if (M.length) draw(); };
+ $('pFor').onclick = () => { dir = 1; $('pFor').classList.add('on'); $('pAg').classList.remove('on'); if (M.length) draw(); }; $('pAg').onclick = () => { if (HOST) return; dir = -1; $('pAg').classList.add('on'); $('pFor').classList.remove('on'); if (M.length) draw(); };
  $('fPass').onclick = () => finish(true); $('fFail').onclick = () => finish(false);
- $('reset').onclick = () => init({ info: lastInfo }); $('end').onclick = $('x').onclick = () => window.sllm.councilClose();
+ $('reset').onclick = () => init({ info: lastInfo }); $('end').onclick = $('x').onclick = () => { if (voteTimer) { clearInterval(voteTimer); voteTimer = null; } window.sllm.councilClose(); };
  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.councilClose(); });
  $('reread').onclick = async () => { $('reread').disabled = true; $('verdict').textContent = '게임에서 정보를 다시 읽는 중입니다…'; const ok = await window.sllm.councilReread().catch(() => false); if (!ok) { $('reread').disabled = false; line('warn', '', '다시 읽었지만 여전히 정보가 불완전합니다. 잠시 뒤 다시 시도하거나 게임 상태를 확인해 주세요.'); } };
  window.sllm.onDevCouncilPrefs(setDevVotes);

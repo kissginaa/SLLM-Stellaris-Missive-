@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Foreign Banquet</title>
+<!-- 타국 주최 만찬장(44, 2026-10-23 집 PC 초안). 앱: src/features/fbanquet-app.ts. 배경은 기존 만찬 그림(접대 수준별 grand/normal/harsh)을 쓴다.
+     주최 통치자와 대화, 실제 참석 지도자 소개받기·연락처 교환, 원하는 때 직접 마치기. 문구는 ui(한, 영)만(언어 팩 호환). 인물·제국 이름과 대사는 data-i18n-skip. -->
+<style>
+ :root{--text:#f2efe6;--dim:#b8b2a0;--gold:#e8c872;--hi:#ecd49b;--line:#859d9e88;--panel:#07121be6;--bad:#e8907a}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:#10191e;color:var(--text);font:13.5px/1.5 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,input,select{font:inherit;color:var(--text)} button{cursor:pointer;border:1px solid var(--line);background:#16262ecc;padding:5px 12px;border-radius:5px} button:hover:not(:disabled){border-color:var(--gold);color:var(--gold)} button:disabled{opacity:.4;cursor:not-allowed}
+ #hall{position:absolute;inset:0;background:#10191e center/cover no-repeat}
+ #hall::after{content:"";position:absolute;inset:0;background:linear-gradient(#0006,#0000 30%,#0000 55%,#000c)}
+ body[data-h=humiliating] #hall::after{background:linear-gradient(#000a,#0003 35%,#0005 55%,#000d)}
+ #top{position:absolute;left:0;right:0;top:0;height:44px;display:flex;align-items:center;gap:12px;padding:0 14px;z-index:20;-webkit-app-region:drag;background:linear-gradient(#000c,#0000)}
+ #top b{color:var(--gold);letter-spacing:.06em} #top .sp{flex:1} #top button{-webkit-app-region:no-drag} #hosp{border:1px solid var(--line);padding:0 8px;border-radius:10px;font-size:12px} body[data-h=grand] #hosp{color:var(--gold);border-color:var(--gold)} body[data-h=humiliating] #hosp{color:var(--bad);border-color:var(--bad)}
+ .seat{position:absolute;z-index:5;background:linear-gradient(#07121bf0,#101e27f5);border:1px solid var(--line);border-radius:9px;padding:9px 8px;text-align:center;box-shadow:0 8px 20px #000a}
+ #host{left:2%;top:70px;width:min(18%,190px)} .pt{width:100%;height:200px;border-radius:5px;background:radial-gradient(ellipse at 50% 40%,#30414b,#0b161e);overflow:hidden;position:relative} .pt img{width:100%;height:100%;object-fit:cover;object-position:50% 18%} .pt .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 54px Georgia,serif;color:var(--gold);opacity:.55}
+ .role{font-size:11px;letter-spacing:.08em;color:var(--hi);margin-bottom:6px} .nm{font-size:15px;margin-top:6px;overflow-wrap:anywhere} .sub{font-size:12px;color:var(--dim)}
+ .seat.talk{border-color:var(--gold);box-shadow:0 0 22px #e8c87255}
+ #guests{position:absolute;right:2%;top:70px;width:min(24%,260px);z-index:5;display:flex;flex-direction:column;gap:8px;max-height:calc(100% - 330px);overflow:auto}
+ #guests .g{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px} #guests .g b{display:block} #guests .g .row{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap} #guests .g .row button{padding:2px 8px;font-size:12px}
+ #guests .hd{font-size:11px;letter-spacing:.08em;color:var(--hi);background:var(--panel);padding:4px 8px;border-radius:6px}
+ #box{position:absolute;left:4%;right:4%;bottom:16px;z-index:10;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;max-height:46%}
+ #log{overflow:auto;display:flex;flex-direction:column;gap:6px;min-height:80px}
+ .ln{max-width:85%;padding:6px 10px;border-radius:8px;background:#ffffff0d;white-space:pre-wrap} .ln small{display:block;color:var(--dim);font-size:11px} .ln.ruler{align-self:flex-end;background:#e8c87218} .ln.host,.ln.guest{font-family:Georgia,"Noto Serif KR",serif}
+ .in{display:flex;gap:8px;align-items:center} #to{background:#0b161e;border:1px solid var(--line);border-radius:5px;padding:5px} #q{flex:1;background:#0b161e;border:1px solid var(--line);border-radius:999px;padding:7px 14px;outline:none}
+ #status{min-height:16px;font-size:12px;color:var(--bad)} .note{font-size:11.5px;color:var(--dim)}
+</style>
+<script src="theme.js"></script><script src="portrait-variants.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+</head><body>
+<div id="hall"></div>
+<div id="top"><b id="ttl"></b><span id="emp" data-i18n-skip></span><span id="hosp"></span><span class="sp"></span><button id="fin" type="button"></button><button id="x" type="button">✕</button></div>
+<div class="seat" id="host"><div class="role" id="hostRole"></div><div class="pt" id="hostPt"></div><div class="nm" id="hostNm" data-i18n-skip></div><div class="sub" id="hostSub" data-i18n-skip></div></div>
+<div id="guests"></div>
+<div id="box"><div id="log" aria-live="polite"></div>
+ <div class="in"><select id="to" aria-label="to"></select><input id="q" autocomplete="off"><button id="send" type="button"></button></div>
+ <div id="status" role="status"></div><div class="note" id="note"></div></div>
+<script>
+ const $ = (id) => document.getElementById(id);
+ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+ const ui = (ko, en) => window.SLLMI18n?.pick ? window.SLLMI18n.pick(ko, en) : ko;
+ let S = null, busy = false, IMG = { images: {}, defaults: {} }, talking = '';
+ const pic = (k, seed) => (k && window.SLLMVariant && SLLMVariant.pick(IMG.images, ['delegate:' + k, 'class:' + k], seed, IMG.defaults[k])) || null;
+ const BG = { grand: 'banquet-grand-v3.png', plain: 'banquet-normal-v3.png', humiliating: 'banquet-harsh-v3.png' };
+ const HO = { grand: ['성대한 환영', 'Grand welcome'], plain: ['평범한 접대', 'Ordinary hospitality'], humiliating: ['냉대', 'Cold reception'] };
+ const CLS = { commander: ['지휘관', 'Commander'], official: ['관료', 'Official'], scientist: ['과학자', 'Scientist'] };
+ function statics() {
+  $('ttl').textContent = ui('타국 만찬', 'FOREIGN BANQUET'); $('fin').textContent = ui('만찬 마치고 돌아가기', 'Take your leave'); $('x').title = ui('닫기 (만찬은 마치기 전까지 이어집니다)', 'Close (the dinner continues until you take your leave)');
+  $('hostRole').textContent = ui('주최 통치자', 'HOST'); $('q').placeholder = ui('말을 건네세요…', 'Say something…'); $('send').textContent = ui('말하기', 'Say');
+  $('note').textContent = ui('대화에서 한 약속은 조약이나 자원 지급이 아닙니다. 소개받은 사람과는 연락처를 바꿀 수 있고, 다음에 개인 서신을 주고받을 수 있습니다.', 'Promises made in conversation are not treaties or transfers. You can exchange contacts with people you are introduced to and write to them later.');
+ }
+ function render(st) {
+  if (st) S = st; if (!S) return; if (!S.open) { $('status').textContent = ui('만찬이 끝났습니다.', 'The dinner is over.'); return; }
+  document.body.dataset.h = S.hospitality; $('hall').style.backgroundImage = `url("assets/rooms/${BG[S.hospitality] || BG.plain}")`;
+  $('emp').textContent = S.empire; $('hosp').textContent = ui(...(HO[S.hospitality] || HO.plain));
+  const img = pic(S.hostCls || S.playerCls, S.host); $('hostPt').innerHTML = img ? `<img src="${esc(img)}" alt="">` : `<div class="gl">${esc([...(S.host || '?')][0])}</div>`;
+  $('hostNm').textContent = S.host; $('hostSub').textContent = [S.hostTitle, S.empire].filter(Boolean).join(' · '); $('host').classList.toggle('talk', talking === 'host');
+  const gs = $('guests'); gs.innerHTML = `<div class="hd">${esc(ui('참석한 지도자', 'OTHER GUESTS'))}</div>` + (S.guests.length ? S.guests.map((g) => `<div class="g"><b data-i18n-skip>${esc(g.name)}</b><span class="sub">${esc(ui(...(CLS[g.cls] || CLS.official)))}${g.council ? ' · ' + esc(ui('평의원', 'Councilor')) : ''}</span><div class="row">${g.introduced ? (g.contact ? `<span class="sub">${esc(ui('연락처 교환함', 'Contacts exchanged'))}</span>` : `<button type="button" data-x="${esc(g.pid)}">${esc(ui('연락처 교환', 'Exchange contacts'))}</button>`) : `<button type="button" data-i="${esc(g.pid)}">${esc(ui('소개받기', 'Ask for an introduction'))}</button>`}</div></div>`).join('') : `<div class="g sub">${esc(ui('다른 참석자 정보를 받지 못했습니다(게임이 켜져 있어야 합니다).', 'No other guests could be read (the game must be running).'))}</div>`);
+  for (const b of gs.querySelectorAll('[data-i]')) b.onclick = () => act(window.sllm.fbIntroduce(b.dataset.i));
+  for (const b of gs.querySelectorAll('[data-x]')) b.onclick = () => act(window.sllm.fbExchange(b.dataset.x));
+  const to = $('to'), cur = to.value; to.innerHTML = `<option value="">${esc(S.host)} (${esc(ui('주최자', 'host'))})</option>` + S.guests.filter((g) => g.introduced).map((g) => `<option value="${esc(g.pid)}">${esc(g.name)}</option>`).join(''); to.value = [...to.options].some((o) => o.value === cur) ? cur : '';
+  const lg = $('log'), atEnd = lg.scrollTop + lg.clientHeight >= lg.scrollHeight - 8;
+  lg.innerHTML = S.talk.length ? S.talk.map((t) => `<div class="ln ${t.who}"><small data-i18n-skip>${esc(t.name)}${t.to ? ' → ' + esc(t.to) : ''}</small><span data-i18n-skip>${esc(t.text)}</span></div>`).join('') : `<div class="sub">${esc(S.hospitality === 'humiliating' ? ui('한참을 기다린 끝에야 주최자가 모습을 드러냅니다…', 'After a long wait, the host finally appears…') : S.hospitality === 'grand' ? ui('의장대와 음악이 당신을 맞이합니다. 주최자가 다가옵니다.', 'An honour guard and music greet you. The host approaches.') : ui('정갈하게 차려진 자리로 안내받습니다.', 'You are shown to a neatly laid table.'))}</div>`;
+  if (atEnd) lg.scrollTop = lg.scrollHeight;
+  $('send').disabled = busy || S.busy; $('q').disabled = busy; $('fin').disabled = busy;
+ }
+ async function act(p) { if (busy) return; busy = true; $('status').textContent = ''; render(); try { const r = await p; if (r && r.state) S = r.state; if (r && !r.ok) $('status').textContent = r.error || ''; } catch (e) { $('status').textContent = String(e); } busy = false; render(); }
+ async function send() { const t = $('q').value.trim(); if (!t || busy) return; $('q').value = ''; talking = $('to').value ? '' : 'host'; await act(window.sllm.fbSay(t, $('to').value)); talking = ''; render(); $('q').focus(); }
+ $('send').onclick = send; $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) send(); });
+ $('fin').onclick = async () => { if (busy) return; if (!window.confirm(ui('만찬을 마치고 돌아갈까요? 이 제국은 3년 동안 다시 초대하지 않습니다.', 'Take your leave? This empire will not invite you again for three years.'))) return; await window.sllm.fbFinish(); };
+ $('x').onclick = () => window.sllm.fbClose();
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.sllm.fbClose(); });
+ statics(); document.addEventListener('sllm-language', () => { statics(); render(); });
+ window.sllm.onFbHall((st) => { if (!busy) render(st); else S = st; });
+ window.sllm.getImageState().then((st) => { IMG = st || IMG; }, () => {}).then(() => window.sllm.fbHall()).then((st) => render(st));
+</script>
+</body></html>

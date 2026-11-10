@@ -62,7 +62,7 @@ export function registerNationalEvents(router:LogRouter):void {
   if(m.kind==='NATIONFX'){terminalReplies.get(m.kind+':'+m.kv.req)?.(m);return;}
   if(m.kind==='NATIONVICTORY' && m.kv.sid===ctx.curSaveId && /^\d+$/.test(m.kv.n||'') && nationalDate(m.kv.date||''))add({id:`victory:${m.kv.n}:${m.kv.date}`,kind:'victory',date:m.kv.date,name:(m.kv.war||m.kv.other||'').slice(0,240),status:'ready',evidence:{context:evidence(entry(),m.kv.date,'victory'),war:entry().wars?.[m.kv.war]||null,opponent:m.kv.other||null,confirmedVictory:true}});
  });
- onGameSnapshot(s=>{if(s.sid!==ctx.curSaveId)return;const e=entry();e.wars??={};for(const w of s.wars||[]){const old=e.wars[w.name]||{};e.wars[w.name]={...old,samples:[...(old.samples||[]),{date:s.date,...w}].slice(-48)};}const names=Object.keys(e.wars);for(const n of names.slice(0,Math.max(0,names.length-30)))delete e.wars[n];save();tick();});
+ onGameSnapshot(s=>{if(s.sid!==ctx.curSaveId)return;const e=entry();e.wars??={};for(const w of s.wars||[]){const old=e.wars[w.name]||{};e.wars[w.name]={...old,samples:[...(old.samples||[]),{date:s.date,...w}].slice(-48)};}const names=Object.keys(e.wars);for(const n of names.slice(0,Math.max(0,names.length-30)))delete e.wars[n];save();tick();},'national'); // 시나리오에서 국가 행사날을 잠그면 쉬게(2026-11-08)
  onPeopleChanged(()=>{if(!ctx.curSaveId || !nationalDate(ctx.gameDate))return;const r=peopleOf(ctx.curSaveId).find(p=>p.ruler&&!p.gone);if(!r)return;const s=entry();if(s.ruler===r.lid){if(!s.rulerName){s.rulerName=r.name;save();}return;}
   if(s.ruler===undefined){s.ruler=r.lid;s.rulerName=r.name;s.reignStart=ctx.gameDate;save();return;}
   const past=evidence(s,ctx.gameDate,'inauguration');

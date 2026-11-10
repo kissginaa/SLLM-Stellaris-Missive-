@@ -1,11 +1,12 @@
 // 시민 청원(앱 쪽, 2026-10-19). 순수 로직은 src/petition.ts, 화면은 ui/office-petition.js(집무실 바탕화면 「시민 청원」).
-// 매달 게임 상황(onGameSnapshot)으로 도착을 세고(2026-10-19 사용자 결정: 매달 2.25%, 최대 3건),
+// 2026-10-31 사용자 결정: 저절로 도착·알림은 없앰 — 집무실 「시민 청원」에서 「시민 청원 받기」를 누르면 한 통(답하지 않은 청원은 최대 3통). 매달 상황은 오래된 청원 만료·건설 과제 확인에만 씀.
 // 아주 가끔(10%)은 건설 과제 청원: 받아들이면 그 행성에 해당 건물이 늘었는지 3개월마다 확인해 보상(안정도·행복·산출 +5% 중 하나), 2년 기한. 플레이어가 화면을 열 때 행성 목록을 읽어(총독 화면과 같은 명령) 청원서를 AI 로 쓴다.
 // 수락·거절은 그 순간 행성 목록을 다시 읽어 순서 번호를 찾고 콘솔 명령(PETITIONAPPLY 응답)으로 건다. 군체·기계 제국에는 오지 않는다.
 // 저장: sllm_petitions.json { saves: { [세이브]: PetSave } }.
 import { app, ipcMain } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
+import { featureOff } from '../app/feature-gate';
 import { ctx } from '../app/ctx';
 import { link } from '../app/game-link';
 import { LogRouter, SLOT } from '../app/log-router';
@@ -17,9 +18,11 @@ import { refreshPlanets } from './gov';
 import { onGameSnapshot } from './gamestate-app';
 import { office } from './office-app';
 import { chronNoteWorld } from './chronicle-app';
+import { registerSecFacts } from './secretary-live';
+import { moodNudge } from './mood-app';
 import type { Planet } from '../planets';
 import { type PetSave, type Petition, emptyPet, petitionTick, pickPetitionPlanet, pickPetitionTopic, petitionMessages, cleanPetText, readPetition, petitionTextOk, petitionApplyCommand, PETITION_TOPICS,
-  BUILD_TASKS, TASK_REWARDS, TASK_CHANCE, TASK_MONTHS, pickTaskCat, pickReward, taskPetitionMessages, petitionCountCommand, taskRewardCommand, taskDue, taskOverdue, addMonthsP } from '../petition';
+  BUILD_TASKS, TASK_REWARDS, TASK_CHANCE, TASK_MONTHS, pickTaskCat, pickReward, taskPetitionMessages, petitionCountCommand, taskRewardCommand, taskDue, taskOverdue, addMonthsP, PET_MAX_PENDING } from '../petition';
 
 const L = pick;
 let data: { saves: Record<string, PetSave> } | null = null;
@@ -32,7 +35,7 @@ function all(): { saves: Record<string, PetSave> } {
 }
 function save(): void { try { const tmp = file() + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(all()), 'utf8'); fs.renameSync(tmp, file()); } catch (e) { logDiagnostic('error', 'storage.write_failed', { store: 'petitions', error: e }); } }
 const petOf = (sid: string): PetSave => { const s = (all().saves[sid] ??= emptyPet()); s.items ??= []; s.pending ??= 0; s.next ??= 1; s.due ??= ''; return s; };
-let busy = false;
+let busy = false, snapGestalt = false;
 
 /** 화면에 보낼 상태(주제·효과·비용은 한/영 둘 다 골라서). */
 export function petitionView() {
@@ -46,21 +49,18 @@ export function petitionView() {
   };
   const open = s.items.filter((p) => p.state === 'open');
   const working = s.items.filter((p) => p.state === 'working');
-  return { sid, open: open.map(row), working: working.map(row), history: s.items.filter((p) => p.state !== 'open' && p.state !== 'working').slice(-12).reverse().map(row), pending: s.pending, unread: s.pending + open.length };
+  return { sid, open: open.map(row), working: working.map(row), history: s.items.filter((p) => p.state !== 'open' && p.state !== 'working').slice(-12).reverse().map(row), pending: 0, canFetch: open.length < PET_MAX_PENDING, max: PET_MAX_PENDING, unread: open.length };
 }
 /** 집무실 아이콘 숫자(도착했지만 아직 읽지 않은 것 + 답하지 않은 것). */
 export const petitionUnread = (): number => petitionView().unread;
 
 function onSnapshot(snap: { sid: string; date: string; gestalt?: boolean }): void {
-  if (!snap.sid || snap.sid !== ctx.curSaveId || snap.gestalt) return; // 군체·기계 제국에는 시민 청원이 없다
+  if (featureOff('petition')) return; // 시나리오에서 잠기면 쉰다(2026-11-08)
+  if (!snap.sid || snap.sid !== ctx.curSaveId) return; snapGestalt = !!snap.gestalt; if (snap.gestalt) return; // 군체·기계 제국에는 시민 청원이 없다
   const s = petOf(snap.sid); const before = JSON.stringify(s);
-  const arrived = petitionTick(s, snap.date);
+  s.pending = 0; petitionTick(s, snap.date, () => 1); // 만료만(저절로 도착 없음·알림 없음, 2026-10-31)
   if (JSON.stringify(s) !== before) save();
   if (s.items.some((p) => p.state === 'working' && p.task && taskDue(p.task, snap.date))) void checkTasks(snap.sid, snap.date);
-  if (arrived) {
-    (office as { toastGo: string }).toastGo = 'petition';
-    ctx.notify({ kind: 'office', title: L('시민 청원 도착', 'A citizens\' petition has arrived'), body: L('행성 주민들이 청원서를 올렸습니다. 집무실 「시민 청원」에서 읽어 보세요.', 'Citizens of one of your planets have sent a petition. Read it in the Office under "Petitions".'), action: L('집무실', 'Office') });
-  }
 }
 async function planetsNow(): Promise<{ list: Planet[] } | { error: string }> {
   if (!ctx.gameRunning) return { error: L('게임이 켜져 있어야 행성 사정을 읽을 수 있습니다.', 'The game must be running to read your planets.') };
@@ -93,6 +93,7 @@ async function checkTasks(sid: string, date: string, onlyId?: number): Promise<s
         const m = k ? await terminalRequest(taskRewardCommand(req, sid, k, task.reward), 'PETITIONAPPLY', req) : null;
         if (m?.kv.status === 'applied') {
           p.state = 'done'; p.decided = date; const rw = TASK_REWARDS[task.reward];
+          moodNudge(PETITION_MOOD, L(`「${p.planet}」 주민 청원 해결`, `Resolved the petition of "${p.planet}"`)); // 17: 완료 조건이 있는 청원을 이루면 플레이어 민심 상승(수락만으로는 아님). 수치는 초기 조정값
           chronNoteWorld(L(`${p.planet} 주민들이 청원한 건물(${BUILD_TASKS[task.cat].ko.replace(' 짓기', '')})이 세워졌다. 주민들이 기뻐한다.`, `The building the citizens of ${p.planet} petitioned for (${BUILD_TASKS[task.cat].en.replace(/^Build (an? )?/, '')}) has been built. The citizens rejoice.`), true);
           (office as { toastGo: string }).toastGo = 'petition';
           ctx.notify({ kind: 'office', title: L('청원 과제 완수', 'Petition fulfilled'), body: L(`「${p.planet}」 주민들이 약속을 지킨 통치자에게 감사합니다: ${rw.ko}(2년).`, `The citizens of "${p.planet}" thank you for keeping your word: ${rw.en} (2 years).`), action: L('집무실', 'Office') });
@@ -112,14 +113,19 @@ async function checkTasks(sid: string, date: string, onlyId?: number): Promise<s
   return note;
 }
 
+/** 청원 과제 완수 → 플레이어 민심(17). 문서상 수치 미정 → 초기 조정값. */
+export const PETITION_MOOD = 5;
 export function registerPetitions(router: LogRouter): void {
+  registerSecFacts({ id: 'Citizens\' petitions', kw: ['청원', 'petition'], facts: (sid) => { const s = petOf(sid), open = s.items.filter((p) => p.state === 'open'), work = s.items.filter((p) => p.state === 'working'), past = s.items.filter((p) => p.state !== 'open' && p.state !== 'working').slice(-5);
+    return [`Unanswered petitions: ${open.length}${open.length ? ' — ' + open.map((p) => `${p.planet}: "${p.title}"`).join('; ') : ''}.`, ...(work.length ? ['Building tasks in progress: ' + work.map((p) => `${p.planet} until ${p.task?.until ?? '?'}`).join('; ')] : []), ...(past.length ? ['Recent outcomes: ' + past.map((p) => `${p.planet} ${p.state}`).join('; ')] : [])]; } }); // 비서가 아는 기록(2026-10-31)
   router.on(SLOT.PETITION, 'petition:apply', (m: SllmMessage) => { if (m.kind === 'PETITIONAPPLY') terminalReplies.get('PETITIONAPPLY:' + m.kv.req)?.(m); else if (m.kind === 'PETITIONCHECK') terminalReplies.get('PETITIONCHECK:' + m.kv.req)?.(m); });
   onGameSnapshot(onSnapshot);
   ipcMain.handle('petitionState', async () => petitionView());
   // 도착한 청원 하나를 연다: 행성 목록을 읽어 행성·주제를 고르고 청원서를 쓴다.
   ipcMain.handle('petitionFetch', async () => {
     const sid = ctx.curSaveId; if (!sid) return { ok: false, error: L('세이브를 불러온 뒤 볼 수 있습니다.', 'Load a save first.'), state: petitionView() };
-    const s = petOf(sid); if (s.pending <= 0) return { ok: true, state: petitionView() };
+    if (snapGestalt) return { ok: false, error: L('군체·기계 제국에는 시민 청원이 없습니다.', 'Hive minds and machine empires have no citizens\' petitions.'), state: petitionView() };
+    const s = petOf(sid); if (s.items.filter((x) => x.state === 'open').length >= PET_MAX_PENDING) return { ok: false, error: L(`답하지 않은 청원이 ${PET_MAX_PENDING}통 있습니다. 먼저 답해 주세요.`, `You have ${PET_MAX_PENDING} unanswered petitions. Answer them first.`), state: petitionView() };
     if (busy) return { ok: false, error: L('이미 처리 중입니다.', 'Already working on it.'), state: petitionView() };
     busy = true;
     try {
@@ -135,7 +141,7 @@ export function registerPetitions(router: LogRouter): void {
       const text = petitionTextOk(cleanPetText(got.text, 1400)) ? cleanPetText(got.text, 1400) : '', title = cleanPetText(got.title, 80) || (cat ? L(BUILD_TASKS[cat].ko, BUILD_TASKS[cat].en) : L(PETITION_TOPICS[topic].ko, PETITION_TOPICS[topic].en));
       if (!text) return { ok: false, error: L('청원서를 읽지 못했습니다. 다시 열어 보세요.', 'Could not read the petition. Try again.'), state: petitionView() };
       if (sid !== ctx.curSaveId) return { ok: false, error: L('세이브가 바뀌었습니다.', 'The save changed.'), state: petitionView() };
-      s.items.push({ id: s.next++, planet: p.name, topic, title, text, date, state: 'open', ...(cat ? { task: { cat, reward: pickReward() } } : {}) }); s.items = s.items.slice(-40); s.pending = Math.max(0, s.pending - 1); save();
+      s.items.push({ id: s.next++, planet: p.name, topic, title, text, date, state: 'open', ...(cat ? { task: { cat, reward: pickReward() } } : {}) }); s.items = s.items.slice(-40); s.pending = 0; save();
       return { ok: true, state: petitionView() };
     } catch (e) { return { ok: false, error: (e as Error).message, state: petitionView() }; }
     finally { busy = false; }

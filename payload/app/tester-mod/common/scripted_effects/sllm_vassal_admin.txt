@@ -1,0 +1,153 @@
+# 종속국 행정(2026-11-04 사용자: 다른 모드 「Subject Administration」에서 채용). 앱: src/features/vassal-admin-app.ts · 규칙: src/vassal-admin.ts
+# 앱 명령이 every_playable_country(플레이어, This = Root) 안에서 sllm_va_me(우리)·sllm_va_t(대상 나라)를 저장한 뒤 부른다.
+# 성계 번호는 성계 번호표(sllm_systems.txt)와 같은 별 변수 sllm_sys 를 쓴다(없으면 여기서 새로 붙임).
+
+# 성계 목록: 대상 나라가 가진 성계마다 VADMSYS 한 줄(번호·식민지 수·수도 여부·이름).
+sllm_va_list = {
+	if = { limit = { NOT = { is_variable_set = sllm_sys_n } } set_variable = { which = sllm_sys_n value = 0 } }
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	every_system = {
+		limit = { exists = star exists = space_owner space_owner = { is_same_value = event_target:sllm_va_t } }
+		star = {
+			if = {
+				limit = { NOT = { is_variable_set = sllm_sys } }
+				root = { change_variable = { which = sllm_sys_n value = 1 } }
+				set_variable = { which = sllm_sys value = root.sllm_sys_n }
+			}
+			root = { set_variable = { which = sllm_va_n value = prev.sllm_sys } }
+		}
+		root = { set_variable = { which = sllm_va_col value = 0 } set_variable = { which = sllm_va_cap value = 0 } }
+		every_system_planet = {
+			limit = { exists = owner owner = { is_same_value = event_target:sllm_va_t } is_colony = yes }
+			root = { change_variable = { which = sllm_va_col value = 1 } }
+		}
+		if = {
+			limit = { any_system_planet = { exists = owner owner = { is_same_value = event_target:sllm_va_t } is_capital = yes } }
+			root = { set_variable = { which = sllm_va_cap value = 1 } }
+		}
+		log = "SLLM:VADMSYS/;/req=\\[Root.sllm_va_req]/;/n=\\[Root.sllm_va_n]/;/col=\\[Root.sllm_va_col]/;/cap=\\[Root.sllm_va_cap]/;/name=\\[This.GetName]"
+	}
+	log = "SLLM:VADMEND/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]"
+}
+
+# 성계 하나 옮기기: DONOR·RECIP = 저장한 대상 이름(sllm_va_t / sllm_va_me), N = 성계 번호, FEE = 영향력(플레이어가 냄).
+# st: 0 없음 · 1 주인 아님 · 2 수도·점령·정거장 없음 · 3 영향력 부족 · 9 됨
+sllm_va_transfer = {
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	set_variable = { which = sllm_va_st value = 0 }
+	random_system = {
+		limit = { exists = star star = { check_variable = { which = sllm_sys value = $N$ } } }
+		root = { set_variable = { which = sllm_va_st value = 1 } }
+		if = {
+			limit = { exists = space_owner space_owner = { is_same_value = event_target:$DONOR$ } }
+			root = { set_variable = { which = sllm_va_st value = 2 } }
+			if = {
+				limit = {
+					exists = starbase
+					NOT = { any_system_planet = { exists = owner owner = { is_same_value = event_target:$DONOR$ } is_capital = yes } }
+					NOT = { any_system_planet = { exists = owner owner = { is_same_value = event_target:$DONOR$ } exists = controller NOT = { controller = { is_same_value = event_target:$DONOR$ } } } }
+				}
+				if = {
+					limit = { root = { resource_stockpile_compare = { resource = influence value < $FEE$ } } }
+					root = { set_variable = { which = sllm_va_st value = 3 } }
+				}
+				else = {
+					root = { add_resource = { influence = -$FEE$ } }
+					starbase = { set_owner = event_target:$RECIP$ }
+					every_system_planet = {
+						limit = { exists = owner owner = { is_same_value = event_target:$DONOR$ } }
+						set_owner = event_target:$RECIP$
+						set_controller = event_target:$RECIP$
+					}
+					every_system_megastructure = {
+						limit = { exists = owner owner = { is_same_value = event_target:$DONOR$ } }
+						set_owner = event_target:$RECIP$
+					}
+					root = { set_variable = { which = sllm_va_st value = 9 } }
+				}
+			}
+		}
+	}
+	log = "SLLM:VADMSET/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_va_st]"
+}
+
+# 우리 월 연구량 읽기(기술 원조 양을 정하려고).
+sllm_va_research = {
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	export_resource_income_to_variable = { resource = physics_research variable = sllm_va_p }
+	export_resource_income_to_variable = { resource = society_research variable = sllm_va_s }
+	export_resource_income_to_variable = { resource = engineering_research variable = sllm_va_e }
+	log = "SLLM:VADMRES/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]/;/p=\\[This.sllm_va_p]/;/s=\\[This.sllm_va_s]/;/e=\\[This.sllm_va_e]"
+}
+
+# 기술 원조: 영향력 COST 를 내고 종속국 연구에 P·S·E 를 보탠다.
+sllm_va_tech = {
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	if = {
+		limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+		set_variable = { which = sllm_va_st value = 3 }
+	}
+	else = {
+		add_resource = { influence = -$COST$ }
+		event_target:sllm_va_t = {
+			add_resource = { physics_research = $P$ society_research = $S$ engineering_research = $E$ }
+			set_timed_country_flag = { flag = sllm_va_tech_cd days = 1080 } # 일정표가 남은 날을 게임에서 읽음(2026-11-04)
+		}
+		set_variable = { which = sllm_va_st value = 9 }
+	}
+	log = "SLLM:VADMSET/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_va_st]"
+}
+
+# 동화 정책: 시작·갱신(COST 0). 우리 윤리(A1~A3, 빈 칸 none)에 끌리는 수정자를 DAYS 동안 건다.
+sllm_va_assim_go = {
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	if = {
+		limit = { event_target:sllm_va_t = { is_gestalt = yes } }
+		set_variable = { which = sllm_va_st value = 4 }
+	}
+	else_if = {
+		limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+		set_variable = { which = sllm_va_st value = 3 }
+	}
+	else = {
+		add_resource = { influence = -$COST$ }
+		event_target:sllm_va_t = {
+			add_modifier = { modifier = sllm_va_assim_$A1$ days = $DAYS$ }
+			add_modifier = { modifier = sllm_va_assim_$A2$ days = $DAYS$ }
+			add_modifier = { modifier = sllm_va_assim_$A3$ days = $DAYS$ }
+			if = { limit = { always = $MARK$ } set_timed_country_flag = { flag = sllm_va_assim_cd days = 1800 } } # 시작할 때만: 다음 단계까지(일정표, 2026-11-04)
+		}
+		set_variable = { which = sllm_va_st value = 9 }
+	}
+	log = "SLLM:VADMSET/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_va_st]"
+}
+sllm_va_assim_stop = {
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	event_target:sllm_va_t = {
+		remove_modifier = sllm_va_assim_authoritarian
+		remove_modifier = sllm_va_assim_egalitarian
+		remove_modifier = sllm_va_assim_xenophobe
+		remove_modifier = sllm_va_assim_xenophile
+		remove_modifier = sllm_va_assim_militarist
+		remove_modifier = sllm_va_assim_pacifist
+		remove_modifier = sllm_va_assim_materialist
+		remove_modifier = sllm_va_assim_spiritualist
+		remove_country_flag = sllm_va_assim_cd
+	}
+	set_variable = { which = sllm_va_st value = 9 }
+	log = "SLLM:VADMSET/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_va_st]"
+}
+# 정부 윤리 한 걸음: E 쪽으로(이미 있으면 그대로). 군체는 건너뜀.
+sllm_va_assim_shift = {
+	set_variable = { which = sllm_va_req value = $REQ$ }
+	set_variable = { which = sllm_va_st value = 4 }
+	event_target:sllm_va_t = {
+		if = {
+			limit = { is_gestalt = no NOT = { has_ethic = ethic_$E$ } NOT = { has_ethic = ethic_fanatic_$E$ } }
+			shift_ethic = ethic_$E$
+			set_timed_country_flag = { flag = sllm_va_assim_cd days = 1800 }
+			root = { set_variable = { which = sllm_va_st value = 9 } }
+		}
+	}
+	log = "SLLM:VADMSET/;/req=\\[This.sllm_va_req]/;/sid=\\[This.sllm_save_id]/;/st=\\[This.sllm_va_st]"
+}

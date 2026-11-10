@@ -14,13 +14,28 @@ import { transcriptText, SYSTEM_PREFIX } from '../transcript';
 import { applyEffect, transferEffect, opinionShiftEffects, openKbEffect, diploEffect, SllmMessage } from '../protocol';
 import { link, enqueue, sendConsole, sendAndWait, sendBatch } from '../app/game-link';
 import { LogRouter, SLOT } from '../app/log-router';
-import { chronNote } from './chronicle-app';
+import { chronNote, chronNoteWorld } from './chronicle-app';
+import { gameRename, recordRename } from './rename-ledger'; // 치욕의 조약: AI 의 개명 요구(2026-11-04)
+import { noteTalkMood } from './emotions-app';
+import { pactAllowed, makePact } from './crisis-pact-app'; // 공동 대응 협약(알파 11)
+import { refreshFrontier, frontierFor } from './frontier-app'; // 국경·전선(2026-10-26)
+import { frontierLines } from '../frontier';
+import { MARAUDER_ACTIONS, isMarauderType, refreshMarauder, marauderActionBlock, marauderProposal, acceptMarauder } from './marauder-app'; // 약탈자 대응(2026-10-26)
+import { dealOwed, onOwedDemandRefused } from '../app/deal-hooks'; // 외교 거래(2026-10-26) — deals-app 이 등록(가져오기 고리 방지)
+import { noteMentions } from './systems-app'; // 대화에서 언급된 성계 지도 이름표(알파 11) // 감정 기억 4종(알파 11)
 import { deferred, inboxStore, syncInbox } from './mail-app';
+import { noteHeard, olderMemories } from './memory-app'; // ChatSyncAuto 참고(2026-10-28)
+import { parseHeard } from '../memory-links';
+import { extractJson, type Action } from '../action';
 import { ctx, Pending } from '../app/ctx';
 import { randomUUID } from 'crypto';
 import { switchHistories } from '../chat-history';
 import { L } from '../i18n-pick'; // 한/영 문구(2026-10-19 영어 화면 점검)
 import { fallenState, fallenKind, answerChance, hangupChance, yearKey, fallenText } from '../fallen';
+import { temperPush } from '../app/temper-hooks'; // 외교 노선(2026-11-04): 대화의 호감 변화 → 노선 압력
+import { talkPush as talkPushOf } from '../temper';
+import { policyTalkLine } from '../policy-view'; // 정책으로 보는 호감(2026-11-05)
+import { infamyTalk } from '../app/infamy-hooks'; // 악명·전쟁범죄(2026-11-04): 대화 프롬프트 줄
 
 interface PendingMood { idx: number; name: string; base: number; steps: number[] }
 /** 대화 상태(main.ts의 let 변수들을 모았다) */
@@ -75,7 +90,7 @@ export function flushMoods(): Promise<void> {
   chat.pend = null;
   if (!p || !ctx.actionsAllowed(p.idx)) return Promise.resolve();
   const steps = netSteps(p.steps);
-  { const dl = p.steps.reduce((a, s) => a + moodDelta(s), 0); if (dl) chronNote(p.idx, L(`대화 끝에 서로의 호감이 ${dl > 0 ? '올랐다' : '떨어졌다'}(${dl > 0 ? '+' : ''}${dl})`, `By the end of the talk our mutual favor ${dl > 0 ? 'rose' : 'fell'} (${dl > 0 ? '+' : ''}${dl})`)); }
+  { const dl = p.steps.reduce((a, s) => a + moodDelta(s), 0); if (dl) temperPush(p.idx, talkPushOf(dl), dl > 0 ? ['우리와의 대화에서 존중을 느낌', 'felt respected in talks with us'] : ['우리와의 대화에서 위협·모욕을 느낌', 'felt threatened or insulted in talks with us']); if (dl) chronNote(p.idx, L(`대화 끝에 서로의 호감이 ${dl > 0 ? '올랐다' : '떨어졌다'}(${dl > 0 ? '+' : ''}${dl})`, `By the end of the talk our mutual favor ${dl > 0 ? 'rose' : 'fell'} (${dl > 0 ? '+' : ''}${dl})`)); }
   if (!steps.length) { ctx.toUi('mood', L(`${p.name}: 쌓인 호감 변화가 서로 상쇄되어 적용할 것이 없습니다.`, `${p.name}: the accumulated favor changes cancelled out, so there is nothing to apply.`)); return Promise.resolve(); }
   return enqueue(async () => {
     chat.lastShift = null;
@@ -100,7 +115,14 @@ export async function doChat(text: string): Promise<ChatResult> {
   const sid=ctx.curSaveId,epoch=link.epoch,idx=chat.talk.idx,session=chat.session;
   chat.busy=true;
   try {
+  if (isMarauderType(chat.talk.ctype)) { await refreshMarauder(idx); if (chat.talk?.idx !== idx) throw new Error(L('통신 또는 세이브가 바뀌어 응답을 반영하지 않았습니다.', 'The channel or save changed, so the reply was not applied.')); } // 약탈자: 발언 전 습격 상태(2026-10-26)
+  await refreshFrontier([idx]).catch(() => {}); if (chat.talk?.idx !== idx) throw new Error(L('통신 또는 세이브가 바뀌어 응답을 반영하지 않았습니다.', 'The channel or save changed, so the reply was not applied.')); // 국경·전선(2026-10-26)
   chat.talk=ctx.withLore(chat.talk);
+  { const fl = frontierLines(frontierFor(idx), { atWar: !!chat.talk.profile?.flags.war }); chat.talk = fl.length ? { ...chat.talk, frontier: fl } : chat.talk; }
+  { const il = infamyTalk(idx); if (il) chat.talk = { ...chat.talk, infamy: il }; } // 악명·전쟁범죄(2026-11-04)
+  { const sn = ctx.flagProv.saveSnap(), me = sn && sn.player.sid === sid ? sn.countries.find((c) => c.human) : undefined, ai = me ? sn!.countries.find((c) => c.idx === idx) : undefined; /* 정책으로 보는 호감(2026-11-05): 자동 저장에서 읽은 두 나라 정책 */
+    const pv = ai && me ? policyTalkLine(ai.pol, me.pol, chat.talk.player) : ''; chat.talk = pv ? { ...chat.talk, policyView: pv } : { ...chat.talk, policyView: undefined }; }
+  { const om = olderMemories(idx, chat.talk.profile?.flags, text); chat.talk = om.length ? { ...chat.talk, olderMemories: om } : { ...chat.talk, olderMemories: undefined }; } // 관련 있는 오래된 기억(2026-10-28)
   const dormant = fallenState(chat.talk.ctype) === 'dormant', fk = fkey(idx), turn = (fallenCalls.get(fk) ?? 0) + 1;
   const final = dormant && Math.random() < hangupChance(turn); // 이번 답을 마지막으로 끊는지(미리 정해 AI 가 끊는 말을 하게)
   const messages=buildMessages(chat.talk, chat.history, text, Math.random, final);
@@ -109,9 +131,15 @@ export async function doChat(text: string): Promise<ChatResult> {
   chat.history.push({ role: 'user', content: text }, { role: 'assistant', content: raw });
   // (아래 parseReply 후 lastSay 를 갱신한다)
   const r = parseReply(raw);
-  if(!ctx.actionsAllowed(chat.talk.idx)){r.action=null;r.mood=0;}
+  { // 약탈자(2026-10-26): 대화 전용이어도 위협·돌리기·용병 흥정만은 제안할 수 있다. 다른 상대는 이 행동을 쓸 수 없다.
+    const mrd = isMarauderType(chat.talk.ctype), mAct = !!r.action && MARAUDER_ACTIONS.has(r.action.type);
+    if (mrd ? !mAct : mAct) r.action = null;
+    if(!ctx.actionsAllowed(chat.talk.idx)){ if(!(mrd && mAct)) r.action=null; r.mood=0; }
+  }
   if (dormant) r.action = null; // 몰락한 제국: 일방적 통신, 게임 행동 없음
   chat.lastSay = r.say;
+  try { const hd = parseHeard(extractJson(raw)); if (hd && !isMarauderType(chat.talk.ctype)) noteHeard({ idx, name: chat.talk.name }, hd); } catch { /* 꼬리표는 부가 기능 */ } // 들은 말이 퍼지기(2026-10-28)
+  try { noteMentions(text + '\n' + (r.say || '')); } catch { /* 지도 이름표는 부가 기능 */ } // 대화에서 언급된 성계(알파 11)
   chat.pending = null;
   let proposal: { id: number; text: string; confirm: boolean } | null = null;
   let hint: string | null = null;
@@ -142,15 +170,20 @@ export async function doChat(text: string): Promise<ChatResult> {
       chat.history.push({ role: 'user', content: SYSTEM_PREFIX + text });
       ctx.toUi('event', text);
     }).catch((e) => ctx.toUi('event', L('선전포고 전송 실패: ', 'Failed to send the war declaration: ') + (e as Error).message));
-  } else if (r.action && r.action.type === 'make_peace' && !chat.talk.profile?.flags.war) {
+  } else if (r.action && r.action.type === 'crisis_pact' && !pactAllowed(chat.talk.idx, { type: chat.talk.ctype, war: !!chat.talk.profile?.flags.war })) {
+    hint = L('지금은 이 제국과 공동 대응 협약을 맺을 수 없어 제안을 무시했습니다(적대 위기가 없거나, 전쟁 중이거나, 이미 협약 중이거나, 협약이 3개입니다).', 'A joint crisis response pact is not possible with this empire right now (no hostile crisis, at war, already bound, or three pacts already), so the proposal was ignored.');
+  } else if (r.action && (r.action.type === 'make_peace' || r.action.type === 'demand_rename') && !chat.talk.profile?.flags.war) {
     hint = L('전쟁 중이 아니라서 평화 제안은 무시했습니다.', 'Not at war, so the peace proposal was ignored.');
+  } else if (r.action && MARAUDER_ACTIONS.has(r.action.type) && marauderActionBlock(r.action, chat.talk.idx)) {
+    hint = marauderActionBlock(r.action, chat.talk.idx);
   } else if (r.action) {
     chat.pending = { id: ++chat.pendingSeq, action: r.action, tid: chat.talk.idx, aiName: chat.talk.name, epoch: link.epoch };
-    proposal = { id: chat.pending.id, text: describe(r.action, chat.talk.name), confirm: false };
+    proposal = { id: chat.pending.id, text: MARAUDER_ACTIONS.has(r.action.type) ? marauderProposal(r.action, chat.talk.name, chat.talk.idx) : describe(r.action, chat.talk.name), confirm: false };
   }
   if (r.mood > 0) {
     if (!chat.pend || chat.pend.idx !== chat.talk.idx) chat.pend = { idx: chat.talk.idx, name: chat.talk.name, base: chat.talk.score, steps: [] };
     chat.pend.steps.push(r.mood);
+    try { noteTalkMood(chat.talk.idx, r.mood); } catch { /* 감정 기억은 부가 기능 */ } // 감정 기억(알파 11)
     chat.talk = { ...chat.talk, score: chat.pend.base + pendDelta() };
     ctx.toUi('talk', chat.talk);
     ctx.toUi('mood', L(`${chat.talk.name}의 호감이 ${moodText(r.mood)} (대화가 끝나면 게임에 반영됩니다)`, `${chat.talk.name}'s favor ${MOOD_EN[r.mood] ?? 'changed'} (applied to the game when the talk ends)`));
@@ -255,9 +288,34 @@ export function registerChat(router: LogRouter, noteSave: (sid: string) => void)
     }
   });
   ipcMain.handle('chat', async (_e, text: string) => doChat(text));
-  // 플레이어가 제안을 수락하면 게임에 보내고, 게임의 ACK 를 기다려 결과를 돌려준다.
+  /** 수락한 행동을 게임이 거부했을 때: 상대가 한두 문장으로 솔직히 말한다(새 제안 없이). 대화가 그대로일 때만. */
+  const REFUSAL_RULE = 'The action you just agreed to was NOT carried out by the game. Tell the leader honestly, in character, in one or two sentences, that it did not go through. Use only the reason given; do not invent another. Do not propose a new action now (action must be null).';
+/** AI 가 종전 조건으로 건 개명 요구를 수락: 우리 수도 행성·성계 이름을 바꾸고(원래 이름은 장부에), 종전을 시도한다. 신문 1면. */
+async function acceptRenameDemand(a: Action, tid: number, aiName: string): Promise<{ outcome: string; text: string }> {
+  const what = a.what === 'sys' ? 'sys' : 'cap', name = a.name || '', sid = ctx.curSaveId;
+  const r = await gameRename({ kind: 'self' }, what, name);
+  if (!r.ok || !sid) return { outcome: 'fail', text: L(`이름을 바꾸지 못했습니다(${r.status}).`, `Could not rename (${r.status}).`) };
+  recordRename(sid, { tid, empire: aiName, what, old: r.old, name, by: 'demand' });
+  const w = what === 'cap' ? L('수도 행성', 'capital world') : L('수도 성계', 'capital system');
+  chronNote(tid, L(`우리의 요구대로 그들이 ${w} 「${r.old}」을(를) 「${name}」(으)로 바꾸었다`, `As we demanded, they renamed their ${w} "${r.old}" to "${name}"`));
+  chronNoteWorld(L(`${ctx.gameDate} 치욕의 조약 — ${ctx.playerName}, ${aiName}의 요구로 ${w} 「${r.old}」을(를) 「${name}」(으)로 개명`, `${ctx.gameDate} A treaty of shame — ${ctx.playerName} renames its ${w} "${r.old}" to "${name}" at ${aiName}'s demand`), true);
+  const pz = await playerPeace(tid, aiName);
+  return { outcome: 'ok', text: L(`${w} 「${r.old}」이(가) 이제 「${name}」입니다. `, `Our ${w} "${r.old}" is now "${name}". `) + pz.text };
+}
+async function refusalLine(tid: number, type: string, why: string): Promise<string> {
+  const talk = chat.talk; if (!talk || talk.idx !== tid || talk.ended || chat.busy) return '';
+  const sid = ctx.curSaveId, epoch = link.epoch, session = chat.session; chat.busy = true;
+  try {
+    const raw = await ctx.ai.chat(buildMessages(talk, chat.history, SYSTEM_PREFIX + `${REFUSAL_RULE} (action: ${type}; game result: ${why})`, Math.random, false), { maxTokens: 900, conversationId: `diplomacy:${sid}:${tid}:${session}` });
+    if (ctx.curSaveId !== sid || link.epoch !== epoch || chat.session !== session || chat.talk?.idx !== tid) return '';
+    const say = parseReply(raw).say.trim(); if (!say) return '';
+    chat.history.push({ role: 'assistant', content: raw }); chat.lastSay = say;
+    return say;
+  } finally { chat.busy = false; }
+}
+// 플레이어가 제안을 수락하면 게임에 보내고, 게임의 ACK 를 기다려 결과를 돌려준다.
   ipcMain.handle('accept', async (_e, id: number) => {
-    if(chat.pending?.id === id && !ctx.actionsAllowed(chat.pending.tid)) return {outcome:'fail',text:L('이 국가 유형의 게임 행동은 호환 설정에서 비활성화되어 있습니다.', 'In-game actions for this empire type are disabled in the compatibility settings.')};
+    if(chat.pending?.id === id && !ctx.actionsAllowed(chat.pending.tid) && !MARAUDER_ACTIONS.has(chat.pending.action.type)) return {outcome:'fail',text:L('이 국가 유형의 게임 행동은 호환 설정에서 비활성화되어 있습니다.', 'In-game actions for this empire type are disabled in the compatibility settings.')};
     if (!chat.pending || chat.pending.id !== id) throw new Error(L('이미 처리되었거나 만료된 제안입니다.', 'This proposal was already handled or has expired.'));
     if (chat.pending.epoch !== undefined && chat.pending.epoch !== link.epoch) { chat.pending = null; throw new Error(L('세이브를 다시 불러와 이 제안은 만료되었습니다.', 'The save was reloaded, so this proposal has expired.')); }
     const p = chat.pending;
@@ -265,6 +323,9 @@ export function registerChat(router: LogRouter, noteSave: (sid: string) => void)
     chat.pending = null;
     const t = p.action.type;
     const amount = p.action.amount ?? 0;
+    if (MARAUDER_ACTIONS.has(t)) { const r = await acceptMarauder(p.action, p.tid, p.aiName); chat.history.push({ role: 'user', content: SYSTEM_PREFIX + r.text }); return r; } // 약탈자 대응(2026-10-26)
+    if (t === 'demand_rename') { const r = await acceptRenameDemand(p.action, p.tid, p.aiName); chat.history.push({ role: 'user', content: SYSTEM_PREFIX + r.text }); return r; } // 치욕의 조약(2026-11-04)
+    if (t === 'crisis_pact') { const r = await makePact(p.tid, p.aiName); chat.history.push({ role: 'user', content: SYSTEM_PREFIX + r.text }); return r; } // 공동 대응 협약(알파 11)
     // 평화: 현상 유지 규칙으로 영유권 안 점령지를 넘기고 종전·휴전(2026-10-17, src/features/peace-app.ts). 다른 행동은 기존 경로.
     const peace = t === 'make_peace' ? await playerPeace(p.tid, p.aiName) : null;
     const o = peace ? peace.outcome : await enqueue(() =>
@@ -290,7 +351,9 @@ export function registerChat(router: LogRouter, noteSave: (sid: string) => void)
     if (o === 'ok') { const ko: Record<string, string> = { give_energy: L(`상대가 에너지 ${amount}을(를) 건넸다`, `They handed over ${amount} energy`), take_energy: L(`상대의 요청으로 우리가 에너지 ${amount}을(를) 건넸다`, `At their request we handed over ${amount} energy`), open_borders: L('상대가 국경 제한을 풀었다', 'They lifted their border restrictions'), make_peace: L('상대와 평화 협정을 맺었다', 'We made peace with them') + (() => { const moved = (peace?.lines ?? []).filter((l) => l.includes('이전 확인') || l.includes('Transfer confirmed')); return moved.length ? ` (${moved.map((l) => l.split(':')[0]).join(', ')})` : ''; })() }; if (ko[t]) chronNote(p.tid, ko[t]); }
     else if (o === 'fail') { const kf: Record<string, string> = { give_energy: L('에너지를 건네려 했으나 처리되지 않았다', 'Tried to hand over energy but it did not go through'), take_energy: L('에너지를 요청했으나 처리되지 않았다', 'Asked for energy but it did not go through'), open_borders: L('국경 개방이 처리되지 않았다', 'Opening borders did not go through'), make_peace: L('평화 처리가 받아들여지지 않았다', 'The peace was not accepted') }; if (kf[t]) chronNote(p.tid, kf[t]); }
     chat.history.push({ role: 'user', content: SYSTEM_PREFIX + text });
-    return { outcome: o, text };
+    // 게임이 거부했으면 상대가 그 자리에서 솔직하게 말한다(2026-10-29, AiLive 참고 — 아이디어만). 실패할 때만 AI 한 번.
+    const say = o === 'fail' || o === 'timeout' ? await refusalLine(p.tid, t, text).catch(() => '') : '';
+    return { outcome: o, text, ...(say ? { say } : {}) };
   });
   // 대화 종료: 쌓인 호감 변화를 지금 게임에 보낸다.
   ipcMain.handle('finish', async () => {
@@ -302,6 +365,7 @@ export function registerChat(router: LogRouter, noteSave: (sid: string) => void)
   ipcMain.handle('reject', async (_e, id: number) => {
     if (chat.pending?.id === id && chat.pending.letterId && chat.pending.letterSid) { inboxStore().handleProposal(chat.pending.letterSid, chat.pending.letterId); syncInbox(); }
     if (chat.pending && chat.pending.id === id) {
+      if (chat.pending.action.type === 'take_energy' && dealOwed(chat.pending.tid)) void onOwedDemandRefused(chat.pending.tid, chat.pending.aiName).catch(() => {}); // 외교 거래: 빚을 쥔 상대의 요구 거절(2026-10-26)
       chat.history.push({ role: 'user', content: SYSTEM_PREFIX + 'The player declined the proposal.' });
       chat.pending = null;
     }

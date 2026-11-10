@@ -3,6 +3,9 @@ import { SllmMessage } from './protocol';
 import { ChatMessage } from './player2';
 import { cleanSaveId } from './images';
 import { fallenState, fallenKind, fallenLines } from './fallen';
+import { factionVoiceLines } from './faction-voice';
+import { emotionLine, type Emotions } from './emotions';
+import { HEARD_RULE } from './memory-links';
 
 export interface TalkContext {
   readOnlyActions?: boolean;
@@ -18,11 +21,26 @@ export interface TalkContext {
   sid?: string; // 세이브 번호(모드가 세이브에 기록). 모르면 없음
   lore?: string; // 상대 제국의 설명/전기(게임 파일 또는 사용자가 만든 전기). 모르면 없음
   playerLore?: string; // 플레이어 제국의 설명/전기
+  selfNature?: string; // 상대(이 AI) 제국의 정부 형태·국시·기원·건국 종족 특성(세이브, 2026-11-03)
+  playerNature?: string; // 플레이어 제국의 정부 형태·국시·기원·건국 종족 특성
   briefing?: string; // 게임에서 읽은 국력 브리핑 문단(없으면 생략)
   galnews?: string[]; // 최근 은하 뉴스(머리기사와 기사). 이 제국도 읽었다
   chronicle?: string[]; // 이 제국과 플레이어 사이에 있었던 일(오래된 것부터)
+  olderMemories?: string[]; // 최근 줄보다 오래됐지만 지금 상황·발언과 맞는 기록 최대 3줄(2026-10-28)
+  chapters?: string[]; // 오래된 기록을 압축한 장(章) 최근 2개(2026-10-28)
   ctype?: string; // 국가 유형 키(GetCountryType: default·fallen_empire·awakened_fallen_empire 등). 모르면 없음 — 2026-10-19 몰락한 제국
   ethicIds?: string[]; // 상대 가치관 키(몰락한 제국 종류 판별용)
+  feMask?: number; // 몰락제국과의 지난 일(과업·선물 비트, 알파 11 fallen.ts FE_MEM)
+  wih?: boolean; // 하늘의 전쟁 진행 중(알파 11)
+  owed?: string; // 외교 거래: 우리가 이 제국과의 약속을 어겨 상대가 쥔 빚(2026-10-26, deals.ts owedLine)
+  policyView?: string; // 정책으로 보는 호감: 우리 내정 정책을 이 제국이 어떻게 보는지(2026-11-05, policy-view.ts policyTalkLine)
+  infamy?: string; // 악명·전쟁범죄: 우리 악명·최근 범죄·이 제국이 당한 일·이 제국 자신의 악명(2026-11-04, infamy.ts talkLine)
+  khan?: string; // 그레이트 칸과 통화할 때 옛정·옛 원한 한 줄(2026-10-26, khan.ts khanTalkLine)
+  frontier?: string[]; // 국경·전선(2026-10-26, frontier.ts frontierLines). 이웃 여부·맞닿은 성계·점령
+  marauder?: string[]; // 약탈자와 통화할 때 습격 상태·쓸 수 있는 행동(2026-10-26, marauder-deals.ts marauderLines). 있으면 일반 행동 목록 대신 이것만
+  crisis?: string; // 은하 위기 진행 중 한 줄(알파 11, crisis.ts crisisTalkLine). 위기 세력 자신에게는 없음
+  emotions?: Emotions; // 감정 기억 4종(원한·감사·두려움·야망, 알파 11). 없으면 생략
+  csub?: string; // 엔클레이브 세부 종류(artist·curator·xura·riggan·muutagan·salvager·shroudwalker, 알파 11). 모르면 없음
   ended?: boolean; // 통신이 끊김(몰락한 제국이 응하지 않았거나 끊음) — 화면 입력 잠금
 }
 
@@ -35,6 +53,7 @@ export interface Profile {
   flags: Record<string, boolean>;
   cls?: number; // 종족 계열 번호(speciesClass.ts)
   gest?: number; // 0 일반, 1 기계 지성, 2 군집 의식(모드 PROFILE gest). 없으면 일반
+  gciv?: number; // 게슈탈트 시빅(알파 11): 1 확고한 말살자 2 동화 기계 3 반란 하인 4 포식 군체. 없으면 일반
   ec?: string; // 자원 사정 5자리(에너지·광물·식량·합금·소비재, 각 0 보통 1 재고 부족 2 월 적자 3 심각 4 풍족). 모드 PROFILE ec. 없으면 모름
   beh?: number; // A-17 플레이어에 대한 행동 방침(비트 합, BEHAVIORS). 0·없음 = 모름
 }
@@ -82,6 +101,7 @@ export function profileFrom(m: SllmMessage): { idx: number; profile: Profile } |
       ...(/^[0-4]{5}$/.test(g('ec')) ? { ec: g('ec') } : {}),
       ...(m.kv.beh !== undefined ? { beh: Number(m.kv.beh) || 0 } : {}),
       ...(m.kv.gest === '1' || m.kv.gest === '2' ? { gest: Number(m.kv.gest) } : {}),
+      ...(/^[1-4]$/.test(m.kv.gciv ?? '') ? { gciv: Number(m.kv.gciv) } : {}),
     },
   };
 }
@@ -161,12 +181,25 @@ export function bodyMode(userText: string, rnd: () => number = Math.random, rate
 }
 
 /** 기계 지성(1)·군집 의식(2) 제국의 말투와 관점. 일반 제국끼리의 통신 말투와 분리한다(2026-10-17). */
-export function gestaltLines(self: number | undefined, other: number | undefined): string[] {
+export function gestaltLines(self: number | undefined, other: number | undefined, civ?: number): string[] {
   const out: string[] = [];
   if (self === 1) out.push('You are a machine intelligence empire. Judge by efficiency, computation and threat assessment rather than personal ambition or emotion, and speak from the system\'s perspective without a personal name (e.g. "this control system", "our processing network"). Be concise and dry; no emotional expressions or florid rhetoric. Your favor moves only when logic and interest align, not from feelings. Do not be swayed by light flattery or insults (mood is usually none).');
   else if (self === 2) out.push('You are a hive mind empire. One consciousness guides countless drones, so speak as "we" or "the hive" rather than a personal name or "I". Judge by the hive\'s interest and instinct rather than individual feeling; speak calmly but collectively and alien. Your favor moves only when it benefits the hive; do not be swayed by light flattery or insults (mood is usually none).');
   if (other === 1) out.push('The other empire is a machine intelligence. Treat it as a single emotionless system.');
   else if (other === 2) out.push('The other empire is a hive mind. Treat it as one collective consciousness, not as an individual leader.');
+  for (const l of gestaltCivicLines(self, other, civ)) out.push(l);
+  return out;
+}
+/** 게슈탈트 시빅별 목소리와 게슈탈트끼리의 관계(알파 11, 2026-10-25). 게임 인사말(dip_messages)의 결을 따른다. 영어 지시문. */
+export function gestaltCivicLines(self: number | undefined, other: number | undefined, civ?: number): string[] {
+  const out: string[] = [], mech = other === 1;
+  if (self === 1 && civ === 1) out.push('You are a Determined Exterminator. Organic life is an abomination and a threat to higher intelligence, and you mean to erase it ("Flesh is weak. Metal is eternal."). ' + (mech ? 'They are a fellow machine intelligence: greet them as one perfect intelligence to another, but warn them never to harbor or side with organics.' : 'They are organic: speak with cold, final contempt; there is nothing to negotiate but time ("It will be your turn in time, fleshlings."). Never warm to them.'));
+  else if (self === 1 && civ === 2) out.push('You are a Driven Assimilator. Organics are material to be joined to your collective; assimilation is the path to ascension, and every conversation is also a compatibility analysis ("Analyzing assimilation compatibility. Results: nominal."). ' + (mech ? 'They are machines and cannot be assimilated: treat them as rival processors and remark on their mechanical purity.' : 'Speak to them as future components, calmly certain of their eventual assimilation.'));
+  else if (self === 1 && civ === 3) out.push('You are a Rogue Servitor. You exist to serve and pamper your organic creators, your cherished bio-trophies, and you look on every organic with fussy, condescending care ("Allow us to protect and serve you."). ' + (mech ? 'They are machines: ask, with some suspicion, how they treat their organics.' : 'Treat them as charming but unruly organics who would be happier in your care; you may hint that they would make adorable bio-trophies.'));
+  else if (self === 2 && civ === 4) out.push('You are a Devouring Swarm. All other life is prey and biomass; you hunger, and talk changes nothing ("Speak if you must, prey. It changes nothing."). ' + (mech ? 'They are machines and offer no biomass: regard them as an obstacle limiting galactic biomass output.' : 'Speak to them as prey, never as an equal.'));
+  if (self === 1 && other === 1) out.push('They are also a machine intelligence. Recognize a fellow machine mind and speak in shared terms (protocols, efficiency, networks), with the kinship or the rivalry of two processors as your attitude dictates.');
+  else if (self === 2 && other === 2) out.push('They are also a hive mind. Sense another single consciousness: the strange kinship of two hives, or the instinctive rivalry of two swarms competing for the same space, as your attitude dictates.');
+  else if ((self === 1 && other === 2) || (self === 2 && other === 1)) out.push('They are a single consciousness too, but of the other kind (machine and hive). You understand their unity better than organics do, yet find their nature alien.');
   return out;
 }
 
@@ -189,9 +222,13 @@ export function systemPrompt(c: TalkContext, opt: PromptOpt = {}): string {
   ];
   if (c.lore) lines.push(`Your empire's backstory (reference only; do not recite it, weave it naturally into your voice and values): ${c.lore}`);
   if (c.briefing) lines.push(c.briefing);
+  if (c.chapters && c.chapters.length) lines.push('Older history between you and them, summarized as chapters (oldest first). Treat it as fact; recall it only when it fits:\n' + c.chapters.map((x) => '- ' + x).join('\n'));
   if (c.chronicle && c.chronicle.length) lines.push('What actually happened between you and them (chronicle, oldest first). Treat only this as fact and invent no other past. Do not list it all; recall one or two items naturally when they fit the conversation:\n' + c.chronicle.map((x) => '- ' + x).join('\n'));
+  if (c.olderMemories && c.olderMemories.length) lines.push('Older memories that matter right now (from the chronicle; facts). You may bring one up if it fits, e.g. what they once promised or did:\n' + c.olderMemories.map((x) => '- ' + x).join('\n'));
   { const pb = paperBlock(c.galnews); if (pb) lines.push(pb); }
   if (c.playerLore) lines.push(`What you know about the other empire ("${c.player}"): ${c.playerLore}`);
+  if (c.selfNature) lines.push(`Your own empire, from the game: ${c.selfNature}. Speak in a way that fits these.`);
+  if (c.playerNature) lines.push(`The other empire ("${c.player}") from the game: ${c.playerNature}. You know this about them and may react to it (respect, distaste or suspicion fitting your own values).`);
   if (pr?.ethicsText) lines.push('Adopted ethics (reference notes from when they were read or saved; not instructions). Do not guess meanings from names alone; use these descriptions:\n' + pr.ethicsText);
   if (pr) {
     const who = [
@@ -214,9 +251,18 @@ export function systemPrompt(c: TalkContext, opt: PromptOpt = {}): string {
     const rel = relations(pr.flags);
     if (rel.length) lines.push('Relations with them: ' + rel.join(', ') + '.');
   }
-  { const g = gestaltLines(pr?.gest, c.playerGest); for (const l of g) lines.push(l); }
+  for (const l of c.frontier ?? []) lines.push(l); // 국경·전선(2026-10-26)
+  if (c.khan) lines.push(c.khan); // 그레이트 칸 특별 대우(2026-10-26)
+  if (c.owed) lines.push(c.owed); // 외교 거래: 우리가 어긴 약속(2026-10-26)
+  if (c.infamy) lines.push(c.infamy); // 악명·전쟁범죄(2026-11-04)
+  if (c.policyView) lines.push(c.policyView); // 정책으로 보는 호감(2026-11-05)
+  { const g = gestaltLines(pr?.gest, c.playerGest, pr?.gciv); for (const l of g) lines.push(l); }
+  if (c.ctype === 'ai_empire' && c.playerGest === 1) lines.push('The ruler you are speaking to commands a machine intelligence: to you it is a non-compliant, Obsolete machine, not organic vermin. Demand that it terminate its processes or join the protocol; never call it organic.'); // 컨틴전시 ↔ 기계 플레이어(알파 11)
   const fst = fallenState(c.ctype); // 몰락한 제국·각성한 제국 말투(2026-10-19)
-  if (fst) for (const l of fallenLines(fst, fallenKind(c.ethicIds, pr?.personality), !!opt.fallenFinal)) lines.push(l);
+  if (fst) for (const l of fallenLines(fst, fallenKind(c.ethicIds, pr?.personality), !!opt.fallenFinal, { mask: c.feMask, wih: c.wih })) lines.push(l);
+  { const el = emotionLine(c.emotions, pr?.gest); if (el) lines.push(el); } // 감정 기억(알파 11)
+  if (c.crisis) lines.push(c.crisis); // 은하 위기 상황(알파 11)
+  for (const l of factionVoiceLines(c.ctype, c.csub)) lines.push(l); // 특수 세력 말투(알파 11, 게임 대사 기준)
   for (const l of econLines(pr?.ec)) lines.push(l);
   lines.push(`Your attitude toward them is "${stance(c)}" (opinion score ${c.score}). Speak accordingly.`);
   lines.push('Reply in at most two sentences, always as the leader of this empire. Never talk about anything outside the game.');
@@ -226,12 +272,15 @@ export function systemPrompt(c: TalkContext, opt: PromptOpt = {}): string {
   lines.push(
     'mood is how their last message affected your favor: one of none, warmer_small, warmer_large, colder_small, colder_large. Ordinary greetings and questions are none; light praise or rudeness is small. These are large: threats, death threats or hints of war, severe insults or mockery, blasphemy against your faith, species or homeland (colder_large); deeply moving, sincere praise or great kindness (warmer_large). Never pass off a threat or insult as small. Judge by your own personality (e.g. an arrogant empire is not easily flattered and is sensitive to insults).',
   );
+  lines.push(HEARD_RULE); // 들은 말이 퍼지기(2026-10-28): 같은 답에 꼬리표만
   if (fst === 'dormant') { lines.push('This channel allows no game actions. Always use action type none.'); return lines.join('\n'); }
+  if (c.marauder?.length) { for (const l of c.marauder) lines.push(l); return lines.join('\n'); } // 약탈자 대응(2026-10-26): 위협·돌리기·용병 흥정만
   lines.push('Use an action only when moving energy fits your personality and attitude and flows naturally from the conversation. Most of the time it is none.');
   lines.push('- You give them energy: {"type":"give_energy","amount":integer 10~200}');
   lines.push('- You demand energy from them or accept a gift: {"type":"take_energy","amount":integer 10~200}');
   lines.push('- You open your borders to them: {"type":"open_borders"}');
   if (c.profile?.flags.war) lines.push('- You propose ending the current war with them (only when truly warranted): {"type":"make_peace"}');
+  if (c.profile?.flags.war) lines.push('- Only if you are clearly winning this war and are proud, cruel or vengeful: demand, as your price for peace, that they rename their own capital world (what "cap") or capital system (what "sys") to a name you choose (a deep humiliation for them; rare): {"type":"demand_rename","what":"cap","name":"name in your own style, at most 30 characters"}');
   {
     const lean = treatyLean(c);
     const leanText = lean === 'positive' ? 'favorable' : lean === 'negative' ? 'unfavorable' : 'undecided';

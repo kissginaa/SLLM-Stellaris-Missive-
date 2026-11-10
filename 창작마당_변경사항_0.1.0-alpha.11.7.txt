@@ -1,0 +1,117 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 11.7 — 인터넷 글·댓글을 AI가 씁니다, 레드시프트 AMA, 가문·가계도는 독재/제정에서만 (0.1.0-alpha.11.7)[/h1]
+
+알파 11.6 이후의 업데이트입니다. 인터넷의 시민 글과 댓글이 이제 [b]AI가 쓴 글[/b]이라 글마다 내용이 달라지고, 댓글은 그 글에 맞게 달립니다. 레드시프트에서 [b]AMA[/b]를 열 수 있고, 가문·가계도는 [b]독재와 세습 군주제[/b]에서만 쓰입니다.
+
+⚠️ 앱만 바뀐 업데이트입니다(모드 파일 변경 없음). 앱 업데이트 알림이 뜨면 적용해 주세요.
+
+[h2]🌐 인터넷 — 글과 댓글을 AI가 씁니다[/h2]
+[list]
+[*][b]글[/b]: 인터넷을 열거나 ⟳ 새로고침할 때, 새로 만들어지는 글(사이트마다 최대 15개)을 AI가 [b]사이트당 한 번[/b]에 새로 씁니다. 누가 쓰는지·무슨 주제에 찬성인지 반대인지·공감 수는 지금처럼 정해지고, AI는 그 틀과 지금 제국 상황(민심·경기·전쟁·불안한 행성·파벌 지지율·최근 소식)을 받아 사이트 말투에 맞게 씁니다. 일상 인플루언서 글, 통치자 자녀 글, 행성 홍보 글(의뢰 직후 올라오는 첫 글 포함)도 같습니다.
+[*][b]댓글[/b]: 글을 누를 때 AI가 한 번에 그 글 내용에 맞는 [b]인기 댓글 최대 7개[/b]를 씁니다. 반대 성향 시민은 짧게 맞받아치고(트윙클은 감정적으로, DS인사이드는 거칠게, 레드시프트는 논리로), 한 번 만든 댓글은 저장되어 다시 열어도 같습니다. 보이는 댓글 수 숫자는 인기만큼 크게 나옵니다.
+[*]AI 연결이 안 되거나 일부만 받으면, 받지 못한 글·댓글은 틀 문장으로 대신 나옵니다. 이 틀 댓글도 이제 글 주제(전쟁 찬반·경기·민심·사건·이념·일상·인플루언서)와 방향에 맞게 나옵니다.
+[*]응답 언어는 설정의 AI 응답 언어(언어 팩 포함)를 따릅니다.
+[*]※ 알파 11.6 노트의 「시민 글은 AI 없이 만들어집니다」는 이 업데이트로 바뀌었습니다.
+[/list]
+
+[h2]✍️ 직접 쓴 글·답글[/h2]
+[list]
+[*]AI에게 파벌 지지율과 단골 시민 몇 명의 성향도 함께 넘겨서 반응이 더 구체적입니다.
+[*]댓글 수가 인기를 따릅니다: 공식 계정 5~7개 · 익명 3~6개 · 민간 계정 2~5개(최대 7개).
+[/list]
+
+[h2]🎤 레드시프트 AMA (공식 계정)[/h2]
+[list]
+[*]레드시프트에서 공식 계정으로 글을 쓸 때 「AMA」를 체크하면, 시민 질문 7개가 달립니다(정책·전쟁·경제·통치자의 사생활, 곤란한 질문과 농담 포함).
+[*]질문을 골라 답하면, 질문한 시민의 반응과 다른 시민의 반응이 달리고 답변에 청색편이(▲)나 적색편이(▼) 수가 붙습니다. 어색하거나 회피한 답은 반발을 받습니다.
+[*]AMA 글은 공식 글 기사화·신분 노출 판정에서 빠집니다.
+[/list]
+
+[h2]🌳 가문과 가계도[/h2]
+[list]
+[*]민주주의에 가문을 따지는 건 어색하므로, 가문과 가계도는 [b]독재와 세습 군주제(제정)[/b] 정부에서만 기록되고 보입니다. 그 밖의 정부에서는 「가문」·「가계도」 탭과 아기방의 「가문·가계도」에 안내 문구가 나옵니다.
+[*]그 밖의 정부에서는 가문 특성이 자녀에게 이어지지 않고, 1:1 통신에서 가문 말투도 들어가지 않습니다. 통치자 사망으로 인한 애도 분위기는 그대로 생깁니다.
+[*]나중에 독재나 제정으로 바뀌면 그때 통치자부터 가문이 새로 시작됩니다. 음모와 정략결혼은 그대로입니다.
+[/list]
+
+앱 업데이트 알림이 뜨면 적용해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 11.7 — AI-Written Internet Posts & Comments, Redshift AMA, House & Family Tree for Dictatorships/Empires Only (0.1.0-alpha.11.7)[/h1]
+
+This update follows Alpha 11.6. Citizen posts and comments on the internet are now [b]written by the AI[/b], so each post reads differently and comments respond to what the post actually says. You can hold an [b]AMA[/b] on Redshift, and the house and family tree are now limited to [b]dictatorships and hereditary monarchies[/b].
+
+⚠️ App-only update (no mod file changes). Please apply the app update when the notice appears.
+
+[h2]🌐 The Internet — AI-Written Posts and Comments[/h2]
+[list]
+[*][b]Posts[/b]: when you open the internet or press ⟳ Refresh, the new posts (up to 15 per site) are rewritten by the AI in [b]one call per site[/b]. Who writes, which topic they back or oppose, and the like counts are still decided as before; the AI takes that outline plus the current state of your empire (mood, economy, wars, unstable planets, faction support, recent news) and writes it in the site's voice. Daily-life influencer posts, ruler's children's posts and planet-promo posts (including the first one right after you commission it) work the same way.
+[*][b]Comments[/b]: when you open a post, the AI writes up to [b]7 top comments[/b] in one call, reacting to what that post says. Citizens of the opposite leaning push back briefly (emotionally on Twinkle, bluntly on DS Inside, with reasons on Redshift). Generated comments are saved, so reopening shows the same ones. The displayed comment count still scales with popularity.
+[*]If the AI is unreachable or returns only part of a batch, the missing posts and comments fall back to template lines. Those template comments now also follow the post's topic (war for/against, economy, mood, events, ideology, daily life, influencers) and direction.
+[*]The reply language follows the AI response language setting (language packs included).
+[*]※ The Alpha 11.6 note "citizen posts are made without AI" no longer applies.
+[/list]
+
+[h2]✍️ Your Own Posts and Replies[/h2]
+[list]
+[*]The AI now also gets faction support and the leanings of a few regular citizens, so reactions are more specific.
+[*]Comment count follows popularity: official account 5–7 · anonymous 3–6 · personal account 2–5 (max 7).
+[/list]
+
+[h2]🎤 Redshift AMA (official account)[/h2]
+[list]
+[*]When you post from the official account on Redshift, tick "AMA" and citizens post 7 questions (policy, war, economy, the ruler's private life, including awkward ones and a joke).
+[*]Pick a question and answer it: the asker and other citizens react, and your answer gets Blueshift (▲) or Redshift (▼) votes. Evasive or clumsy answers draw pushback.
+[*]AMA posts are excluded from the "makes the papers" check and from hidden-identity exposure.
+[/list]
+
+[h2]🌳 House & Family Tree[/h2]
+[list]
+[*]A house makes little sense in a democracy, so houses and the family tree are now recorded and shown only under [b]dictatorial and hereditary (imperial) governments[/b]. Other governments see a notice in the House and Family tree tabs and in the nursery's "House & family tree".
+[*]Under other governments, house traits are not passed to children and house voice is not added to 1:1 talks. Mourning after a ruler's death still happens.
+[*]If you later become a dictatorship or empire, a house starts fresh from the ruler at that time. Plots and political marriage are unchanged.
+[/list]
+
+Please apply the app update when the notice appears.
+
+===== Discord (한국어) — 2000자 이하 1개 =====
+----- 메시지 1 -----
+# SLLM 알파 11.7 — 인터넷 글·댓글을 AI가 씁니다, 레드시프트 AMA (0.1.0-alpha.11.7)
+
+알파 11.6 이후의 **앱만** 바뀐 업데이트입니다(모드 파일 변경 없음).
+
+## 🌐 인터넷 — 글과 댓글을 AI가 씁니다
+- **글**: 인터넷을 열거나 ⟳ 새로고침할 때 새 글(사이트당 최대 15개)을 사이트당 AI 1번으로 새로 씁니다. 작성자·찬반·공감 수는 그대로 정해지고, AI는 그 틀과 제국 상황(민심·경기·전쟁·불안 행성·파벌 지지율·최근 소식)을 받아 사이트 말투로 씁니다. 인플루언서·자녀·행성 홍보 글(의뢰 직후 첫 글 포함)도 같습니다.
+- **댓글**: 글을 누를 때 AI 1번으로 그 글에 맞는 **인기 댓글 최대 7개**. 반대 성향 시민이 짧게 맞받아치고, 한 번 만든 댓글은 저장됩니다.
+- AI가 안 되거나 일부만 오면 틀 문장으로 대신 나오고, 틀 댓글도 이제 글 주제·방향에 맞습니다. 응답 언어는 설정의 AI 응답 언어를 따릅니다.
+- ※ 11.6 노트의 「시민 글은 AI 없이 만들어집니다」는 이 업데이트로 바뀌었습니다.
+
+## ✍️ 직접 쓴 글·답글
+- AI에게 파벌 지지율과 단골 시민 성향도 함께 넘깁니다. 댓글 수: 공식 5~7 · 익명 3~6 · 민간 2~5개.
+
+## 🎤 레드시프트 AMA
+- 공식 계정으로 글을 쓸 때 「AMA」 체크 → 시민 질문 7개. 골라서 답하면 질문자·다른 시민 반응과 청색편이(▲)/적색편이(▼) 수가 붙습니다. AMA 글은 기사화·신분 노출 판정에서 빠집니다.
+
+## 🌳 가문과 가계도
+- **독재와 세습 군주제(제정)** 에서만 기록·표시됩니다. 그 밖의 정부에서는 안내 문구만 나오고, 가문 특성 계승·가문 말투도 없습니다. 음모와 정략결혼은 그대로입니다.
+
+===== Discord (English) — 1 message under 2000 chars =====
+----- Message 1 -----
+# SLLM Alpha 11.7 — AI-Written Internet Posts & Comments, Redshift AMA (0.1.0-alpha.11.7)
+
+This update follows Alpha 11.6 and changes the **app only** (no mod file changes).
+
+## 🌐 The Internet — AI-Written Posts and Comments
+- **Posts**: on open or ⟳ Refresh, new posts (up to 15 per site) are rewritten by the AI in one call per site. Authors, stances and like counts are decided as before; the AI takes that outline plus your empire's state (mood, economy, wars, unstable planets, faction support, recent news) and writes in the site's voice. Influencer, child and planet-promo posts (including the first one after you commission it) work the same way.
+- **Comments**: opening a post makes the AI write up to **7 top comments** that react to that post. Opposite-leaning citizens push back briefly, and comments are saved once made.
+- If the AI is unreachable or returns only part, template lines fill in, and template comments now follow the post's topic and direction. Reply language follows the AI response language setting.
+- ※ The 11.6 note "citizen posts are made without AI" no longer applies.
+
+## ✍️ Your Own Posts and Replies
+- The AI also gets faction support and a few regular citizens' leanings. Comment count: official 5–7 · anonymous 3–6 · personal 2–5.
+
+## 🎤 Redshift AMA
+- Tick "AMA" when posting from the official account → 7 citizen questions. Answer one to get reactions from the asker and others plus Blueshift (▲)/Redshift (▼) votes. AMA posts are excluded from the papers check and identity exposure.
+
+## 🌳 House & Family Tree
+- Recorded and shown **only under dictatorial and hereditary (imperial) governments**. Others see a notice only, and get no house trait inheritance or house voice. Plots and political marriage are unchanged.

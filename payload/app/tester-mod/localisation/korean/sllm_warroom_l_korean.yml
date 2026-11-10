@@ -1,0 +1,22 @@
+﻿l_korean:
+ # SLLM 작전지휘실 연합 원정군(2026-11-05): 동맹이 보낸 함대를 가진 세력 이름. [prev.GetName] = 보낸 나라.
+ SLLM_WR_XF_NAME:0 "[prev.GetName] 연합 원정군"
+ # 작전지휘실 전쟁 성향 특성(2026-11-05, common/traits/sllm_warroom_traits.txt)
+ sllm_doc_no_retreat:0 "후퇴 없는 돌격가"
+ sllm_doc_no_retreat_desc:0 "후퇴는 없다. 불리해도 정면으로 전부 쏟아붓는다."
+ sllm_doc_focused_striker:0 "집중 타격가"
+ sllm_doc_focused_striker_desc:0 "결정적인 한 곳에만 압도적인 전력을 몰아넣는다."
+ sllm_doc_raider:0 "기습 약탈가"
+ sllm_doc_raider_desc:0 "약한 식민지를 빠르게 치고 빠진다. 정면 승부는 피한다."
+ sllm_doc_fortress:0 "요새 수호자"
+ sllm_doc_fortress_desc:0 "요충지와 기지를 어떻게든 지킨다. 굳건한 자리를 떠나지 않는다."
+ sllm_doc_elastic:0 "탄력 방어가"
+ sllm_doc_elastic_desc:0 "일부러 내주고, 깊이 들어온 적을 되친다."
+ sllm_doc_guardian:0 "본토 수호자"
+ sllm_doc_guardian_desc:0 "수도와 핵심 행성이 먼저다. 함대를 집 가까이 둔다."
+ sllm_doc_maneuver:0 "기동 전술가"
+ sllm_doc_maneuver_desc:0 "측면, 협공, 양동. 덩치가 아니라 움직임으로 이긴다."
+ sllm_doc_calculator:0 "계산형 참모"
+ sllm_doc_calculator_desc:0 "숫자로 확실히 앞설 때만 싸운다."
+ sllm_doc_opportunist:0 "기회주의자"
+ sllm_doc_opportunist_desc:0 "적이 다른 곳에 정신 팔린 틈을 노리고, 불리하면 빠진다."

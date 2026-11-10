@@ -1,0 +1,37 @@
+# SLLM 작전지휘실 — 빌려 온 동맹 함대의 독자 행동(2026-11-05 사용자: 합동 작전과 자동 작전을 함께, 빌려 왔어도 그들이 직접 움직이는 느낌).
+# 매달 한 번, 플레이어 나라이고 지휘 중인 동맹 함대가 있을 때만. 규칙은 common/scripted_effects/sllm_warroom.txt 의 sllm_wr_ally_tick.
+namespace = sllm_wr
+
+country_event = {
+	id = sllm_wr.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		is_ai = no
+		OR = {
+			any_controlled_fleet = { sllm_wr_ally_fleet = yes }
+			any_country = { has_country_flag = sllm_wr_xf }
+		}
+	}
+	immediate = {
+		sllm_wr_xf_tick = yes
+		sllm_wr_ally_tick = yes
+	}
+}
+
+# 전쟁 성향(2026-11-05): 새 지도자가 후보 명단에 들어올 때(지휘관만). FROM = 지도자. NLL 같은 모드가 하위직을 먼저 붙이도록 같은 날 조금 뒤에.
+country_event = {
+	id = sllm_wr.10
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { exists = from from = { leader_class = commander } }
+	immediate = { from = { sllm_doc_assign = yes } }
+}
+# 해마다: 아직 성향이 없는 지휘관(옛 세이브·스크립트로 생긴 지도자)에게 붙인다.
+country_event = {
+	id = sllm_wr.11
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = { any_owned_leader = { leader_class = commander NOT = { sllm_has_doc = yes } } }
+	immediate = { every_owned_leader = { limit = { leader_class = commander NOT = { sllm_has_doc = yes } } sllm_doc_assign = yes } }
+}

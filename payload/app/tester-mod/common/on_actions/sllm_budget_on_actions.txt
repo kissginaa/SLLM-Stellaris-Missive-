@@ -1,0 +1,4 @@
+# SLLM 예산 회의(2026-11-04) — 매달 맥박(4.5: events 만).
+on_monthly_pulse_country = {
+	events = { sllm_bud.1 }
+}

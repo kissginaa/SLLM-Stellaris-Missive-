@@ -1,0 +1,449 @@
+# SLLM 성간 임시회의 과제 감시(2026-11-09 사용자: 「매달 확인이 필요 없는 것은 바뀔 때만」 · 회랑 방식). 생성기 SLLM_Dev_20261016/tools/gen-iscq-watch.py — 손으로 고치지 말 것.
+# 예전: 과제가 진행 중이면 앱이 매달 콘솔로 수입·창고·해군·호감·전쟁을 재고(ISCQM), 상황 기록 숫자도 매달 콘솔로 바꿨다(sllm_iscq_tick).
+# 지금: 상황 기록 칸(sllm_iscq_log.txt 의 칸 1~3)에 감시 표식(sllm_iqw<칸>_<체인>)을 붙이면, 모드가 매달 그 칸의 지금 값·남은 달을 직접 바꾸고
+#   목표에 닿았을 때(hit) · 대상 제국과 전쟁 상태일 때(war) · 대상 제국이 사라졌을 때(gone)만 SLLM:ISCQW 줄을 남긴다(조건이 이어지는 동안은 그달마다 — 앱이 놓쳐도 다음 달 다시).
+#   판정(성공·실패·기한)은 앱이 그 줄을 받거나 기한이 된 달에만 한 번 재서 한다(src/isc-quest.ts judge).
+# 감시 켜기(앱이 세션마다 진행 중인 과제마다 한 번): sllm_iscq_watch = { SLOT = 1 CHAIN = income_energy } — 끄기는 sllm_iscq_end 가 한다.
+# 비교는 차이 변수로(변수 대 변수 check_variable 이 안 먹던 일). 목표 sllm_iscq<칸>_goal 은 상황 기록 숫자(해군은 %, 나머지 소수 1자리).
+sllm_iscq_watch = {
+	set_country_flag = sllm_iqw$SLOT$_$CHAIN$
+	set_country_flag = sllm_iqw_on
+}
+# 매달(sllm_iqw.1, 플레이어 나라): 감시 중인 칸마다
+sllm_iscq_watch_tick = {
+	if = {
+		limit = { has_country_flag = sllm_iqw1_peace }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq1_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=gone/;/date=\\[GetDate]" }
+		else_if = { limit = { event_target:sllm_iscq1_target = { is_at_war_with = root } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=war/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_war }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq1_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=gone/;/date=\\[GetDate]" }
+		else_if = { limit = { event_target:sllm_iscq1_target = { is_at_war_with = root } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=war/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_relation }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq1_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=gone/;/date=\\[GetDate]" }
+		else = {
+			event_target:sllm_iscq1_target = { export_trigger_value_to_variable = { trigger = opinion parameters = { who = root } variable = sllm_iqw_v } }
+			set_variable = { which = sllm_iscq1_now value = event_target:sllm_iscq1_target.sllm_iqw_v }
+			set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+			subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+			if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+		}
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_naval }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = used_naval_capacity_percent variable = sllm_iscq1_now }
+		multiply_variable = { which = sllm_iscq1_now value = 100 }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_energy }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = energy } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_minerals }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = minerals } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_food }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = food } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_alloys }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = alloys } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_consumer_goods }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = consumer_goods } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_unity }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = unity } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_physics_research }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = physics_research } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_society_research }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = society_research } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_income_engineering_research }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = engineering_research } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_stock_energy }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = energy } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_stock_minerals }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = minerals } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_stock_food }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = food } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_stock_alloys }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = alloys } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw1_stock_consumer_goods }
+		if = { limit = { check_variable = { which = sllm_iscq1_left value > 0 } } change_variable = { which = sllm_iscq1_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = consumer_goods } variable = sllm_iscq1_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq1_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq1_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=1/;/ev=hit/;/now=\\[This.sllm_iscq1_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_peace }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq2_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=gone/;/date=\\[GetDate]" }
+		else_if = { limit = { event_target:sllm_iscq2_target = { is_at_war_with = root } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=war/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_war }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq2_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=gone/;/date=\\[GetDate]" }
+		else_if = { limit = { event_target:sllm_iscq2_target = { is_at_war_with = root } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=war/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_relation }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq2_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=gone/;/date=\\[GetDate]" }
+		else = {
+			event_target:sllm_iscq2_target = { export_trigger_value_to_variable = { trigger = opinion parameters = { who = root } variable = sllm_iqw_v } }
+			set_variable = { which = sllm_iscq2_now value = event_target:sllm_iscq2_target.sllm_iqw_v }
+			set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+			subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+			if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+		}
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_naval }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = used_naval_capacity_percent variable = sllm_iscq2_now }
+		multiply_variable = { which = sllm_iscq2_now value = 100 }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_energy }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = energy } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_minerals }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = minerals } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_food }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = food } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_alloys }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = alloys } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_consumer_goods }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = consumer_goods } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_unity }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = unity } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_physics_research }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = physics_research } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_society_research }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = society_research } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_income_engineering_research }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = engineering_research } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_stock_energy }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = energy } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_stock_minerals }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = minerals } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_stock_food }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = food } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_stock_alloys }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = alloys } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw2_stock_consumer_goods }
+		if = { limit = { check_variable = { which = sllm_iscq2_left value > 0 } } change_variable = { which = sllm_iscq2_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = consumer_goods } variable = sllm_iscq2_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq2_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq2_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=2/;/ev=hit/;/now=\\[This.sllm_iscq2_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_peace }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq3_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=gone/;/date=\\[GetDate]" }
+		else_if = { limit = { event_target:sllm_iscq3_target = { is_at_war_with = root } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=war/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_war }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq3_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=gone/;/date=\\[GetDate]" }
+		else_if = { limit = { event_target:sllm_iscq3_target = { is_at_war_with = root } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=war/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_relation }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		if = { limit = { NOT = { exists = event_target:sllm_iscq3_target } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=gone/;/date=\\[GetDate]" }
+		else = {
+			event_target:sllm_iscq3_target = { export_trigger_value_to_variable = { trigger = opinion parameters = { who = root } variable = sllm_iqw_v } }
+			set_variable = { which = sllm_iscq3_now value = event_target:sllm_iscq3_target.sllm_iqw_v }
+			set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+			subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+			if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+		}
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_naval }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = used_naval_capacity_percent variable = sllm_iscq3_now }
+		multiply_variable = { which = sllm_iscq3_now value = 100 }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_energy }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = energy } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_minerals }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = minerals } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_food }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = food } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_alloys }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = alloys } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_consumer_goods }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = consumer_goods } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_unity }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = unity } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_physics_research }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = physics_research } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_society_research }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = society_research } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_income_engineering_research }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_monthly_income parameters = { resource = engineering_research } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_stock_energy }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = energy } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_stock_minerals }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = minerals } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_stock_food }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = food } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_stock_alloys }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = alloys } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+	if = {
+		limit = { has_country_flag = sllm_iqw3_stock_consumer_goods }
+		if = { limit = { check_variable = { which = sllm_iscq3_left value > 0 } } change_variable = { which = sllm_iscq3_left value = -1 } }
+		export_trigger_value_to_variable = { trigger = has_resource parameters = { type = consumer_goods } variable = sllm_iscq3_now }
+		set_variable = { which = sllm_iqw_d value = sllm_iscq3_now }
+		subtract_variable = { which = sllm_iqw_d value = sllm_iscq3_goal }
+		if = { limit = { check_variable = { which = sllm_iqw_d value >= 0 } } log = "SLLM:ISCQW/;/sid=\\[This.sllm_save_id]/;/slot=3/;/ev=hit/;/now=\\[This.sllm_iscq3_now]/;/date=\\[GetDate]" }
+	}
+}

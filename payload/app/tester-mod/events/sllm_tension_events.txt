@@ -1,0 +1,59 @@
+# SLLM 대립 긴장도(시나리오 전용, 2026-11-05) — 매달 계산 sllm_tn.1(숨김) · 단계 알림 sllm_tn.12~15(오를 때) · sllm_tn.20(누그러질 때). 효과: scripted_effects/sllm_tension.txt
+# 시나리오 모드가 sllm_tn_begin 을 부르기 전에는 아무것도 하지 않는다.
+namespace = sllm_tn
+
+event = {
+	id = sllm_tn.1
+	hide_window = yes
+	is_triggered_only = yes
+	trigger = {
+		has_global_flag = sllm_tn_on
+		any_country = { has_country_flag = sllm_tn_side_a }
+		any_country = { has_country_flag = sllm_tn_side_b }
+	}
+	immediate = {
+		sllm_tn_find = yes
+		event_target:sllm_tn_a = { sllm_tn_month = yes }
+	}
+}
+
+country_event = {
+	id = sllm_tn.12
+	title = sllm_tn.12.name
+	desc = sllm_tn.12.desc
+	picture = GFX_evt_smear_campaign
+	is_triggered_only = yes
+	option = { name = sllm_tn.ok }
+}
+country_event = {
+	id = sllm_tn.13
+	title = sllm_tn.13.name
+	desc = sllm_tn.13.desc
+	picture = GFX_evt_smear_campaign
+	is_triggered_only = yes
+	option = { name = sllm_tn.ok }
+}
+country_event = {
+	id = sllm_tn.14
+	title = sllm_tn.14.name
+	desc = sllm_tn.14.desc
+	picture = GFX_evt_smear_campaign
+	is_triggered_only = yes
+	option = { name = sllm_tn.ok }
+}
+country_event = {
+	id = sllm_tn.15
+	title = sllm_tn.15.name
+	desc = sllm_tn.15.desc
+	picture = GFX_evt_smear_campaign
+	is_triggered_only = yes
+	option = { name = sllm_tn.ok }
+}
+country_event = {
+	id = sllm_tn.20
+	title = sllm_tn.20.name
+	desc = sllm_tn.20.desc
+	picture = GFX_evt_smear_campaign
+	is_triggered_only = yes
+	option = { name = sllm_tn.ok }
+}

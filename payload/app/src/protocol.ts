@@ -33,6 +33,7 @@ export function parseLogLine(line: string): SllmMessage | null {
   for (const f of fields) {
     const eq = f.indexOf('=');
     if (eq > 0) kv[f.slice(0, eq)] = f.slice(eq + 1).replace(/^\\+/, '');
+    else { const m = /^req(\d+)\$?$/.exec(f); if (m && kv.req === undefined) kv.req = m[1]; } // 2026-10-22 실제 로그: 게임이 "req=$REQ$" 를 "req9$" 로 찍은 적이 있다(구판 비서 조회 모드)
   }
   return { kind, fields, kv, raw: line };
 }
@@ -133,7 +134,7 @@ export function pauseStateEffect(): string {
 }
 
 /** 앱이 맞는 모드 연결 규격(모드 sllm_probe_connection.txt 의 HELLO protocol=). 앱·모드 함께 바뀌는 변경이 있을 때 올린다. */
-export const MOD_PROTOCOL = 5;
+export const MOD_PROTOCOL = 6; // 2026-10-24: 총독회의·기념일·시위·결혼 수정자, 임시회의·타국 만찬 조회가 모드에 더해짐(낡은 모드 경고)
 export type ModProtocolState = 'ok' | 'old' | 'new';
 /** HELLO 가 알려 준 규격 번호 → 맞음 / 모드가 낡음(번호 없음·0 포함) / 앱이 낡음. */
 export function modProtocolState(p: number): ModProtocolState {

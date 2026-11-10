@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Pet Shop</title>
+<!-- 펫샵(2026-10-30, 계획서 8·10번). 앱: src/features/petshop-app.ts · 자료: src/petshop.ts. 입구: 외출 지도 → 펫샵.
+     동네 가게 하나: 왼쪽 수조 벽(물고기 15) · 가운데 계산대(가게 주인 + 오늘 들어온 희귀종) · 오른쪽 동물 코너(애완동물 15).
+     그림 자리(10_펫샵_그림_의뢰서.md): petshop/bg.webp, petshop/keeper.png, petshop/items/(id).png. 없으면 앱이 그린 모양. 문구는 L(한, 영)만(언어 팩 호환). -->
+<style>
+ :root{--bg:#0b1210;--panel:#121c19ee;--text:#eef3ea;--dim:#97a89c;--gold:#f0c870;--hi:#ffe2a0;--line:#2a3a33;--red:#e2606a;--water:#1a5a7a;--leaf:#6ab87a}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 "Malgun Gothic","Segoe UI",sans-serif;overflow:hidden}
+ button,input{font:inherit;color:var(--text);border:1px solid var(--line);background:#1a2722;border-radius:5px}
+ button{cursor:pointer;padding:6px 13px} button:hover:not(:disabled){border-color:var(--gold);color:var(--gold)} button:disabled{opacity:.4;cursor:default} button.main{background:linear-gradient(#5a4a18,#3a3010);border-color:var(--gold);color:var(--hi);font-weight:700}
+ #top{position:absolute;z-index:5;left:0;right:0;top:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;-webkit-app-region:drag;background:linear-gradient(#0b1210f2,#0b121000)}
+ #top>*{-webkit-app-region:no-drag} #top .t{font-weight:800;letter-spacing:.14em;color:var(--gold);-webkit-app-region:drag} #top .sp{flex:1;-webkit-app-region:drag}
+ .chip{padding:3px 10px;border:1px solid var(--line);border-radius:12px;background:#121c19cc;white-space:nowrap} .chip b{color:var(--gold)} #x{background:none;border-color:transparent;color:var(--dim);font-size:16px}
+ #bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#24382c,#0b1210 75%);background-size:cover;background-position:center}
+ #bg.art::after{content:'';position:absolute;inset:0;background:linear-gradient(#0b1210aa,#0b121022 20%,#0b121033 65%,#0b1210d0)}
+ #main{position:absolute;inset:46px 0 0 0;display:grid;grid-template-columns:1fr 330px 1fr;gap:14px;padding:12px 16px;overflow:hidden}
+ .col{display:flex;flex-direction:column;min-height:0} .col h3{margin:0 0 8px;color:var(--gold);font-size:14px;display:flex;justify-content:space-between} .col h3 span{color:var(--dim);font-weight:400;font-size:12px}
+ .wall{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:9px;align-content:start;padding-right:4px}
+ .card{position:relative;border-radius:10px;border:1px solid var(--line);background:var(--panel);cursor:pointer;overflow:hidden;display:flex;flex-direction:column}
+ .card:hover{border-color:var(--gold)} .card.love{box-shadow:0 0 0 1px #f2a8c8aa}
+ .card .ic{height:86px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+ .card.fish .ic{background:linear-gradient(#2a7aa0,#0e3a52 80%,#2a3a2a)} .card.pet .ic{background:radial-gradient(#4a5a3a,#1a241a)}
+ .card .ic img{max-width:78px;max-height:78px;position:relative;z-index:1}
+ .card.fish .ic img{animation:swim 5s ease-in-out infinite} @keyframes swim{50%{transform:translateX(8px) translateY(-3px)}}
+ .gl{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#0b1210;position:relative;z-index:1}
+ .fish .gl{border-radius:50% 70% 70% 50%/55% 50% 50% 45%;background:linear-gradient(135deg,#9ee6ff,#3a9ac8);animation:swim 5s ease-in-out infinite} .pet .gl{background:linear-gradient(135deg,#ffe0a8,#c88a48)}
+ .bub{position:absolute;bottom:-8px;width:6px;height:6px;border-radius:50%;border:1px solid #cdf2ffaa;animation:rise 4s linear infinite} @keyframes rise{to{transform:translateY(-110px);opacity:0}}
+ .card .nm{padding:5px 8px 0;font-weight:700;font-size:12px} .card .pr{padding:0 8px 6px;color:var(--gold);font-size:12px}
+ .card .own{position:absolute;top:5px;left:5px;font-size:10px;padding:0 6px;border-radius:8px;background:#2a5a3a;z-index:2} .card .heart{position:absolute;top:4px;right:6px;color:#f2a8c8;z-index:2}
+ .counter{display:flex;flex-direction:column;gap:10px;overflow:auto}
+ .keeper{padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)} .keeper .pf{height:200px;border-radius:9px;background:radial-gradient(#5a4a30,#1e1a10);background-size:contain;background-repeat:no-repeat;background-position:center bottom;display:flex;align-items:center;justify-content:center;font-size:56px;color:#f0c87066;margin-bottom:8px}
+ .keeper .sayk{color:#f6e6c0} .keeper b{color:var(--gold)}
+ .rare{padding:12px;border-radius:12px;background:linear-gradient(135deg,#3a2a50ee,#1a1430ee);border:1px solid #c8a0ff88;box-shadow:0 0 18px #a070ff33}
+ .rare .lab{font-size:11px;letter-spacing:.12em;color:#d8c0ff} .rare .card{margin-top:6px;border-color:#c8a0ff66} .rare .card .ic{height:120px}
+ .homebtn{width:100%}
+ #modal{position:absolute;inset:0;z-index:9;background:#000a;display:none;align-items:center;justify-content:center} #modal.on{display:flex}
+ .box{width:min(560px,92vw);max-height:86vh;overflow:auto;padding:16px;border-radius:12px;background:#121c19;border:1px solid var(--gold);display:flex;flex-direction:column;gap:9px}
+ .box .big{height:200px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden} .box.fish .big{background:linear-gradient(#2a7aa0,#0e3a52 80%,#2a3a2a)} .box.pet .big{background:radial-gradient(#4a5a3a,#1a241a)}
+ .box .big img{max-height:180px} .box .big .gl{width:96px;height:96px;font-size:40px}
+ .box h2{margin:0;color:var(--gold)} .note{color:var(--dim);font-size:12px} .rx{color:#f6d9b0;font-style:italic} .tl{color:#cfe8d8;min-height:18px}
+ .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap} .row input{flex:1;min-width:140px;padding:7px}
+ .home{display:flex;flex-direction:column;gap:6px} .home .it{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;background:#1a2722} .home .it .k{width:20px;text-align:center} .home .it .n{flex:1} .home .it input{width:130px;padding:4px}
+ #msg{position:absolute;z-index:10;left:50%;top:54px;transform:translateX(-50%);padding:6px 14px;border-radius:6px;background:#121c19ee;border:1px solid var(--gold);display:none;max-width:80vw}
+ #msg.err{border-color:var(--red);background:#2a1418ee}
+</style></head>
+<body>
+<div id="bg"></div>
+<div id="top"><span class="t" id="tt"></span><span class="sp"></span><span class="chip" id="cnt"></span><span class="chip" id="vault"></span><button id="x" type="button">✕</button></div>
+<div id="main"></div><div id="modal"></div><div id="msg"></div>
+<script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script>
+<script>
+ const L = (ko, en) => (window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick(ko, en) : ko);
+ const $ = (id) => document.getElementById(id);
+ const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+ const btn = (t, f, cls) => { const b = h('button', cls || '', t); b.type = 'button'; b.onclick = f; return b; };
+ const fmt = (n) => Math.round(n).toLocaleString();
+ let S = null, open = null, touch = '', rehomeAsk = '';
+ const say = (t, bad) => { const m = $('msg'); m.textContent = t || ''; m.className = bad ? 'err' : ''; m.style.display = t ? 'block' : 'none'; if (t) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4500); };
+ const call = async (p) => { const r = await p; if (r && r.state) S = r.state; if (r && !r.ok && r.error) say(r.error, true); return r || {}; };
+ const pic = (a, big) => { const d = h('div', big ? 'big' : 'ic'); if (a.kind === 'fish') for (let i = 0; i < (big ? 6 : 3); i++) { const b = h('i', 'bub'); b.style.left = (12 + i * (big ? 15 : 28)) + '%'; b.style.animationDelay = (i * 0.9) + 's'; d.append(b); }
+  if (a.icon) { const im = h('img'); im.src = a.icon; im.alt = ''; d.append(im); } else d.append(h('div', 'gl', a.name.trim().charAt(0))); return d; };
+ function card(a) {
+  const c = h('div', 'card ' + a.kind + (a.loves ? ' love' : '')); c.append(pic(a), h('div', 'nm', a.name), h('div', 'pr', `${fmt(a.price)} ${L('크레딧', 'cr')}`));
+  if (a.owned) c.append(h('span', 'own', L(`우리 집 ${a.owned}`, `Home ${a.owned}`))); if (a.loves) c.append(h('span', 'heart', '♥'));
+  c.onclick = () => { open = a.id; touch = ''; drawModal(); }; return c;
+ }
+ function draw() {
+  $('tt').textContent = L('별빛 펫샵', 'STARLIGHT PET SHOP');
+  if (!S || !S.ready) return;
+  $('vault').innerHTML = ''; $('vault').append(document.createTextNode(L('개인 금고 ', 'Private vault ')), h('b', '', fmt(S.vault)));
+  $('cnt').innerHTML = ''; $('cnt').append(document.createTextNode(L('어항 ', 'Tank ')), h('b', '', `${S.fishN}/${S.fishMax}`), document.createTextNode(L(' · 애완동물 ', ' · Pets ')), h('b', '', `${S.petN}/${S.petMax}`));
+  const bg = S.art.bg; $('bg').style.backgroundImage = bg ? `url(${bg})` : ''; $('bg').classList.toggle('art', !!bg);
+  const m = $('main'); m.textContent = '';
+  const col = (title, sub, kind) => { const c = h('div', 'col'), t = h('h3', '', title); t.append(h('span', '', sub)); const w = h('div', 'wall'); for (const a of S.animals.filter((x) => x.kind === kind)) w.append(card(a)); c.append(t, w); return c; };
+  m.append(col(L('수조 벽 · 물고기', 'Tank wall · Fish'), L(`어항 ${S.fishN}/${S.fishMax}`, `Tank ${S.fishN}/${S.fishMax}`), 'fish'));
+  const mid = h('div', 'col counter'), k = h('div', 'keeper'), pf = h('div', 'pf'); if (S.art.keeper) pf.style.backgroundImage = `url(${S.art.keeper})`; else pf.textContent = '✿';
+  k.append(pf, h('b', '', S.keeper.name), h('div', 'sayk', S.keeper.greet)); mid.append(k);
+  const r = h('div', 'rare'); r.append(h('div', 'lab', L('★ 오늘 들어온 아이 · 오늘만', '★ TODAY\'S ARRIVAL · TODAY ONLY')), h('div', 'note', S.keeper.rare));
+  if (S.rare.soldToday) r.append(h('div', 'note', L('오늘의 아이는 이미 궁으로 갔습니다. 내일 또 새 아이가 옵니다.', 'Today\'s arrival already went to the palace. A new one comes tomorrow.'))); else r.append(card(S.rare));
+  mid.append(r, btn(L(`우리 집 아이들 (${S.home.length})`, `Our animals (${S.home.length})`), () => { open = '#home'; rehomeAsk = ''; drawModal(); }, 'homebtn'));
+  if (S.comp.kind !== 'alone') mid.append(h('div', 'note', S.partner ? L(`${S.comp.name} 님과 함께 — ♥ 표시는 마음에 들어 하는 아이. 함께 골라 데려가면 기뻐합니다.`, `With ${S.comp.name} — ♥ marks the ones they love. Take one home together and they will be glad.`) : L(`${S.comp.name} 님과 함께`, `With ${S.comp.name}`)));
+  m.append(mid, col(L('동물 코너 · 애완동물', 'Animal corner · Pets'), L(`궁에 ${S.petN}/${S.petMax}`, `At the palace ${S.petN}/${S.petMax}`), 'pet'));
+  drawModal();
+ }
+ function drawModal() {
+  const md = $('modal'); md.textContent = ''; md.classList.toggle('on', !!open); if (!open || !S) return;
+  if (open === '#home') return drawHome(md);
+  const a = S.animals.find((x) => x.id === open) || (S.rare.id === open ? S.rare : null); if (!a) { open = null; md.classList.remove('on'); return; }
+  const b = h('div', 'box ' + a.kind); b.append(pic(a, true)); const t = h('h2', '', a.name); b.append(t);
+  if (a.rare) b.append(h('div', 'note', L('★ 오늘만 있는 희귀종', '★ A rare arrival, today only')));
+  b.append(h('div', '', a.about), h('div', 'note', `${fmt(a.price)} ${L('크레딧', 'cr')} · ${a.kind === 'fish' ? L('어항으로', 'goes to the tank') : L('침실로', 'goes to the bedroom')}`));
+  if (a.reaction) b.append(h('div', 'rx', a.reaction));
+  b.append(h('div', 'tl', touch));
+  const r1 = h('div', 'row'); r1.append(btn(a.kind === 'fish' ? L('먹이 주며 구경', 'Watch it feed') : L('쓰다듬기', 'Pet it'), async () => { touch = await window.sllm.petshopTouch(a.id); drawModal(); })); b.append(r1);
+  const r2 = h('div', 'row'), inp = h('input'); inp.maxLength = 24; inp.placeholder = a.kind === 'pet' ? L('이름(꼭 지어 주세요)', 'Name (required)') : L('이름(없어도 됨)', 'Name (optional)');
+  const full = a.kind === 'fish' ? S.fishN >= S.fishMax : S.petN >= S.petMax;
+  const go = btn(L('데려가기', 'Take home'), async () => { const r = await call(window.sllm.petshopBuy(a.id, inp.value)); if (r.ok) { say(r.bought); open = null; } draw(); }, 'main');
+  inp.onkeydown = (e) => { if (e.key === 'Enter') go.onclick(); }; r2.append(inp, go); b.append(r2);
+  if (full) b.append(h('div', 'note', a.kind === 'fish' ? L(`어항이 꽉 찼습니다(${S.fishMax}마리). 「우리 집 아이들」에서 자리를 비울 수 있습니다.`, `The tank is full (${S.fishMax}). You can make room in "Our animals".`) : L(`애완동물은 ${S.petMax}마리까지입니다. 「우리 집 아이들」에서 자리를 비울 수 있습니다.`, `Up to ${S.petMax} pets. You can make room in "Our animals".`)));
+  b.append(btn(L('닫기', 'Close'), () => { open = null; drawModal(); })); md.append(b); setTimeout(() => inp.focus(), 0);
+ }
+ function drawHome(md) {
+  const b = h('div', 'box'); b.append(h('h2', '', L('우리 집 아이들', 'Our animals')), h('div', 'note', L('침실이 생기면 물고기는 어항에, 애완동물은 침실에 들어갑니다. 돌볼 필요는 없습니다.', 'Once the bedroom opens, fish go in the tank and pets in the bedroom. No care needed.')));
+  const list = h('div', 'home'); if (!S.home.length) list.append(h('div', 'note', L('아직 데려온 아이가 없습니다.', 'No animals yet.')));
+  for (const o of S.home) {
+   const it = h('div', 'it'); it.append(h('span', 'k', o.kind === 'fish' ? '≋' : '✿'), h('span', 'n', `${o.name || L('(이름 없음)', '(no name)')} · ${o.species}`), h('span', 'note', o.on));
+   const inp = h('input'); inp.maxLength = 24; inp.value = o.name; inp.placeholder = L('새 이름', 'New name'); it.append(inp, btn(L('이름 바꾸기', 'Rename'), async () => { await call(window.sllm.petshopRename(o.uid, inp.value)); draw(); }));
+   it.append(btn(rehomeAsk === o.uid ? L('정말 보낼까요?', 'Really?') : L('새 집으로 보내기', 'Rehome'), async () => { if (rehomeAsk !== o.uid) { rehomeAsk = o.uid; drawModal(); return; } rehomeAsk = ''; const r = await call(window.sllm.petshopRehome(o.uid)); if (r.ok) say(r.msg); draw(); }));
+   list.append(it);
+  }
+  b.append(list, btn(L('닫기', 'Close'), () => { open = null; drawModal(); })); md.append(b);
+ }
+ $('x').onclick = () => window.sllm.petshopClose();
+ $('modal').onclick = (e) => { if (e.target === $('modal')) { open = null; drawModal(); } };
+ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (open) { open = null; drawModal(); } else window.sllm.petshopClose(); } });
+ document.addEventListener('sllm-language', draw);
+ if (window.sllm.onPetshopState) window.sllm.onPetshopState((s) => { S = s; draw(); });
+ window.sllm.petshopState().then((s) => { S = s; draw(); });
+</script>
+</body></html>

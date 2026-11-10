@@ -1,0 +1,6 @@
+# SLLM 신규 식민지 이름 짓기(2026-11-04): 바닐라 목록에 더할 뿐 바꾸지 않는다. Scope = 행성(carrier).
+on_colonized = {
+	events = {
+		sllm_colname.1
+	}
+}

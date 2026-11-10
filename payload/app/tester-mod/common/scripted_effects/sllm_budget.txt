@@ -1,0 +1,232 @@
+# SLLM 예산 회의(2026-11-04) — 장관 예산 집행. 앱: src/budget.ts · src/features/budget-app.ts, 화면: ui/office-budget.js(집무실 「예산 회의」).
+# 분야 번호 D: 1 국방 · 2 연구 · 3 외교 · 4 경제 · 5 내무. 분야마다 예산은 하나만 집행 중(새로 승인하면 이전 것을 바꾼다).
+# 집행 = 수정자 sllm_bud_<항목>_f|h 360일 + 시한 표식 sllm_bud_<D>(360일) + 월 비용 변수 sllm_bud_cost<D>. 매달(sllm_bud.1) 에너지 창고에서 빼고, 모자라면 그 예산을 멈춘다.
+# 로그 글자 안에는 $매개변수$ 를 쓰지 않는다(변수로 옮겨 찍는다).
+#   읽기:  sllm_bud_ctx = { REQ = 9 }                         → SLLM:BUDCTX req·inc(월 에너지 수입)·stock·war·nc(함대 한도)·nu(쓴 한도)
+#   집행:  sllm_bud_apply = { REQ = 9 D = 2 MOD = sllm_bud_res_voidcraft_f COST = 40 }   → SLLM:BUDSET req·status
+#   매달:  SLLM:BUDSTOP d(국고 부족으로 멈춤) · SLLM:BUDEND d(기간 끝)
+
+sllm_bud_ctx = {
+	set_variable = { which = sllm_bud_req value = $REQ$ }
+	export_resource_income_to_variable = { resource = energy variable = sllm_bud_inc }
+	export_resource_stockpile_to_variable = { resource = energy variable = sllm_bud_stock }
+	if = { limit = { is_at_war = yes } set_variable = { which = sllm_bud_war value = 1 } } else = { set_variable = { which = sllm_bud_war value = 0 } }
+	# 함대 한도: 쓴 것·최대(2026-11-05, Empire Dashboard Feed 참고) — 국방 장관이 한도 증액을 청할지
+	export_trigger_value_to_variable = { trigger = max_naval_capacity variable = sllm_bud_nc }
+	export_trigger_value_to_variable = { trigger = used_naval_capacity_integer variable = sllm_bud_nu }
+	log = "SLLM:BUDCTX/;/req=\\[Root.sllm_bud_req]/;/sid=\\[Root.sllm_save_id]/;/inc=\\[Root.sllm_bud_inc]/;/stock=\\[Root.sllm_bud_stock]/;/war=\\[Root.sllm_bud_war]/;/nc=\\[Root.sllm_bud_nc]/;/nu=\\[Root.sllm_bud_nu]"
+}
+
+# 분야 D 의 예산 수정자를 모두 지운다.
+sllm_bud_clear = {
+	if = { limit = { always = yes check_variable = { which = sllm_bud_dq value = 1 } }
+		remove_modifier = sllm_bud_def_weapons_f
+		remove_modifier = sllm_bud_def_weapons_h
+		remove_modifier = sllm_bud_def_navalcap_f
+		remove_modifier = sllm_bud_def_navalcap_h
+		remove_modifier = sllm_bud_def_upkeep_f
+		remove_modifier = sllm_bud_def_upkeep_h
+	}
+	if = { limit = { always = yes check_variable = { which = sllm_bud_dq value = 2 } }
+		remove_modifier = sllm_bud_res_voidcraft_f
+		remove_modifier = sllm_bud_res_voidcraft_h
+		remove_modifier = sllm_bud_res_propulsion_f
+		remove_modifier = sllm_bud_res_propulsion_h
+		remove_modifier = sllm_bud_res_particles_f
+		remove_modifier = sllm_bud_res_particles_h
+		remove_modifier = sllm_bud_res_computing_f
+		remove_modifier = sllm_bud_res_computing_h
+		remove_modifier = sllm_bud_res_field_f
+		remove_modifier = sllm_bud_res_field_h
+		remove_modifier = sllm_bud_res_materials_f
+		remove_modifier = sllm_bud_res_materials_h
+		remove_modifier = sllm_bud_res_industry_f
+		remove_modifier = sllm_bud_res_industry_h
+		remove_modifier = sllm_bud_res_military_f
+		remove_modifier = sllm_bud_res_military_h
+		remove_modifier = sllm_bud_res_biology_f
+		remove_modifier = sllm_bud_res_biology_h
+		remove_modifier = sllm_bud_res_newworlds_f
+		remove_modifier = sllm_bud_res_newworlds_h
+		remove_modifier = sllm_bud_res_statecraft_f
+		remove_modifier = sllm_bud_res_statecraft_h
+		remove_modifier = sllm_bud_res_psionics_f
+		remove_modifier = sllm_bud_res_psionics_h
+		remove_modifier = sllm_bud_res_archaeo_f
+		remove_modifier = sllm_bud_res_archaeo_h
+	}
+	if = { limit = { always = yes check_variable = { which = sllm_bud_dq value = 3 } }
+		remove_modifier = sllm_bud_sta_weight_f
+		remove_modifier = sllm_bud_sta_weight_h
+		remove_modifier = sllm_bud_sta_decrypt_f
+		remove_modifier = sllm_bud_sta_decrypt_h
+		remove_modifier = sllm_bud_sta_influence_f
+		remove_modifier = sllm_bud_sta_influence_h
+	}
+	if = { limit = { always = yes check_variable = { which = sllm_bud_dq value = 4 } }
+		remove_modifier = sllm_bud_eco_build_f
+		remove_modifier = sllm_bud_eco_build_h
+		remove_modifier = sllm_bud_eco_upkeep_f
+		remove_modifier = sllm_bud_eco_upkeep_h
+		remove_modifier = sllm_bud_eco_minerals_f
+		remove_modifier = sllm_bud_eco_minerals_h
+	}
+	if = { limit = { always = yes check_variable = { which = sllm_bud_dq value = 5 } }
+		remove_modifier = sllm_bud_int_stability_f
+		remove_modifier = sllm_bud_int_stability_h
+		remove_modifier = sllm_bud_int_crime_f
+		remove_modifier = sllm_bud_int_crime_h
+		remove_modifier = sllm_bud_int_amenities_f
+		remove_modifier = sllm_bud_int_amenities_h
+	}
+}
+
+sllm_bud_apply = {
+	set_variable = { which = sllm_bud_req value = $REQ$ }
+	set_variable = { which = sllm_bud_dq value = $D$ }
+	sllm_bud_clear = yes
+	add_modifier = { modifier = $MOD$ days = 360 }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 1 } } set_variable = { which = sllm_bud_cost1 value = $COST$ } remove_country_flag = sllm_bud_1 set_timed_country_flag = { flag = sllm_bud_1 days = 360 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 2 } } set_variable = { which = sllm_bud_cost2 value = $COST$ } remove_country_flag = sllm_bud_2 set_timed_country_flag = { flag = sllm_bud_2 days = 360 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 3 } } set_variable = { which = sllm_bud_cost3 value = $COST$ } remove_country_flag = sllm_bud_3 set_timed_country_flag = { flag = sllm_bud_3 days = 360 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 4 } } set_variable = { which = sllm_bud_cost4 value = $COST$ } remove_country_flag = sllm_bud_4 set_timed_country_flag = { flag = sllm_bud_4 days = 360 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 5 } } set_variable = { which = sllm_bud_cost5 value = $COST$ } remove_country_flag = sllm_bud_5 set_timed_country_flag = { flag = sllm_bud_5 days = 360 } }
+	set_country_flag = sllm_bud_any
+	if = { limit = { has_modifier = $MOD$ } log = "SLLM:BUDSET/;/req=\\[Root.sllm_bud_req]/;/status=applied" }
+	else = { log = "SLLM:BUDSET/;/req=\\[Root.sllm_bud_req]/;/status=failed" }
+}
+
+# 분야 D 하나를 멈춘다(앱의 「집행 중단」).
+sllm_bud_cancel = {
+	set_variable = { which = sllm_bud_req value = $REQ$ }
+	set_variable = { which = sllm_bud_dq value = $D$ }
+	sllm_bud_clear = yes
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 1 } } remove_country_flag = sllm_bud_1 set_variable = { which = sllm_bud_cost1 value = 0 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 2 } } remove_country_flag = sllm_bud_2 set_variable = { which = sllm_bud_cost2 value = 0 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 3 } } remove_country_flag = sllm_bud_3 set_variable = { which = sllm_bud_cost3 value = 0 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 4 } } remove_country_flag = sllm_bud_4 set_variable = { which = sllm_bud_cost4 value = 0 } }
+	if = { limit = { check_variable = { which = sllm_bud_dq value = 5 } } remove_country_flag = sllm_bud_5 set_variable = { which = sllm_bud_cost5 value = 0 } }
+	log = "SLLM:BUDSET/;/req=\\[Root.sllm_bud_req]/;/status=applied"
+}
+
+# 매달 한 번(sllm_bud.1, 플레이어 국가 범위). 집행 중인 분야마다 창고에서 월 비용을 뺀다. 창고가 모자라면 그 분야를 멈춘다.
+sllm_bud_monthly = {
+	export_resource_stockpile_to_variable = { resource = energy variable = sllm_bud_stock }
+	set_variable = { which = sllm_bud_live value = 0 }
+	if = {
+		limit = { is_variable_set = sllm_bud_cost1 check_variable = { which = sllm_bud_cost1 value > 0 } }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_bud_1 } }
+			set_variable = { which = sllm_bud_dq value = 1 }
+			sllm_bud_clear = yes
+			set_variable = { which = sllm_bud_cost1 value = 0 }
+			log = "SLLM:BUDEND/;/d=1/;/date=\\[GetDate]"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_bud_stock value >= sllm_bud_cost1 } }
+			add_resource = { energy = -1 mult = sllm_bud_cost1 }
+			subtract_variable = { which = sllm_bud_stock value = sllm_bud_cost1 }
+			change_variable = { which = sllm_bud_live value = 1 }
+		}
+		else = {
+			set_variable = { which = sllm_bud_dq value = 1 }
+			sllm_bud_clear = yes
+			remove_country_flag = sllm_bud_1
+			set_variable = { which = sllm_bud_cost1 value = 0 }
+			log = "SLLM:BUDSTOP/;/d=1/;/date=\\[GetDate]"
+		}
+	}
+	if = {
+		limit = { is_variable_set = sllm_bud_cost2 check_variable = { which = sllm_bud_cost2 value > 0 } }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_bud_2 } }
+			set_variable = { which = sllm_bud_dq value = 2 }
+			sllm_bud_clear = yes
+			set_variable = { which = sllm_bud_cost2 value = 0 }
+			log = "SLLM:BUDEND/;/d=2/;/date=\\[GetDate]"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_bud_stock value >= sllm_bud_cost2 } }
+			add_resource = { energy = -1 mult = sllm_bud_cost2 }
+			subtract_variable = { which = sllm_bud_stock value = sllm_bud_cost2 }
+			change_variable = { which = sllm_bud_live value = 1 }
+		}
+		else = {
+			set_variable = { which = sllm_bud_dq value = 2 }
+			sllm_bud_clear = yes
+			remove_country_flag = sllm_bud_2
+			set_variable = { which = sllm_bud_cost2 value = 0 }
+			log = "SLLM:BUDSTOP/;/d=2/;/date=\\[GetDate]"
+		}
+	}
+	if = {
+		limit = { is_variable_set = sllm_bud_cost3 check_variable = { which = sllm_bud_cost3 value > 0 } }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_bud_3 } }
+			set_variable = { which = sllm_bud_dq value = 3 }
+			sllm_bud_clear = yes
+			set_variable = { which = sllm_bud_cost3 value = 0 }
+			log = "SLLM:BUDEND/;/d=3/;/date=\\[GetDate]"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_bud_stock value >= sllm_bud_cost3 } }
+			add_resource = { energy = -1 mult = sllm_bud_cost3 }
+			subtract_variable = { which = sllm_bud_stock value = sllm_bud_cost3 }
+			change_variable = { which = sllm_bud_live value = 1 }
+		}
+		else = {
+			set_variable = { which = sllm_bud_dq value = 3 }
+			sllm_bud_clear = yes
+			remove_country_flag = sllm_bud_3
+			set_variable = { which = sllm_bud_cost3 value = 0 }
+			log = "SLLM:BUDSTOP/;/d=3/;/date=\\[GetDate]"
+		}
+	}
+	if = {
+		limit = { is_variable_set = sllm_bud_cost4 check_variable = { which = sllm_bud_cost4 value > 0 } }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_bud_4 } }
+			set_variable = { which = sllm_bud_dq value = 4 }
+			sllm_bud_clear = yes
+			set_variable = { which = sllm_bud_cost4 value = 0 }
+			log = "SLLM:BUDEND/;/d=4/;/date=\\[GetDate]"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_bud_stock value >= sllm_bud_cost4 } }
+			add_resource = { energy = -1 mult = sllm_bud_cost4 }
+			subtract_variable = { which = sllm_bud_stock value = sllm_bud_cost4 }
+			change_variable = { which = sllm_bud_live value = 1 }
+		}
+		else = {
+			set_variable = { which = sllm_bud_dq value = 4 }
+			sllm_bud_clear = yes
+			remove_country_flag = sllm_bud_4
+			set_variable = { which = sllm_bud_cost4 value = 0 }
+			log = "SLLM:BUDSTOP/;/d=4/;/date=\\[GetDate]"
+		}
+	}
+	if = {
+		limit = { is_variable_set = sllm_bud_cost5 check_variable = { which = sllm_bud_cost5 value > 0 } }
+		if = {
+			limit = { NOT = { has_country_flag = sllm_bud_5 } }
+			set_variable = { which = sllm_bud_dq value = 5 }
+			sllm_bud_clear = yes
+			set_variable = { which = sllm_bud_cost5 value = 0 }
+			log = "SLLM:BUDEND/;/d=5/;/date=\\[GetDate]"
+		}
+		else_if = {
+			limit = { check_variable = { which = sllm_bud_stock value >= sllm_bud_cost5 } }
+			add_resource = { energy = -1 mult = sllm_bud_cost5 }
+			subtract_variable = { which = sllm_bud_stock value = sllm_bud_cost5 }
+			change_variable = { which = sllm_bud_live value = 1 }
+		}
+		else = {
+			set_variable = { which = sllm_bud_dq value = 5 }
+			sllm_bud_clear = yes
+			remove_country_flag = sllm_bud_5
+			set_variable = { which = sllm_bud_cost5 value = 0 }
+			log = "SLLM:BUDSTOP/;/d=5/;/date=\\[GetDate]"
+		}
+	}
+	if = { limit = { check_variable = { which = sllm_bud_live value = 0 } } remove_country_flag = sllm_bud_any }
+}

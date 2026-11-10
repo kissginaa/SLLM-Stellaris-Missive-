@@ -117,3 +117,21 @@
 - build-installer.ps1 / build-release.sh: 전체 stage 로 제거 목록을 만든 뒤 seed 를 따로 만들어 makensis PAYLOAD 로 사용(dist\main.js 가 들어가면 실패). make-installer.ps1: 완료 메시지에 "창작마당 묶음을 먼저 올릴 것" 안내.
 - 검증: app-update-core 첫 설치 시험(준비/설치기보다 오래됨/없음/새 버전 허용/DLL 다름/받는 중/서명 오류/채운 뒤 업데이트 없음, 실제 make-app-update.js 묶음 사용), Electron 흉내로 도우미 흐름(없음→다시 확인→페이지 열기→닫기, 채우기→전체 앱 실행, 한/영), NSIS 리눅스판으로 setup.nsi 컴파일(가짜 seed), build-release.sh 문법, tsc, selftest PASS 3033/FAIL 3(이전과 같음, example 폴더 없는 환경).
 - 미검증: 실제 Windows 설치·첫 실행(진짜 Electron)·실제 설치기 크기(예상 약 90~110MB, Electron 압축본 110MB 기준). 버전 올리기·설치기 생성·업로드는 하지 않음.
+
+## 2026-10-23 데이트 지도 AI 그림 (GPT)
+- 최신 실행 앱 alpha.10.2 ui/date-park.html의 지도만 수정. ui/assets/date/park-map-v1.png 신규 추가, 8개 장소의 클릭 위치를 그림에 맞춤. 장소명/방문/잠금/언어 처리는 기존 코드 유지.
+- 배포 payload에는 date-park.html 및 새 연애 기능이 아직 없으므로 이번에 실행 앱 전체를 복사하지 않음. 향후 최신 기능 통합 시 이 HTML과 assets/date도 포함해야 함.
+- 격리 브라우저: 8개 지점, 정원 클릭, 960x640 화면 범위, JS 오류 없음 확인. 실제 게임/AI 호출/설치기 빌드는 하지 않음.
+
+
+## 2026-10-23 데이트 장소 배경·비서 분리 레이어 (GPT)
+- 실행 앱 ui/assets/date/scenes/: gate/stalls/garden/wheel/tower/restaurant/relics-v1.png 및 secretary-dusk-v1.png. 7개 배경과 투명 인물 분리. date-park.html에서 일반 지도자 초상화 제거, sec 키일 때만 비서 레이어. 관람차 오른쪽/다른 장소 왼쪽 배치.
+- 중요: romance-app.ts는 현재 p:숫자 지도자만 받음. 비서 실제 지도 데이트 진입·호감·기억 연결은 아직 없음. 이번 비서 화면 검수는 모의 sec 상태로 수행했으며 기존 비서 이벤트 기능은 변경 안 함.
+- 7장×2모드 렌더링, PNG alpha, 작은 창 확인. 실제 AI/게임 실행, 설치기 제작 없음. 배포 payload 동기화 없음.
+
+
+## 2026-10-23 장소별 비서 자세 (GPT)
+- 사용자 승인: 원본 3뷰 얼굴 참조, 얌전한 자세. 마지막 전시관 옆얼굴만 거부되어 얕은 사선 얼굴로 재제작. 다른 6자세 유지. secretary-{gate,stalls,garden,wheel,tower,restaurant,relics}-v2.png 추가.
+- tower-v2.png: 전망대에서 동일 탑이 또 보이던 구도 수정. garden-v2.png: 앉은 비서용 가까운 벤치. date-park.html에 장소별 자세/좌표 적용.
+- 모의 sec 상태로 7장×2모드 렌더링, 오류 없음. 실제 비서 지도 진입은 여전히 미연결. 기존 비서 이벤트/호감 규칙과 배포 payload/설치기는 변경하지 않음.
+

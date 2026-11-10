@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { pathToFileURL } from 'url';
 import { ctx } from '../app/ctx';
+import { coverScreen } from '../app/cover-screen'; // 작업 표시줄까지 덮는 전체화면(2026-11-05)
 import { logDiagnostic } from '../diagnostics';
 import { pick } from './settings-ui';
 import { musicView, musicCeremonyFx } from './music-app';
@@ -49,7 +50,8 @@ export function ceremonyOpen(declaration: { title: string; text: string; notice:
   win.setAlwaysOnTop(true, 'screen-saver', 2);
   win.setMenuBarVisibility(false);
   void win.loadFile(path.join(__dirname, '..', '..', 'ui', declaration.kind ? 'national-ceremony.html' : 'ceremony.html'));
-  win.once('ready-to-show', () => { win?.show(); win?.focus(); });
+  const cover = !declaration.kind; // 국가 의식(집무실 크기)이 아니면 화면 전체 — 작업 표시줄까지(2026-11-05 사용자)
+  win.once('ready-to-show', () => { if (cover) coverScreen(win, true, ctx.gameDip); win?.show(); win?.focus(); });
   win.on('closed', () => { win = null; address = null; const f = onDone; onDone = null; if (f) f(true); });
   logDiagnostic('info', 'declaration.presentation', { lines: declaration.text.split('\n').filter(x => x.trim()).length });
   return { ok: true };

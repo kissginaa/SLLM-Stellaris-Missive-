@@ -1,0 +1,255 @@
+===== 창작마당 (한국어, BBCode) =====
+[h1]SLLM 알파 12.22 — 양당 정치 · 인물 관계도 · 게임 부담 줄이기 · 시나리오 팩 지원 · 설치기 다국어 (0.1.0-alpha.12.22)[/h1]
+
+알파 12.3 이후의 업데이트입니다. 민주정 · 과두정 · 기업 정부에 [b]두 거대 정당[/b]이 생겨 지지율 · 대정부 질문 · 선거전 · 총선이 돌아가고, 지도자 카드에서 [b]인물 관계도[/b]를 볼 수 있습니다. 매달 게임과 주고받던 확인을 [b]바뀔 때만[/b] 하도록 줄여 게임 부담을 덜었고, 첫 시나리오 팩 [b]「회랑의 삼파전」[/b]을 앱이 지원합니다.
+
+⚠️ [b]모드 파일이 바뀌었습니다.[/b] 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+[h2]🏛️ 양당 정치 (집무실 「의회」 맨 위)[/h2]
+[list]
+[*]민주정 · 과두정 · 기업 정부에서만 켜집니다(독재 · 제정 · 군체 · 기계 지성은 없음). 의회의 파벌 의석 위에 [b]집권당[/b]과 [b]제1야당[/b]이 생기고, 파벌은 당 안의 계파가 됩니다. 당 이름은 제국 성향에 맞춰 붙습니다.
+[*][b]정당 지지율[/b]이 매달 움직입니다. 국정 승인도를 천천히 따라가고 사건이 흔듭니다. 집권 첫 1년은 허니문, 오래 집권하면 피로가 쌓이고, 전쟁 초반에는 결집 · 2년이 넘으면 역풍이 붑니다. 추이 그래프로 볼 수 있습니다.
+[*][b]야당이 먼저 움직입니다[/b]: 4년마다 [b]대정부 질문[/b]. 야당이 실제 상황(전쟁 · 불안 행성 · 낮은 승인도 · 날치기 · 과반 여부 등)을 짚어 묻고, 플레이어가 답을 직접 쓰면 AI가 국민의 눈으로 판정해 지지율에 반영합니다. 답변을 거부할 수도 있습니다(손해).
+[*][b]총선[/b]: 민주정은 6년, 그 밖은 10년마다. 6달 전부터 [b]선거전[/b] — 공약 3개를 고르고(마감까지 안 고르면 당 지도부가 정함) 야당 대표와 [b]후보 토론[/b](발언 2번, AI 판정)을 합니다. 민주정은 지지율이 1.5배 크게 흔들립니다.
+[*]총선 득표가 [b]의회 의석을 실제로 옮깁니다[/b](이긴 쪽이 조금 더 가져감). 지난 공약은 다음 총선 때 성적표가 되어, 지키면 득 · 어기면 손해입니다. 지난 총선 기록이 남습니다.
+[*]AI는 대정부 질문 판정과 후보 토론에만 씁니다. 질문 · 공약 · 성명은 미리 쓴 틀 문장입니다.
+[/list]
+
+[h2]🕸️ 인물 관계도 (지도자 인물 카드)[/h2]
+[list]
+[*]지도자 인물 카드의 [b]「🕸 관계도」[/b]로 우리 지도자들의 관계를 한 화면에서 봅니다. 인물 카드 「인간관계」와 같은 규칙으로, 통치자와의 관계 · 공개된 관계 · 소개로 알게 된 관계 · 플레이어가 아는 갈등만 나옵니다.
+[*][b]세력판[/b]: 통치자가 가운데, 진한 관계(연인 · 배우자 · 친구 · 라이벌)로 묶인 무리가 둘레에 섭니다. 통치자와 관계없는 무리와 홀로 선 인물은 선 없이 바깥쪽에 따로 섭니다(그래도 모두 나옵니다). 무리를 누르면 그쪽으로 날아갑니다.
+[*]연인 · 배우자는 [b]같은 크기 초상화로 나란히[/b](♥) 섭니다. 통치자의 짝은 통치자와 같은 크기입니다.
+[*][b]아는 사이(지인)[/b]도 가는 회색 선으로 이어집니다. 무리 사이의 지인 선은 각 무리에서 지인이 가장 많은 사람끼리 한 줄로 묶이고(「지인 n」), 인물을 누르면 그 사람의 선만 풀어서 보여 줍니다.
+[*][b]인물 관계도[/b] 탭: 고른 인물을 가운데에 두고 바로 이어진 사람, 그다음 사람까지 둘레로 펼칩니다. 나온 사람끼리의 관계는 모두 선으로 그리고, 가운데를 가로지르는 선은 휘어 돌아갑니다. 마우스를 올린 인물의 선만 밝아집니다.
+[*]게임에 묻는 것 없이 앱 기록만 읽습니다.
+[/list]
+
+[h2]⚙️ 게임 부담 줄이기 — 바뀔 때만[/h2]
+[list]
+[*][b]월간 상황 조사[/b]: 의제 · 성향 · 엔클레이브 · 파벌 · 종속국 · 민심 자료는 바뀐 달에만 보냅니다. 행성을 두 번 돌지 않게 합쳤습니다. [i](모드 파일 변경)[/i]
+[*][b]매달 지급[/b](외교 거래의 조공 · 매달 지급, 반란군 후원, 물자 지원): 맺을 때 모드에 한 번 적으면 게임이 매달 직접 보냅니다. 앱은 못 냈을 때 · 끊겼을 때 · 다 냈을 때만 알림을 받습니다. 세이브를 불러오면 게임에 남아 있는지 확인만 하고, 없으면 끝난 것으로 봅니다. [i](모드 파일 변경)[/i]
+[*]용병 할인 정산 · 성간 임시회의 과제 진행 · 취약 국가 판정 · 종속국 대리전과 징발의 결말(전쟁 끝 · 함대 격침 · 임대 끝)은 [b]모드가 사건 때 스스로 알립니다[/b]. 앱은 해마다 1월에만 한 번 확인합니다. [i](모드 파일 변경)[/i]
+[*]일정표의 재사용 대기는 세이브를 불러온 뒤 첫 달 · 일정표를 연 달 · 12달마다만 읽습니다.
+[*]은하 위기 상황은 바뀔 때만 알리고, 1년에 한 번 다시 맞춥니다. [i](모드 파일 변경)[/i]
+[*][b]세이브 다시 읽기[/b]: 세이브를 불러올 때 · 통치자가 바뀔 때 · 첫 접촉 · 우리 성향이나 권위가 바뀔 때 · 12달이 지났을 때만 다음 자동 저장을 읽습니다. 작전지휘실 지도는 늘 그 게임 폴더의 가장 새 세이브를 씁니다.
+[*]큰 저장 파일 쓰기와 로그 찾기를 [b]작업 스레드[/b]로 옮겨 앱 화면이 덜 멈춥니다. 연대기는 모아서 씁니다.
+[/list]
+
+[h2]💳 에너지 크레딧 지불 확인[/h2]
+[list]
+[*]에너지 크레딧을 내는 모든 행동은 먼저 국고를 확인합니다. 모자라면 값도 치르지 않고 효과도 생기지 않습니다(「보내지 못했습니다」로 끝남).
+[/list]
+
+[h2]🌌 시나리오 팩 「회랑의 삼파전」 지원[/h2]
+[list]
+[*]SLLM의 첫 시나리오 팩이 [b]별도 창작마당 모드[/b]로 나왔습니다(이 모드와 SLLM 앱이 필요). 두 거대 세력 사이 작은 회랑 국가의 통치자가 되어 귀족 정치 · 비밀 접견 · 회랑 정보국 · 제국 세력도를 다룹니다. 자세한 내용은 시나리오 모드 페이지를 봐 주세요.
+[*]시나리오 판에서는 맞지 않는 본편 기능이 잠깁니다. 아이콘이 사라지고 기능도 동작하지 않습니다. 국내 정치를 켤지는 시작할 때 고릅니다(기본: 끔).
+[*]일반 게임에는 영향이 없습니다.
+[/list]
+
+[h2]🖥️ 앱 · 설치기[/h2]
+[list]
+[*][b]집무실이 기본 전체화면[/b](작업 표시줄까지 덮음)으로 열립니다. [b]F11[/b]로 창 모드와 전환합니다.
+[*]개인실 복도를 없앴습니다. [b]비서실 · 개인실 · 트로피룸[/b]이 집무실 바탕화면 아이콘으로 바로 열립니다(비서실은 비서를 부른 뒤에 켜짐).
+[*]설치기: [b]영어 · 중국어(간체)[/b] 설치 언어를 고를 수 있습니다. 창작마당 버전과 상관없이 설치됩니다. 게임이 4.5.3이면 새 연결 DLL을 넣습니다.
+[*][b]중국어(간체) 언어 팩[/b]이 별도 창작마당 모드로 나왔습니다. 지금은 회랑 시나리오 문구부터 번역되어 있습니다.
+[/list]
+
+[h2]🔧 버그 수정[/h2]
+[list]
+[*]신문 · 호외가 전쟁을 선언한 쪽과 당한 쪽을 바꿔 쓰던 문제(예: 몰락 제국이 선전포고했는데 우리가 먼저 한 것처럼 씀).
+[*]감정 기억의 원한 · 두려움이 은하 전체에 「위협」을 쌓던 문제. 이제 그 AI 한 나라의 호감만 낮춥니다(쌓이되 상한이 있고, 시간이 지나면 사라짐). [i](모드 파일 변경)[/i]
+[*]「정책으로 보는 호감」 모드 파일이 통째로 읽히지 않던 문제. [i](모드 파일 변경)[/i]
+[*]모드 초상화: 일부 모드(예: Voyage to Eternity) 초상화가 실패하던 문제. 대소문자가 다른 텍스처 이름을 읽고, 투명 여백을 잘라 인물이 크게 나옵니다. 실패하면 이유를 기록에 남깁니다.
+[/list]
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Workshop (English, BBCode) =====
+[h1]SLLM Alpha 12.22 — Two-Party Politics · Relationship Chart · Lighter on the Game · Scenario Pack Support · Multilingual Installer (0.1.0-alpha.12.22)[/h1]
+
+Updates since Alpha 12.3. Democratic, oligarchic and corporate empires now have [b]two major parties[/b] with support ratings, question time, campaigns and general elections, and the leader card gains a [b]relationship chart[/b]. Monthly checks between the app and the game now happen [b]only when something changes[/b], and the app supports the first scenario pack, [b]"Corridor Triangle"[/b].
+
+⚠️ [b]Mod files changed.[/b] Update this mod (Workshop) and the app together, then fully restart the game.
+
+[h2]🏛️ Two-party politics (top of the Office "Parliament")[/h2]
+[list]
+[*]Only for democratic, oligarchic and corporate governments (not dictatorial, imperial, hive mind or machine). A [b]governing party[/b] and a [b]main opposition[/b] sit on top of the parliament's faction seats, and factions become wings inside the parties. Party names follow the empire's ethics.
+[*][b]Party support[/b] moves every month: it slowly follows government approval and events shake it. The first year in power is a honeymoon, long rule builds fatigue, and a war first rallies the public, then turns against you after two years. A trend graph shows it.
+[*][b]The opposition moves first[/b]: [b]question time[/b] every 4 years. The opposition asks about the real situation (wars, worlds in unrest, low approval, rammed-through bills, a missing majority…). You write the answer yourself and the AI judges it through the public's eyes, which moves support. You may refuse to answer (at a cost).
+[*][b]General elections[/b]: every 6 years in a democracy, every 10 otherwise. The [b]campaign[/b] opens 6 months before: pick 3 pledges (the party leadership picks if you don't) and face the opposition leader in a [b]debate[/b] (2 turns, judged by the AI). Support swings 1.5× harder in a democracy.
+[*]The vote [b]really moves parliament seats[/b] (the winner gets a little extra). Past pledges become a report card at the next election: kept ones help, broken ones hurt. Past elections are recorded.
+[*]The AI is only used to judge question time and debates. Questions, pledges and statements are pre-written templates.
+[/list]
+
+[h2]🕸️ Relationship chart (leader card)[/h2]
+[list]
+[*]Press [b]"🕸 Relationship chart"[/b] on a leader card to see all of our leaders' ties on one screen. Same rules as the card's "Relationships": ties with the ruler, public ties, ties learned through introductions, and conflicts you know about.
+[*][b]Power board[/b]: the ruler in the centre, circles bound by close ties (partners, spouses, friends, rivals) around them. Circles and loners with no tie to the ruler stand apart on the outside with no line (everyone is still shown). Click a circle to fly to it.
+[*]Partners and spouses stand [b]side by side at the same portrait size[/b] (♥). The ruler's partner is as large as the ruler.
+[*][b]Acquaintances[/b] are joined by thin grey lines. Acquaintance lines between circles are bundled into one line between each circle's best-connected person ("n acq."); click a person to unbundle just their lines.
+[*][b]Relationship chart[/b] tab: the chosen person in the centre, their direct ties and the next ring around them. Every tie among the people shown is drawn, lines that would cross the centre bend around it, and hovering a person lights only their lines.
+[*]Reads only the app's records; nothing is asked of the game.
+[/list]
+
+[h2]⚙️ Lighter on the game — only when something changes[/h2]
+[list]
+[*][b]Monthly survey[/b]: agenda, ethics, enclave, faction, subject and public-mood data are sent only in months they change, and planets are no longer walked twice. [i](mod files changed)[/i]
+[*][b]Monthly payments[/b] (deal tribute and monthly payments, rebel sponsorship, lend-lease): written into the mod once when agreed, then the game pays every month by itself. The app only hears about missed, broken or finished payments. After loading a save it only checks the payment still exists in the game; if not, it is over. [i](mod files changed)[/i]
+[*]Mercenary discount settlement, Interstellar Council task progress, the vulnerable-state check, and the outcome of subject proxy wars and fleet levies (war over, fleet destroyed, lease ended) are [b]reported by the mod when they happen[/b]. The app double-checks once a year in January. [i](mod files changed)[/i]
+[*]Schedule cooldowns are read only in the first month after loading, in months you open the schedule, and every 12 months.
+[*]The galactic crisis status is sent only when it changes and re-synced once a year. [i](mod files changed)[/i]
+[*][b]Save re-reads[/b]: the next autosave is read only after loading a save, a new ruler, a first contact, a change of our ethics or authority, or after 12 months. The War Room map always uses the newest save in that game folder.
+[*]Writing large data files and searching logs moved to a [b]worker thread[/b], so the app freezes less. The chronicle is written in batches.
+[/list]
+
+[h2]💳 Energy credit check[/h2]
+[list]
+[*]Every action that pays energy credits checks the treasury first. If it is short, nothing is paid and nothing happens (it ends as "could not send").
+[/list]
+
+[h2]🌌 Scenario pack "Corridor Triangle" support[/h2]
+[list]
+[*]SLLM's first scenario pack is out as a [b]separate Workshop mod[/b] (needs this mod and the SLLM app). Rule a small corridor state between two great powers: noble politics, secret audiences, the Corridor Intelligence Bureau and the empire power map. See the scenario mod's page for details.
+[*]In a scenario game, main-game features that do not fit are locked: their icons disappear and they stop running. Whether to turn on domestic politics is chosen at the start (default: off).
+[*]Normal games are not affected.
+[/list]
+
+[h2]🖥️ App · Installer[/h2]
+[list]
+[*][b]The Office opens full screen by default[/b] (covering the taskbar). [b]F11[/b] toggles windowed mode.
+[*]The private-rooms corridor is gone: [b]Secretary's office, private room and trophy room[/b] open directly from Office desktop icons (the secretary's office appears once you have called a secretary).
+[*]Installer: choose [b]English or Simplified Chinese[/b] as the setup language. It installs regardless of the Workshop version, and puts the new connection DLL in place when the game is 4.5.3.
+[*]A [b]Simplified Chinese language pack[/b] is out as a separate Workshop mod, starting with the Corridor scenario text.
+[/list]
+
+[h2]🔧 Fixes[/h2]
+[list]
+[*]The newspaper and extras could swap the side that declared war with the side that was attacked (e.g. a Fallen Empire declared war, but the paper wrote that we started it).
+[*]Grudges and fear from emotional memory piled up galaxy-wide "threat". They now only lower that one AI's opinion of us (stacking, capped, fading over time). [i](mod files changed)[/i]
+[*]The "opinion from policies" mod file could fail to load entirely. [i](mod files changed)[/i]
+[*]Mod portraits: some mods' portraits (e.g. Voyage to Eternity) failed. Texture names with different letter case are read, transparent margins are trimmed so the character is shown large, and failures are logged with a reason.
+[/list]
+
+When the app update prompt appears, apply it, update the mod too, and restart the game.
+
+===== Discord (한국어) — 1/2 =====
+
+# SLLM 알파 12.22 — 양당 정치 · 인물 관계도 · 게임 부담 줄이기 · 시나리오 팩 지원 · 설치기 다국어 (0.1.0-alpha.12.22)
+
+알파 12.3 이후의 업데이트입니다. 민주정 · 과두정 · 기업 정부에 **두 거대 정당**이 생겨 지지율 · 대정부 질문 · 선거전 · 총선이 돌아가고, 지도자 카드에서 **인물 관계도**를 볼 수 있습니다. 매달 게임과 주고받던 확인을 **바뀔 때만** 하도록 줄여 게임 부담을 덜었고, 첫 시나리오 팩 **「회랑의 삼파전」**을 앱이 지원합니다.
+
+⚠️ **모드 파일이 바뀌었습니다.** 이 모드(창작마당)와 앱을 함께 최신으로 맞추고, 게임을 완전히 다시 시작해 주세요.
+
+## 🏛️ 양당 정치 (집무실 「의회」 맨 위)
+- 민주정 · 과두정 · 기업 정부에서만 켜집니다(독재 · 제정 · 군체 · 기계 지성은 없음). 의회의 파벌 의석 위에 **집권당**과 **제1야당**이 생기고, 파벌은 당 안의 계파가 됩니다. 당 이름은 제국 성향에 맞춰 붙습니다.
+- **정당 지지율**이 매달 움직입니다. 국정 승인도를 천천히 따라가고 사건이 흔듭니다. 집권 첫 1년은 허니문, 오래 집권하면 피로가 쌓이고, 전쟁 초반에는 결집 · 2년이 넘으면 역풍이 붑니다. 추이 그래프로 볼 수 있습니다.
+- **야당이 먼저 움직입니다**: 4년마다 **대정부 질문**. 야당이 실제 상황(전쟁 · 불안 행성 · 낮은 승인도 · 날치기 · 과반 여부 등)을 짚어 묻고, 플레이어가 답을 직접 쓰면 AI가 국민의 눈으로 판정해 지지율에 반영합니다. 답변을 거부할 수도 있습니다(손해).
+- **총선**: 민주정은 6년, 그 밖은 10년마다. 6달 전부터 **선거전** — 공약 3개를 고르고(마감까지 안 고르면 당 지도부가 정함) 야당 대표와 **후보 토론**(발언 2번, AI 판정)을 합니다. 민주정은 지지율이 1.5배 크게 흔들립니다.
+- 총선 득표가 **의회 의석을 실제로 옮깁니다**(이긴 쪽이 조금 더 가져감). 지난 공약은 다음 총선 때 성적표가 되어, 지키면 득 · 어기면 손해입니다. 지난 총선 기록이 남습니다.
+- AI는 대정부 질문 판정과 후보 토론에만 씁니다. 질문 · 공약 · 성명은 미리 쓴 틀 문장입니다.
+
+## 🕸️ 인물 관계도 (지도자 인물 카드)
+- 지도자 인물 카드의 **「🕸 관계도」**로 우리 지도자들의 관계를 한 화면에서 봅니다. 인물 카드 「인간관계」와 같은 규칙으로, 통치자와의 관계 · 공개된 관계 · 소개로 알게 된 관계 · 플레이어가 아는 갈등만 나옵니다.
+- **세력판**: 통치자가 가운데, 진한 관계(연인 · 배우자 · 친구 · 라이벌)로 묶인 무리가 둘레에 섭니다. 통치자와 관계없는 무리와 홀로 선 인물은 선 없이 바깥쪽에 따로 섭니다(그래도 모두 나옵니다). 무리를 누르면 그쪽으로 날아갑니다.
+- 연인 · 배우자는 **같은 크기 초상화로 나란히**(♥) 섭니다. 통치자의 짝은 통치자와 같은 크기입니다.
+- **아는 사이(지인)**도 가는 회색 선으로 이어집니다. 무리 사이의 지인 선은 각 무리에서 지인이 가장 많은 사람끼리 한 줄로 묶이고(「지인 n」), 인물을 누르면 그 사람의 선만 풀어서 보여 줍니다.
+- **인물 관계도** 탭: 고른 인물을 가운데에 두고 바로 이어진 사람, 그다음 사람까지 둘레로 펼칩니다. 나온 사람끼리의 관계는 모두 선으로 그리고, 가운데를 가로지르는 선은 휘어 돌아갑니다. 마우스를 올린 인물의 선만 밝아집니다.
+- 게임에 묻는 것 없이 앱 기록만 읽습니다.
+
+===== Discord (한국어) — 2/2 =====
+
+## ⚙️ 게임 부담 줄이기 — 바뀔 때만
+- **월간 상황 조사**: 의제 · 성향 · 엔클레이브 · 파벌 · 종속국 · 민심 자료는 바뀐 달에만 보냅니다. 행성을 두 번 돌지 않게 합쳤습니다. *(모드 파일 변경)*
+- **매달 지급**(외교 거래의 조공 · 매달 지급, 반란군 후원, 물자 지원): 맺을 때 모드에 한 번 적으면 게임이 매달 직접 보냅니다. 앱은 못 냈을 때 · 끊겼을 때 · 다 냈을 때만 알림을 받습니다. 세이브를 불러오면 게임에 남아 있는지 확인만 하고, 없으면 끝난 것으로 봅니다. *(모드 파일 변경)*
+- 용병 할인 정산 · 성간 임시회의 과제 진행 · 취약 국가 판정 · 종속국 대리전과 징발의 결말(전쟁 끝 · 함대 격침 · 임대 끝)은 **모드가 사건 때 스스로 알립니다**. 앱은 해마다 1월에만 한 번 확인합니다. *(모드 파일 변경)*
+- 일정표의 재사용 대기는 세이브를 불러온 뒤 첫 달 · 일정표를 연 달 · 12달마다만 읽습니다.
+- 은하 위기 상황은 바뀔 때만 알리고, 1년에 한 번 다시 맞춥니다. *(모드 파일 변경)*
+- **세이브 다시 읽기**: 세이브를 불러올 때 · 통치자가 바뀔 때 · 첫 접촉 · 우리 성향이나 권위가 바뀔 때 · 12달이 지났을 때만 다음 자동 저장을 읽습니다. 작전지휘실 지도는 늘 그 게임 폴더의 가장 새 세이브를 씁니다.
+- 큰 저장 파일 쓰기와 로그 찾기를 **작업 스레드**로 옮겨 앱 화면이 덜 멈춥니다. 연대기는 모아서 씁니다.
+
+## 💳 에너지 크레딧 지불 확인
+- 에너지 크레딧을 내는 모든 행동은 먼저 국고를 확인합니다. 모자라면 값도 치르지 않고 효과도 생기지 않습니다(「보내지 못했습니다」로 끝남).
+
+## 🌌 시나리오 팩 「회랑의 삼파전」 지원
+- SLLM의 첫 시나리오 팩이 **별도 창작마당 모드**로 나왔습니다(이 모드와 SLLM 앱이 필요). 두 거대 세력 사이 작은 회랑 국가의 통치자가 되어 귀족 정치 · 비밀 접견 · 회랑 정보국 · 제국 세력도를 다룹니다. 자세한 내용은 시나리오 모드 페이지를 봐 주세요.
+- 시나리오 판에서는 맞지 않는 본편 기능이 잠깁니다. 아이콘이 사라지고 기능도 동작하지 않습니다. 국내 정치를 켤지는 시작할 때 고릅니다(기본: 끔).
+- 일반 게임에는 영향이 없습니다.
+
+## 🖥️ 앱 · 설치기
+- **집무실이 기본 전체화면**(작업 표시줄까지 덮음)으로 열립니다. **F11**로 창 모드와 전환합니다.
+- 개인실 복도를 없앴습니다. **비서실 · 개인실 · 트로피룸**이 집무실 바탕화면 아이콘으로 바로 열립니다(비서실은 비서를 부른 뒤에 켜짐).
+- 설치기: **영어 · 중국어(간체)** 설치 언어를 고를 수 있습니다. 창작마당 버전과 상관없이 설치됩니다. 게임이 4.5.3이면 새 연결 DLL을 넣습니다.
+- **중국어(간체) 언어 팩**이 별도 창작마당 모드로 나왔습니다. 지금은 회랑 시나리오 문구부터 번역되어 있습니다.
+
+## 🔧 버그 수정
+- 신문 · 호외가 전쟁을 선언한 쪽과 당한 쪽을 바꿔 쓰던 문제(예: 몰락 제국이 선전포고했는데 우리가 먼저 한 것처럼 씀).
+- 감정 기억의 원한 · 두려움이 은하 전체에 「위협」을 쌓던 문제. 이제 그 AI 한 나라의 호감만 낮춥니다(쌓이되 상한이 있고, 시간이 지나면 사라짐). *(모드 파일 변경)*
+- 「정책으로 보는 호감」 모드 파일이 통째로 읽히지 않던 문제. *(모드 파일 변경)*
+- 모드 초상화: 일부 모드(예: Voyage to Eternity) 초상화가 실패하던 문제. 대소문자가 다른 텍스처 이름을 읽고, 투명 여백을 잘라 인물이 크게 나옵니다. 실패하면 이유를 기록에 남깁니다.
+
+앱 업데이트 알림이 뜨면 적용하고, 모드도 최신으로 맞춘 뒤 게임을 다시 시작해 주세요.
+
+===== Discord (English) — 1/5 =====
+
+# SLLM Alpha 12.22 — Two-Party Politics · Relationship Chart · Lighter on the Game · Scenario Pack Support · Multilingual Installer (0.1.0-alpha.12.22)
+
+Updates since Alpha 12.3. Democratic, oligarchic and corporate empires now have **two major parties** with support ratings, question time, campaigns and general elections, and the leader card gains a **relationship chart**. Monthly checks between the app and the game now happen **only when something changes**, and the app supports the first scenario pack, **"Corridor Triangle"**.
+
+⚠️ **Mod files changed.** Update this mod (Workshop) and the app together, then fully restart the game.
+
+===== Discord (English) — 2/5 =====
+
+## 🏛️ Two-party politics (top of the Office "Parliament")
+- Only for democratic, oligarchic and corporate governments (not dictatorial, imperial, hive mind or machine). A **governing party** and a **main opposition** sit on top of the parliament's faction seats, and factions become wings inside the parties. Party names follow the empire's ethics.
+- **Party support** moves every month: it slowly follows government approval and events shake it. The first year in power is a honeymoon, long rule builds fatigue, and a war first rallies the public, then turns against you after two years. A trend graph shows it.
+- **The opposition moves first**: **question time** every 4 years. The opposition asks about the real situation (wars, worlds in unrest, low approval, rammed-through bills, a missing majority…). You write the answer yourself and the AI judges it through the public's eyes, which moves support. You may refuse to answer (at a cost).
+- **General elections**: every 6 years in a democracy, every 10 otherwise. The **campaign** opens 6 months before: pick 3 pledges (the party leadership picks if you don't) and face the opposition leader in a **debate** (2 turns, judged by the AI). Support swings 1.5× harder in a democracy.
+- The vote **really moves parliament seats** (the winner gets a little extra). Past pledges become a report card at the next election: kept ones help, broken ones hurt. Past elections are recorded.
+- The AI is only used to judge question time and debates. Questions, pledges and statements are pre-written templates.
+
+===== Discord (English) — 3/5 =====
+
+## 🕸️ Relationship chart (leader card)
+- Press **"🕸 Relationship chart"** on a leader card to see all of our leaders' ties on one screen. Same rules as the card's "Relationships": ties with the ruler, public ties, ties learned through introductions, and conflicts you know about.
+- **Power board**: the ruler in the centre, circles bound by close ties (partners, spouses, friends, rivals) around them. Circles and loners with no tie to the ruler stand apart on the outside with no line (everyone is still shown). Click a circle to fly to it.
+- Partners and spouses stand **side by side at the same portrait size** (♥). The ruler's partner is as large as the ruler.
+- **Acquaintances** are joined by thin grey lines. Acquaintance lines between circles are bundled into one line between each circle's best-connected person ("n acq."); click a person to unbundle just their lines.
+- **Relationship chart** tab: the chosen person in the centre, their direct ties and the next ring around them. Every tie among the people shown is drawn, lines that would cross the centre bend around it, and hovering a person lights only their lines.
+- Reads only the app's records; nothing is asked of the game.
+
+===== Discord (English) — 4/5 =====
+
+## ⚙️ Lighter on the game — only when something changes
+- **Monthly survey**: agenda, ethics, enclave, faction, subject and public-mood data are sent only in months they change, and planets are no longer walked twice. *(mod files changed)*
+- **Monthly payments** (deal tribute and monthly payments, rebel sponsorship, lend-lease): written into the mod once when agreed, then the game pays every month by itself. The app only hears about missed, broken or finished payments. After loading a save it only checks the payment still exists in the game; if not, it is over. *(mod files changed)*
+- Mercenary discount settlement, Interstellar Council task progress, the vulnerable-state check, and the outcome of subject proxy wars and fleet levies (war over, fleet destroyed, lease ended) are **reported by the mod when they happen**. The app double-checks once a year in January. *(mod files changed)*
+- Schedule cooldowns are read only in the first month after loading, in months you open the schedule, and every 12 months.
+- The galactic crisis status is sent only when it changes and re-synced once a year. *(mod files changed)*
+- **Save re-reads**: the next autosave is read only after loading a save, a new ruler, a first contact, a change of our ethics or authority, or after 12 months. The War Room map always uses the newest save in that game folder.
+- Writing large data files and searching logs moved to a **worker thread**, so the app freezes less. The chronicle is written in batches.
+
+## 💳 Energy credit check
+- Every action that pays energy credits checks the treasury first. If it is short, nothing is paid and nothing happens (it ends as "could not send").
+
+===== Discord (English) — 5/5 =====
+
+## 🌌 Scenario pack "Corridor Triangle" support
+- SLLM's first scenario pack is out as a **separate Workshop mod** (needs this mod and the SLLM app). Rule a small corridor state between two great powers: noble politics, secret audiences, the Corridor Intelligence Bureau and the empire power map. See the scenario mod's page for details.
+- In a scenario game, main-game features that do not fit are locked: their icons disappear and they stop running. Whether to turn on domestic politics is chosen at the start (default: off).
+- Normal games are not affected.
+
+## 🖥️ App · Installer
+- **The Office opens full screen by default** (covering the taskbar). **F11** toggles windowed mode.
+- The private-rooms corridor is gone: **Secretary's office, private room and trophy room** open directly from Office desktop icons (the secretary's office appears once you have called a secretary).
+- Installer: choose **English or Simplified Chinese** as the setup language. It installs regardless of the Workshop version, and puts the new connection DLL in place when the game is 4.5.3.
+- A **Simplified Chinese language pack** is out as a separate Workshop mod, starting with the Corridor scenario text.
+
+## 🔧 Fixes
+- The newspaper and extras could swap the side that declared war with the side that was attacked (e.g. a Fallen Empire declared war, but the paper wrote that we started it).
+- Grudges and fear from emotional memory piled up galaxy-wide "threat". They now only lower that one AI's opinion of us (stacking, capped, fading over time). *(mod files changed)*
+- The "opinion from policies" mod file could fail to load entirely. *(mod files changed)*
+- Mod portraits: some mods' portraits (e.g. Voyage to Eternity) failed. Texture names with different letter case are read, transparent margins are trimmed so the character is shown large, and failures are logged with a reason.
+
+When the app update prompt appears, apply it, update the mod too, and restart the game.

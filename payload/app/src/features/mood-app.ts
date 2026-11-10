@@ -5,8 +5,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ctx } from '../app/ctx';
 import { logDiagnostic } from '../diagnostics';
+import { featureOff } from '../app/feature-gate';
 import { pick } from './settings-ui';
 import { chronNoteWorld } from './chronicle-app';
+import { registerSecFacts } from './secretary-live';
 import { safeKey } from '../music';
 import type { StateSnapshot } from '../gamestate';
 import { type Mood, type MoodLevel, computeMood, moodLevel, pushMood, moodTrend, moodAlert, moodPromptLine, sanitizeMood, activeAdj, MOOD_KO, MOOD_EN } from '../mood';
@@ -40,7 +42,8 @@ export function moodNudge(value: number, why: string): void {
 }
 /** 신문·라디오 프롬프트 한 줄(없으면 빈 글). */
 export function moodPromptNow(): string {
-  if (!mood.cur || !ctx.curSaveId) return ''; return moodPromptLine(mood.cur, moodTrend(entry(ctx.curSaveId).series));
+  // 시나리오에서 민심을 뺐으면 신문·라디오에도 넣지 않는다(2026-11-08)
+  if (!mood.cur || !ctx.curSaveId || featureOff('mood')) return ''; return moodPromptLine(mood.cur, moodTrend(entry(ctx.curSaveId).series));
 }
 export function moodView() {
   const sid = ctx.curSaveId || '', e = sid ? entry(sid) : null, m = mood.cur, last = e?.series[e.series.length - 1];
@@ -49,6 +52,7 @@ export function moodView() {
 }
 function pushView(): void { try { const v = moodView(); for (const bw of BrowserWindow.getAllWindows()) if (!bw.isDestroyed()) bw.webContents.send('moodUpdate', v); } catch { /* 창 없음 */ } }
 export function registerMood(): void {
+  registerSecFacts({ id: 'National mood', kw: ['민심', '여론', '지지율', '국민', 'mood', 'public opinion', 'approval'], facts: (sid) => { if (sid !== ctx.curSaveId) return []; const v = moodView(); if (v.score === null) return []; return [`National mood: ${v.score}/100 (${v.level ? MOOD_EN[v.level] : '?'}), trend ${v.trend > 0 ? 'rising' : v.trend < 0 ? 'falling' : 'flat'}.`, ...(v.adj.length ? ['Recent mood changes from app events: ' + v.adj.map((a) => `${a.date} ${a.value > 0 ? '+' : ''}${a.value} ${a.why}`).join('; ')] : [])]; } }); // 비서가 아는 기록(2026-10-31)
   ipcMain.handle('moodState', async () => moodView());
 }
 export type { MoodLevel };

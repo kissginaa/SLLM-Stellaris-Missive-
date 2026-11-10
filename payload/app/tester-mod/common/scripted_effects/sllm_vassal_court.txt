@@ -1,0 +1,122 @@
+# SLLM 종속국 통치(2026-11-04 사용자) — 조공 감면 요청 · 감독관 파견 · 계약 재협상 반응.
+# 앱: src/vassal-court.ts · src/features/vassal-court-app.ts, 화면: ui/vassal-court.js(종속국 창의 종속국 채널 아래 칸).
+# 게임 연결: 충성도는 monthly_loyalty 수정자(바닐라 키, 기존 sllm_vassal_grateful/resentful 재사용), 감면은 매달 실제 에너지 환급(우리 → 종속국),
+#           재협상 반응은 바닐라 on_agreement_change_accepted(이벤트 sllm_vc.2).
+# every_subject 안: THIS = 종속국, PREV = 플레이어(종주국). 로그 글자 안에는 $매개변수$ 를 쓰지 않는다(변수로 옮겨 찍음).
+# 매개변수로 조건을 가르지 않는다(경우마다 효과를 따로 둠).
+
+# 감면 요청 액수 정하기: 그 종속국의 월 에너지 수입을 알려 준다(요청이 생길 때 한 번).
+sllm_vc_ctx = {
+	set_variable = { which = sllm_vc_req value = $REQ$ }
+	set_variable = { which = sllm_vc_found value = 0 }
+	every_subject = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		prev = { set_variable = { which = sllm_vc_found value = 1 } }
+		export_resource_income_to_variable = { resource = energy variable = sllm_vc_inc }
+		set_variable = { which = sllm_vc_req value = $REQ$ }
+		log = "SLLM:VCCTX/;/req=\\[This.sllm_vc_req]/;/idx=\\[This.sllm_idx]/;/inc=\\[This.sllm_vc_inc]"
+	}
+	if = { limit = { check_variable = { which = sllm_vc_found value = 0 } } log = "SLLM:VCCTX/;/req=\\[Root.sllm_vc_req]/;/idx=-1/;/inc=0" }
+}
+
+# 감면 액수 계산(종속국 범위): 월 에너지 수입 × PERMILLE / 1000, 최소 5. 결과는 이 나라의 sllm_vc_amt.
+# 다른 범위의 변수는 value = prev.<변수> 로 바로 읽는다(4.5.2 에서 검증된 문법: Native Fleet Order 모드 · 게임 문서 add_variable/check_variable).
+sllm_vc_calc = {
+	export_resource_income_to_variable = { resource = energy variable = sllm_vc_amt }
+	multiply_variable = { which = sllm_vc_amt value = $PERMILLE$ }
+	divide_variable = { which = sllm_vc_amt value = 1000 }
+	round_variable_to_closest = { which = sllm_vc_amt value = 1 }
+	if = { limit = { check_variable = { which = sllm_vc_amt value < 5 } } set_variable = { which = sllm_vc_amt value = 5 } }
+	set_timed_country_flag = { flag = sllm_vc_relief days = 360 }
+	prev = { set_variable = { which = sllm_vc_found value = 1 } set_variable = { which = sllm_vc_last value = prev.sllm_vc_amt } set_timed_country_flag = { flag = sllm_vc_relief_any days = 360 } }
+}
+sllm_vc_found_log = {
+	if = { limit = { check_variable = { which = sllm_vc_found value = 1 } } log = "SLLM:VCSET/;/req=\\[Root.sllm_vc_req]/;/status=applied/;/amt=\\[Root.sllm_vc_last]" }
+	else = { log = "SLLM:VCSET/;/req=\\[Root.sllm_vc_req]/;/status=no_target" }
+}
+
+# 전액 감면: 1년간 매달 (월 에너지 수입의 15%) 환급 + 고마워함(충성도 매달 +1, 1년)
+sllm_vc_grant_full = {
+	set_variable = { which = sllm_vc_req value = $REQ$ }
+	set_variable = { which = sllm_vc_found value = 0 }
+	set_variable = { which = sllm_vc_last value = 0 }
+	every_subject = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		sllm_vc_calc = { PERMILLE = 150 }
+		remove_modifier = sllm_vassal_grateful remove_modifier = sllm_vassal_resentful
+		add_modifier = { modifier = sllm_vassal_grateful days = 360 }
+	}
+	sllm_vc_found_log = yes
+}
+# 절반 감면: 1년간 매달 (월 에너지 수입의 7.5%) 환급(충성도 변화 없음)
+sllm_vc_grant_half = {
+	set_variable = { which = sllm_vc_req value = $REQ$ }
+	set_variable = { which = sllm_vc_found value = 0 }
+	set_variable = { which = sllm_vc_last value = 0 }
+	every_subject = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		sllm_vc_calc = { PERMILLE = 75 }
+	}
+	sllm_vc_found_log = yes
+}
+# 거절: 원망(충성도 매달 −1, 1년)
+sllm_vc_refuse = {
+	set_variable = { which = sllm_vc_req value = $REQ$ }
+	set_variable = { which = sllm_vc_found value = 0 }
+	every_subject = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		prev = { set_variable = { which = sllm_vc_found value = 1 } }
+		remove_modifier = sllm_vassal_grateful remove_modifier = sllm_vassal_resentful
+		add_modifier = { modifier = sllm_vassal_resentful days = 360 }
+	}
+	sllm_vc_found_log = yes
+}
+
+# 매달 환급(플레이어 국가 범위, 이벤트 sllm_vc.1). 우리 창고가 모자라면 그달은 건너뛰고 알린다.
+sllm_vc_monthly = {
+	export_resource_stockpile_to_variable = { resource = energy variable = sllm_vc_stock }
+	every_subject = {
+		limit = { has_country_flag = sllm_vc_relief is_variable_set = sllm_vc_amt }
+		if = {
+			limit = { prev = { check_variable = { which = sllm_vc_stock value >= prev.sllm_vc_amt } } }
+			prev = {
+				set_variable = { which = sllm_vc_pay value = prev.sllm_vc_amt }
+				add_resource = { energy = -1 mult = sllm_vc_pay }
+				subtract_variable = { which = sllm_vc_stock value = sllm_vc_pay }
+			}
+			add_resource = { energy = 1 mult = sllm_vc_amt }
+		}
+		else = { log = "SLLM:VCSHORT/;/idx=\\[This.sllm_idx]" }
+	}
+}
+
+# 감독관 파견: 영향력 COST, 그 종속국 충성도 매달 +1.5(소환할 때까지)
+sllm_vc_overseer_on = {
+	set_variable = { which = sllm_vc_req value = $REQ$ }
+	set_variable = { which = sllm_vc_found value = 0 }
+	if = {
+		limit = { resource_stockpile_compare = { resource = influence value < $COST$ } }
+		log = "SLLM:VCSET/;/req=\\[Root.sllm_vc_req]/;/status=short"
+	}
+	else = {
+		every_subject = {
+			limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+			prev = { set_variable = { which = sllm_vc_found value = 1 } }
+			remove_modifier = sllm_vc_overseer
+			add_modifier = { modifier = sllm_vc_overseer }
+		}
+		if = { limit = { check_variable = { which = sllm_vc_found value = 1 } } add_resource = { influence = -$COST$ } }
+		sllm_vc_found_log = yes
+	}
+}
+# 감독관 소환(또는 감독관이 죽거나 물러남)
+sllm_vc_overseer_off = {
+	set_variable = { which = sllm_vc_req value = $REQ$ }
+	set_variable = { which = sllm_vc_found value = 0 }
+	every_subject = {
+		limit = { is_variable_set = sllm_idx check_variable = { which = sllm_idx value = $TID$ } }
+		prev = { set_variable = { which = sllm_vc_found value = 1 } }
+		remove_modifier = sllm_vc_overseer
+	}
+	sllm_vc_found_log = yes
+}

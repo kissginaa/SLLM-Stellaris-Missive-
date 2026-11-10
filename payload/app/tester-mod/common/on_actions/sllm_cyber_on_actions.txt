@@ -1,0 +1,4 @@
+# SLLM 사이버전·여론 공작(2026-11-04): 바닐라 목록에 더할 뿐 바꾸지 않는다.
+on_operation_finished = {
+	events = { sllm_cyber.1 }
+}

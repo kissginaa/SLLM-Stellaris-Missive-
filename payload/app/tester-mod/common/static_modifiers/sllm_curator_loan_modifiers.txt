@@ -1,0 +1,7 @@
+# SLLM - 큐레이터 대여 보상(알파 11, 2026-10-25). 앱(src/curator-loan.ts loanBonusCommand)이 1년 대여가 끝나면 플레이어 나라에 360일 붙인다.
+# 사용자 확정: 대여품 등급별 모든 연구 속도 일반 +3% · 희귀 +5% · 전설 +8%(게임 Curator Insight 와 같은 계열).
+# 단위 수정자(+1%) × 배수 3·5·8 (src/unit-modifier.ts, DTP 기법). 예전 등급별 3개(_1·_2·_3)는 배포 전이라 지웠다.
+sllm_curator_loan = {
+	icon = "gfx/interface/icons/modifiers/mod_country_all_tech_research_speed.dds"
+	all_technology_research_speed = 0.01
+}

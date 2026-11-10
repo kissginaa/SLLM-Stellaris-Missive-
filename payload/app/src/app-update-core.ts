@@ -11,7 +11,8 @@ export const PUBLIC_KEY_FILE = 'update-public-key.pem';
 /** 묶음에 들어갈 수 있는 앱 최상위 항목(tools/make-app-update.js 의 TOP 과 같아야 함). 공개 키·설치 기록·runtime 은 절대 바꾸지 않는다. */
 export const UPDATE_TOP = ['dist', 'ui', 'native', 'example', 'package.json', 'start_app.bat', 'portrait-library.pak',
   'README_KO.md', 'ALPHA_SETUP_KO.md', 'ALPHA_SETUP_EN.md', 'RELEASE_NOTES_KO.md', 'RELEASE_NOTES_EN.md'];
-/** 이 파일이 바뀌면 게임 폴더 DLL 도 바꿔야 하므로 설치기로만 업데이트한다(설치기의 DLL 백업·제거 규칙 유지). */
+/** 예전 위치의 DLL. 이 파일이 바뀌면 설치기로만 업데이트한다(예전 앱도 같은 규칙). 2026-11-04부터 이 파일은 고정하고 새 DLL 은 native/bridge/ 로만 배포한다 —
+ *  앱 업데이트로 받은 새 DLL 은 게임이 꺼져 있을 때 앱이 게임 폴더에 넣는다(src/game-dll.ts). */
 export const DLL_FILE = 'native/command-bridge.dll';
 
 export type ManifestFile = { path: string; size: number; sha256: string };
@@ -99,13 +100,14 @@ export type InstallCheck =
   | { kind: 'ready'; version: string; bundleDir: string; changed: ManifestFile[] }
   | { kind: 'missing' }                                 // 구독본·업로드 원본 어디에도 묶음이 없음
   | { kind: 'downloading'; detail: string }             // 서명은 맞는데 파일이 덜 받아졌거나 달라짐(스팀이 받는 중)
-  | { kind: 'too_old'; version: string }                // 묶음이 이 설치기보다 오래됨(스팀에서 모드 업데이트 필요)
   | { kind: 'bad_signature' }                           // 서명이 맞는 묶음이 하나도 없음
   | { kind: 'needs_installer'; version: string };       // 묶음의 게임 연결 DLL 이 설치기와 다름 → 그 버전 설치기 필요
 
-/** 처음 채울 묶음 찾기: 서명이 맞고 설치기 버전(minVersion) 이상인 것 중 가장 높은 버전. 업데이트와 달리 같은 버전도 받는다. */
-export function findInstallBundle(appDir: string, minVersion: string, modDirs: string[], publicKeyPem: string): InstallCheck {
-  let best: { m: Manifest; dir: string } | null = null, sawBad = false, older: string | null = null;
+/** 처음 채울 묶음 찾기: 서명이 맞는 것 중 가장 높은 버전. 업데이트와 달리 같은 버전도 받는다.
+ *  2026-11-08 사용자: 설치기는 창작마당 버전과 상관없이 설치돼야 한다(개발판 번호가 창작마당보다 훨씬 높아도 막지 않음) → 설치기 버전보다 낮다는 이유로 거르지 않는다.
+ *  낮은 버전을 받으면 앱 파일이 그 버전으로 채워지고, 나중에 창작마당이 올라가면 앱 안 업데이트로 따라간다. */
+export function findInstallBundle(appDir: string, modDirs: string[], publicKeyPem: string): InstallCheck {
+  let best: { m: Manifest; dir: string } | null = null, sawBad = false;
   for (const mod of [...new Set(modDirs.filter(Boolean))]) {
     const dir = path.join(mod, UPDATE_DIR);
     let raw: Buffer, sig: string;
@@ -113,11 +115,9 @@ export function findInstallBundle(appDir: string, minVersion: string, modDirs: s
     const m = readSignedManifest(raw, sig, publicKeyPem);
     if (!m) { sawBad = true; continue; }
     if (!m.files.some((f) => f.path === FULL_APP_MARKER)) { sawBad = true; continue; }
-    const cmp = compareVersions(m.version, minVersion);
-    if (cmp === null || cmp < 0) { older = m.version; continue; }
     if (!best || (compareVersions(m.version, best.m.version) ?? 0) > 0) best = { m, dir };
   }
-  if (!best) return older ? { kind: 'too_old', version: older } : sawBad ? { kind: 'bad_signature' } : { kind: 'missing' };
+  if (!best) return sawBad ? { kind: 'bad_signature' } : { kind: 'missing' };
   const { m, dir } = best;
   for (const f of m.files) {
     const src = path.join(dir, ...f.path.split('/'));

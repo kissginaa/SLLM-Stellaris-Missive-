@@ -49,7 +49,21 @@
  #deskPaper .cols{position:absolute;left:8%;right:8%;top:27%;bottom:9%;background:repeating-linear-gradient(#5a5248 0 2px,transparent 2px 7px);opacity:.5}
  #deskPaper:hover .np,#deskPaper:focus-visible .np{transform:rotate(-7deg) skewX(-26deg) scaleY(.62) translateY(-10%);box-shadow:0 14px 18px #000b,0 0 14px var(--hi);filter:brightness(1.08)}
  #deskPaper .new{position:absolute;top:38%;right:-6%;font-size:11px;line-height:1.5;padding:0 7px;border-radius:9px;background:#c0392b;color:#fff;font-weight:700;white-space:nowrap;box-shadow:0 0 8px #c0392b88}
- body.boot #deskPaper{visibility:hidden}
+ body.boot #deskPaper,body.boot #deskWallet{visibility:hidden}
+ /* 외출(2026-10-30): 책상 위 펼친 가죽 지갑 + 궁 외출 패스. 누르면 외출 화면(수도 지도). 그림이 오면 이 자리에 그림으로 바꿀 수 있음. */
+ #deskWallet{position:fixed;z-index:3;left:calc(50% - .2 * max(100vw, 133.3vh));bottom:max(17vh, 12.75vw);width:calc(.075 * max(100vw, 133.3vh));aspect-ratio:1.5;padding:0;border:0;background:none;cursor:pointer;transform:translateX(-50%);-webkit-app-region:no-drag} #deskWallet.hasimg{width:calc(.1012 * max(100vw, 133.3vh));aspect-ratio:836/336;bottom:calc(max(17vh, 12.75vw) - .0036 * max(100vw, 133.3vh));margin-left:calc(.0057 * max(100vw, 133.3vh));overflow:visible} /* 2026-10-31: 원근·그림자를 그림에 미리 구운 outing-wallet-desk.webp — CSS 변형·필터 없이 단추 안에 딱 맞게(일부 PC 에서 변형된 그림이 단추 밖으로 나간 만큼 잘리던 문제) */
+ #deskWallet .wl{position:absolute;inset:0;display:block;border-radius:6px;background:linear-gradient(135deg,#6b3f22,#4a2a16 55%,#3a2010);transform:rotate(6deg) skewX(28deg) scaleY(.5);transform-origin:50% 100%;box-shadow:0 6px 10px #000b,inset 0 0 0 2px #2a170b,inset 0 0 0 4px #8a5a3455;transition:transform .25s,box-shadow .25s,filter .25s}
+ #deskWallet .wl::after{content:'';position:absolute;top:6%;bottom:6%;left:50%;width:2px;background:#2a170b}
+ #deskWallet .pass{position:absolute;left:56%;right:8%;top:14%;bottom:22%;border-radius:3px;background:linear-gradient(120deg,#dfe9f5,#9fb6cf);box-shadow:inset 0 0 0 1px #fff8}
+ #deskWallet .pass::before{content:'';position:absolute;left:10%;right:10%;top:18%;height:16%;background:linear-gradient(90deg,#7fd8ff,#f2c86b,#c08bff);opacity:.85}
+ #deskWallet .pass::after{content:'';position:absolute;left:10%;width:28%;bottom:14%;height:34%;border-radius:2px;background:#5a6f8a}
+ #deskWallet:hover .wl,#deskWallet:focus-visible .wl{transform:rotate(6deg) skewX(24deg) scaleY(.62) translateY(-10%);box-shadow:0 14px 18px #000b,0 0 14px var(--hi);filter:brightness(1.1)}
+ /* 실물 그림(2026-10-31, assets/office/outing-wallet.webp, 투명 768×512): 있으면 그린 지갑 대신. 책상 위에 눕히는 원근만 앱이 줌(납작하게 — rotateX 는 쓰지 않음, 붙은 창과 어긋나지 않게). */
+ #deskWallet .wimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:transform .25s;pointer-events:none}
+ #deskWallet.hasimg .wl{display:none} #deskWallet:not(.hasimg) .wimg{display:none}
+ #deskWallet.hasimg:hover .wimg,#deskWallet.hasimg:focus-visible .wimg{transform:translateY(-6%)} #deskWallet.hasimg::before{content:'';position:absolute;inset:10% 5%;border-radius:50%;background:radial-gradient(ellipse,var(--hi) 0%,transparent 70%);opacity:0;transition:opacity .25s;pointer-events:none} #deskWallet.hasimg:hover::before,#deskWallet.hasimg:focus-visible::before{opacity:.35}
+ @media (prefers-reduced-motion:reduce){#deskWallet .wl,#deskWallet .wimg{transition:none}}
+ #walletNote{position:fixed;z-index:40;width:320px;padding:8px 12px;border-radius:10px;background:#0c1220ee;border:1px solid #ffb34788;color:#ffe2b0;font-size:13px;line-height:1.4;text-align:center;box-shadow:0 6px 18px #000a;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none} #walletNote.on{opacity:1;transform:none}
  @media (prefers-reduced-motion:reduce){#deskPaper .np{transition:none}}
  .readall{margin-left:auto;margin-right:10px;font-size:12px;padding:4px 10px;background:none;border:1px solid var(--line2);color:var(--text);border-radius:4px;cursor:pointer} .readall:disabled{opacity:.4;cursor:default}
  #busy{display:none} body.docked #desktop,body.docked .app{visibility:hidden}
@@ -131,6 +145,7 @@
  #tside h4{margin:0 0 6px;font-size:12.5px;font-weight:400;color:var(--dim)}
  #tside .persona .traits{display:inline-block;margin-top:6px;font-size:11px;opacity:.75}
  #tside .persona{margin:0 0 16px;line-height:1.6}
+ #tside ol#tfacts{margin-bottom:16px} #tside li .fc{display:inline-block;margin-right:6px;padding:0 5px;border:1px solid var(--line2);border-radius:3px;font-size:10.5px;color:var(--dim)} #tside li.kept{opacity:.5;text-decoration:line-through} #tside li.owed .fc{color:#e0623a;border-color:#e0623a}
  #tside ol{list-style:none;margin:0;padding:0} #tside li{padding:6px 0;border-bottom:1px solid var(--line2);line-height:1.5} #tside li b{display:block;font-weight:400;color:var(--hi);font-size:11.5px}
  #detail .trust{margin:0 0 14px}
  /* 추모관(2026-10-18): 명예의 전당(세상을 떠난 인물의 비석) · 떠난 사람들(해임·행방 불명) */
@@ -173,9 +188,11 @@
  @keyframes draw{from{clip-path:inset(0 0 100% 0);filter:brightness(2.2)}to{clip-path:inset(0 0 0 0);filter:none}}
  @media (prefers-reduced-motion:reduce){body.boot #beam,body.boot #holo{animation:none}}
  @media (max-width:1000px){#feed{display:none}#detail{width:280px}}
-</style><script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><script src="backstory-ui.js"></script><link rel="stylesheet" href="office-secretary.css"><link rel="stylesheet" href="office-art.css"><link rel="stylesheet" href="office-policy.css"><link rel="stylesheet" href="office-style.css"><link rel="stylesheet" href="office-petition.css"><link rel="stylesheet" href="office-embassy.css"><link rel="stylesheet" href="office-music.css"><link rel="stylesheet" href="office-mood.css"><link rel="stylesheet" href="office-cabinet.css"><link rel="stylesheet" href="office-national.css"><link rel="stylesheet" href="corridor-art.css"><link rel="stylesheet" href="private-rooms.css"></head>
+</style><script src="theme.js"></script><script src="i18n-catalog.js"></script><script src="i18n-ui.js"></script><script src="backstory-ui.js"></script><link rel="stylesheet" href="office-secretary.css"><link rel="stylesheet" href="office-art.css"><link rel="stylesheet" href="office-policy.css"><link rel="stylesheet" href="office-style.css"><link rel="stylesheet" href="office-petition.css"><link rel="stylesheet" href="office-protest.css"><link rel="stylesheet" href="office-social.css"><link rel="stylesheet" href="office-embassy.css"><link rel="stylesheet" href="office-deals.css"><link rel="stylesheet" href="office-music.css"><link rel="stylesheet" href="office-mood.css"><link rel="stylesheet" href="office-civic.css">
+<link rel="stylesheet" href="office-preftl.css"><link rel="stylesheet" href="office-audit.css"><link rel="stylesheet" href="office-twoparty.css"><link rel="stylesheet" href="office-lobby.css"><link rel="stylesheet" href="office-budget.css"><link rel="stylesheet" href="office-temper.css"><link rel="stylesheet" href="office-cabinet.css"><link rel="stylesheet" href="office-national.css"><link rel="stylesheet" href="private-rooms.css"><link rel="stylesheet" href="nursery.css"><link rel="stylesheet" href="office-court.css"><link rel="stylesheet" href="office-internet.css"></head>
 <body class="boot">
 <div id="room" aria-hidden="true"><div id="sky"></div><div id="beam"></div><div id="desk"></div><div id="proj"></div></div>
+<button id="deskWallet" type="button" title="외출하기" aria-label="외출하기"><img class="wimg" src="assets/office/outing-wallet-desk.webp" alt="" draggable="false" onload="this.parentNode.classList.add('hasimg')" onerror="this.remove()"><span class="wl"><i class="pass"></i></span></button>
 <button id="deskPaper" type="button" title="신문 펼치기" aria-label="신문 펼치기"><span class="np"><i class="mh"></i><i class="cols"></i></span><b class="new" id="nPaperDesk" hidden>새 호</b></button>
 <div id="bar"><b>집무실</b><span class="sp"></span><button id="x" type="button" title="집무실 나가기 (Esc)" aria-label="집무실 나가기">✕</button></div>
 
@@ -190,12 +207,12 @@
      <button class="ic" type="button" data-app="contacts"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="6" width="30" height="36" rx="3"/><circle cx="24" cy="20" r="6"/><path d="M15 35c1.8-5 5-7 9-7s7.2 2 9 7"/><path d="M6 13h4M6 24h4M6 35h4"/></svg><span>연락처</span></button>
      <button class="ic" type="button" data-app="letters"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="11" width="36" height="26" rx="2"/><path d="M6 13l18 13 18-13"/><path d="M33 30l6 6"/></svg><span>개인 서신</span><b class="n" id="nLetters"></b></button>
      <button class="ic" type="button" data-app="memorial"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 42V20a10 10 0 0120 0v22"/><path d="M10 42h28"/><path d="M24 7v4M20 9h8"/><path d="M20 27h8M20 33h8"/></svg><span>추모관</span><b class="n" id="nMemorial"></b></button>
+     <button class="ic" type="button" id="ourLore" title="우리 제국의 배경 이야기를 직접 적습니다. 대화·회의에서 AI가 참고합니다."><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8h22a4 4 0 014 4v26a4 4 0 01-4 4H14"/><path d="M12 8a4 4 0 00-4 4v4h8v-4a4 4 0 00-4-4z"/><path d="M14 42a4 4 0 01-4-4v-2h24"/><path d="M20 18h12M20 24h12M20 30h8"/></svg><span>우리 제국 전기</span></button>
     </div></div>
     <div class="grp"><h2>국정</h2><div class="row">
      <button class="ic" type="button" data-open="terminal"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 9h28a3 3 0 013 3v18a3 3 0 01-3 3H24l-9 7v-7h-5a3 3 0 01-3-3V12a3 3 0 013-3z"/><path d="M16 18h16M16 24h10"/></svg><span>외교 단말기</span><b class="n" id="nTerminal"></b></button>
      <button class="ic" type="button" id="secCall"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12" r="6"/><path d="M14 42l3-18c1-4 4-6 7-6s6 2 7 6l3 18"/><path d="M19 30h10M24 18v24"/><path d="M36 9l3-3M38 15h4"/></svg><span>비서 호출</span></button>
      <button class="ic" type="button" data-app="policy"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6h16l8 8v28H14z"/><path d="M30 6v8h8M19 22h14M19 28h14M19 34h8"/><circle cx="34" cy="36" r="5"/></svg><span>정책</span><b class="n" id="nPolicy"></b></button>
-     <button class="ic" type="button" data-open="gov"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="16"/><path d="M8 24h32M24 8c5 4.6 7.4 10 7.4 16S29 35.4 24 40c-5-4.6-7.4-10-7.4-16S19 12.6 24 8z"/></svg><span>행성 총독</span></button>
      <button class="ic" type="button" data-open="fleet"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 29l18-20 18 20-18 10z"/><path d="M24 9v30M15 24h18"/></svg><span>함대 사령부</span></button>
      <button class="ic" type="button" data-open="vassal"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 17l8 6 8-12 8 12 8-6-3.2 18H11.2z"/><path d="M11 41h26"/></svg><span>종속국 채널</span></button>
      <button class="ic" type="button" data-open="press"><svg viewBox="0 0 48 48" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="6" width="12" height="20" rx="6"/><path d="M11 22a13 13 0 0026 0M24 35v7M17 42h14"/></svg><span>언론사 인터뷰</span></button>
@@ -216,7 +233,7 @@
   <section class="view app" id="talk" aria-label="통신">
    <div class="apph"><button class="back" type="button" id="talkBack">‹ 연락처</button><div class="who" id="twho"></div><div class="trust" id="ttrust"></div><button class="end" type="button" id="tend">대화 마치기</button></div>
    <div id="tbody"><div id="tcol"><div id="tlog" data-i18n-skip aria-live="polite"></div><div id="tin"><textarea id="ttext" maxlength="500" placeholder="할 말을 입력하세요 (Enter 보내기, Shift+Enter 줄바꿈)"></textarea><button type="button" id="tsend">보내기</button></div></div>
-   <aside id="tside"><h4>말투와 성격</h4><p class="persona" id="tpersona" data-i18n-skip></p><h4>기억하는 일</h4><ol id="tmems" data-i18n-skip></ol></aside></div>
+   <aside id="tside"><h4>말투와 성격</h4><p class="persona" id="tpersona" data-i18n-skip></p><h4>나에 대해 아는 것</h4><ol id="tfacts" data-i18n-skip></ol><h4>기억하는 일</h4><ol id="tmems" data-i18n-skip></ol></aside></div>
   </section>
 
   <section class="view app" id="letters" aria-label="개인 서신">
@@ -237,9 +254,14 @@
  const T = (s) => (window.SLLMI18n ? window.SLLMI18n.t(s) : s);
  const ROLE = { ruler: '통치자', governor: '총독', admiral: '제독', general: '장군', scientist: '과학자', commander: '지휘관', official: '관료' };
  let st = null, role = 'all', pick = '';
+ $('ourLore').onclick = () => { // 우리 제국 전기(2026-11-03 테스터 요청: AI가 우리 제국을 잘 모른다)
+  const name = st && st.empire; if (!name || !window.SLLMBackstory) return;
+  window.SLLMBackstory.open({ title: '우리 제국 전기', name, kind: 'empire', intro: '우리 제국의 역사·사회·종족·국시를 적으면 지도자·장관·외국 제국이 대화할 때 사실로 참고합니다. 게임에서 읽은 정부 형태·국시·종족 특성은 따로 자동으로 전해집니다. 같은 이름의 제국이면 다른 세이브에서도 씁니다.', placeholder: '우리 제국의 기원, 종족의 모습과 기질, 사회 분위기, 국시가 실제로 어떻게 돌아가는지 등을 자유롭게 적어 주세요.',
+   load: () => window.sllm.backstoryEmpire(name).then((v) => (v ? { ...v, card: false } : v)), save: (text) => window.sllm.backstoryEmpireSet(name, text) });
+ };
  setTimeout(() => document.body.classList.remove('boot'), 1400);
 
- function show(id) { for (const v of document.querySelectorAll('.view')) v.classList.toggle('on', v.id === id); if (id === 'contacts') drawContacts(); if (id === 'letters') loadLetters(); if (id === 'memorial') loadMemorial(); const f = document.querySelector('#' + id + ' .back, #' + id + ' .ic'); if (f) f.focus(); }
+ function show(id) { if (!document.getElementById(id)) return; for (const v of document.querySelectorAll('.view')) v.classList.toggle('on', v.id === id); if (id === 'contacts') drawContacts(); if (id === 'letters') loadLetters(); if (id === 'memorial') loadMemorial(); const f = document.querySelector('#' + id + ' .back, #' + id + ' .ic'); if (f) f.focus(); }
  document.querySelectorAll('.back').forEach((b) => (b.onclick = () => show('desktop')));
  // (통신 화면의 돌아가기는 아래 talk 부분에서 따로 정한다)
  document.querySelectorAll('[data-app]').forEach((b) => (b.onclick = () => show(b.dataset.app)));
@@ -296,11 +318,26 @@
   drawDetail(list.find((p) => p.key === pick) || null);
  }
 
+ /** 지도자 개인 초상화(2026-10-24): 이 인물에게만 쓸 그림. 이 세이브의 모든 장면에서 먼저 쓰인다(ui/portrait-variants.js · src/features/images.ts). */
+ async function drawFace(box, p) {
+  const IS = await window.sllm.getImageState().catch(() => null); if (!IS || pick !== p.key || !box.isConnected) return;
+  const sv = String(IS.save || ''), lid = Number.isInteger(p.lid) ? p.lid : null;
+  const k = /^\d{1,9}$/.test(sv) ? (lid !== null ? 'person:' + sv + ':' + lid : 'person:' + sv + ':n:' + String(p.name || '').replace(/[\r\n]/g, ' ').trim().slice(0, 80)) : null;
+  box.textContent = ''; if (!k) return;
+  const url = IS.images && IS.images[k];
+  if (url) { const im = mk('img'); im.src = url; im.alt = ''; im.style.cssText = 'width:72px;height:72px;object-fit:cover;object-position:top;border:1px solid color-mix(in srgb,var(--line,#5fd4e4) 45%,transparent)'; box.append(im); }
+  const b = mk('button', 'act', url ? T('🖼 초상화 바꾸기') : T('🖼 초상화 넣기')); b.type = 'button'; b.style.background = 'none';
+  b.title = T('이 인물에게만 쓸 그림을 고릅니다. 이 세이브의 모든 장면(회의·연회·데이트 등)에서 이 그림이 먼저 보입니다.');
+  b.onclick = async () => { b.disabled = true; await window.sllm.pickImage({ kind: 'portrait', key: k, label: p.name }).catch(() => null); drawFace(box, p); };
+  box.append(b);
+  if (url) { const c = mk('button', 'act', T('기본 초상화로')); c.type = 'button'; c.style.background = 'none'; c.onclick = async () => { c.disabled = true; await window.sllm.clearImage({ kind: 'portrait', key: k }).catch(() => null); drawFace(box, p); }; box.append(c); }
+ }
  function drawDetail(p) {
   const d = $('detail'); d.textContent = '';
   if (!p) { d.append(mk('div', 'empty', T('왼쪽에서 인물을 고르면 자세한 정보와 할 수 있는 일이 보입니다.'))); return; }
   const nm = mk('h4', '', p.name); nm.setAttribute('data-i18n-skip', '');
   d.append(badge(p), nm, mk('div', 'rl', T(ROLE[p.role])));
+  { const pf = mk('div', 'pface'); pf.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0'; d.append(pf); drawFace(pf, p); } // 지도자 개인 초상화(2026-10-24)
   const dl = mk('dl');
   const row = (k, v, raw) => { if (!v && v !== 0) return; const dd = mk('dd', '', String(v)); if (raw) dd.setAttribute('data-i18n-skip', ''); dl.append(mk('dt', '', T(k)), dd); };
   if (p.lv) row('기술 수준', p.lv);
@@ -310,14 +347,15 @@
   else if (p.fleet) row('맡은 함대', p.fleet, true);
   if (p.traits && p.traits.length) row('특성', p.traits.join(' · '), true); // 이름은 게임 지역화(한국어/영어) 그대로
   d.append(dl);
+  { const pol = mk('div', 'pol'); d.append(pol); if (window.SLLMStanding) window.SLLMStanding.load(pol, p, () => pick === p.key); } // 정치적 지위(office-standing.js, 2026-10-23)
+  { const rel = mk('div', 'rel'); d.append(rel); if (window.SLLMRelations) window.SLLMRelations.load(rel, p, () => pick === p.key); } // 인간관계(office-relations.js, 2026-10-23)
   const tr = mk('div', 'trust'); d.append(tr);
   const memBox = mk('div', 'note'); memBox.setAttribute('data-i18n-skip', '');
   const a = mk('button', 'act');
-  if (p.role === 'governor' && p.planet) { a.textContent = T('통신 열기'); a.onclick = () => window.sllm.officeOpen('gov', p.planet); } // 총독은 행성 정보가 있는 총독 창으로
-  else { a.textContent = T('통신 열기'); a.onclick = () => openTalk(p); }
+  { a.textContent = T('통신 열기'); a.onclick = () => openTalk(p); } // 옛 총독 창은 뗐다(2026-10-23) — 총독도 다른 인물처럼 대화
   d.append(a);
   { const b = mk('button', 'act'); b.textContent = T('📜 인물 전기'); b.style.background = 'none'; b.title = T('이 인물의 배경 이야기를 직접 적습니다. 대화·편지·보고에서 AI가 참고합니다.'); // 2026-10-18 모드 영웅 설정 등
-    b.onclick = () => window.SLLMBackstory && window.SLLMBackstory.open({ title: '인물 전기', name: p.name, intro: '이 인물의 출신·경력·성격을 적으면 AI가 이 인물을 연기할 때 사실로 참고합니다(이 세이브에서만). 저장하면 말투를 새로 정합니다.', load: () => window.sllm.backstoryPerson(p.key), save: (text) => window.sllm.backstoryPersonSet(p.key, text) });
+    b.onclick = () => window.SLLMBackstory && window.SLLMBackstory.open({ title: '인물 전기', name: p.name, intro: '이 인물의 출신·경력·성격을 적으면 AI가 이 인물을 연기할 때 사실로 참고합니다(이 세이브에서만). 저장하면 말투를 새로 정합니다.', load: () => window.sllm.backstoryPerson(p.key), kind: 'person', save: (text, card) => window.sllm.backstoryPersonSet(p.key, text, card) });
     d.append(b); }
   if (p.battles !== undefined) { const f = mk('button', 'act'); f.textContent = T('함대 사령부에서 보기'); f.style.background = 'none'; f.onclick = () => window.sllm.officeOpen('fleet'); d.append(f); }
   d.append(memBox);
@@ -335,17 +373,23 @@
  function drawTrust(box, t, lv) { box.textContent = ''; const bar = mk('span', 'bar'), i = document.createElement('i'); const w = Math.min(50, Math.abs(t) / 2); i.style.cssText = t >= 0 ? 'left:50%;width:' + w + '%' : 'left:' + (50 - w) + '%;width:' + w + '%'; if (t < 0) i.className = 'neg'; bar.append(i); const lb = mk('span'); lb.append(document.createTextNode(T('관계') + ' '), mk('b', '', T(lv)), document.createTextNode(' (' + (t > 0 ? '+' : '') + t + ')')); box.append(bar, lb, mk('span', 'd')); }
  function flash(d) { const e = $('ttrust').querySelector('.d'); if (!e || !d) return; e.textContent = d > 0 ? '▲' + d : '▼' + (-d); e.className = 'd show ' + (d > 0 ? 'up' : 'down'); setTimeout(() => e.classList.remove('show'), 1800); }
  const line = (who, text) => { const e = mk('div', 'ln ' + who, text); $('tlog').append(e); $('tlog').scrollTop = $('tlog').scrollHeight; return e; };
- function drawMems(v) { $('tpersona').textContent = v.persona || T('아직 정해지지 않았습니다.'); if (v.traits && v.traits.length) { const tt = mk('span', 'traits', v.traits.join(' · ')); $('tpersona').append(document.createElement('br'), tt); } const ol = $('tmems'); ol.textContent = ''; if (!v.mems.length) { ol.append(mk('li', '', T('아직 없습니다. 대화를 마치면 이곳에 남습니다.'))); return; } for (const m of v.mems) { const li = mk('li'); li.append(mk('b', '', m.date || ''), document.createTextNode(m.text)); ol.append(li); } }
+ function drawMems(v) { $('tpersona').textContent = v.persona || T('아직 정해지지 않았습니다.'); if (v.traits && v.traits.length) { const tt = mk('span', 'traits', v.traits.join(' · ')); $('tpersona').append(document.createElement('br'), tt); } drawEmo(v); const ol = $('tmems'); ol.textContent = ''; if (!v.mems.length) { ol.append(mk('li', '', T('아직 없습니다. 대화를 마치면 이곳에 남습니다.'))); return; } for (const m of v.mems) { const li = mk('li'); li.append(mk('b', '', m.date || ''), document.createTextNode(m.text)); ol.append(li); } }
+ // 아는 것(2026-10-29): 대화 중에 지도자가 털어놓은 약속·비밀·관계·취향. 비밀은 신뢰가 낮으면 「입 다묾」
+ const FCAT = { promise: '약속', secret: '비밀', relationship: '관계', preference: '취향', fact: '사실' };
+ function drawFacts(list) { const ol = $('tfacts'); if (!ol) return; ol.textContent = ''; if (!list || !list.length) { ol.append(mk('li', '', T('아직 없습니다. 대화 중에 털어놓은 약속·비밀·취향이 이곳에 남습니다.'))); return; } for (const f of list) { const li = mk('li', f.kept ? 'kept' : f.owed ? 'owed' : ''); const tag = T(FCAT[f.cat] || '사실') + (f.kept ? ' ✓' : f.owed ? ' ✗' : f.guarded ? ' 🔒' : ''); li.append(mk('b', '', f.date || ''), mk('span', 'fc', tag), document.createTextNode(f.text)); if (f.guarded) li.title = T('지금 신뢰로는 이 비밀을 대화에 꺼내지 않습니다(신뢰 50 이상부터).'); ol.append(li); } }
+ // 두려움·원한(2026-10-29): 위협·모욕을 받으면 쌓이고 1년마다 옅어진다
+ function drawEmo(v) { const p = $('tpersona'); if (!p) return; const old = p.querySelector('.emo'); if (old) old.remove(); const bits = []; if (v.fear > 0) bits.push(T('두려움') + ' ' + v.fear); if (v.resent > 0) bits.push(T('원한') + ' ' + v.resent); if (bits.length) { const e = mk('span', 'traits emo', bits.join(' · ')); e.style.color = '#e0623a'; p.append(document.createElement('br'), e); } }
+ const FELT = { threatened: '위협으로 받아들였습니다', insulted: '모욕으로 받아들였습니다', slighted: '불쾌하게 받아들였습니다' };
  function lockTalk(v) { tbusy = v; $('tsend').disabled = v; $('tend').disabled = v; $('ttext').disabled = v; }
  async function openTalk(p) {
   if (tbusy) return; tkey = p.key; show('talk');
   const who = $('twho'); who.textContent = ''; const nm = mk('b', '', p.name); nm.setAttribute('data-i18n-skip', ''); const box = mk('div'); box.append(nm, mk('small', '', ' ' + T(ROLE[p.role] || ''))); who.append(badge(p), box);
-  $('tlog').textContent = ''; $('ttrust').textContent = ''; $('tpersona').textContent = ''; $('tmems').textContent = '';
+  $('tlog').textContent = ''; $('ttrust').textContent = ''; $('tpersona').textContent = ''; $('tmems').textContent = ''; if ($('tfacts')) $('tfacts').textContent = '';
   const w = line('sys', T('통신을 연결하는 중…')); lockTalk(true);
   try {
    const r = await window.sllm.personaOpen(p.key); w.remove();
    if (!r.ok) { line('sys', r.error || T('통신을 열지 못했습니다.')); return; }
-   drawTrust($('ttrust'), r.trust, r.level); drawMems(r);
+   drawTrust($('ttrust'), r.trust, r.level); drawMems(r); drawFacts(r.facts);
    for (const l of r.lines) line(l.who, l.text);
    if (r.error) line('sys', r.error);
   } catch (e) { w.remove(); line('sys', e.message); }
@@ -354,14 +398,14 @@
  async function sendTalk() {
   const t = $('ttext').value.trim(); if (!t || tbusy || !tkey) return;
   $('ttext').value = ''; line('me', t); const w = line('them wait', '…'); lockTalk(true);
-  try { const r = await window.sllm.personaSay(tkey, t); w.remove(); if (!r.ok) { line('sys', r.error || ''); return; } line('them', r.reply); drawTrust($('ttrust'), r.trust, r.level); flash(r.delta); }
+  try { const r = await window.sllm.personaSay(tkey, t); w.remove(); if (!r.ok) { line('sys', r.error || ''); return; } line('them', r.reply); drawTrust($('ttrust'), r.trust, r.level); flash(r.delta); if (r.facts) drawFacts(r.facts); drawEmo(r); if (FELT[r.felt]) line('sys', T(FELT[r.felt])); if (r.learned) line('sys', T('기억해 둠') + ' · ' + r.learned); if (r.kept) line('sys', T('지켜진 약속으로 기록') + ' · ' + r.kept); }
   catch (e) { w.remove(); line('sys', e.message); }
   finally { lockTalk(false); $('ttext').focus(); }
  }
  async function endTalk() {
   if (!tkey) { show('contacts'); return; } if (tbusy) return;
   const k = tkey; lockTalk(true); const w = line('sys', T('대화를 기억으로 정리하는 중…'));
-  try { const r = await window.sllm.personaEnd(k); w.remove(); if (r.memory) line('sys', T('기억에 남김') + ': ' + r.memory); else if (r.error) line('sys', r.error); if (r.mems) drawMems(r); }
+  try { const r = await window.sllm.personaEnd(k); w.remove(); if (r.memory) line('sys', T('기억에 남김') + ': ' + r.memory); else if (r.error) line('sys', r.error); if (r.mems) drawMems(r); if (r.facts) drawFacts(r.facts); }
   catch (e) { w.remove(); }
   finally { lockTalk(false); tkey = ''; setTimeout(() => { if (!tkey) show('contacts'); }, 1200); }
  }
@@ -403,8 +447,8 @@
    const f = l.favor, fb = mk('div', 'favbox');
    fb.append(mk('h5', '', T('부탁') + ': ' + T(FAVOR[f.kind] || '')));
    fb.append(mk('div', '', T('들어주면: 신뢰 +6 · 특성 「지도자의 신임」(경험치 획득 +10%)') + (f.energy ? ' · ' + T('에너지') + ' −' + f.energy : '')), mk('div', '', T('거절하면: 신뢰 −3')));
-   if (f.state === 'open') { const r2 = mk('div', 'row2'), y = mk('button', 'act', T('들어주기')), n = mk('button', 'act no', T('거절하기')); y.onclick = () => favor(l.id, true, r2); n.onclick = () => favor(l.id, false, r2); r2.append(y, n); fb.append(r2); }
-   else fb.append(mk('div', 'note', f.state === 'granted' ? T('들어주었습니다.') : f.state === 'declined' ? T('거절했습니다.') : f.state === 'pending' ? T('게임에 적용하는 중…') : T('적용하지 못했습니다.')));
+   if (f.state === 'open' || f.state === 'failed') { const r2 = mk('div', 'row2'), y = mk('button', 'act', T('들어주기')), n = mk('button', 'act no', T('거절하기')); y.onclick = () => favor(l.id, true, r2); n.onclick = () => favor(l.id, false, r2); r2.append(y, n); fb.append(r2); }
+   if (f.state !== 'open') fb.append(mk('div', 'note', f.state === 'granted' ? T('들어주었습니다.') : f.state === 'declined' ? T('거절했습니다.') : f.state === 'pending' ? T('게임에 적용하는 중…') : T('적용하지 못했습니다.')));
    if (f.note) fb.append(mk('div', 'note', f.note));
    rd.append(fb);
   }
@@ -467,12 +511,19 @@
  $('lreadAll').onclick = async () => { if (!window.sllm.lettersReadAll) return; $('lreadAll').disabled = true; lst = await window.sllm.lettersReadAll().catch(() => lst); drawLetters(); }; // AI 없이 봉투만 읽음으로
  $('lfreq').onchange = async () => { lst = await window.sllm.letterFreq($('lfreq').value).catch(() => lst); drawLetters(); };
  if (window.sllm.onOfficeGo) window.sllm.onOfficeGo((v) => { if (v === 'letters' || v === 'memorial') show(v); });
- $('deskPaper').onclick = () => { if (window.sllm.paperDesk) window.sllm.paperDesk(); }; // 책상 신문 → 종이 지면 큰 창 + 펼치는 효과
+ $('deskWallet').onclick = async () => {
+  const say = (t) => { let n = $('walletNote'); if (!n) { n = document.createElement('div'); n.id = 'walletNote'; document.body.append(n); } const b = $('deskWallet').getBoundingClientRect(); n.textContent = t; n.style.left = Math.max(8, b.left + b.width / 2 - 160) + 'px'; n.style.top = Math.max(8, b.top - 64) + 'px'; n.classList.add('on'); clearTimeout(say.t); say.t = setTimeout(() => n.classList.remove('on'), 4500); };
+  if (!window.sllm.outingOpen) { say(window.SLLMI18n && window.SLLMI18n.pick ? window.SLLMI18n.pick('앱을 다시 켜 주세요(외출 기능을 불러오지 못했습니다).', 'Please restart the app (the outing feature did not load).') : '앱을 다시 켜 주세요(외출 기능을 불러오지 못했습니다).'); return; } // 2026-10-31: 실패해도 아무 반응이 없던 것 → 지갑 위에 이유를 띄움
+  let r; try { r = await window.sllm.outingOpen(); } catch (e) { r = { ok: false, error: String(e && e.message || e) }; }
+  if (r && !r.ok && r.error) say(r.error);
+ }; // 책상 위 지갑 → 외출(2026-10-30)
+$('deskPaper').onclick = () => { if (window.sllm.paperDesk) window.sllm.paperDesk(); }; // 책상 신문 → 종이 지면 큰 창 + 펼치는 효과
  window.sllm.onOfficeState(draw);
  window.sllm.officeState().then(draw).catch(() => {});
  if (window.sllm.onCrisisState) window.sllm.onCrisisState((c) => { if (st) { st.crisis = c; draw(st); } });
  window.sllm.onTheme((t) => applyTheme(t.theme, t.custom));
  if (window.sllm.launcherState) window.sllm.launcherState().then((t) => { if (t && t.theme) applyTheme(t.theme, t.custom); }, () => {});
  document.addEventListener('sllm-language', () => { if (st) draw(st); });
-</script><script src="office-policy.js"></script><script src="office-secretary.js"></script><script src="office-style.js"></script><script src="office-petition.js"></script><script src="office-embassy.js"></script><script src="office-music.js"></script><script src="office-mood.js"></script><script src="office-cabinet.js"></script><script src="official-holidays.js"></script>
-<script src="office-national.js"></script><script src="corridor-art.js"></script><script src="private-rooms.js"></script></body></html>
+</script><script src="office-policy.js"></script><script src="office-secretary.js"></script><script src="office-style.js"></script><script src="office-petition.js"></script><script src="office-protest.js"></script><script src="office-emergency.js"></script><script src="office-isc.js"></script><script src="office-standing.js"></script><script src="office-relations.js"></script><script src="office-relgraph.js"></script><script src="office-social.js"></script><script src="office-gc.js"></script><script src="office-retired.js"></script><script src="office-fbanquet.js"></script><script src="office-execution.js"></script><script src="office-lore.js"></script><script src="office-embassy.js"></script><script src="office-cyber.js"></script><script src="office-rebels.js"></script><script src="office-tension.js"></script><script src="office-alarm.js"></script><script src="deal-ui.js"></script><script src="office-deals.js"></script><script src="office-music.js"></script><script src="office-mood.js"></script><script src="office-cabinet.js"></script><script src="official-holidays.js"></script><script src="planet-holidays.js"></script><script src="office-govgroup.js"></script><script src="office-colname.js"></script><script src="office-civic.js"></script>
+<script src="office-preftl.js"></script><script src="office-preftl-net.js"></script><script src="office-audit.js"></script><script src="office-twoparty.js"></script><script src="office-lobby.js"></script><script src="office-budget.js"></script><script src="office-temper.js"></script><script src="office-lazy.js"></script>
+<script src="office-national.js"></script><script src="office-nobles.js"></script><script src="scenario-locks-ui.js"></script><script src="office-games.js"></script><script src="office-trade.js"></script><script src="office-intel.js"></script><link rel="stylesheet" href="state-docs.css"><script src="state-docs.js"></script><script src="office-docs.js"></script><script src="curator-loan.js"></script><script src="collectible-shop.js"></script><script src="artist-tour.js"></script><script src="internet-data.js"></script><script src="office-internet.js"></script><script src="office-gforum.js"></script><script src="office-court.js"></script><script src="nursery.js"></script><script src="private-rooms.js"></script><script src="office-gestalt.js"></script><script src="gestalt-terms.js"></script></body></html>

@@ -140,7 +140,7 @@ export function admiralApplyCommand(req: number, sid: string, cid: string, lid: 
   const xp = outcome === 'acclaimed' ? ` add_experience = ${ADM_XP}` : '';
   // every_owned_leader 안: THIS = 제독, PREV = 플레이어 국가.
   const body = `if = { limit = { prev = { is_variable_set = ${mark} } } ${log('duplicate')} } else = { prev = { set_variable = { which = ${mark} value = 1 } } remove_trait = sllm_trait_admiral_acclaimed remove_trait = sllm_trait_admiral_reprimanded add_trait = ${trait}${xp} set_variable = { which = sllm_adm_m value = ${ADM_MONTHS} } if = { limit = { has_trait = ${trait} } ${log('applied')} } else = { ${log('failed')} } }`;
-  return `effect every_playable_country = { limit = { is_ai = no check_variable = { which = sllm_save_id value = ${sid} } } set_variable = { which = sllm_adm_found value = 0 } every_owned_leader = { limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = ${lid} } } prev = { set_variable = { which = sllm_adm_found value = 1 } } ${body} } if = { limit = { check_variable = { which = sllm_adm_found value = 0 } } ${log('no_target')} } clear_variable = sllm_adm_found }`;
+  return `effect every_playable_country = { limit = { is_ai = no check_variable = { which = sllm_save_id value = ${sid} } } set_variable = { which = sllm_adm_found value = 0 } every_owned_leader = { limit = { is_variable_set = sllm_lid check_variable = { which = sllm_lid value = ${lid} } } prev = { set_variable = { which = sllm_adm_found value = 1 } } set_variable = { which = sllm_tr_m value = 12 } ${body} } if = { limit = { check_variable = { which = sllm_adm_found value = 0 } } ${log('no_target')} } clear_variable = sllm_adm_found }`;
 }
 
 export interface FleetSave { admirals: Record<string, Admiral> }

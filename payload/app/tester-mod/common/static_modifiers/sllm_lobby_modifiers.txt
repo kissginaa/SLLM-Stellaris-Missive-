@@ -1,0 +1,12 @@
+# SLLM 로비(2026-11-03 사용자 결정 ⑦). 앱: src/lobby.ts LOBBY, src/features/lobby-app.ts(회신 CIVIC). 파벌 scope 2개(2년), 국가 scope 1개(뇌물 스캔들 2년).
+sllm_lobby_favor = {
+	faction_approval = 0.1
+}
+sllm_lobby_spurned = {
+	faction_approval = -0.05
+}
+sllm_lobby_scandal = {
+	icon = "gfx/interface/icons/planet_modifiers/pm_planet_surface.dds"
+	icon_frame = 3
+	planet_stability_add = -6
+}

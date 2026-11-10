@@ -1,0 +1,75 @@
+# SLLM 총독 방침(2026-11-03): 총독 기질에 따라 국고 광물이 모자라면 공사를 쉰다. 꼼꼼(sllm_gov_frugal) 1000 · 보통 300 · 대담(sllm_gov_bold) 늘.
+sllm_gov_can_spend = {
+	OR = {
+		has_planet_flag = sllm_gov_bold
+		AND = {
+			has_planet_flag = sllm_gov_frugal
+			owner = { resource_stockpile_compare = { resource = minerals value >= 1000 } }
+		}
+		AND = {
+			NOT = { has_planet_flag = sllm_gov_frugal }
+			owner = { resource_stockpile_compare = { resource = minerals value >= 300 } }
+		}
+	}
+}
+
+# 방침이 하나라도 맡겨져 있는가(행성·식민지 scope)
+sllm_gov_has_mandate = {
+	OR = {
+		has_planet_flag = sllm_gov_research
+		has_planet_flag = sllm_gov_foundry
+		has_planet_flag = sllm_gov_factory
+		has_planet_flag = sllm_gov_mining
+		has_planet_flag = sllm_gov_generator
+		has_planet_flag = sllm_gov_farming
+		has_planet_flag = sllm_gov_urban
+		has_planet_flag = sllm_gov_fortress
+		has_planet_flag = sllm_gov_unity
+		has_planet_flag = sllm_gov_trade
+	}
+}
+
+# 급한 일(2026-11-05): 총독은 방침보다 이것을 먼저 본다(sllm_gov_pick, 생성기 FIXES 순서). 행성 scope.
+# 짓던 것이 있는가
+sllm_gov_busy = {
+	is_variable_set = sllm_gov_proj
+	check_variable = { which = sllm_gov_proj value > 0 }
+}
+# 주거가 모자란다
+sllm_gov_short_housing = {
+	free_housing < 0
+}
+# 나라 살림이 달마다 적자(전략 자원은 보지 않는다 — 기본 셋만)
+# (메우는 중인 행성이 이미 있으면 다른 행성은 기다린다 — 국가 표식 sllm_gov_fixing_<자원>, 생성기 LOCK_DAYS)
+sllm_gov_short_energy = {
+	owner = {
+		NOT = { has_country_flag = sllm_gov_fixing_energy }
+		resource_income_compare = { resource = energy value < 0 }
+	}
+}
+sllm_gov_short_food = {
+	owner = {
+		country_uses_food = yes
+		NOT = { has_country_flag = sllm_gov_fixing_food }
+		resource_income_compare = { resource = food value < 0 }
+	}
+}
+sllm_gov_short_minerals = {
+	owner = {
+		NOT = { has_country_flag = sllm_gov_fixing_minerals }
+		resource_income_compare = { resource = minerals value < 0 }
+	}
+}
+# 편의가 모자라는데 연예인 일자리는 이미 다 찼다(빈 일자리가 있으면 더 지어 봐야 소용없다)
+sllm_gov_short_amenity = {
+	free_amenities < 0
+	NOT = { has_available_jobs = entertainer }
+}
+# 범죄(일탈)가 높은데 치안 일자리는 이미 다 찼다
+sllm_gov_crime_high = {
+	planet_crime > 30
+	NOR = {
+		has_available_jobs = enforcer
+		has_available_jobs = patrol_drone
+	}
+}

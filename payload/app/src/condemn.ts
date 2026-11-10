@@ -57,14 +57,14 @@ export function countStances(voices: Voice[], w: WarInfo, ourSideIsAttacker: boo
   return c;
 }
 /** AI 요청: 여러 제국의 성명을 한 번에(JSON 배열). 각 제국은 정해진 입장에 맞는 1~2문장만. */
-export function reactionMessages(player: string, w: WarInfo, speakers: Array<{ name: string; stance: Stance; ethics: string[]; memory?: string }>, galcom: Stance | null, declaration: string): ChatMessage[] {
+export function reactionMessages(player: string, w: WarInfo, speakers: Array<{ name: string; stance: Stance; ethics: string[]; memory?: string; geo?: string }>, galcom: Stance | null, declaration: string): ChatMessage[] { // geo: 그 나라와 플레이어의 국경·영유권 사이(2026-10-26, frontier.ts frontierBrief)
   const sys = 'You write short diplomatic statements issued by space empires in the game Stellaris in reaction to a war. '
     + 'Each statement is 1-2 sentences in the voice of that empire\'s government, matching the STANCE given for it exactly (condemn = sharp denunciation; concern = measured worry, calls for restraint; support = approval or solidarity). '
     + 'If an empire "remembers" something the player did, it may throw it back at the player in its statement. Refer to the actual cause of the war. ORIGINAL text only, never quote real-world statements. Output ONLY JSON: {"galcom":"statement or empty string","items":[{"name":"empire name","text":"statement"}]}.';
   const lines = [`Player empire: ${player.slice(0, 80)}`, `War: ${w.war.slice(0, 120)} — attacker ${w.attacker.slice(0, 80)}, defender ${w.defender.slice(0, 80)}; the player is the ${w.side === 'att' ? 'attacker' : 'defender'}.`, 'Cause: ' + describeWar(w, 'en').slice(0, 400)];
   if (declaration) lines.push('Excerpt of the player\'s declaration: "' + declaration.replace(/\s+/g, ' ').slice(0, 300) + '"');
   if (galcom) lines.push(`Galactic Community statement — STANCE: ${galcom}`);
-  for (const s of speakers) lines.push(`${s.name.slice(0, 80)} — STANCE: ${s.stance}${s.ethics.length ? ' — ethics: ' + s.ethics.slice(0, 4).join(', ') : ''}${s.memory ? ' — remembers: ' + s.memory.slice(0, 200) : ''}`);
+  for (const s of speakers) lines.push(`${s.name.slice(0, 80)} — STANCE: ${s.stance}${s.ethics.length ? ' — ethics: ' + s.ethics.slice(0, 4).join(', ') : ''}${s.memory ? ' — remembers: ' + s.memory.slice(0, 200) : ''}${s.geo ? ' — relation to the player: ' + s.geo.slice(0, 200) : ''}`);
   return [{ role: 'system', content: sys }, { role: 'user', content: lines.join('\n') }];
 }
 export function parseReactions(raw: unknown): { galcom: string; items: Array<{ name: string; text: string }> } | null {

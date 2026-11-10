@@ -1,0 +1,7 @@
+# SLLM 종속국 통치(2026-11-04) — 매달 감면 환급 · 계약 재협상 반응. 바닐라 목록에 덧붙는다(4.5: events 만).
+on_monthly_pulse_country = {
+	events = { sllm_vc.1 }
+}
+on_agreement_change_accepted = {
+	events = { sllm_vc.2 }
+}
